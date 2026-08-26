@@ -4751,6 +4751,25 @@ html,body{
   border-color:#66E0FF !important;
 }
 
+body.light #app input,
+body.light #app textarea,
+body.light #app select,
+body.light #app .search-wrap input{
+  background:#ffffff !important;
+  border-color:rgba(20,25,42,.16) !important;
+}
+body.light #app input::placeholder,
+body.light #app textarea::placeholder,
+body.light #app .search-wrap input::placeholder{
+  color:#7085a2 !important;
+}
+body.light #app input:focus,
+body.light #app textarea:focus,
+body.light #app select:focus,
+body.light #app .search-wrap input:focus{
+  border-color:#2563eb !important;
+}
+
 #app a,
 #app .link{
   color:#66E0FF !important;
@@ -11128,6 +11147,11 @@ body.light #mateusAiModal .mateus-ai-head { background:linear-gradient(180deg,rg
 body.light #mateusAiModal .mateus-ai-messages { background:radial-gradient(300px circle at 8% 0%,rgba(14,165,233,.10),transparent 58%)!important; }
 body.light #mateusAiModal .mateus-ai-msg.assistant { background:#f2f9ff!important; border-color:#d6eaf7!important; color:#15334a!important; }
 body.light #mateusAiModal .mateus-ai-msg.user { background:linear-gradient(135deg,#0ea5e9,#2563eb)!important; color:white!important; }
+body.light #mateusAiModal .mateus-ai-form { background:#ffffff!important; border:1px solid #d5deea!important; }
+body.light #mateusAiModal #mateusAiInput { color:#15334a!important; caret-color:#2563eb!important; }
+body.light #mateusAiModal .eva-attach,
+body.light #mateusAiModal .eva-voice { background:#e8eef8!important; border-color:#c9d6e8!important; color:#152033!important; }
+body.light #mateusAiModal .mateus-ai-status { color:#5b7291!important; }
 @media(max-width:700px){ #mateusAiModal .mateus-ai-card { top:auto; right:10px; bottom:10px; width:calc(100vw - 20px); height:min(76dvh,620px); max-height:76dvh; border-radius:27px!important; } }
 </style>
 <script id="mw-premium-eva-behavior">
@@ -12515,6 +12539,12 @@ body.light #mwSupportForm .form-field select{background:#fff;color:#17233a;borde
 #mwSupportChat.is-closed .mw-support-chat-form{opacity:.5;pointer-events:none}
 body.light .mw-support-msg.system{background:#eef4fb;border-color:#d8e4f0;color:#17233a}
 body.light .mw-support-ticket{background:rgba(235,245,255,.7)}
+body.light .mw-support-badge.aberto{background:rgba(14,116,144,.12);color:#0e7490}
+body.light .mw-support-badge.em_andamento{background:rgba(202,138,4,.14);color:#a16207}
+body.light .mw-support-badge.encerrado{background:rgba(71,85,105,.12);color:#475569}
+body.light #mwSupportChatBack,body.light .mw-support-chat-form button{background:rgba(15,23,42,.06)}
+body.light .mw-support-chat-form input[type=text]{background:#fff;border-color:rgba(15,23,42,.15);color:#0b1830}
+body.light .mw-support-intro{color:#526988}
 @media(max-width:860px){
   .mw-support-chat{height:calc(100dvh - 190px)}
 }
@@ -12755,6 +12785,30 @@ body.light .mw-support-ticket{background:rgba(235,245,255,.7)}
   else initSupport();
 })();
 </script>
+
+<style id="mw-a11y-focus">
+/* Anel de foco visível e consistente pra navegação por teclado em
+   qualquer botão/link/campo do site — várias partes já tinham o próprio
+   outline:none sem repor nada no lugar. Só aparece no teclado (:focus-visible
+   não ativa em clique de mouse), então não muda nada pra quem usa o mouse. */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible{
+  outline:2.5px solid rgba(56,189,248,.65)!important;
+  outline-offset:2px!important;
+}
+body.light button:focus-visible,
+body.light a:focus-visible,
+body.light input:focus-visible,
+body.light select:focus-visible,
+body.light textarea:focus-visible,
+body.light [tabindex]:focus-visible{
+  outline-color:rgba(37,99,235,.6)!important;
+}
+</style>
 
 </body>
 </html>
