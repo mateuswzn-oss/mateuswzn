@@ -2700,8 +2700,8 @@ body.light #app .calendar-card .calendar-nav button:hover{
 .mwv2-footer-icon[data-social="instagram"]:hover{background:linear-gradient(135deg,rgba(245,133,41,.26),rgba(221,42,123,.3) 45%,rgba(129,52,175,.3) 72%,rgba(81,91,212,.26));border-color:rgba(221,42,123,.45)}
 .mwv2-footer-icon[data-social="facebook"]:hover{background:rgba(56,101,246,.24);border-color:rgba(56,101,246,.55)}
 .mwv2-footer-text{margin:0;color:var(--muted2);font-size:10.5px;line-height:1.4}
-.mwv2-footer-links{display:flex;align-items:center;gap:7px;color:var(--muted2);font-size:10px}
-.mwv2-footer-links button{border:0;background:none;color:var(--muted2);font-size:inherit;padding:2px 1px;cursor:pointer;transition:color .18s ease}
+.mwv2-footer-links{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;row-gap:4px;gap:7px;color:var(--muted2);font-size:10px}
+.mwv2-footer-links button{border:0;background:none;color:var(--muted2);font-size:inherit;padding:6px 2px;min-height:24px;cursor:pointer;transition:color .18s ease}
 .mwv2-footer-links button:hover{color:var(--blue2)}
 .mwv2-footer-toast{position:fixed;left:50%;bottom:118px;transform:translate(-50%,12px);padding:9px 16px;border-radius:100px;background:rgba(8,20,43,.92);border:1px solid rgba(104,171,245,.3);color:#eaf6ff;font-size:11.5px;letter-spacing:.02em;opacity:0;pointer-events:none;transition:opacity .22s ease,transform .22s ease;z-index:60;backdrop-filter:blur(14px);white-space:nowrap}
 .mwv2-footer-toast.show{opacity:1;transform:translate(-50%,0)}
@@ -2852,6 +2852,8 @@ body.light #app .calendar-card .calendar-nav button:hover{
       <button type="button" data-footer-link="termos">Termos</button>
       <span aria-hidden="true">·</span>
       <button type="button" data-footer-link="ajuda">Ajuda</button>
+      <span aria-hidden="true">·</span>
+      <button type="button" id="mwFooterSupportLink">Suporte</button>
     </div>
   </footer>
 
@@ -11035,8 +11037,8 @@ body.light #app .main .activity-card,body.light #app .main .lecture-card,body.li
 #mateusAiModal .mateus-ai-head { padding:22px 18px 15px; background:linear-gradient(180deg,rgba(21,57,91,.52),transparent); border-bottom-color:rgba(125,211,252,.12); }
 #mateusAiModal .mateus-ai-messages { min-height:0; flex:1; max-height:none; padding:16px; align-content:start; background:radial-gradient(300px circle at 8% 0%,rgba(34,211,238,.08),transparent 58%); }
 #mateusAiModal .mateus-ai-msg { width:fit-content; max-width:82%; padding:10px 13px; border-radius:17px; box-shadow:inset 0 1px 0 rgba(255,255,255,.05); }
-#mateusAiModal .mateus-ai-msg.assistant { background:rgba(125,211,252,.10); border-color:rgba(125,211,252,.13); }
-#mateusAiModal .mateus-ai-msg.user { background:linear-gradient(135deg,rgba(37,99,235,.58),rgba(14,116,144,.55)); border-color:rgba(103,232,249,.22); }
+#mateusAiModal .mateus-ai-msg.assistant { background:rgba(23,52,86,.9); border-color:rgba(125,211,252,.18); color:#eaf6ff; }
+#mateusAiModal .mateus-ai-msg.user { background:linear-gradient(135deg,rgba(37,99,235,.92),rgba(14,116,144,.9)); border-color:rgba(103,232,249,.3); color:#f2fbff; }
 #mateusAiModal .mateus-ai-form { margin:8px 12px 5px!important; border-radius:18px!important; background:rgba(2,12,26,.58)!important; }
 #mateusAiModal .mateus-ai-status { padding:4px 17px 14px; font-size:10px; color:#8fb4cb; }
 #mateusAiModal .eva-chips { display:none!important; }
@@ -11621,7 +11623,7 @@ body.light #app .main .mw-bell-wrap .notification-menu{background:linear-gradien
 body.light #app .main .profile-photo-card{background:linear-gradient(150deg,rgba(255,255,255,.85),rgba(230,244,255,.7))}
 
 /* ---------- EVANGELINE: identidade mais "inteligente" e formal ---------- */
-#mateusAiModal .eva-orb{box-shadow:0 0 0 4px rgba(34,211,238,.12),0 0 22px rgba(34,211,238,.55) !important;animation:mwOrbPulse 2.6s ease-in-out infinite}
+#mateusAiModal .eva-orb{width:40px!important;height:40px!important;box-shadow:0 0 0 4px rgba(34,211,238,.12),0 0 22px rgba(34,211,238,.55) !important;animation:mwOrbPulse 2.6s ease-in-out infinite}
 @keyframes mwOrbPulse{0%,100%{box-shadow:0 0 0 4px rgba(34,211,238,.12),0 0 16px rgba(34,211,238,.45)}50%{box-shadow:0 0 0 7px rgba(34,211,238,.08),0 0 26px rgba(34,211,238,.7)}}
 #mateusAiModal .mateus-ai-form{
   border:1px solid rgba(103,232,249,.18) !important;
@@ -11970,9 +11972,18 @@ body.light html body #app #searchWrap .search-icon.icon-btn{color:#2563eb!import
 @keyframes mwv2EvaShine{to{background-position:-220% 0}}
 
 html body #mateusAiModal .mateus-ai-card{
-  border:1px solid rgba(125,194,255,.22)!important;
-  background:linear-gradient(150deg,rgba(12,43,82,.5),rgba(3,16,35,.86))!important;
-  box-shadow:none!important;
+  /* Fundo bem mais sólido (era .5 de opacidade no primeiro stop — dava
+     pra ver o conteúdo do dashboard passando por trás, parecendo vidro
+     quebrado em vez de um card premium). Glassmorphism discreto: só um
+     blur leve, o grosso do efeito é o fundo praticamente opaco. */
+  border:1px solid rgba(125,194,255,.28)!important;
+  background:linear-gradient(150deg,rgba(13,32,58,.97),rgba(4,11,24,.99))!important;
+  backdrop-filter:blur(20px) saturate(140%)!important;
+  -webkit-backdrop-filter:blur(20px) saturate(140%)!important;
+  box-shadow:0 30px 70px rgba(2,8,23,.5),0 0 0 1px rgba(103,232,249,.06),0 0 46px -12px rgba(124,92,255,.35)!important;
+}
+body.light html body #mateusAiModal .mateus-ai-card{
+  background:linear-gradient(150deg,rgba(250,254,255,.98),rgba(232,244,255,.99))!important;
 }
 html body .mateus-ai-form{
   display:flex!important;align-items:center!important;gap:8px!important;
@@ -12082,8 +12093,8 @@ html body #mateusAiInput{background:transparent!important;border:0!important;lin
 <div id="mwv2InstallBanner" role="status" aria-live="polite">
   <div class="mwv2-install-icon">MW</div>
   <div class="mwv2-install-text">
-    <strong>Instalar Mateus Workspace</strong>
-    <span>Adicione à tela de início para abrir como um app.</span>
+    <strong id="mwv2InstallTitle">Instalar Mateus Workspace</strong>
+    <span id="mwv2InstallDesc">Adicione à tela de início para abrir como um app.</span>
   </div>
   <button type="button" id="mwv2InstallGo" class="mwv2-install-go">Instalar</button>
   <button type="button" id="mwv2InstallDismiss" aria-label="Fechar">✕</button>
@@ -12103,14 +12114,50 @@ html body #mateusAiInput{background:transparent!important;border:0!important;lin
   const banner = document.getElementById('mwv2InstallBanner');
   const goBtn = document.getElementById('mwv2InstallGo');
   const dismissBtn = document.getElementById('mwv2InstallDismiss');
+  const titleEl = document.getElementById('mwv2InstallTitle');
+  const descEl = document.getElementById('mwv2InstallDesc');
   const DISMISS_KEY = 'mwInstallDismissed';
 
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    if (localStorage.getItem(DISMISS_KEY) === '1') return;
-    banner?.classList.add('show');
-  });
+  // Já rodando instalado (Android/desktop "standalone" ou "Adicionar à Tela
+  // de Início" no iOS) — não faz sentido convidar pra instalar de novo.
+  const alreadyInstalled = window.matchMedia?.('(display-mode: standalone)')?.matches || navigator.standalone === true;
+
+  const ua = navigator.userAgent || '';
+  const isIOS = /iphone|ipad|ipod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isAndroid = /android/i.test(ua);
+
+  if (alreadyInstalled) return;
+
+  // Só mostra o convite depois que a pessoa já está no dashboard — nunca
+  // por cima da tela de login, onde em telas curtas ele acabava cobrindo
+  // os campos de e-mail/senha.
+  const appEl = document.getElementById('app');
+  const showWhenReady = (fn) => {
+    if (appEl && !appEl.classList.contains('hidden')) { fn(); return; }
+    const obs = new MutationObserver(() => {
+      if (appEl && !appEl.classList.contains('hidden')) { fn(); obs.disconnect(); }
+    });
+    if (appEl) obs.observe(appEl, { attributes: true, attributeFilter: ['class'] });
+  };
+
+  if (isIOS) {
+    // O Safari/iOS nunca dispara "beforeinstallprompt" — não existe uma API
+    // de instalação programática. O único caminho é o usuário tocar em
+    // Compartilhar e escolher "Adicionar à Tela de Início" manualmente, então
+    // em vez de um botão "Instalar" que não faria nada, mostramos o passo a passo.
+    if (titleEl) titleEl.textContent = 'Adicionar à Tela de Início';
+    if (descEl) descEl.innerHTML = 'Toque em <strong>Compartilhar</strong> <span aria-hidden="true">⬆︎</span> e depois em "Adicionar à Tela de Início".';
+    if (goBtn) goBtn.remove();
+    if (localStorage.getItem(DISMISS_KEY) !== '1') showWhenReady(() => banner?.classList.add('show'));
+  } else {
+    if (titleEl) titleEl.textContent = isAndroid ? 'Instalar aplicativo' : 'Instalar Mateus Workspace';
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (localStorage.getItem(DISMISS_KEY) === '1') return;
+      showWhenReady(() => banner?.classList.add('show'));
+    });
+  }
 
   goBtn?.addEventListener('click', async () => {
     banner?.classList.remove('show');
