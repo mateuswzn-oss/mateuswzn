@@ -6701,11 +6701,16 @@ img,svg,video,canvas{max-width:100%}
     scrim.id = 'mwSidebarScrim';
     document.body.appendChild(scrim);
   }
-  const close = () => { app.classList.remove('mw-mobile-open'); document.body.style.overflow=''; };
+  // O scrim é filho de <body>, não de #app — a regra em CSS
+  // "#app.mw-mobile-open #mwSidebarScrim" nunca bate por causa disso, então
+  // o fundo escurecido (e o toque-fora-pra-fechar) mostra/esconde direto
+  // aqui via JS, sem depender daquele seletor quebrado.
+  const close = () => { app.classList.remove('mw-mobile-open'); scrim.style.display = 'none'; document.body.style.overflow=''; };
   const open = () => {
     app.classList.add('mw-mobile-open');
     app.classList.remove('mw-sidebar-collapsed');
     document.querySelector('#app .sidebar')?.classList.remove('collapsed');
+    scrim.style.display = 'block';
     document.body.style.overflow = 'hidden';
   };
   btn.addEventListener('click', (e) => {
@@ -7991,6 +7996,11 @@ html body #app{
 html body #app.mw-sidebar-collapsed{
   grid-template-columns: 72px minmax(0,1fr) !important;
 }
+/* Só no desktop: no mobile essa regra sem media query estava vencendo a
+   largura do menu-gaveta (min(84vw,292px)) por especificidade, deixando
+   o menu ocupar a tela inteira e escondendo a faixa de toque que fecha
+   o menu (o "scrim"). */
+@media (min-width:861px){
 html body #app aside.sidebar.mw-reference-sidebar.mw-sidebar-polished,
 html body #app.mw-sidebar-collapsed aside.sidebar.mw-reference-sidebar.mw-sidebar-polished{
   width: 100% !important;
@@ -7998,6 +8008,7 @@ html body #app.mw-sidebar-collapsed aside.sidebar.mw-reference-sidebar.mw-sideba
   padding-left: 0 !important;
   padding-right: 0 !important;
   transition: none !important;
+}
 }
 
 html body #app aside.sidebar .mw-sidebar-brand,
@@ -8158,6 +8169,13 @@ html body #app.mw-sidebar-collapsed aside.sidebar .mw-switch{
   const app = document.getElementById('app');
   const sidebar = app && app.querySelector('aside.sidebar');
   if (!app || !sidebar) return;
+  // Isso "trava" o tamanho da barra lateral com estilo inline (!important)
+  // pra animação de recolher/expandir no desktop não ficar instável. No
+  // mobile não existe esse recolher — a barra vira uma gaveta — e como
+  // estilo inline com !important vence qualquer regra do CSS, isso
+  // travava a gaveta sempre em 100% da largura da tela, sem espaço pra
+  // fechar tocando fora dela.
+  if (window.innerWidth <= 860) return;
 
   const pin = (el, props) => {
     for (const k in props) el.style.setProperty(k, props[k], 'important');
@@ -12284,6 +12302,20 @@ html body #mateusAiInput{background:transparent!important;border:0!important;lin
 #themeToggle .mwv2-star.s1{width:2.5px;height:2.5px;top:1px;right:-1px;animation-delay:.1s}
 #themeToggle .mwv2-star.s2{width:1.6px;height:1.6px;bottom:2px;right:1px;animation-delay:.7s}
 @keyframes mwv2StarTwinkle{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1)}}
+</style>
+
+<style id="mw-mobile-drawer-width-fix">
+/* Uma regra antiga e sem media query (#app .mw-reference-sidebar{width:auto})
+   tem a mesma especificidade da largura da gaveta mobile, então na prática
+   o menu acabava ocupando a tela inteira, sem sobrar espaço pra fechar
+   tocando fora dele. Esta regra vem depois de tudo (e um pouco mais
+   específica) só pra garantir que a largura certa sempre vença. */
+@media (max-width:860px){
+  html body #app aside.sidebar.mw-reference-sidebar{
+    width: min(84vw, 292px) !important;
+    min-width: 0 !important;
+  }
+}
 </style>
 
 </body>
