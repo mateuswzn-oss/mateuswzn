@@ -6653,8 +6653,14 @@ img,svg,video,canvas{max-width:100%}
   }
   body.light #app .topbar{background:rgba(238,241,246,.96)!important}
   #mwMobileMenu.mw-mobile-menu{display:grid!important;place-items:center;width:44px;height:44px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:inherit}
+  #app .hello{min-width:0!important;overflow:hidden!important;transition:opacity .18s ease,visibility .18s ease!important}
   #app .hello h2{font-size:17px!important;margin:0!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #app .hello p{font-size:11px!important;margin:2px 0 0!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* Com a busca aberta não sobra espaço decente pros dois lados — em vez
+     de espremer "Olá, Mateus!" até virar uma letra solta cortada, esconde
+     a saudação enquanto a pesquisa estiver em uso. */
+  #app .topbar:has(.search-wrap.open) .hello,
+  #app .topbar:has(.search-wrap:focus-within) .hello{opacity:0!important;visibility:hidden!important}
   #app .top-actions{width:auto!important;gap:6px!important}
   #app #themeToggle,#app #quickAdd,#app #profileBtn{display:none!important}
   #app .search-wrap{width:44px!important;min-width:44px!important;height:44px!important;flex:0 0 44px!important;display:flex!important}
@@ -11832,7 +11838,10 @@ body::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,rgba(90,17
   border:0!important;outline:none!important;border-radius:inherit!important;
   background:transparent!important;color:var(--text)!important;
   caret-color:#67c7ff!important;cursor:text!important;
-  font-size:12px!important;letter-spacing:.005em;
+  /* 16px é o limiar do Safari/iOS: input com fonte menor faz a página
+     inteira dar zoom sozinha ao focar o campo, e o usuário precisa dar
+     um pinça pra voltar ao tamanho normal. */
+  font-size:16px!important;letter-spacing:.005em;
   opacity:0;pointer-events:none;
   transition:opacity .18s ease!important;
 }
