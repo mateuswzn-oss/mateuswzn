@@ -3126,17 +3126,16 @@ body.light #app .calendar-card .calendar-nav button:hover{
     }
   } catch (e) {}
 
+  // Um atraso fixo e curto, sem depender do evento "load" da janela:
+  // esperar fontes/ícones externos terminarem de carregar podia travar
+  // esse loader pra sempre em contextos com rede restrita (ex.: preview
+  // do Arquivos/Quick Look no iPhone), deixando a tela presa em "Carregando".
   var loader = document.getElementById('mwBootLoader');
-  var minDelay = new Promise(function(r){ setTimeout(r, 420); });
-  var ready = new Promise(function(r){
-    if (document.readyState === 'complete') r();
-    else window.addEventListener('load', r, { once: true });
-  });
-  Promise.all([minDelay, ready]).then(function(){
+  setTimeout(function(){
     if (!loader) return;
     loader.classList.add('mw-boot-hide');
     setTimeout(function(){ loader.remove(); }, 500);
-  });
+  }, 550);
 })();
 </script>
 
