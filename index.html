@@ -2686,31 +2686,7 @@ body.light #app .calendar-card .calendar-nav button:hover{
 .mwv2-otp-field input:focus{border-color:#57b5ff;box-shadow:none}
 .mwv2-otp-field.hidden{display:none}
 
-/* rodapé profissional da tela de login: redes sociais + info do site.
-   Fica fixo, num "cartão" compacto no canto inferior — não empurra o
-   card de login nem estica a altura da página, fica sempre no mesmo lugar. */
 .mwv2-login-stack{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;width:100%}
-.mwv2-footer{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:3;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;padding:11px 20px;max-width:min(360px,calc(100vw - 24px));border-radius:18px;background:rgba(6,16,33,.44);border:1px solid rgba(125,194,255,.14);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);animation:mwv2FooterIn .7s cubic-bezier(.22,.8,.2,1) .15s both}
-@keyframes mwv2FooterIn{from{opacity:0;transform:translate(-50%,14px)}to{opacity:1;transform:translate(-50%,0)}}
-.mwv2-footer-social{display:flex;align-items:center;gap:9px}
-.mwv2-footer-icon{display:grid;place-items:center;width:32px;height:32px;border:1px solid rgba(125,194,255,.22);border-radius:10px;background:rgba(12,43,82,.42);color:#bcdfff;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:transform .22s cubic-bezier(.22,.8,.2,1),background .22s ease,border-color .22s ease,color .22s ease}
-.mwv2-footer-icon svg{width:15px;height:15px}
-.mwv2-footer-icon:hover{transform:translateY(-2px);border-color:rgba(104,171,245,.5);color:#eaf6ff}
-.mwv2-footer-icon:active{transform:translateY(0) scale(.94)}
-.mwv2-footer-icon[data-social="instagram"]:hover{background:linear-gradient(135deg,rgba(245,133,41,.26),rgba(221,42,123,.3) 45%,rgba(129,52,175,.3) 72%,rgba(81,91,212,.26));border-color:rgba(221,42,123,.45)}
-.mwv2-footer-icon[data-social="facebook"]:hover{background:rgba(56,101,246,.24);border-color:rgba(56,101,246,.55)}
-.mwv2-footer-text{margin:0;color:var(--muted2);font-size:10.5px;line-height:1.4}
-.mwv2-footer-links{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;row-gap:4px;gap:7px;color:var(--muted2);font-size:10px}
-.mwv2-footer-links button{border:0;background:none;color:var(--muted2);font-size:inherit;padding:6px 2px;min-height:24px;cursor:pointer;transition:color .18s ease}
-.mwv2-footer-links button:hover{color:var(--blue2)}
-.mwv2-footer-toast{position:fixed;left:50%;bottom:118px;transform:translate(-50%,12px);padding:9px 16px;border-radius:100px;background:rgba(8,20,43,.92);border:1px solid rgba(104,171,245,.3);color:#eaf6ff;font-size:11.5px;letter-spacing:.02em;opacity:0;pointer-events:none;transition:opacity .22s ease,transform .22s ease;z-index:60;backdrop-filter:blur(14px);white-space:nowrap}
-.mwv2-footer-toast.show{opacity:1;transform:translate(-50%,0)}
-
-@media(max-height:720px){
-  .mwv2-footer{position:relative;left:auto;bottom:auto;transform:none;margin:14px auto 0}
-  @keyframes mwv2FooterIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-  .mwv2-footer-toast{bottom:26px}
-}
 
 @media(max-width:760px){
   #authScene.mwv2-card{width:min(700px,100%);height:auto;display:grid;grid-template-columns:1fr;overflow:hidden;border-radius:22px}
@@ -2727,9 +2703,6 @@ body.light #app .calendar-card .calendar-nav button:hover{
   .mwv2-form-area{height:430px;border-radius:0}
   .mwv2-auth-pane{padding:26px 24px 22px}
   .mwv2-login-stack{gap:20px}
-  .mwv2-footer{max-width:94vw;bottom:calc(14px + env(safe-area-inset-bottom,0px))}
-  .mwv2-footer-icon{width:33px;height:33px;border-radius:10px}
-  .mwv2-footer-toast{bottom:calc(108px + env(safe-area-inset-bottom,0px));font-size:11px;padding:8px 14px}
 }
 </style>
 
@@ -2835,29 +2808,6 @@ body.light #app .calendar-card .calendar-nav button:hover{
     </section>
   </div>
   </div>
-
-  <footer class="mwv2-footer">
-    <div class="mwv2-footer-social">
-      <button type="button" class="mwv2-footer-icon" data-social="instagram" aria-label="Instagram">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-      </button>
-      <button type="button" class="mwv2-footer-icon" data-social="facebook" aria-label="Facebook">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-      </button>
-    </div>
-    <p class="mwv2-footer-text">© <span id="mwv2FooterYear">2026</span> MateusWorkspace — organize estudos, projetos e prazos em um só lugar.</p>
-    <div class="mwv2-footer-links">
-      <button type="button" data-footer-link="privacidade">Privacidade</button>
-      <span aria-hidden="true">·</span>
-      <button type="button" data-footer-link="termos">Termos</button>
-      <span aria-hidden="true">·</span>
-      <button type="button" data-footer-link="ajuda">Ajuda</button>
-      <span aria-hidden="true">·</span>
-      <button type="button" id="mwFooterSupportLink">Suporte</button>
-    </div>
-  </footer>
-
-  <div class="mwv2-footer-toast" id="mwv2FooterToast" role="status" aria-live="polite"></div>
 
   <div class="otp-overlay hidden" id="otpOverlay" aria-hidden="true">
     <div class="otp-panel" role="dialog" aria-modal="true" aria-labelledby="otpTitle">
@@ -2995,31 +2945,6 @@ body.light #app .calendar-card .calendar-nav button:hover{
     }catch{}
   })();
 
-  /* Rodapé profissional: ano automático + aviso ao tocar nos ícones sociais. */
-  (function loginFooter(){
-    const yearEl = document.getElementById('mwv2FooterYear');
-    if(yearEl) yearEl.textContent = new Date().getFullYear();
-
-    const toast = document.getElementById('mwv2FooterToast');
-    let toastTimer = null;
-    function showToast(text){
-      if(!toast) return;
-      toast.textContent = text;
-      toast.classList.add('show');
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
-    }
-
-    loginScreen.querySelectorAll('.mwv2-footer-icon').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const network = btn.dataset.social === 'instagram' ? 'Instagram' : 'Facebook';
-        showToast(`${network} em breve por aqui`);
-      });
-    });
-    loginScreen.querySelectorAll('.mwv2-footer-links button').forEach(btn => {
-      btn.addEventListener('click', () => showToast('Em breve'));
-    });
-  })();
 })();
 </script>
 
@@ -3149,6 +3074,7 @@ body.light #app .calendar-card .calendar-nav button:hover{
         <div class="mw-support-chat-head">
           <button type="button" id="mwSupportChatBack" aria-label="Voltar para a lista de atendimentos">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            <span class="mw-back-label">Voltar</span>
           </button>
           <div class="mw-support-chat-id">
             <strong id="mwSupportChatSubject">Assunto</strong>
@@ -3181,8 +3107,131 @@ body.light #app .calendar-card .calendar-nav button:hover{
       <div class="settings-group"><h4>Sessão</h4><p>Este projeto usa uma sessão demonstrativa local.</p><div class="profile-actions"><button class="small-btn mw-logout-btn" id="logout">Sair</button></div></div>
       <div class="settings-group"><h4>Dados</h4><p>Remove disciplinas, atividades, projetos e anotações salvos neste navegador.</p><button class="small-btn danger mw-clear-btn" id="clearAll">Apagar todos os dados</button></div>
     </section></section>
+
+    <footer class="mw-app-footer">
+      <div class="mw-app-footer-brand">
+        <span class="mw-app-footer-logo">MW</span>
+        <div class="mw-app-footer-copy">
+          <strong>Mateus Workspace</strong>
+          <small>© <span id="mwAppFooterYear">2026</span> — organize estudos, projetos e prazos em um só lugar.</small>
+        </div>
+      </div>
+      <nav class="mw-app-footer-links">
+        <button type="button" data-footer-link="privacidade">Privacidade</button>
+        <button type="button" data-footer-link="termos">Termos</button>
+        <button type="button" data-footer-link="ajuda">Ajuda</button>
+        <button type="button" id="mwAppFooterSupport">Suporte</button>
+      </nav>
+      <div class="mw-app-footer-social">
+        <button type="button" class="mw-app-footer-icon" data-social="instagram" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </button>
+        <button type="button" class="mw-app-footer-icon" data-social="facebook" aria-label="Facebook">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </button>
+        <span class="mw-app-footer-divider" aria-hidden="true"></span>
+        <button type="button" class="mw-app-store-badge" data-store="apple" aria-label="Em breve na App Store">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17.05 12.54c-.02-2.02 1.65-2.99 1.72-3.03-.94-1.37-2.4-1.56-2.92-1.58-1.24-.13-2.43.73-3.06.73-.63 0-1.6-.71-2.64-.69-1.35.02-2.6.79-3.3 1.99-1.41 2.44-.36 6.05 1.01 8.03.67.97 1.47 2.06 2.52 2.02 1.01-.04 1.4-.65 2.62-.65 1.22 0 1.57.65 2.64.63 1.09-.02 1.78-.99 2.44-1.96.77-1.12 1.09-2.21 1.11-2.27-.02-.01-2.12-.81-2.14-3.22zM15.04 6.4c.55-.67.92-1.6.82-2.53-.79.03-1.75.53-2.32 1.19-.51.59-.96 1.54-.84 2.44.88.07 1.78-.44 2.34-1.1z"/></svg>
+          <span><small>Em breve na</small><strong>App Store</strong></span>
+        </button>
+        <button type="button" class="mw-app-store-badge" data-store="google" aria-label="Em breve no Google Play">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3.6 2.4c-.35.2-.6.58-.6 1.05v17.1c0 .47.25.85.6 1.05l9.85-9.6-9.85-9.6zm11.15 9.6 2.5-2.44 3.66 2.1c.5.3.5 1.03 0 1.33l-3.66 2.1-2.5-2.44v-.65zm-1.1 1.1 2.36 2.3-9.76 9.5 7.4-11.8zm0-2.2L6.19 1.4l9.76 9.5-2.3 2.24z"/></svg>
+          <span><small>Em breve no</small><strong>Google Play</strong></span>
+        </button>
+      </div>
+    </footer>
+    <div class="mw-app-footer-toast" id="mwAppFooterToast" role="status" aria-live="polite"></div>
   </main>
 </section>
+<style id="mw-app-footer-style">
+.mw-app-footer{
+  margin-top:28px;padding:22px 20px 18px;border-top:1px solid var(--line);
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 24px;
+}
+.mw-app-footer-brand{display:flex;align-items:center;gap:12px;min-width:0}
+.mw-app-footer-logo{
+  width:36px;height:36px;flex:0 0 36px;border-radius:11px;display:grid;place-items:center;
+  background:linear-gradient(135deg,#67e8f9,#38bdf8 48%,#2563eb);color:#061525;font-weight:800;font-size:12px;
+}
+.mw-app-footer-copy{min-width:0}
+.mw-app-footer-copy strong{display:block;font-size:12.5px;color:var(--text)}
+.mw-app-footer-copy small{display:block;margin-top:2px;font-size:10.5px;color:var(--muted2);line-height:1.4}
+.mw-app-footer-links{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px}
+.mw-app-footer-links button{border:0;background:none;color:var(--muted2);font-size:11px;padding:6px 2px;min-height:28px;cursor:pointer;transition:color .18s ease}
+.mw-app-footer-links button:hover{color:var(--blue2)}
+.mw-app-footer-social{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.mw-app-footer-icon{
+  display:grid;place-items:center;width:34px;height:34px;border:1px solid var(--line);border-radius:10px;
+  background:var(--panel2);color:var(--muted2);flex:0 0 auto;cursor:pointer;
+  transition:transform .2s ease,background .2s ease,border-color .2s ease,color .2s ease;
+}
+.mw-app-footer-icon svg{width:15px;height:15px}
+.mw-app-footer-icon:hover{transform:translateY(-2px);color:var(--text)}
+.mw-app-footer-icon[data-social="instagram"]:hover{background:linear-gradient(135deg,rgba(245,133,41,.26),rgba(221,42,123,.3) 45%,rgba(129,52,175,.3) 72%,rgba(81,91,212,.26));border-color:rgba(221,42,123,.45)}
+.mw-app-footer-icon[data-social="facebook"]:hover{background:rgba(56,101,246,.2);border-color:rgba(56,101,246,.5)}
+.mw-app-footer-divider{width:1px;height:24px;background:var(--line);margin:0 2px;flex:0 0 auto}
+.mw-app-store-badge{
+  display:flex;align-items:center;gap:8px;padding:6px 12px;border-radius:11px;border:1px solid var(--line);
+  background:var(--panel2);color:var(--muted2);cursor:not-allowed;flex:0 0 auto;opacity:.75;
+  transition:opacity .2s ease;
+}
+.mw-app-store-badge:hover{opacity:1}
+.mw-app-store-badge span{display:flex;flex-direction:column;align-items:flex-start;line-height:1.15;text-align:left}
+.mw-app-store-badge small{font-size:8.5px;color:var(--muted2)}
+.mw-app-store-badge strong{font-size:11px;color:var(--text)}
+.mw-app-footer-toast{
+  position:fixed;left:50%;bottom:24px;transform:translate(-50%,12px);padding:9px 16px;border-radius:100px;
+  background:rgba(8,20,43,.92);border:1px solid rgba(104,171,245,.3);color:#eaf6ff;font-size:11.5px;
+  letter-spacing:.02em;opacity:0;pointer-events:none;transition:opacity .22s ease,transform .22s ease;
+  z-index:60;backdrop-filter:blur(14px);white-space:nowrap;
+}
+.mw-app-footer-toast.show{opacity:1;transform:translate(-50%,0)}
+body.light .mw-app-footer-icon{background:rgba(15,23,42,.04)}
+body.light .mw-app-store-badge{background:rgba(15,23,42,.04)}
+@media(max-width:760px){
+  .mw-app-footer{flex-direction:column;align-items:flex-start;text-align:left;padding:20px 4px 16px}
+  .mw-app-footer-social{width:100%}
+  body.mw-in-app .mw-app-footer{margin-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+  .mw-app-footer-toast{bottom:calc(78px + env(safe-area-inset-bottom,0px))}
+}
+</style>
+<script id="mw-app-footer-js">
+(() => {
+  const yearEl = document.getElementById('mwAppFooterYear');
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+  const toast = document.getElementById('mwAppFooterToast');
+  let toastTimer = null;
+  const showToast = (text) => {
+    if (!toast) return;
+    toast.textContent = text;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+  };
+
+  document.querySelectorAll('.mw-app-footer-icon').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const network = btn.dataset.social === 'instagram' ? 'Instagram' : 'Facebook';
+      showToast(`${network} em breve por aqui`);
+    });
+  });
+  document.querySelectorAll('.mw-app-footer-links button:not(#mwAppFooterSupport)').forEach(btn => {
+    btn.addEventListener('click', () => showToast('Em breve'));
+  });
+  document.querySelectorAll('.mw-app-store-badge').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const store = btn.dataset.store === 'apple' ? 'App Store' : 'Google Play';
+      showToast(`Em breve na ${store}`);
+    });
+  });
+  document.getElementById('mwAppFooterSupport')?.addEventListener('click', () => {
+    document.querySelector('#nav [data-view="support"]')?.click();
+    document.querySelector('#app .main')?.scrollTo({top: 0, behavior: 'smooth'});
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  });
+})();
+</script>
 
 <script id="mw-boot-session-gate">
 (function(){
@@ -5018,6 +5067,10 @@ body.light #app .search-wrap input:focus{
   btn.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopImmediatePropagation();
+    if (window.innerWidth <= 860 && app.classList.contains('mw-mobile-open')) {
+      document.getElementById('mwMobileMenu')?.click();
+      return;
+    }
     if (locked) return;
     locked = true;
 
@@ -6650,7 +6703,10 @@ body.light #view-college .college-setup label{color:#1d4ed8 !important}
   btn.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopImmediatePropagation();
-    if (window.innerWidth <= 860) return;
+    if (window.innerWidth <= 860) {
+      if (app.classList.contains('mw-mobile-open')) document.getElementById('mwMobileMenu')?.click();
+      return;
+    }
     apply(!sidebar.classList.contains('collapsed'));
   });
   if (localStorage.getItem('mwSidebarCollapsed') === '1' && window.innerWidth > 860) apply(true);
@@ -6739,8 +6795,12 @@ img,svg,video,canvas{max-width:100%}
   #app.mw-mobile-open .sidebar{transform:none!important}
   #app.mw-mobile-open #mwSidebarScrim{display:block!important}
   #app .mw-sidebar-collapse,.workspace-instagram{display:none!important}
-  #app .sidebar .label,#app .nav button>span:last-child,#app .mw-brand-copy,#app .mw-profile-copy{
+  #app .sidebar .label,#app .nav button>span:last-child,#app .mw-brand-copy{
     display:block!important;visibility:visible!important;opacity:1!important;max-width:none!important;
+  }
+  #app .sidebar .mw-profile-copy.label,#app .mw-profile-copy{
+    display:flex!important;flex-direction:column!important;gap:2px!important;
+    visibility:visible!important;opacity:1!important;max-width:none!important;
   }
   #app .mw-reference-profile{background:rgba(255,255,255,.05)!important;border-radius:16px!important;padding:8px!important;margin-bottom:12px!important}
   #app .nav button,#app .mw-reference-row{min-height:48px!important;padding:12px!important;justify-content:flex-start!important;width:100%!important;border-radius:14px!important}
@@ -6861,9 +6921,17 @@ img,svg,video,canvas{max-width:100%}
     flex:1; min-height:52px; border:0; border-radius:14px;
     background:transparent; color:#8aa0bc; font-size:10px; font-weight:600;
     display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+    transition:background .2s ease, color .2s ease, transform .15s ease;
   }
-  #mwBottomNav button.active{background:rgba(56,189,248,.16); color:#f2f7ff}
-  #mwBottomNav svg{width:18px;height:18px}
+  #mwBottomNav button:active{transform:scale(.9)}
+  #mwBottomNav button.active{background:rgba(56,189,248,.16); color:#f2f7ff; animation:mw-bottomnav-pop .32s cubic-bezier(.34,1.56,.64,1)}
+  #mwBottomNav button.active svg{animation:mw-bottomnav-icon-pop .32s cubic-bezier(.34,1.56,.64,1)}
+  #mwBottomNav svg{width:18px;height:18px;transition:transform .15s ease}
+  @keyframes mw-bottomnav-pop{0%{transform:scale(.88)}55%{transform:scale(1.06)}100%{transform:scale(1)}}
+  @keyframes mw-bottomnav-icon-pop{0%{transform:translateY(0)}40%{transform:translateY(-3px)}100%{transform:translateY(0)}}
+  @media (prefers-reduced-motion:reduce){
+    #mwBottomNav button.active,#mwBottomNav button.active svg{animation:none}
+  }
 
   #loginScreen .auth-card{
     display:flex !important;
@@ -12521,7 +12589,9 @@ body.light #mwSupportForm .form-field select{background:#fff;color:#17233a;borde
 
 .mw-support-chat{display:flex;flex-direction:column;height:min(640px,72vh);padding:0!important;overflow:hidden}
 .mw-support-chat-head{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid rgba(78,132,204,.14)}
-#mwSupportChatBack{border:0;background:rgba(255,255,255,.06);color:inherit;width:34px;height:34px;min-height:34px;border-radius:10px;display:grid;place-items:center;flex:0 0 auto;cursor:pointer}
+#mwSupportChatBack{border:1px solid rgba(125,194,255,.22);background:rgba(255,255,255,.08);color:inherit;width:34px;height:34px;min-height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:6px;flex:0 0 auto;cursor:pointer}
+#mwSupportChatBack .mw-back-label{display:none;font-size:12.5px;font-weight:700}
+body.light #mwSupportChatBack{border-color:rgba(15,23,42,.14)}
 .mw-support-chat-id{flex:1;min-width:0}
 .mw-support-chat-id strong{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mw-support-chat-id small{color:#7890b1;font-size:10.5px;display:flex;align-items:center;gap:6px}
@@ -12547,6 +12617,8 @@ body.light .mw-support-chat-form input[type=text]{background:#fff;border-color:r
 body.light .mw-support-intro{color:#526988}
 @media(max-width:860px){
   .mw-support-chat{height:calc(100dvh - 190px)}
+  #mwSupportChatBack{width:auto;min-height:40px;padding:0 14px 0 10px;border-radius:100px}
+  #mwSupportChatBack .mw-back-label{display:inline}
 }
 </style>
 
@@ -12766,15 +12838,6 @@ body.light .mw-support-intro{color:#526988}
 
     document.querySelectorAll('#nav [data-view="support"]').forEach(btn => {
       btn.addEventListener('click', () => { activeId = null; showPanel('list'); renderList(); });
-    });
-
-    // Rodapé do login: suporte exige estar logado no Workspace.
-    $('#mwFooterSupportLink')?.addEventListener('click', () => {
-      const toast = $('#mwv2FooterToast');
-      if (!toast) return;
-      toast.textContent = 'Entre no seu Workspace para abrir um atendimento de suporte.';
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 2400);
     });
 
     showPanel('list');
