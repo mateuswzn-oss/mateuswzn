@@ -956,8 +956,8 @@ body.light #app .brand-mark,body.light #app .logo-mark,body.light #app .mw-logo{
 #loginBtn,
 #inlineCreateForm .mw-original-car-btn {
   width:100% !important;
-  height:44px !important;
-  min-height:44px !important;
+  height:52px !important;
+  min-height:52px !important;
   border-radius:999px !important;
   margin:0 !important;
 }
@@ -2536,6 +2536,23 @@ body.light #app .calendar-card .calendar-nav button:hover{
 
 </head>
 <body>
+<style id="mw-boot-loader-style">
+/* Tela de carregamento: cobre tudo desde o primeiro instante, então a
+   decisão "voltar pro login ou pro dashboard" (mais abaixo) nunca aparece
+   como um flash — ela acontece por trás, escondida, e só then o loader some. */
+#mwBootLoader{position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:radial-gradient(circle at 20% 45%,rgba(37,99,235,.17),transparent 30%),radial-gradient(circle at 85% 15%,rgba(124,92,255,.12),transparent 28%),linear-gradient(135deg,#020617,#061226 55%,#020617);transition:opacity .45s ease}
+#mwBootLoader.mw-boot-hide{opacity:0;pointer-events:none}
+.mw-boot-badge{position:relative;width:64px;height:64px;display:grid;place-items:center}
+.mw-boot-mark{position:relative;z-index:1;width:64px;height:64px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(145deg,#3b82f6,#1d4ed8);color:#eaf5ff;font-family:Inter,ui-sans-serif,system-ui,sans-serif;font-weight:800;font-size:20px;letter-spacing:-.02em}
+.mw-boot-ring{position:absolute;inset:-10px;border-radius:26px;border:2px solid rgba(103,232,249,.30);border-top-color:#67e8f9;animation:mwBootSpin 1s linear infinite}
+@keyframes mwBootSpin{to{transform:rotate(360deg)}}
+.mw-boot-text{margin:0;color:#8da4c7;font-family:Inter,ui-sans-serif,system-ui,sans-serif;font-size:12.5px;letter-spacing:.04em;animation:mwBootPulse 1.6s ease-in-out infinite}
+@keyframes mwBootPulse{0%,100%{opacity:.55}50%{opacity:1}}
+</style>
+<div id="mwBootLoader" aria-hidden="true">
+  <div class="mw-boot-badge"><span class="mw-boot-ring"></span><span class="mw-boot-mark">MW</span></div>
+  <p class="mw-boot-text">Carregando seu workspace…</p>
+</div>
 <style id="mwv2-login-style">
 /* ============================================================
    TELA DE LOGIN V2 — nav lateral + hero + formulário deslizante,
@@ -2543,7 +2560,6 @@ body.light #app .calendar-card .calendar-nav button:hover{
    Sem sombras de UI (box-shadow) — visual plano, por pedido.
    ============================================================ */
 #loginScreen{position:relative;overflow:hidden}
-#mwv2NameFx{position:absolute;inset:0;z-index:0;pointer-events:none}
 #loginScreen .mwv2-ambient{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0}
 #loginScreen .mwv2-ambient.a1{width:520px;height:520px;left:-160px;top:-120px;background:radial-gradient(circle,rgba(37,99,235,.28),transparent 70%)}
 #loginScreen .mwv2-ambient.a2{width:460px;height:460px;right:-140px;bottom:-140px;background:radial-gradient(circle,rgba(124,92,255,.24),transparent 70%)}
@@ -2670,23 +2686,31 @@ body.light #app .calendar-card .calendar-nav button:hover{
 .mwv2-otp-field input:focus{border-color:#57b5ff;box-shadow:none}
 .mwv2-otp-field.hidden{display:none}
 
-/* rodapé profissional da tela de login: redes sociais + info do site */
-.mwv2-login-stack{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:30px;width:100%}
-.mwv2-footer{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:11px;text-align:center;padding:0 16px;max-width:420px;animation:mwv2FooterIn .7s cubic-bezier(.22,.8,.2,1) .15s both}
-@keyframes mwv2FooterIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-.mwv2-footer-social{display:flex;align-items:center;gap:10px}
-.mwv2-footer-icon{display:grid;place-items:center;width:38px;height:38px;border:1px solid rgba(125,194,255,.22);border-radius:12px;background:rgba(12,43,82,.42);color:#bcdfff;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:transform .22s cubic-bezier(.22,.8,.2,1),background .22s ease,border-color .22s ease,color .22s ease}
-.mwv2-footer-icon svg{width:17px;height:17px}
+/* rodapé profissional da tela de login: redes sociais + info do site.
+   Fica fixo, num "cartão" compacto no canto inferior — não empurra o
+   card de login nem estica a altura da página, fica sempre no mesmo lugar. */
+.mwv2-login-stack{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;width:100%}
+.mwv2-footer{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:3;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;padding:11px 20px;max-width:min(360px,calc(100vw - 24px));border-radius:18px;background:rgba(6,16,33,.44);border:1px solid rgba(125,194,255,.14);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);animation:mwv2FooterIn .7s cubic-bezier(.22,.8,.2,1) .15s both}
+@keyframes mwv2FooterIn{from{opacity:0;transform:translate(-50%,14px)}to{opacity:1;transform:translate(-50%,0)}}
+.mwv2-footer-social{display:flex;align-items:center;gap:9px}
+.mwv2-footer-icon{display:grid;place-items:center;width:32px;height:32px;border:1px solid rgba(125,194,255,.22);border-radius:10px;background:rgba(12,43,82,.42);color:#bcdfff;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:transform .22s cubic-bezier(.22,.8,.2,1),background .22s ease,border-color .22s ease,color .22s ease}
+.mwv2-footer-icon svg{width:15px;height:15px}
 .mwv2-footer-icon:hover{transform:translateY(-2px);border-color:rgba(104,171,245,.5);color:#eaf6ff}
 .mwv2-footer-icon:active{transform:translateY(0) scale(.94)}
 .mwv2-footer-icon[data-social="instagram"]:hover{background:linear-gradient(135deg,rgba(245,133,41,.26),rgba(221,42,123,.3) 45%,rgba(129,52,175,.3) 72%,rgba(81,91,212,.26));border-color:rgba(221,42,123,.45)}
 .mwv2-footer-icon[data-social="facebook"]:hover{background:rgba(56,101,246,.24);border-color:rgba(56,101,246,.55)}
-.mwv2-footer-text{margin:0;color:var(--muted2);font-size:11px;line-height:1.5}
-.mwv2-footer-links{display:flex;align-items:center;gap:8px;color:var(--muted2);font-size:10.5px}
+.mwv2-footer-text{margin:0;color:var(--muted2);font-size:10.5px;line-height:1.4}
+.mwv2-footer-links{display:flex;align-items:center;gap:7px;color:var(--muted2);font-size:10px}
 .mwv2-footer-links button{border:0;background:none;color:var(--muted2);font-size:inherit;padding:2px 1px;cursor:pointer;transition:color .18s ease}
 .mwv2-footer-links button:hover{color:var(--blue2)}
-.mwv2-footer-toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,12px);padding:9px 16px;border-radius:100px;background:rgba(8,20,43,.92);border:1px solid rgba(104,171,245,.3);color:#eaf6ff;font-size:11.5px;letter-spacing:.02em;opacity:0;pointer-events:none;transition:opacity .22s ease,transform .22s ease;z-index:60;backdrop-filter:blur(14px);white-space:nowrap}
+.mwv2-footer-toast{position:fixed;left:50%;bottom:118px;transform:translate(-50%,12px);padding:9px 16px;border-radius:100px;background:rgba(8,20,43,.92);border:1px solid rgba(104,171,245,.3);color:#eaf6ff;font-size:11.5px;letter-spacing:.02em;opacity:0;pointer-events:none;transition:opacity .22s ease,transform .22s ease;z-index:60;backdrop-filter:blur(14px);white-space:nowrap}
 .mwv2-footer-toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media(max-height:720px){
+  .mwv2-footer{position:relative;left:auto;bottom:auto;transform:none;margin:14px auto 0}
+  @keyframes mwv2FooterIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  .mwv2-footer-toast{bottom:26px}
+}
 
 @media(max-width:760px){
   #authScene.mwv2-card{width:min(700px,100%);height:auto;display:grid;grid-template-columns:1fr;overflow:hidden;border-radius:22px}
@@ -2703,14 +2727,13 @@ body.light #app .calendar-card .calendar-nav button:hover{
   .mwv2-form-area{height:430px;border-radius:0}
   .mwv2-auth-pane{padding:26px 24px 22px}
   .mwv2-login-stack{gap:20px}
-  .mwv2-footer{max-width:94vw}
-  .mwv2-footer-icon{width:35px;height:35px;border-radius:10px}
-  .mwv2-footer-toast{bottom:calc(18px + env(safe-area-inset-bottom,0px));font-size:11px;padding:8px 14px}
+  .mwv2-footer{max-width:94vw;bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+  .mwv2-footer-icon{width:33px;height:33px;border-radius:10px}
+  .mwv2-footer-toast{bottom:calc(108px + env(safe-area-inset-bottom,0px));font-size:11px;padding:8px 14px}
 }
 </style>
 
 <section id="loginScreen">
-  <canvas id="mwv2NameFx" aria-hidden="true"></canvas>
   <div class="mwv2-ambient a1"></div>
   <div class="mwv2-ambient a2"></div>
   <i class="sign-up-side" hidden aria-hidden="true"></i>
@@ -2811,6 +2834,7 @@ body.light #app .calendar-card .calendar-nav button:hover{
       </div>
     </section>
   </div>
+  </div>
 
   <footer class="mwv2-footer">
     <div class="mwv2-footer-social">
@@ -2830,7 +2854,6 @@ body.light #app .calendar-card .calendar-nav button:hover{
       <button type="button" data-footer-link="ajuda">Ajuda</button>
     </div>
   </footer>
-  </div>
 
   <div class="mwv2-footer-toast" id="mwv2FooterToast" role="status" aria-live="polite"></div>
 
@@ -2970,194 +2993,6 @@ body.light #app .calendar-card .calendar-nav button:hover{
     }catch{}
   })();
 
-  /* ============================================================
-     Efeito de partículas no fundo — o nome "Aya" se forma suavemente
-     ao passar o mouse pela tela de login. Cores da própria paleta.
-     ============================================================ */
-  (function nameParticles(){
-    const canvas = document.getElementById('mwv2NameFx');
-    if(!canvas || !canvas.getContext) return;
-    const ctx = canvas.getContext('2d');
-    const NAME = 'NYC';
-    let w = 0, h = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
-    let particles = [], targets = [], hovering = false, raf = null;
-
-    function resize(){
-      const r = loginScreen.getBoundingClientRect();
-      w = r.width; h = r.height;
-      if(w < 10 || h < 10){ setTimeout(resize, 150); return; }
-      canvas.width = Math.max(1, Math.round(w * dpr));
-      canvas.height = Math.max(1, Math.round(h * dpr));
-      canvas.style.width = w + 'px';
-      canvas.style.height = h + 'px';
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      buildTargets();
-    }
-
-    function buildTargets(){
-      // Acha uma faixa livre acima OU abaixo do card (o que tiver mais espaço),
-      // pra o nome não ficar desenhado escondido atrás do vidro do card.
-      const BUFFER = 36;
-      const cardRect = scene.getBoundingClientRect();
-      const loginRect = loginScreen.getBoundingClientRect();
-      const cardTop = cardRect.top - loginRect.top;
-      const cardBottom = cardRect.bottom - loginRect.top;
-      const topSpace = Math.max(0, cardTop - BUFFER);
-      const bottomSpace = Math.max(0, h - cardBottom - BUFFER);
-      let bandTop, bandHeight;
-      if(bottomSpace >= topSpace && bottomSpace > 46){
-        bandTop = cardBottom + BUFFER; bandHeight = bottomSpace;
-      } else if(topSpace > 46){
-        bandTop = 0; bandHeight = topSpace;
-      } else {
-        // tela muito curta, sem sobra de nenhum lado: usa uma faixa fina no topo mesmo assim
-        bandTop = 0; bandHeight = Math.max(44, topSpace);
-      }
-
-      const off = document.createElement('canvas');
-      const fontSize = Math.max(20, Math.min(130, Math.round(Math.min(w * 0.13, bandHeight * 0.72))));
-      off.width = Math.round(w); off.height = Math.round(fontSize * 1.6);
-      const octx = off.getContext('2d');
-      octx.font = `800 ${fontSize}px Inter, Arial, sans-serif`;
-      octx.textAlign = 'center'; octx.textBaseline = 'middle';
-      octx.fillStyle = '#fff';
-      octx.fillText(NAME, off.width / 2, off.height / 2);
-      const img = octx.getImageData(0, 0, off.width, off.height).data;
-      const pts = [];
-      const step = 4;
-      for(let y = 0; y < off.height; y += step){
-        for(let x = 0; x < off.width; x += step){
-          const alpha = img[(y * off.width + x) * 4 + 3];
-          if(alpha > 120){
-            pts.push({
-              x: x,
-              y: y + bandTop + (bandHeight - off.height) / 2
-            });
-          }
-        }
-      }
-      targets = pts;
-      const count = Math.max(particles.length, targets.length);
-      while(particles.length < count){
-        particles.push({
-          x: Math.random() * w, y: Math.random() * h,
-          hx: Math.random() * w, hy: Math.random() * h,
-          vx: (Math.random() - .5) * .15, vy: (Math.random() - .5) * .15,
-          r: Math.random() * 1.4 + .6,
-          hue: Math.random() < .5 ? 0 : 1,
-          phase: Math.random() * Math.PI * 2
-        });
-      }
-      particles.length = count;
-      particles.forEach((p, i) => { p.tx = targets[i % targets.length]?.x ?? p.hx; p.ty = targets[i % targets.length]?.y ?? p.hy; });
-    }
-
-    let mouseX = -9999, mouseY = -9999;
-    const REACT_DIST = 90;
-    let wasHovering = false, waveStart = 0;
-
-    function draw(){
-      ctx.clearRect(0, 0, w, h);
-      const colA = [124, 92, 255], colB = [56, 189, 248];
-      const now = performance.now();
-
-      // Início do "aceno": quando o cursor entra, o nome se escreve
-      // da esquerda pra direita em vez de simplesmente aparecer parado.
-      if(hovering && !wasHovering) waveStart = now;
-      wasHovering = hovering;
-
-      // O formato inteiro do nome acompanha suavemente a posição do
-      // mouse (efeito parallax), então ele nunca fica "grudado" num
-      // único ponto fixo da tela — sempre reage a quem está passando o cursor.
-      let parX = 0, parY = 0;
-      if(hovering && mouseX > -9000){
-        parX = ((mouseX - w / 2) / (w / 2)) * 16;
-        parY = ((mouseY - h / 2) / (h / 2)) * 11;
-      }
-
-      particles.forEach(p => {
-        // Leve tremular contínuo por partícula — garante que o nome
-        // nunca fique estático, mesmo já formado e com o mouse parado.
-        const t = now / 1000 + p.phase;
-        const shimmerX = Math.sin(t * 1.3) * (hovering ? 1.6 : 2.6);
-        const shimmerY = Math.cos(t * 1.1) * (hovering ? 1.6 : 2.6);
-
-        const goalX = (hovering ? p.tx + parX : p.hx) + shimmerX;
-        const goalY = (hovering ? p.ty + parY : p.hy) + shimmerY;
-
-        let ease = 0.045;
-        if(hovering){
-          // varredura da esquerda pra direita: cada partícula só começa
-          // a convergir depois do seu "atraso" baseado na posição x do alvo.
-          const delay = (p.tx / w) * 320;
-          ease = (now - waveStart - delay) > 0 ? 0.07 : 0.01;
-        }
-        p.x += (goalX - p.x) * ease;
-        p.y += (goalY - p.y) * ease;
-        if(!hovering){
-          p.hx += p.vx; p.hy += p.vy;
-          if(p.hx < 0 || p.hx > w) p.vx *= -1;
-          if(p.hy < 0 || p.hy > h) p.vy *= -1;
-        }
-
-        // Interação real com o cursor: partículas perto do mouse se
-        // afastam suavemente e brilham mais, como um rastro reativo.
-        let px = p.x, py = p.y, boost = 0;
-        const dx = p.x - mouseX, dy = p.y - mouseY;
-        const dist = Math.hypot(dx, dy);
-        if(dist < REACT_DIST){
-          const force = (1 - dist / REACT_DIST);
-          const ang = Math.atan2(dy, dx);
-          px += Math.cos(ang) * force * 16;
-          py += Math.sin(ang) * force * 16;
-          boost = force;
-        }
-
-        const c = p.hue ? colA : colB;
-        const alpha = Math.min(1, (hovering ? 0.55 : 0.16) + boost * 0.5);
-        const radius = p.r * (hovering ? 1.5 : 1) * (1 + boost * 0.8);
-        ctx.beginPath();
-        ctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${alpha})`;
-        ctx.arc(px, py, radius, 0, Math.PI * 2);
-        ctx.fill();
-      });
-      raf = requestAnimationFrame(draw);
-    }
-
-    let hideTimer = null;
-    loginScreen.addEventListener('mousemove', (e) => {
-      const rect = loginScreen.getBoundingClientRect();
-      mouseX = e.clientX - rect.left;
-      mouseY = e.clientY - rect.top;
-      hovering = true;
-      clearTimeout(hideTimer);
-      hideTimer = setTimeout(() => { hovering = false; }, 2600);
-    }, { passive: true });
-    loginScreen.addEventListener('mouseleave', () => { hovering = false; mouseX = -9999; mouseY = -9999; });
-
-    // Toque mobile: o dedo também "escreve" o nome ao arrastar pela tela.
-    loginScreen.addEventListener('touchmove', (e) => {
-      const touch = e.touches && e.touches[0];
-      if(!touch) return;
-      const rect = loginScreen.getBoundingClientRect();
-      mouseX = touch.clientX - rect.left;
-      mouseY = touch.clientY - rect.top;
-      hovering = true;
-      clearTimeout(hideTimer);
-      hideTimer = setTimeout(() => { hovering = false; }, 2600);
-    }, { passive: true });
-
-    window.addEventListener('resize', resize);
-    resize();
-    draw();
-    // A fonte "Inter" pode ainda estar baixando quando o texto é amostrado
-    // pela primeira vez — isso deixava o formato das letras "bugado" até
-    // a fonte certa carregar. Reconstrói assim que ela estiver pronta.
-    if(document.fonts && document.fonts.ready){
-      document.fonts.ready.then(() => setTimeout(buildTargets, 30)).catch(() => {});
-    }
-  })();
-
   /* Rodapé profissional: ano automático + aviso ao tocar nos ícones sociais. */
   (function loginFooter(){
     const yearEl = document.getElementById('mwv2FooterYear');
@@ -3234,7 +3069,7 @@ body.light #app .calendar-card .calendar-nav button:hover{
     </div>
   </aside>
   <main class="main">
-    <header class="topbar"><button type="button" class="mw-mobile-menu" id="mwMobileMenu" aria-label="Abrir menu"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><div class="hello"><h2>Olá, Mateus!</h2><p>Quarto semestre • Engenharia de Software</p></div><div class="top-actions"><div class="search-wrap" id="searchWrap"><button type="button" class="search-icon icon-btn" id="searchToggle" aria-label="Pesquisar"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="m16.2 16.2 3.6 3.6"/></svg></button><input id="globalSearch" type="search" placeholder="Pesquisar..."></div><div class="mw-bell-wrap" style="position:relative"><button class="icon-btn bell-btn" id="notificationBtn" title="Notificações"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 2a6.5 6.5 0 0 0-6.5 6.5c0 4.6-1.8 6.6-2.4 7.2A1 1 0 0 0 4 17.8h16a1 1 0 0 0 .9-1.6c-.6-.6-2.4-2.6-2.4-7.2A6.5 6.5 0 0 0 12 2zm-1.6 18a1.6 1.6 0 0 0 3.2 0z"/></svg><span class="bell-dot"></span></button><div class="notification-menu hidden" id="notificationMenu"><strong>Notificações</strong><div id="notificationList"><div class="notification-item">Nada novo por agora.</div></div></div></div><button class="icon-btn mwv2-theme-btn" id="themeToggle" title="Alternar tema"><svg class="mwv2-icon-sun" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.5v2.4M12 19.1v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/></svg><span class="mwv2-moon-glow" aria-hidden="true"></span><svg class="mwv2-icon-moon" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z"/></svg><span class="mwv2-star s1" aria-hidden="true"></span><span class="mwv2-star s2" aria-hidden="true"></span></button><button class="icon-btn" id="quickAdd" title="Adicionar">＋</button><button class="mateus-ai-btn" id="mateusAiBtn" type="button" title="Abrir Nyc AI AI"><span>✦</span><span class="eva-label">Nyc AI</span></button><button class="profile-btn" id="profileBtn" title="Configurações do perfil">MW</button></div></header>
+    <header class="topbar"><button type="button" class="mw-mobile-menu" id="mwMobileMenu" aria-label="Abrir menu"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><div class="hello"><h2>Olá, Mateus!</h2><p>Quarto semestre • Engenharia de Software</p></div><div class="top-actions"><div class="search-wrap" id="searchWrap"><button type="button" class="search-icon icon-btn" id="searchToggle" aria-label="Pesquisar"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="m16.2 16.2 3.6 3.6"/></svg></button><input id="globalSearch" type="search" placeholder="Pesquisar..."></div><div class="mw-bell-wrap" style="position:relative"><button class="icon-btn bell-btn" id="notificationBtn" title="Notificações"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 2a6.5 6.5 0 0 0-6.5 6.5c0 4.6-1.8 6.6-2.4 7.2A1 1 0 0 0 4 17.8h16a1 1 0 0 0 .9-1.6c-.6-.6-2.4-2.6-2.4-7.2A6.5 6.5 0 0 0 12 2zm-1.6 18a1.6 1.6 0 0 0 3.2 0z"/></svg><span class="bell-dot"></span></button><div class="notification-menu hidden" id="notificationMenu"><strong>Notificações</strong><div id="notificationList"><div class="notification-item">Nada novo por agora.</div></div></div></div><button class="icon-btn mwv2-theme-btn" id="themeToggle" title="Alternar tema"><svg class="mwv2-icon-sun" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.5v2.4M12 19.1v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/></svg><span class="mwv2-moon-glow" aria-hidden="true"></span><svg class="mwv2-icon-moon" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z"/></svg><span class="mwv2-star s1" aria-hidden="true"></span><span class="mwv2-star s2" aria-hidden="true"></span></button><button class="icon-btn" id="quickAdd" title="Adicionar">＋</button><button class="mateus-ai-btn" id="mateusAiBtn" type="button" title="Abrir Nyc AI"><span>✦</span><span class="eva-label">Nyc AI</span></button><button class="profile-btn" id="profileBtn" title="Configurações do perfil">MW</button></div></header>
     <section class="view active" id="view-home">
       <div class="grid stats"><div class="card stat"><div class="kicker">Disciplinas</div><strong id="statSubjects">0</strong><span id="statSubjectsHint">Nenhuma cadastrada</span></div><div class="card stat"><div class="kicker">Atividades</div><strong id="statActivities">0</strong><span id="statActivitiesHint">Nenhuma cadastrada</span></div><div class="card stat"><div class="kicker">Projetos</div><strong id="statProjects">0</strong><span id="statProjectsHint">Nenhum cadastrado</span></div><div class="card stat"><div class="kicker">Progresso</div><strong id="statProgress">0%</strong><span id="statProgressHint">Sem dados ainda</span></div></div>
       <section class="card section mwv2-chart-card" id="mwv2ChartCard">
@@ -3279,6 +3114,31 @@ body.light #app .calendar-card .calendar-nav button:hover{
     </section></section>
   </main>
 </section>
+
+<script id="mw-boot-session-gate">
+(function(){
+  var loginScreen = document.getElementById('loginScreen');
+  var app = document.getElementById('app');
+  try {
+    if (localStorage.getItem('mwSession') === '1') {
+      loginScreen.classList.add('hidden');
+      app.classList.remove('hidden');
+    }
+  } catch (e) {}
+
+  var loader = document.getElementById('mwBootLoader');
+  var minDelay = new Promise(function(r){ setTimeout(r, 420); });
+  var ready = new Promise(function(r){
+    if (document.readyState === 'complete') r();
+    else window.addEventListener('load', r, { once: true });
+  });
+  Promise.all([minDelay, ready]).then(function(){
+    if (!loader) return;
+    loader.classList.add('mw-boot-hide');
+    setTimeout(function(){ loader.remove(); }, 500);
+  });
+})();
+</script>
 
 <div class="modal hidden" id="modal"><div class="modal-box"><div class="modal-head"><h3 id="modalTitle">Adicionar</h3><button class="close" id="closeModal">×</button></div><form id="modalForm"></form></div></div>
 <div class="modal ms-modal hidden" id="msModal"><div class="modal-box"><div class="ms-top"><span class="ms-logo"><i></i><i></i><i></i><i></i></span><strong>Microsoft</strong></div><h3 id="msTitle">Entrar</h3><p id="msDescription">Use sua conta Microsoft para continuar no Mateus Workspace.</p><form id="msForm"><input class="ms-input" id="msEmail" type="email" autocomplete="username" placeholder="Email, telefone ou Skype" required><div class="ms-error" id="msError"></div><div class="ms-actions"><button class="ms-cancel" id="msCancel" type="button">Voltar</button><button class="ms-continue" id="msContinue" type="submit">Avançar</button></div></form></div></div>
@@ -4086,7 +3946,7 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
         <span class="eva-orb" aria-hidden="true"></span>
         <div>
           <span class="mateus-ai-eyebrow">ASSISTENTE DE VOZ</span>
-          <h3 id="mateusAiTitle">Nyc AI AI</h3>
+          <h3 id="mateusAiTitle">Nyc AI</h3>
         </div>
       </div>
       <div class="eva-head-actions">
@@ -5852,7 +5712,7 @@ html,body{
 <style id="mateus-no-extra-shadows">#inlineCreateForm .mw-original-car-btn{box-shadow:none!important}#inlineCreateForm .mw-original-car-btn:hover:not(:disabled){box-shadow:none!important}</style>
 
 <style id="mw-atualizado-2026-08-22">
-/* Nyc AI AI */
+/* Nyc AI */
 #mateusAiBtn.mateus-ai-btn{
   height:40px!important;padding:0 14px 0 12px!important;border-radius:999px!important;
   background:linear-gradient(135deg,rgba(56,189,248,.22),rgba(124,92,255,.28))!important;
@@ -11191,6 +11051,10 @@ body.light #app #view-college .mw-custom-option { color:#173b55!important; }
 html { scroll-behavior:smooth; }
 #app .main { position:relative; scrollbar-width:thin; scrollbar-color:rgba(103,232,249,.45) transparent; }
 #app .main::before { content:''; position:sticky; display:block; top:0; height:0; z-index:45; pointer-events:none; opacity:0; transition:opacity .28s ease; box-shadow:0 10px 34px 20px rgba(7,28,50,.44),0 0 36px 10px rgba(34,211,238,.08); }
+/* Um único estado "rolou a página" (não depende da direção do scroll)
+   evita o pisca-pisca de dois efeitos concorrentes ligando/desligando
+   ao mesmo tempo quando o usuário sobe e desce rapidamente. */
+#app .topbar { transition:background .3s ease, backdrop-filter .3s ease; }
 #app.mw-scroll-up .main::before { opacity:1; }
 #app.mw-scroll-up .topbar { background:linear-gradient(105deg,rgba(7,23,44,.74),rgba(12,43,73,.62))!important; backdrop-filter:blur(22px) saturate(145%); }
 body.light #app.mw-scroll-up .topbar { background:linear-gradient(105deg,rgba(249,254,255,.78),rgba(224,244,255,.70))!important; }
@@ -11225,8 +11089,8 @@ body.light #app .mw-dev-tool h4 { color:#153651; } body.light #app .mw-dev-tool 
 (() => {
   const app=document.getElementById('app'), main=document.querySelector('#app .main');
   let lastY=0, timer=0;
-  const position=()=>main?.scrollTop||window.scrollY||document.documentElement.scrollTop||0;
-  const updateScroll=()=>{ const y=position(); if(app){app.classList.toggle('mw-scroll-up', y>42 && y<lastY); } lastY=y; timer=0; };
+  const position=()=>{ if(main) return main.scrollTop; return window.scrollY||document.documentElement.scrollTop||0; };
+  const updateScroll=()=>{ const y=position(); if(app){app.classList.toggle('mw-scroll-up', y>24); } lastY=y; timer=0; };
   const onScroll=()=>{ if(!timer) timer=setTimeout(updateScroll,45); };
   window.addEventListener('scroll',onScroll,{passive:true}); main?.addEventListener('scroll',onScroll,{passive:true});
 
@@ -11360,7 +11224,6 @@ body.light #modal .form-field input,body.light #modal .form-field textarea { bac
 #mateusAiInput { min-height:38px!important; max-height:118px!important; height:38px!important; resize:none!important; overflow-y:auto!important; line-height:1.45!important; padding:9px 5px!important; font:inherit!important; }
 #mateusAiModal.is-closing .mateus-ai-card { animation:mw-eva-phone-out .18s ease both!important; }
 @keyframes mw-eva-phone-out { to { opacity:0; transform:translateY(12px) scale(.97); } }
-@supports (mask-image:linear-gradient(#000,#000)) { #app.mw-scroll-up .main { mask-image:linear-gradient(to bottom,transparent 0,rgba(0,0,0,.82) 48px,#000 110px); } }
 </style>
 <script id="mw-chat-composer-behavior">
 (() => {
@@ -11409,8 +11272,6 @@ html body #app #logout:hover{background:linear-gradient(135deg,#38bdf8,#2563eb)!
 
 /* Slower, smoother search expansion and scroll feedback without wheel interception. */
 html body #app .search-wrap,html body #app .search-wrap.open,html body #app .search-wrap:focus-within{transition:width .52s cubic-bezier(.2,.75,.2,1),background .30s ease,box-shadow .30s ease!important;}
-#app .main{transition:mask-image .38s ease,filter .38s ease;}
-#app.mw-scrolling .main::before{opacity:.52;transition:opacity .35s ease;}
 @media(max-width:860px){#app .mw-insights{grid-template-columns:1fr;}}
 </style>
 <script id="mw-elite-dashboard-insights">
@@ -11432,9 +11293,6 @@ html body #app .search-wrap,html body #app .search-wrap.open,html body #app .sea
     const max=Math.max(1,...days);document.querySelectorAll('#mwWeekBars i').forEach((bar,i)=>bar.style.setProperty('--h',Math.max(16,Math.round(days[i]/max*100))+'%'));
   };
   const current=window.mwDashRefresh;window.mwDashRefresh=(d)=>{if(typeof current==='function')current(d);refresh(d);};refresh();
-  let stopTimer=0; const app=document.getElementById('app');
-  const markScroll=()=>{app?.classList.add('mw-scrolling');clearTimeout(stopTimer);stopTimer=setTimeout(()=>app?.classList.remove('mw-scrolling'),260);};
-  window.addEventListener('scroll',markScroll,{passive:true});document.querySelector('#app .main')?.addEventListener('scroll',markScroll,{passive:true});
   const surface=()=>{const photo=document.getElementById('profilePhoto')?.value||'';const name=document.getElementById('profileName')?.value||'Mateus';const targets=[document.getElementById('workspaceProfileSocialBtn')].filter(Boolean);targets.forEach(el=>{if(photo){el.style.backgroundImage=`url("${photo}")`;el.style.backgroundSize='cover';el.style.backgroundPosition='center';el.textContent='';}else{el.style.backgroundImage='';el.textContent=String(name).split(/\s+/).map(x=>x[0]).slice(0,2).join('').toUpperCase();}});};
   document.addEventListener('click',event=>{if(event.target.closest('.crop-save,#removeProfilePhoto,#saveProfile'))setTimeout(surface,30);});surface();
 })();
