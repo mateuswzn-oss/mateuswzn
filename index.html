@@ -3105,6 +3105,7 @@ body.light #app .calendar-card .calendar-nav button:hover{
 </div></div><div class="profile-actions"><button class="save-btn" id="saveProfile">Salvar perfil</button></div></div>
       <div class="settings-group hidden" id="legacyThemeGroup"><h4>Preferências</h4><div class="theme-row"><button class="theme-btn" id="darkModeBtn">Modo Escuro</button><button class="theme-btn" id="lightModeBtn">Modo Claro</button></div></div>
       <div class="settings-group"><h4>Sessão</h4><p>Este projeto usa uma sessão demonstrativa local.</p><div class="profile-actions"><button class="small-btn mw-logout-btn" id="logout">Sair</button></div></div>
+      <div class="settings-group"><h4>Aplicativo</h4><p id="mwSettingsInstallDesc">Adicione o Mateus Workspace à tela de início para abrir como um app.</p><div class="profile-actions"><button class="small-btn" id="mwSettingsInstallBtn">Instalar aplicativo</button></div></div>
       <div class="settings-group"><h4>Dados</h4><p>Remove disciplinas, atividades, projetos e anotações salvos neste navegador.</p><button class="small-btn danger mw-clear-btn" id="clearAll">Apagar todos os dados</button></div>
     </section></section>
 
@@ -3331,7 +3332,7 @@ function setTheme(theme){data.theme=theme;if(persistWorkspace())applyTheme();toa
 $('#themeToggle').onclick=()=>setTheme(data.theme==='light'?'dark':'light');$('#darkModeBtn').onclick=()=>setTheme('dark');$('#lightModeBtn').onclick=()=>setTheme('light');
 function loadProfileFields(){const p=data.profile||defaults.profile;$('#profileName').value=p.name||'';$('#profileEmail').value=p.email||'';$('#profilePhoto').value=p.photo||''}$('#saveProfile').onclick=()=>{data.profile={name:$('#profileName').value.trim()||'Mateus',email:$('#profileEmail').value.trim(),photo:$('#profilePhoto').value.trim()};save();$('.hello h2').textContent='Olá, '+data.profile.name+'! 👋';toast('Perfil salvo')};
 $('#clearAll').onclick=()=>{if(confirm('Apagar todos os dados do Workspace?')){data.subjects=[];data.projects=[];data.activities=[];data.notes=[];save();toast('Dados apagados')}};
-function logout(){localStorage.removeItem('mwSession');$('#app').classList.add('hidden');$('#loginScreen').classList.remove('hidden');status.textContent='';username.value='';password.value='';updateLogin()}
+function logout(){localStorage.removeItem('mwSession');$('#app').classList.add('hidden');$('#loginScreen').classList.remove('hidden');status.textContent='';username.value='';password.value='';updateLogin();document.getElementById('mwv2InstallBanner')?.classList.remove('show');document.body.classList.remove('mw-install-showing')}
 $('#logout') && ($('#logout').onclick=logout); $('#relogin') && ($('#relogin').onclick=logout);
 applyTheme();renderAll();loadProfileFields();
 // Alguns scripts posteriores (autosave ao fechar a aba, recarregar dados
@@ -6820,13 +6821,24 @@ img,svg,video,canvas{max-width:100%}
   #app .hello p{font-size:11px!important;margin:2px 0 0!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   /* Com a busca aberta não sobra espaço decente pros dois lados — em vez
      de espremer "Olá, Mateus!" até virar uma letra solta cortada, esconde
-     a saudação enquanto a pesquisa estiver em uso. */
-  #app .topbar:has(.search-wrap.open) .hello,
-  #app .topbar:has(.search-wrap:focus-within) .hello{opacity:0!important;visibility:hidden!important}
+     a saudação enquanto a pesquisa estiver em uso. Só .open (setada no
+     clique, depois que o toque já terminou) — nunca :focus-within, que
+     dispara ainda no meio do gesto (no mousedown/touchstart) e mudava o
+     layout embaixo do dedo antes do toque soltar, fazendo o clique
+     acertar outro elemento. */
+  #app .topbar:has(.search-wrap.open) .hello{opacity:0!important;visibility:hidden!important}
+  /* Sino e Nyc AI saem de vez (display:none, não só invisíveis) pra
+     abrir espaço de verdade — o container da busca é dimensionado por
+     grid/flex "auto", então some da tela quem dividia aquele espaço com
+     ela em vez de tentar sobrepor tudo com position:absolute (isso
+     dependia da largura do .top-actions, que é apertada e não cobre a
+     topbar inteira). */
+  #app .topbar:has(.search-wrap.open) .mw-bell-wrap,
+  #app .topbar:has(.search-wrap.open) #mateusAiBtn{display:none!important}
   #app .top-actions{width:auto!important;gap:6px!important}
   #app #themeToggle,#app #quickAdd,#app #profileBtn{display:none!important}
   #app .search-wrap{width:44px!important;min-width:44px!important;height:44px!important;flex:0 0 44px!important;display:flex!important}
-  #app .search-wrap.open,#app .search-wrap:focus-within{position:absolute;left:14px;right:14px;top:8px;z-index:6;width:auto!important;min-width:0!important;height:44px!important}
+  #app .search-wrap.open{position:relative!important;width:min(300px,72vw)!important;min-width:0!important;height:44px!important;flex:0 1 auto!important}
   #app .icon-btn,#mateusAiBtn{width:44px!important;height:44px!important;min-width:44px!important;padding:0!important;border-radius:14px!important}
   #mateusAiBtn{justify-content:center!important;font-size:0!important}
   #mateusAiBtn .eva-label{display:none!important}
@@ -12046,13 +12058,21 @@ body.light #app .main::after{background:linear-gradient(to bottom,rgba(236,235,2
 
 @media(max-width:800px){
   #app .topbar{margin:-4px 0 22px;padding:10px;border-radius:18px!important}
-  #app #searchWrap.search-wrap.open,#app #searchWrap.search-wrap:focus-within{width:min(250px,48vw)!important}
+  /* Só .open (adicionada no clique, depois que o toque já terminou) —
+     nunca :focus-within, que dispara no foco (mousedown/touchstart),
+     ainda no meio do gesto, deslocando o layout embaixo do dedo antes
+     de soltar. Sem position:absolute: o container (.top-actions) é
+     estreito e não cobre a topbar inteira, então "esticar" a busca
+     contra ele sempre resultava numa caixa pequena — em vez disso o
+     sino e a Nyc AI somem (display:none, ver regra com :has acima) e a
+     busca simplesmente cresce no espaço que sobra, dentro do fluxo. */
+  #app #searchWrap.search-wrap.open{position:relative!important;width:min(300px,72vw)!important;min-width:0!important}
   #app .main::after{left:0}
 }
 @media(max-width:560px){
   #app .topbar{padding:9px;border-radius:16px!important;gap:10px}
   #app .top-actions{gap:5px}
-  #app #searchWrap.search-wrap.open,#app #searchWrap.search-wrap:focus-within{width:min(220px,58vw)!important;min-width:150px!important}
+  #app #searchWrap.search-wrap.open{position:relative!important;width:min(230px,72vw)!important;min-width:0!important}
 }
 </style>
 
@@ -12257,6 +12277,7 @@ html body #mateusAiInput{background:transparent!important;border:0!important;lin
 #mwv2InstallBanner .mwv2-install-text span{display:block;margin-top:2px;color:#8da4c7;font-size:10.5px}
 #mwv2InstallBanner button{border:0;background:transparent;color:inherit;font-size:11px;cursor:pointer;padding:6px 8px;border-radius:8px}
 #mwv2InstallBanner .mwv2-install-go{background:linear-gradient(135deg,#67e8f9,#38bdf8 48%,#2563eb);color:#061525;font-weight:700;padding:8px 12px}
+#mwv2InstallBanner #mwv2InstallDismiss{flex:0 0 auto;width:34px;height:34px;min-width:34px;min-height:34px;font-size:15px;display:grid;place-items:center;padding:0;background:rgba(255,255,255,.08)}
 @media(max-width:480px){
   #mwv2InstallBanner{left:12px;right:12px;transform:translateY(120%);max-width:none}
   #mwv2InstallBanner.show{transform:translateY(0)}
@@ -12272,6 +12293,10 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
 @media(max-width:860px){
   body.mw-in-app.mw-install-showing #app .main{padding-bottom:230px!important}
 }
+/* Rede de segurança: o banner nunca pode aparecer com a tela de login
+   visível, não importa o que o JS ache que deveria mostrar (ex.: um
+   logout que aconteceu enquanto o banner estava de pé). */
+#loginScreen:not(.hidden) ~ #mwv2InstallBanner{display:none!important}
 </style>
 
 <div id="mwv2InstallBanner" role="status" aria-live="polite">
@@ -12310,7 +12335,13 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
   const isIOS = /iphone|ipad|ipod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   const isAndroid = /android/i.test(ua);
 
-  if (alreadyInstalled) return;
+  const settingsBtn = document.getElementById('mwSettingsInstallBtn');
+  const settingsDesc = document.getElementById('mwSettingsInstallDesc');
+  if (alreadyInstalled) {
+    if (settingsBtn) settingsBtn.remove();
+    if (settingsDesc) settingsDesc.textContent = 'O Mateus Workspace já está instalado neste aparelho.';
+    return;
+  }
 
   // Só mostra o convite depois que a pessoa já está no dashboard — nunca
   // por cima da tela de login, onde em telas curtas ele acabava cobrindo
@@ -12344,6 +12375,7 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
     if (titleEl) titleEl.textContent = 'Adicionar à Tela de Início';
     if (descEl) descEl.innerHTML = 'Toque em <strong>Compartilhar</strong> <span aria-hidden="true">⬆︎</span> e depois em "Adicionar à Tela de Início".';
     if (goBtn) goBtn.remove();
+    if (settingsDesc) settingsDesc.innerHTML = 'Toque em <strong>Compartilhar</strong> <span aria-hidden="true">⬆︎</span> e depois em "Adicionar à Tela de Início".';
     if (localStorage.getItem(DISMISS_KEY) !== '1') showWhenReady(() => setBannerVisible(true));
   } else {
     if (titleEl) titleEl.textContent = isAndroid ? 'Instalar aplicativo' : 'Instalar Mateus Workspace';
@@ -12368,7 +12400,28 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
     try { localStorage.setItem(DISMISS_KEY, '1'); } catch {}
   });
 
-  window.addEventListener('appinstalled', () => setBannerVisible(false));
+  // Caminho permanente e organizado (em Configurações), sem depender do
+  // banner flutuante: sempre disponível, nunca cobre nada.
+  settingsBtn?.addEventListener('click', async () => {
+    if (isIOS) {
+      try { localStorage.removeItem(DISMISS_KEY); } catch {}
+      setBannerVisible(true);
+      return;
+    }
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice.catch(() => {});
+      deferredPrompt = null;
+      return;
+    }
+    if (settingsDesc) settingsDesc.textContent = 'Seu navegador ainda não liberou a instalação — abra pelo menu do navegador (⋮ ou Compartilhar) e procure "Instalar app" ou "Adicionar à tela inicial".';
+  });
+
+  window.addEventListener('appinstalled', () => {
+    setBannerVisible(false);
+    if (settingsBtn) settingsBtn.remove();
+    if (settingsDesc) settingsDesc.textContent = 'O Mateus Workspace já está instalado neste aparelho.';
+  });
 })();
 </script>
 
