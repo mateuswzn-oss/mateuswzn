@@ -3277,10 +3277,36 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
     toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
   };
 
+  /* Instagram: abre o app quando instalado (iOS/Android) e cai pro
+     perfil na web quando não abre a nenhum navegador de volta a tempo;
+     no desktop vai direto pro navegador. Só troca o clique — aparência,
+     posição, tamanho, Liquid Glass e animação do botão continuam
+     exatamente como estavam. */
+  const openInstagram = () => {
+    const username = 'mateuswzn';
+    const webUrl = `https://www.instagram.com/${username}/`;
+    const appUrl = `instagram://user?username=${username}`;
+    const ua = navigator.userAgent || '';
+    const isMobile = /iphone|ipad|ipod|android/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (!isMobile) {
+      window.open(webUrl, '_blank', 'noopener');
+      return;
+    }
+    let leftPage = false;
+    const onHide = () => { leftPage = true; };
+    document.addEventListener('visibilitychange', onHide, { once: true });
+    const fallback = setTimeout(() => {
+      document.removeEventListener('visibilitychange', onHide);
+      if (!leftPage) window.location.href = webUrl;
+    }, 1400);
+    window.addEventListener('pagehide', () => clearTimeout(fallback), { once: true });
+    window.location.href = appUrl;
+  };
+
   document.querySelectorAll('.mw-app-footer-icon').forEach(btn => {
     btn.addEventListener('click', () => {
-      const network = btn.dataset.social === 'instagram' ? 'Instagram' : 'Facebook';
-      showToast(`${network} em breve por aqui`);
+      if (btn.dataset.social === 'instagram') { openInstagram(); return; }
+      showToast('Facebook em breve por aqui');
     });
   });
   document.querySelectorAll('.mw-app-footer-links button:not(#mwAppFooterSupport)').forEach(btn => {
