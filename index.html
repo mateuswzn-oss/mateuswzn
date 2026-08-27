@@ -11356,14 +11356,15 @@ body.light #app #view-college .mw-custom-option { color:#173b55!important; }
 /* Scroll feedback is purely visual: it never captures pointer or keyboard events. */
 html { scroll-behavior:smooth; }
 #app .main { position:relative; scrollbar-width:thin; scrollbar-color:rgba(103,232,249,.45) transparent; }
-#app .main::before { content:''; position:sticky; display:block; top:0; height:0; z-index:45; pointer-events:none; opacity:0; transition:opacity .28s ease; box-shadow:0 10px 34px 20px rgba(7,28,50,.44),0 0 36px 10px rgba(34,211,238,.08); }
-/* Um único estado "rolou a página" (não depende da direção do scroll)
-   evita o pisca-pisca de dois efeitos concorrentes ligando/desligando
-   ao mesmo tempo quando o usuário sobe e desce rapidamente. */
+/* Este brilho (::before) e a troca binária de background em y>24px são
+   de uma versão antiga do efeito de scroll, de antes do sistema
+   contínuo de --mw-nav-compact existir. Ligavam/desligavam de repente
+   e sem relação nenhuma com a transformação real do vidro — exatamente
+   o "um card some, outro aparece" que não queremos. Desativados: o
+   Liquid Glass da topbar (mw-scroll-blur-premium, mais abaixo no
+   arquivo) já cobre isso de forma progressiva e única. */
+#app .main::before { content:''; position:sticky; display:block; top:0; height:0; z-index:45; pointer-events:none; opacity:0; }
 #app .topbar { transition:background .3s ease, backdrop-filter .3s ease; }
-#app.mw-scroll-up .main::before { opacity:1; }
-#app.mw-scroll-up .topbar { background:linear-gradient(105deg,rgba(7,23,44,.74),rgba(12,43,73,.62))!important; backdrop-filter:blur(22px) saturate(145%); }
-body.light #app.mw-scroll-up .topbar { background:linear-gradient(105deg,rgba(249,254,255,.78),rgba(224,244,255,.70))!important; }
 #app .main::-webkit-scrollbar { width:9px; }
 #app .main::-webkit-scrollbar-thumb { background:linear-gradient(#67e8f9,#2563eb); border:2px solid transparent; background-clip:padding-box; border-radius:99px; }
 
@@ -13350,12 +13351,21 @@ html body .mwv2-auth-pane{padding:38px 46px 28px!important}
 @media(max-width:860px){
   html body #mwBottomNav button{
     flex-direction:row!important;gap:0!important;font-size:0!important;
+    flex:0 0 auto!important;width:50px!important;
   }
   html body #mwBottomNav svg{width:21px!important;height:21px!important}
 }
 html body #mwBottomNav{
+  /* Largura de conteúdo, centralizada — não esticada de ponta a ponta
+     da tela. Esticar em flex:1 era a causa raiz dos ícones "largados"
+     e do avatar parecendo espremido: cada botão virava uma célula
+     enorme e vazia em vez de um alvo de toque compacto. */
+  left:50%!important;right:auto!important;
+  transform:translateX(-50%)!important;
+  width:auto!important;max-width:calc(100vw - 32px);
   align-items:center!important;
-  padding:calc(4px - var(--mw-nav-compact,0) * 1px)!important;
+  gap:5px!important;
+  padding:calc(7px - var(--mw-nav-compact,0) * 1.5px) calc(9px - var(--mw-nav-compact,0) * 1.5px)!important;
   border-radius:999px!important;
   background-image:
     linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.02) 45%,rgba(255,255,255,.06)),
@@ -13396,7 +13406,7 @@ html body.light #mwBottomNav button.active{
    no mesmo eixo vertical dos ícones ao lado, mesmo tendo altura
    diferente dos botões. */
 html body #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar{
-  flex:0 0 auto!important;width:36px;height:36px;min-width:36px;min-height:36px;
+  flex:0 0 auto!important;width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important;
   border-radius:50%!important;overflow:hidden;
   display:grid;place-items:center;margin:0!important;
   background-color:rgba(56,99,235,.28);background-size:cover!important;background-position:center!important;
