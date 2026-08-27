@@ -3994,7 +3994,7 @@ body.light .mw-photo-hint{color:#72767a;}
  function initials(name){return String(name||'Mateus Workspace').trim().split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0].toUpperCase()).join('')||'MW';}
  function syncAllAvatars(src){
    const name=$('#profileName')?.value||'Mateus';
-   const targets=[$('#profileBtn'),$('#workspaceProfileSocialBtn'),$('#mwSidebarAvatar'),$('#profileAvatarPreview')].filter(Boolean);
+   const targets=[$('#profileBtn'),$('#workspaceProfileSocialBtn'),$('#mwSidebarAvatar'),$('#profileAvatarPreview'),$('#mwBottomMenu')].filter(Boolean);
    targets.forEach(a=>{
      if(src){
        a.style.backgroundImage=`url("${src}")`;
@@ -4091,7 +4091,7 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
  const preview=q('#profileAvatarPreview'), initialsEl=q('#profileAvatarInitials'), photoInput=q('#profilePhoto'), fileInput=q('#profilePhotoFile');
  const choose=q('#chooseProfilePhoto'), edit=q('#editProfilePhoto'), remove=q('#removeProfilePhoto');
  let crop={src:'',img:null,x:0,y:0,scale:1,min:1,max:3,drag:false,sx:0,sy:0,ox:0,oy:0};
- function setAvatar(photo,name){const apply=(el,asImg)=>{if(!el)return;if(photo){el.style.backgroundImage=`url("${photo}")`;el.style.backgroundSize='cover';el.style.backgroundPosition='center';el.classList.add('has-avatar');if(asImg)el.textContent='';}else{el.style.backgroundImage='';el.classList.remove('has-avatar');if(asImg)el.textContent=initials(name);}};const av=q('#profileBtn');apply(av,true);apply(q('#mwSidebarAvatar'),true);const nm=q('#mwSidebarName');if(nm)nm.textContent=name||'Mateus';if(preview){if(photo){preview.style.backgroundImage=`url("${photo}")`;preview.style.backgroundColor='transparent';preview.style.backgroundSize='cover';preview.style.backgroundPosition='center';if(initialsEl)initialsEl.style.display='none'}else{preview.style.backgroundImage='';preview.style.backgroundColor='';if(initialsEl){initialsEl.style.display='';initialsEl.textContent=initials(name)}}}}
+ function setAvatar(photo,name){const apply=(el,asImg)=>{if(!el)return;if(photo){el.style.backgroundImage=`url("${photo}")`;el.style.backgroundSize='cover';el.style.backgroundPosition='center';el.classList.add('has-avatar');if(asImg)el.textContent='';}else{el.style.backgroundImage='';el.classList.remove('has-avatar');if(asImg)el.textContent=initials(name);}};const av=q('#profileBtn');apply(av,true);apply(q('#mwSidebarAvatar'),true);apply(q('#mwBottomMenu'),true);const nm=q('#mwSidebarName');if(nm)nm.textContent=name||'Mateus';if(preview){if(photo){preview.style.backgroundImage=`url("${photo}")`;preview.style.backgroundColor='transparent';preview.style.backgroundSize='cover';preview.style.backgroundPosition='center';if(initialsEl)initialsEl.style.display='none'}else{preview.style.backgroundImage='';preview.style.backgroundColor='';if(initialsEl){initialsEl.style.display='';initialsEl.textContent=initials(name)}}}}
  function syncProfile(){const d=getData(),p=d.profile||{};setAvatar(p.photo||'',p.name||'Mateus');if(photoInput)photoInput.value=p.photo||''}
  function openCrop(src){
    const back=document.createElement('div');back.className='profile-editor-backdrop';back.innerHTML=`<div class="profile-editor" role="dialog" aria-modal="true"><div class="profile-editor-head"><h3>Ajustar foto de perfil</h3><button class="profile-editor-close" type="button" aria-label="Fechar">×</button></div><div class="crop-stage"><img class="crop-image" draggable="false"><div class="crop-mask"></div><div class="crop-ring"></div></div><div class="crop-controls"><button type="button" data-zoom="-1" title="Afastar">−</button><input type="range" min="0" max="100" step="1" value="40" aria-label="Zoom"><button type="button" data-zoom="1" title="Aproximar">+</button></div><div class="crop-hint">− afasta · + aproxima · arraste para centralizar</div><div class="profile-editor-actions"><button type="button" class="profile-editor-close2">Cancelar</button><button type="button" class="crop-save">Usar esta foto</button></div></div>`;
@@ -7137,7 +7137,7 @@ img,svg,video,canvas{max-width:100%}
       <button type="button" data-view="home" class="active" aria-label="Início"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.6 3 10.2V21h6.4v-6.1h5.2V21H21V10.2L12 2.6z"/></svg></button>
       <button type="button" data-view="college" aria-label="Faculdade"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 1.5 8.2 12 13.4 20.5 9.1V16H22V8.2L12 3z"/></svg></button>
       <button type="button" data-view="notes" aria-label="Notas"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 2h9.2L20 6.8V22H6V2z"/></svg></button>
-      <button type="button" id="mwBottomMenu" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>`;
+      <button type="button" id="mwBottomMenu" class="mw-bottomnav-avatar" aria-label="Menu"></button>`;
     document.body.appendChild(nav);
   }
   const syncChrome = () => {
@@ -9640,7 +9640,7 @@ html body.light .eva-voice{
       name = (p.name || q('#profileName')?.value || 'Mateus').trim() || 'Mateus';
     } catch {}
     const initials = name.split(/\s+/).filter(Boolean).slice(0,2).map(x => x[0]).join('').toUpperCase() || 'MW';
-    const targets = [q('#mwSidebarAvatar'), q('#profileBtn'), q('#profileAvatarPreview')].filter(Boolean);
+    const targets = [q('#mwSidebarAvatar'), q('#profileBtn'), q('#profileAvatarPreview'), q('#mwBottomMenu')].filter(Boolean);
     targets.forEach(el => {
       if (photo) {
         el.style.setProperty('--mw-photo', 'url("' + photo + '")');
@@ -9655,7 +9655,7 @@ html body.light .eva-voice{
         el.style.removeProperty('--mw-photo');
         el.style.setProperty('background-image', 'none', 'important');
         el.classList.remove('has-avatar', 'has-photo');
-        if (el.id === 'mwSidebarAvatar' || el.id === 'profileBtn') el.textContent = initials;
+        if (el.id === 'mwSidebarAvatar' || el.id === 'profileBtn' || el.id === 'mwBottomMenu') el.textContent = initials;
         const ini = q('#profileAvatarInitials');
         if (el.id === 'profileAvatarPreview' && ini) { ini.style.display = ''; ini.textContent = initials; }
       }
@@ -13199,47 +13199,47 @@ html body #app .mw-theme-icon.mw-theme-flash::after{opacity:1!important;transfor
 })();
 </script>
 <style id="mw-scroll-blur-premium">
-/* Rolagem "estilo feed": a topbar ganha transparência/blur crescentes
-   conforme o usuário desce a página, deixando o conteúdo passar
-   visualmente por trás dela sem perder legibilidade — como em apps de
-   feed modernos. Só afeta pintura (background/blur), nunca layout. */
-html body #app{--mw-scroll-progress:0}
+/* Liquid Glass da topbar, dirigido por --mw-nav-compact (0 a 1), uma
+   variável contínua e ciente de direção (ver script mw-liquid-nav-scroll
+   mais abaixo). Só a pintura muda aqui (background/blur/sombra/opacidade
+   via transform em filhos) — a caixa da topbar nunca muda de tamanho,
+   então nada no conteúdo abaixo reflui/pula durante a rolagem. */
+html:root{--mw-nav-compact:0}
 html body #app .topbar.topbar{
-  background:linear-gradient(105deg,rgba(7,23,44,calc(.58 + var(--mw-scroll-progress,0) * .32)),rgba(12,43,73,calc(.46 + var(--mw-scroll-progress,0) * .28)))!important;
-  backdrop-filter:blur(calc(10px + var(--mw-scroll-progress,0) * 16px)) saturate(calc(120% + var(--mw-scroll-progress,0) * 35%))!important;
-  -webkit-backdrop-filter:blur(calc(10px + var(--mw-scroll-progress,0) * 16px)) saturate(calc(120% + var(--mw-scroll-progress,0) * 35%))!important;
-  box-shadow:0 8px 26px -14px rgba(2,10,24,calc(var(--mw-scroll-progress,0) * .55))!important;
-  transition:box-shadow .25s ease!important;
+  background:linear-gradient(105deg,rgba(7,23,44,calc(.52 + var(--mw-nav-compact,0) * .4)),rgba(12,43,73,calc(.42 + var(--mw-nav-compact,0) * .34)))!important;
+  backdrop-filter:blur(calc(14px + var(--mw-nav-compact,0) * 14px)) saturate(calc(140% + var(--mw-nav-compact,0) * 30%))!important;
+  -webkit-backdrop-filter:blur(calc(14px + var(--mw-nav-compact,0) * 14px)) saturate(calc(140% + var(--mw-nav-compact,0) * 30%))!important;
+  border:1px solid rgba(125,194,255,calc(.22 - var(--mw-nav-compact,0) * .09))!important;
+  box-shadow:0 10px 28px -16px rgba(2,10,24,calc(var(--mw-nav-compact,0) * .55)),inset 0 1px 0 rgba(255,255,255,calc(.08 - var(--mw-nav-compact,0) * .04))!important;
 }
 html body.light #app .topbar.topbar{
-  background:linear-gradient(105deg,rgba(249,254,255,calc(.5 + var(--mw-scroll-progress,0) * .36)),rgba(224,244,255,calc(.4 + var(--mw-scroll-progress,0) * .32)))!important;
+  background:linear-gradient(105deg,rgba(249,254,255,calc(.46 + var(--mw-nav-compact,0) * .42)),rgba(224,244,255,calc(.36 + var(--mw-nav-compact,0) * .36)))!important;
+  border-color:rgba(30,64,120,calc(.14 - var(--mw-nav-compact,0) * .06))!important;
+}
+/* Elementos internos encolhem sutilmente (transform, sem afetar layout)
+   pra reforçar a sensação de "compactando", sem mexer na altura real
+   da barra nem nas áreas de toque dos botões. */
+html body #app .topbar .hello{
+  transform:scale(calc(1 - var(--mw-nav-compact,0) * .05));
+  transform-origin:left center;
+  opacity:calc(1 - var(--mw-nav-compact,0) * .1);
+}
+html body #app .topbar .top-actions>.icon-btn,
+html body #app .topbar .top-actions>#quickAdd,
+html body #app .topbar .top-actions>.mateus-ai-btn,
+html body #app .topbar .top-actions>.profile-btn,
+html body #app .topbar .top-actions>.mw-bell-wrap>.bell-btn{
+  transform:scale(calc(1 - var(--mw-nav-compact,0) * .08));
 }
 @media(prefers-reduced-motion:reduce){
-  html body #app .topbar.topbar{transition:none!important}
+  html body #app .topbar .hello,
+  html body #app .topbar .top-actions>.icon-btn,
+  html body #app .topbar .top-actions>#quickAdd,
+  html body #app .topbar .top-actions>.mateus-ai-btn,
+  html body #app .topbar .top-actions>.profile-btn,
+  html body #app .topbar .top-actions>.mw-bell-wrap>.bell-btn{transform:none!important;opacity:1!important}
 }
 </style>
-<script id="mw-scroll-blur-js">
-(() => {
-  const app = document.getElementById('app');
-  const main = document.querySelector('#app .main');
-  if(!app || !main) return;
-  const MAX = 130;
-  let ticking = false;
-  const update = () => {
-    const winY = window.scrollY || document.documentElement.scrollTop || 0;
-    const y = Math.max(main.scrollTop || 0, winY);
-    const progress = Math.max(0, Math.min(1, y / MAX));
-    app.style.setProperty('--mw-scroll-progress', progress.toFixed(3));
-    ticking = false;
-  };
-  const onScroll = () => {
-    if(!ticking){ ticking = true; requestAnimationFrame(update); }
-  };
-  main.addEventListener('scroll', onScroll, { passive:true });
-  window.addEventListener('scroll', onScroll, { passive:true });
-  update();
-})();
-</script>
 <style id="mw-scrollbar-premium">
 /* Scrollbar refinada: mais fina em repouso, ganha presença sutil no
    hover (desktop) e some do rastro no touch (mobile), onde o momentum
@@ -13320,9 +13320,10 @@ html body .mwv2-auth-pane{padding:38px 46px 28px!important}
 }
 </style>
 <style id="mw-bottomnav-instagram">
-/* Bottom nav estilo Instagram: só ícones (sem legenda), pill arredondada
-   já existente preservada, e a barra some suavemente ao descer a página
-   e volta ao subir — igual ao espírito do efeito da topbar. */
+/* Bottom nav estilo Instagram: só ícones (sem legenda) + avatar circular
+   no lugar do menu-hambúrguer, cápsula flutuante em Liquid Glass. A
+   barra nunca desaparece — só fica mais compacta e discreta conforme
+   --mw-nav-compact sobe, e volta ao normal ao subir a página. */
 @media(max-width:860px){
   html body #mwBottomNav button{
     flex-direction:row!important;gap:0!important;font-size:0!important;
@@ -13330,41 +13331,112 @@ html body .mwv2-auth-pane{padding:38px 46px 28px!important}
   html body #mwBottomNav svg{width:21px!important;height:21px!important}
 }
 html body #mwBottomNav{
-  transition:transform .32s cubic-bezier(.22,.8,.2,1),opacity .28s ease;
+  padding:calc(4px - var(--mw-nav-compact,0) * 1px)!important;
+  border-radius:999px!important;
+  background:linear-gradient(160deg,rgba(16,24,42,calc(.66 + var(--mw-nav-compact,0) * .24)),rgba(7,13,26,calc(.72 + var(--mw-nav-compact,0) * .2)))!important;
+  backdrop-filter:blur(calc(18px + var(--mw-nav-compact,0) * 10px)) saturate(150%)!important;
+  -webkit-backdrop-filter:blur(calc(18px + var(--mw-nav-compact,0) * 10px)) saturate(150%)!important;
+  border:1px solid rgba(255,255,255,calc(.14 - var(--mw-nav-compact,0) * .05))!important;
+  box-shadow:0 14px 34px -16px rgba(2,8,20,.55),inset 0 1px 0 rgba(255,255,255,calc(.1 - var(--mw-nav-compact,0) * .05))!important;
+  transition:box-shadow .2s ease;
 }
-html body #mwBottomNav.mw-navhide{
-  transform:translateY(140%);opacity:0;pointer-events:none;
+html body.light #mwBottomNav{
+  background:linear-gradient(160deg,rgba(255,255,255,calc(.72 + var(--mw-nav-compact,0) * .2)),rgba(240,246,255,calc(.62 + var(--mw-nav-compact,0) * .24)))!important;
+  border-color:rgba(15,23,42,calc(.12 - var(--mw-nav-compact,0) * .04))!important;
+}
+html body #mwBottomNav button svg{
+  transform:scale(calc(1 - var(--mw-nav-compact,0) * .13));
+}
+/* Avatar no lugar do antigo ícone de menu — mesmo comportamento de
+   clique (abre a gaveta lateral), só a aparência muda. Tamanho fixo
+   (não anima com o compact) pra nunca reduzir a área de toque. */
+html body #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar{
+  flex:0 0 auto!important;width:36px;height:36px;min-width:36px;min-height:36px;
+  border-radius:50%!important;overflow:hidden;
+  display:grid;place-items:center;
+  background-color:rgba(56,99,235,.28);background-size:cover!important;background-position:center!important;
+  font-size:12.5px!important;font-weight:800;letter-spacing:.01em;color:#eaf6ff;
+  border:1.5px solid rgba(255,255,255,calc(.4 - var(--mw-nav-compact,0) * .16));
+  transition:border-color .2s ease;
+}
+html body.light #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar{
+  color:#0b1830;border-color:rgba(15,23,42,calc(.22 - var(--mw-nav-compact,0) * .1));
 }
 @media(prefers-reduced-motion:reduce){
-  html body #mwBottomNav{transition:opacity .18s linear}
-  html body #mwBottomNav.mw-navhide{transform:none}
+  html body #mwBottomNav{transition:none}
+  html body #mwBottomNav button svg{transform:none!important}
 }
 </style>
-<script id="mw-bottomnav-autohide">
+<script id="mw-liquid-nav-scroll">
 (() => {
-  const nav = document.getElementById('mwBottomNav');
-  if (!nav) return;
+  /* Controlador único e reutilizável do "compactar ao descer, expandir
+     ao subir": acumula distância rolada com sinal (positivo descendo,
+     negativo subindo), sem threshold binário — pequenas oscilações só
+     empurram o acumulador um pouco, nunca alternam um estado on/off.
+     Funciona com touch, mouse wheel, trackpad, arrastar a scrollbar e
+     teclado, porque todos eles disparam o evento nativo "scroll". */
+  const html = document.documentElement;
   const main = document.querySelector('#app .main');
-  let lastY = 0, ticking = false;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const DIST = 90;
+  const TOP_RESET = 16;
+  let lastY = 0, accum = 0, target = 0, current = 0, raf = null;
+
   const getY = () => Math.max(main ? main.scrollTop : 0, window.scrollY || document.documentElement.scrollTop || 0);
+
+  const loop = () => {
+    const ease = reduceMotion ? 1 : 0.16;
+    current += (target - current) * ease;
+    if (Math.abs(target - current) < 0.001) current = target;
+    html.style.setProperty('--mw-nav-compact', current.toFixed(3));
+    if (current !== target) raf = requestAnimationFrame(loop);
+    else raf = null;
+  };
+
   const update = () => {
     const y = getY();
     const delta = y - lastY;
-    if (y < 40) {
-      nav.classList.remove('mw-navhide');
-    } else if (delta > 6) {
-      nav.classList.add('mw-navhide');
-    } else if (delta < -6) {
-      nav.classList.remove('mw-navhide');
-    }
     lastY = y;
-    ticking = false;
+    if (y <= TOP_RESET) accum = 0;
+    else accum = Math.max(0, Math.min(DIST, accum + delta));
+    target = accum / DIST;
+    if (!raf) raf = requestAnimationFrame(loop);
   };
-  const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
-  main?.addEventListener('scroll', onScroll, { passive:true });
-  window.addEventListener('scroll', onScroll, { passive:true });
+
+  main?.addEventListener('scroll', update, { passive:true });
+  window.addEventListener('scroll', update, { passive:true });
+  update();
 })();
 </script>
+<style id="mw-avatar-containment">
+/* Blindagem estrutural dos avatares: a base do arquivo tinha três
+   raios de borda diferentes (10px via JS lock, 11px no CSS, 12px em
+   .has-avatar) e nenhuma trava explícita de aspect-ratio/overflow em
+   todos os pontos ao mesmo tempo — uma receita pra foto "escapar" do
+   círculo em algum estado específico. Uma única regra final, aplicada
+   a todos os locais de avatar, elimina a ambiguidade. */
+html body #mwSidebarAvatar,
+html body #profileBtn,
+html body #profileAvatarPreview,
+html body #mwBottomMenu.mw-bottomnav-avatar{
+  aspect-ratio:1/1!important;
+  overflow:hidden!important;
+  flex-shrink:0!important;
+  background-repeat:no-repeat!important;
+}
+html body #mwSidebarAvatar{border-radius:10px!important}
+html body #profileBtn{border-radius:13px!important}
+html body #mwBottomMenu.mw-bottomnav-avatar{border-radius:50%!important}
+html body #profileAvatarPreview{border-radius:18px!important}
+@media(hover:hover){
+  html body #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar:hover{filter:brightness(1.12)}
+  html body #mwBottomNav button:hover svg{opacity:.85}
+}
+html body #mwBottomNav button:active{transform:scale(.88)!important}
+@media(prefers-reduced-motion:reduce){
+  html body #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar:hover{filter:none}
+}
+</style>
 <style id="mw-back-button">
 /* Botão de voltar: só aparece no mobile quando o usuário não está no
    Dashboard, ocupando o mesmo lugar do menu-hambúrguer (que já fica
@@ -13442,7 +13514,7 @@ html body .mwv2-input-wrap:focus-within{
    cards do dashboard (que usam isolation:isolate) acabavam formando um
    contexto de empilhamento próprio e pintando por cima do menu, dando a
    impressão de um painel semitransparente vazando conteúdo por trás. */
-html body #app .topbar.topbar{position:relative!important;z-index:200!important}
+html body #app .topbar.topbar{position:sticky!important;top:0!important;z-index:200!important}
 html body #app .notification-menu,
 html body #app .main .mw-bell-wrap .notification-menu{
   background:linear-gradient(165deg,#132848,#0a1730) !important;
