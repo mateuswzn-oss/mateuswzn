@@ -13382,22 +13382,37 @@ html body #mwBottomNav{
      gradientes translúcidos do modo claro ficavam pintados por cima
      de um fundo opaco escuro e o vidro nunca ficava claro de verdade. */
   background-color:transparent!important;
+  /* Menos tint ainda — o Liquid Glass do Control Center do iPhone é
+     quase só blur + refração, praticamente sem cor própria por baixo. */
   background-image:
-    radial-gradient(130% 150% at 12% -15%,rgba(255,255,255,.22),transparent 55%),
-    linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.015) 40%,rgba(255,255,255,.05)),
-    linear-gradient(160deg,rgba(20,28,48,calc(.13 + var(--mw-nav-compact,0) * .15)),rgba(10,15,26,calc(.17 + var(--mw-nav-compact,0) * .13)))!important;
-  backdrop-filter:blur(calc(26px + var(--mw-nav-compact,0) * 8px)) saturate(200%) brightness(1.08)!important;
-  -webkit-backdrop-filter:blur(calc(26px + var(--mw-nav-compact,0) * 8px)) saturate(200%) brightness(1.08)!important;
-  border:1px solid rgba(255,255,255,calc(.24 - var(--mw-nav-compact,0) * .09))!important;
-  box-shadow:0 12px 32px -18px rgba(0,0,0,calc(.35 + var(--mw-nav-compact,0) * .15)),inset 0 1px 0 rgba(255,255,255,calc(.28 - var(--mw-nav-compact,0) * .08)),inset 0 -1px 0 rgba(255,255,255,.04)!important;
+    radial-gradient(130% 150% at 12% -15%,rgba(255,255,255,.2),transparent 55%),
+    linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.01) 40%,rgba(255,255,255,.04)),
+    linear-gradient(160deg,rgba(20,28,48,calc(.07 + var(--mw-nav-compact,0) * .14)),rgba(10,15,26,calc(.1 + var(--mw-nav-compact,0) * .12)))!important;
+  backdrop-filter:blur(calc(28px + var(--mw-nav-compact,0) * 8px)) saturate(210%) brightness(1.1)!important;
+  -webkit-backdrop-filter:blur(calc(28px + var(--mw-nav-compact,0) * 8px)) saturate(210%) brightness(1.1)!important;
+  /* Duas bordas, como um vidro de verdade tem duas superfícies: uma
+     bem sutil por fora (contorno do card) e outra por dentro (inset),
+     ligeiramente mais visível, marcando onde a "peça de vidro" da
+     navegação começa e termina sem depender só do contraste do fundo. */
+  border:1px solid rgba(255,255,255,calc(.14 - var(--mw-nav-compact,0) * .05))!important;
+  box-shadow:
+    0 12px 32px -18px rgba(0,0,0,calc(.35 + var(--mw-nav-compact,0) * .15)),
+    inset 0 0 0 1px rgba(255,255,255,calc(.16 - var(--mw-nav-compact,0) * .05)),
+    inset 0 1px 0 rgba(255,255,255,calc(.26 - var(--mw-nav-compact,0) * .08)),
+    inset 0 -1px 0 rgba(255,255,255,.03)!important;
   transition:box-shadow .2s ease;
 }
 html body.light #mwBottomNav{
   background-image:
-    radial-gradient(130% 150% at 12% -15%,rgba(255,255,255,.75),transparent 55%),
-    linear-gradient(180deg,rgba(255,255,255,.46),rgba(255,255,255,.1) 40%,rgba(255,255,255,.24)),
-    linear-gradient(160deg,rgba(255,255,255,calc(.1 + var(--mw-nav-compact,0) * .13)),rgba(240,246,255,calc(.14 + var(--mw-nav-compact,0) * .12)))!important;
-  border-color:rgba(15,23,42,calc(.09 - var(--mw-nav-compact,0) * .03))!important;
+    radial-gradient(130% 150% at 12% -15%,rgba(255,255,255,.7),transparent 55%),
+    linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,.06) 40%,rgba(255,255,255,.18)),
+    linear-gradient(160deg,rgba(255,255,255,calc(.06 + var(--mw-nav-compact,0) * .12)),rgba(240,246,255,calc(.09 + var(--mw-nav-compact,0) * .11)))!important;
+  border-color:rgba(15,23,42,calc(.07 - var(--mw-nav-compact,0) * .03))!important;
+  box-shadow:
+    0 12px 28px -18px rgba(30,41,59,.18),
+    inset 0 0 0 1px rgba(15,23,42,.07),
+    inset 0 1px 0 rgba(255,255,255,.7),
+    inset 0 -1px 0 rgba(15,23,42,.03)!important;
 }
 html body #mwBottomNav button{color:rgba(255,255,255,.68)}
 html body.light #mwBottomNav button{color:rgba(15,23,42,.55)}
