@@ -2719,6 +2719,52 @@ body.light #app .calendar-card .calendar-nav button:hover{
 }
 </style>
 
+<div id="mwFaceIdGate" class="hidden" role="dialog" aria-modal="true" aria-label="Desbloquear com Face ID">
+  <div class="mw-faceid-gate-card">
+    <div class="mw-faceid-gate-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2"/><path d="M16 4h2a2 2 0 0 1 2 2v2"/><path d="M4 16v2a2 2 0 0 0 2 2h2"/><path d="M16 20h2a2 2 0 0 0 2-2v-2"/><path d="M8 10v1.5a4 4 0 0 0 8 0V10"/><path d="M9.5 9.2V9a2.5 2.5 0 0 1 5 0v.2"/><path d="M12 15.5V17"/></svg></div>
+    <h2>Mateus Workspace</h2>
+    <p>Use o Face ID para continuar de onde parou.</p>
+    <button type="button" class="save-btn" id="mwFaceIdGateBtn">Continuar com Face ID</button>
+    <button type="button" class="small-btn" id="mwFaceIdGateFallback">Entrar de outro jeito</button>
+    <p class="form-error" id="mwFaceIdGateError" hidden></p>
+  </div>
+</div>
+<style id="mw-faceid-style">
+#mwFaceIdGate{
+  position:fixed;inset:0;z-index:9500;display:none;
+  align-items:center;justify-content:center;padding:24px;
+  background:radial-gradient(circle at 20% 20%,rgba(37,99,235,.16),transparent 45%),linear-gradient(160deg,#050b18,#0a1730 60%,#050b18);
+}
+#mwFaceIdGate:not(.hidden){display:flex}
+body.light #mwFaceIdGate{background:radial-gradient(circle at 20% 20%,rgba(37,99,235,.10),transparent 45%),linear-gradient(160deg,#eaf3ff,#f7fbff)}
+.mw-faceid-gate-card{
+  width:min(340px,100%);padding:34px 26px 28px;border-radius:26px;text-align:center;
+  background:rgba(10,20,40,.72);border:1px solid rgba(125,211,252,.22);
+  box-shadow:0 30px 70px rgba(2,8,23,.5),inset 0 1px 0 rgba(224,251,255,.08);
+  backdrop-filter:blur(22px) saturate(140%);-webkit-backdrop-filter:blur(22px) saturate(140%);
+}
+body.light .mw-faceid-gate-card{background:rgba(255,255,255,.86);border-color:rgba(37,99,235,.16);box-shadow:0 24px 60px rgba(30,64,175,.16),inset 0 1px 0 #fff;color:#0b1830}
+.mw-faceid-gate-icon{width:64px;height:64px;margin:0 auto 16px;border-radius:20px;display:grid;place-items:center;color:#eaf6ff;background:linear-gradient(145deg,rgba(37,99,235,.35),rgba(103,232,249,.14));border:1px solid rgba(125,211,252,.3)}
+body.light .mw-faceid-gate-icon{color:#0b1830;background:linear-gradient(145deg,rgba(37,99,235,.16),rgba(103,232,249,.10));border-color:rgba(37,99,235,.2)}
+.mw-faceid-gate-card h2{margin:0 0 6px;font-size:17px;color:#eaf6ff}
+body.light .mw-faceid-gate-card h2{color:#0b1830}
+.mw-faceid-gate-card p{margin:0 0 20px;font-size:12.5px;color:#9db8d6}
+body.light .mw-faceid-gate-card p{color:#526988}
+.mw-faceid-gate-card .save-btn{width:100%;margin-bottom:10px}
+.mw-faceid-gate-card .small-btn{width:100%;background:transparent}
+.mw-faceid-gate-card .form-error{margin-top:12px;font-size:11.5px}
+.mw-faceid-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}
+.mw-faceid-row-label{font-size:13px;color:var(--text)}
+.mw-faceid-switch{
+  flex:0 0 auto;width:44px;height:26px;border-radius:99px;padding:2px;border:1px solid var(--line);
+  background:rgba(127,148,181,.22);display:flex;align-items:center;justify-content:flex-start;
+  cursor:pointer;transition:background .2s ease,border-color .2s ease;
+}
+.mw-faceid-switch i{width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.3);transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
+.mw-faceid-switch.on{background:linear-gradient(100deg,#2563eb,#0ea5e9);border-color:rgba(37,99,235,.5);justify-content:flex-end}
+.mw-faceid-switch:disabled{opacity:.6;cursor:default}
+@media(prefers-reduced-motion:reduce){.mw-faceid-switch i{transition:none}}
+</style>
 <section id="loginScreen">
   <div class="mwv2-ambient a1"></div>
   <div class="mwv2-ambient a2"></div>
@@ -3121,6 +3167,7 @@ body.light #app .calendar-card .calendar-nav button:hover{
 </div></div><div class="profile-actions"><button class="save-btn" id="saveProfile">Salvar perfil</button></div></div>
       <div class="settings-group hidden" id="legacyThemeGroup"><h4>Preferências</h4><div class="theme-row"><button class="theme-btn" id="darkModeBtn">Modo Escuro</button><button class="theme-btn" id="lightModeBtn">Modo Claro</button></div></div>
       <div class="settings-group"><h4>Sessão</h4><p>Este projeto usa uma sessão demonstrativa local.</p><div class="profile-actions"><button class="small-btn mw-logout-btn" id="logout">Sair</button></div></div>
+      <div class="settings-group" id="mwFaceIdGroup" hidden><h4>Segurança</h4><p>Use o Face ID deste iPhone/iPad para entrar no Workspace sem digitar nada.</p><div class="mw-faceid-row"><span class="mw-faceid-row-label">Entrar com Face ID</span><button type="button" class="mw-faceid-switch" id="mwFaceIdToggle" role="switch" aria-checked="false" aria-label="Entrar com Face ID"><i></i></button></div><p class="form-error" id="mwFaceIdStatus" hidden></p></div>
       <div class="settings-group"><h4>Aplicativo</h4><p id="mwSettingsInstallDesc">Adicione o Mateus Workspace à tela de início para abrir como um app.</p><div class="profile-actions"><button class="small-btn" id="mwSettingsInstallBtn">Instalar aplicativo</button></div></div>
       <div class="settings-group"><h4>Backup</h4><p>Seus dados ficam salvos só neste navegador. Exporte um arquivo de backup pra não perder nada ao trocar de aparelho ou limpar os dados do navegador.</p><div class="profile-actions"><button class="small-btn" id="exportBackup">Exportar backup</button><button class="small-btn" id="importBackupBtn">Importar backup</button><input type="file" id="importBackupFile" accept="application/json" hidden></div><div class="form-error" id="importBackupError"></div></div>
       <div class="settings-group"><h4>Dados</h4><p>Remove disciplinas, atividades, projetos e anotações salvos neste navegador.</p><button class="small-btn danger mw-clear-btn" id="clearAll">Apagar todos os dados</button></div>
@@ -3257,10 +3304,118 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
 (function(){
   var loginScreen = document.getElementById('loginScreen');
   var app = document.getElementById('app');
+  var gate = document.getElementById('mwFaceIdGate');
+
+  /* Face ID no iOS via WebAuthn/passkey da própria plataforma — nunca uma
+     câmera simulada ou reconhecimento facial próprio. O app só recebe o
+     RESULTADO (sucesso/falha) que o sistema operacional entrega; nenhuma
+     imagem de rosto ou dado biométrico passa por aqui, só o id público de
+     uma credencial (equivalente a saber "existe uma chave cadastrada"). */
+  var ua = navigator.userAgent || '';
+  var isIOS = /iphone|ipad|ipod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var hasWebAuthn = !!(window.PublicKeyCredential && navigator.credentials && navigator.credentials.create && navigator.credentials.get);
+  var FID_ENABLED_KEY = 'mwFaceIdEnabled';
+  var FID_CRED_KEY = 'mwFaceIdCredentialId';
+
+  function b64uToBuf(b64u){
+    var b64 = b64u.replace(/-/g,'+').replace(/_/g,'/');
+    while (b64.length % 4) b64 += '=';
+    var str = atob(b64), buf = new Uint8Array(str.length);
+    for (var i=0;i<str.length;i++) buf[i] = str.charCodeAt(i);
+    return buf.buffer;
+  }
+  function bufToB64u(buf){
+    var bytes = new Uint8Array(buf), str = '';
+    for (var i=0;i<bytes.length;i++) str += String.fromCharCode(bytes[i]);
+    var b64 = btoa(str);
+    return b64.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  }
+  function randomChallenge(){ var arr = new Uint8Array(32); crypto.getRandomValues(arr); return arr.buffer; }
+
+  function isEnabled(){
+    try { return localStorage.getItem(FID_ENABLED_KEY) === '1' && !!localStorage.getItem(FID_CRED_KEY); }
+    catch(e){ return false; }
+  }
+  function isSupported(){
+    if (!isIOS || !hasWebAuthn || !window.isSecureContext) return Promise.resolve(false);
+    try { return PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().catch(function(){ return false; }); }
+    catch(e){ return Promise.resolve(false); }
+  }
+  function enroll(){
+    var profile = {};
+    try { profile = (JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}').profile) || {}; } catch(e){}
+    var label = profile.email || profile.name || 'mateus-workspace-user';
+    var userId = new TextEncoder().encode(String(label));
+    return navigator.credentials.create({ publicKey: {
+      challenge: randomChallenge(),
+      rp: { name: 'Mateus Workspace' },
+      user: { id: userId, name: String(label), displayName: profile.name || 'Mateus Workspace' },
+      pubKeyCredParams: [{ type:'public-key', alg:-7 }, { type:'public-key', alg:-257 }],
+      authenticatorSelection: { authenticatorAttachment:'platform', userVerification:'required', residentKey:'preferred' },
+      timeout: 60000,
+      attestation: 'none'
+    }}).then(function(cred){
+      if (!cred) throw new Error('no-credential');
+      localStorage.setItem(FID_CRED_KEY, bufToB64u(cred.rawId));
+      localStorage.setItem(FID_ENABLED_KEY, '1');
+      return true;
+    });
+  }
+  function verify(){
+    var credId = null;
+    try { credId = localStorage.getItem(FID_CRED_KEY); } catch(e){}
+    if (!credId) return Promise.reject(new Error('not-enrolled'));
+    return navigator.credentials.get({ publicKey: {
+      challenge: randomChallenge(),
+      allowCredentials: [{ id: b64uToBuf(credId), type:'public-key' }],
+      userVerification:'required',
+      timeout: 60000
+    }}).then(function(assertion){ return !!assertion; });
+  }
+  function disable(){
+    try { localStorage.removeItem(FID_ENABLED_KEY); localStorage.removeItem(FID_CRED_KEY); } catch(e){}
+  }
+  window.mwFaceId = { isIOS: isIOS, hasWebAuthn: hasWebAuthn, isEnabled: isEnabled, isSupported: isSupported, enroll: enroll, verify: verify, disable: disable };
+
+  function revealApp(){ loginScreen.classList.add('hidden'); app.classList.remove('hidden'); }
+  function revealLogin(){ if (gate) gate.classList.add('hidden'); loginScreen.classList.remove('hidden'); app.classList.add('hidden'); }
+
+  function runFaceIdGate(){
+    var gateBtn = document.getElementById('mwFaceIdGateBtn');
+    var fallbackBtn = document.getElementById('mwFaceIdGateFallback');
+    var errorEl = document.getElementById('mwFaceIdGateError');
+    var busy = false;
+    var setError = function(msg){ if (!errorEl) return; errorEl.textContent = msg || ''; errorEl.hidden = !msg; };
+    var attempt = function(){
+      if (busy) return;
+      busy = true;
+      setError('');
+      verify().then(function(ok){
+        busy = false;
+        if (ok) { gate.classList.add('hidden'); revealApp(); }
+        else setError('Não foi possível confirmar. Tente novamente.');
+      }).catch(function(){
+        busy = false;
+        setError('Face ID não confirmado. Tente novamente ou entre de outro jeito.');
+      });
+    };
+    gateBtn && gateBtn.addEventListener('click', attempt);
+    fallbackBtn && fallbackBtn.addEventListener('click', function(){ gate.classList.add('hidden'); revealLogin(); });
+    gate.classList.remove('hidden');
+    // Melhor esforço: tenta autenticar assim que a tela aparece; se o
+    // navegador exigir um toque pra liberar o sensor, o botão "Continuar
+    // com Face ID" acima continua funcionando normalmente com um toque.
+    setTimeout(attempt, 80);
+  }
+
   try {
     if (localStorage.getItem('mwSession') === '1') {
-      loginScreen.classList.add('hidden');
-      app.classList.remove('hidden');
+      if (isEnabled() && isIOS && hasWebAuthn && gate) {
+        runFaceIdGate();
+      } else {
+        loginScreen.classList.add('hidden');
+        app.classList.remove('hidden');
+      }
     }
   } catch (e) {}
 
@@ -3274,6 +3429,54 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
     loader.classList.add('mw-boot-hide');
     setTimeout(function(){ loader.remove(); }, 500);
   }, 550);
+})();
+</script>
+<script id="mw-faceid-settings-js">
+(function(){
+  var group = document.getElementById('mwFaceIdGroup');
+  var toggle = document.getElementById('mwFaceIdToggle');
+  var status = document.getElementById('mwFaceIdStatus');
+  if (!group || !toggle || !window.mwFaceId) return;
+
+  var setStatus = function(msg, isError){
+    if (!status) return;
+    status.textContent = msg || '';
+    status.hidden = !msg;
+    status.style.color = isError ? '' : 'var(--muted2)';
+  };
+  var setSwitch = function(on){
+    toggle.classList.toggle('on', !!on);
+    toggle.setAttribute('aria-checked', on ? 'true' : 'false');
+  };
+
+  window.mwFaceId.isSupported().then(function(supported){
+    if (!supported) { group.hidden = true; return; }
+    group.hidden = false;
+    setSwitch(window.mwFaceId.isEnabled());
+  });
+
+  toggle.addEventListener('click', function(){
+    if (toggle.disabled) return;
+    var currentlyOn = toggle.classList.contains('on');
+    toggle.disabled = true;
+    if (!currentlyOn) {
+      setStatus('Confirme no pedido do sistema…');
+      window.mwFaceId.enroll().then(function(){
+        setSwitch(true);
+        setStatus('Face ID ativado. Vamos confirmar na próxima vez que você abrir o Workspace.');
+        if (typeof toast === 'function') toast('Face ID ativado');
+      }).catch(function(){
+        setSwitch(false);
+        setStatus('Não foi possível ativar o Face ID agora. Tente novamente.', true);
+      }).finally(function(){ toggle.disabled = false; });
+    } else {
+      window.mwFaceId.disable();
+      setSwitch(false);
+      setStatus('Face ID desativado.');
+      if (typeof toast === 'function') toast('Face ID desativado');
+      toggle.disabled = false;
+    }
+  });
 })();
 </script>
 
@@ -3333,7 +3536,7 @@ $('#msButton').onclick=()=>{msStage='email';msAccount='';msTitle.textContent='En
 $('#msCancel').onclick=()=>msModal.classList.add('hidden');
 msForm.addEventListener('submit',e=>{e.preventDefault();const value=msEmail.value.trim();if(msStage==='email'){if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)){msError.textContent='Digite um endereço de e-mail válido.';return}msAccount=value;msStage='password';msTitle.textContent='Digite sua senha';msDescription.textContent='Conta: '+msAccount;msEmail.type='password';msEmail.value='';msEmail.placeholder='Senha';msEmail.autocomplete='current-password';msError.textContent='';msContinue.textContent='Entrar';setTimeout(()=>msEmail.focus(),40);return}if(value.length<1){msError.textContent='Digite sua senha para continuar.';return}msContinue.disabled=true;msContinue.textContent='Entrando...';setTimeout(()=>{msContinue.disabled=false;msModal.classList.add('hidden');enterApp();toast('Autenticação Microsoft simulada com sucesso')},800)});
 /* Navigation */
-function showView(view){$$('.view').forEach(v=>v.classList.remove('active'));$('#view-'+view)?.classList.add('active');$$('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===view));if(view==='settings')loadProfileFields()}
+function showView(view){$$('.view').forEach(v=>v.classList.remove('active'));$('#view-'+view)?.classList.add('active');$$('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===view));if(view==='settings')loadProfileFields();window.mwSyncBottomNavActive?.()}
 $$('#nav button').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
 $('#profileBtn').onclick=()=>showView('settings');$('#quickAdd').onclick=()=>openModal('subjects');
 /* Dynamic data */
@@ -4094,10 +4297,32 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
  function setAvatar(photo,name){const apply=(el,asImg)=>{if(!el)return;if(photo){el.style.backgroundImage=`url("${photo}")`;el.style.backgroundSize='cover';el.style.backgroundPosition='center';el.classList.add('has-avatar');if(asImg)el.textContent='';}else{el.style.backgroundImage='';el.classList.remove('has-avatar');if(asImg)el.textContent=initials(name);}};const av=q('#profileBtn');apply(av,true);apply(q('#mwSidebarAvatar'),true);apply(q('#mwBottomMenu'),true);const nm=q('#mwSidebarName');if(nm)nm.textContent=name||'Mateus';if(preview){if(photo){preview.style.backgroundImage=`url("${photo}")`;preview.style.backgroundColor='transparent';preview.style.backgroundSize='cover';preview.style.backgroundPosition='center';if(initialsEl)initialsEl.style.display='none'}else{preview.style.backgroundImage='';preview.style.backgroundColor='';if(initialsEl){initialsEl.style.display='';initialsEl.textContent=initials(name)}}}}
  function syncProfile(){const d=getData(),p=d.profile||{};setAvatar(p.photo||'',p.name||'Mateus');if(photoInput)photoInput.value=p.photo||''}
  function openCrop(src){
-   const back=document.createElement('div');back.className='profile-editor-backdrop';back.innerHTML=`<div class="profile-editor" role="dialog" aria-modal="true"><div class="profile-editor-head"><h3>Ajustar foto de perfil</h3><button class="profile-editor-close" type="button" aria-label="Fechar">×</button></div><div class="crop-stage"><img class="crop-image" draggable="false"><div class="crop-mask"></div><div class="crop-ring"></div></div><div class="crop-controls"><button type="button" data-zoom="-1" title="Afastar">−</button><input type="range" min="0" max="100" step="1" value="40" aria-label="Zoom"><button type="button" data-zoom="1" title="Aproximar">+</button></div><div class="crop-hint">− afasta · + aproxima · arraste para centralizar</div><div class="profile-editor-actions"><button type="button" class="profile-editor-close2">Cancelar</button><button type="button" class="crop-save">Usar esta foto</button></div></div>`;
-   document.body.appendChild(back); const stage=back.querySelector('.crop-stage'),img=back.querySelector('.crop-image'),range=back.querySelector('input[type=range]'); crop={...crop,src,img,stage,x:0,y:0,scale:1};img.src=src;
-   const fit=()=>{if(!img.naturalWidth)return;const size=Math.min(stage.clientWidth,stage.clientHeight)*.72;const cover=Math.max(size/img.naturalWidth,size/img.naturalHeight);crop.min=cover*0.5;crop.max=cover*4;crop.scale=cover;range.min=0;range.max=100;range.value=Math.round(((cover-crop.min)/(crop.max-crop.min))*100);position()};
-   const position=()=>{const w=img.naturalWidth*crop.scale,h=img.naturalHeight*crop.scale;img.style.width=w+'px';img.style.height=h+'px';img.style.left='50%';img.style.top='50%';img.style.marginLeft=(-w/2+crop.x)+'px';img.style.marginTop=(-h/2+crop.y)+'px'};
+   const back=document.createElement('div');back.className='profile-editor-backdrop';back.innerHTML=`<div class="profile-editor" role="dialog" aria-modal="true"><div class="profile-editor-head"><h3>Ajustar foto de perfil</h3><button class="profile-editor-close" type="button" aria-label="Fechar">×</button></div><div class="crop-stage"><img class="crop-image" draggable="false"><div class="crop-mask"></div><div class="crop-ring"></div></div><div class="crop-controls"><button type="button" data-zoom="-1" title="Afastar">−</button><input type="range" min="0" max="100" step="1" value="0" aria-label="Zoom"><button type="button" data-zoom="1" title="Aproximar">+</button></div><div class="crop-hint">− afasta · + aproxima · arraste para centralizar</div><div class="profile-editor-actions"><button type="button" class="profile-editor-close2">Cancelar</button><button type="button" class="crop-save">Usar esta foto</button></div></div>`;
+   document.body.appendChild(back); const stage=back.querySelector('.crop-stage'),img=back.querySelector('.crop-image'),ring=back.querySelector('.crop-ring'),range=back.querySelector('input[type=range]'); crop={...crop,src,img,stage,x:0,y:0,scale:1};img.src=src;
+   // Único ponto de verdade pro tamanho do círculo de recorte — o mesmo
+   // valor é usado pra calcular o zoom mínimo, limitar o arrasto e
+   // exportar a foto, então os três nunca ficam fora de sincronia.
+   const ringSize=()=>ring.getBoundingClientRect().width||Math.min(stage.clientWidth,stage.clientHeight)*.72;
+   // Trava o arrasto pra imagem nunca revelar uma borda vazia dentro do
+   // círculo — sem isso, arrastar até o fim (mesmo com o zoom mínimo
+   // corrigido abaixo) deixava uma faixa fora da foto, e como a
+   // exportação final é JPEG (sem transparência), essa faixa saía preta
+   // sólida na foto salva: exatamente a "linha escura" relatada.
+   const clampPan=()=>{const cs=ringSize();const iw=img.naturalWidth*crop.scale,ih=img.naturalHeight*crop.scale;const maxX=Math.max(0,(iw-cs)/2),maxY=Math.max(0,(ih-cs)/2);crop.x=Math.max(-maxX,Math.min(maxX,crop.x));crop.y=Math.max(-maxY,Math.min(maxY,crop.y))};
+   const fit=()=>{
+     if(!img.naturalWidth)return;
+     const cs=ringSize();
+     const cover=Math.max(cs/img.naturalWidth,cs/img.naturalHeight);
+     // O zoom mínimo agora É o "cover" — nunca menos que isso. Zoom
+     // abaixo do necessário pra cobrir o círculo era a causa raiz do
+     // fundo quadrado/linhas escuras: a imagem ficava menor que a área
+     // de recorte e a exportação preenchia o resto de preto.
+     crop.min=cover;crop.max=cover*4;crop.scale=cover;
+     range.min=0;range.max=100;range.value=0;
+     crop.x=0;crop.y=0;
+     position();
+   };
+   const position=()=>{clampPan();const w=img.naturalWidth*crop.scale,h=img.naturalHeight*crop.scale;img.style.width=w+'px';img.style.height=h+'px';img.style.left='50%';img.style.top='50%';img.style.marginLeft=(-w/2+crop.x)+'px';img.style.marginTop=(-h/2+crop.y)+'px'};
    img.onload=fit;
    const updateScale=v=>{const t=Number(v);crop.scale=crop.min+(crop.max-crop.min)*(t/100);position()};
    range.oninput=()=>updateScale(range.value);
@@ -4106,7 +4331,7 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
    const move=e=>{if(!crop.drag)return;crop.x=crop.ox+(e.clientX-crop.sx);crop.y=crop.oy+(e.clientY-crop.sy);position()};
    const up=()=>{crop.drag=false;stage.classList.remove('dragging')};stage.addEventListener('pointerdown',down);stage.addEventListener('pointermove',move);stage.addEventListener('pointerup',up);stage.addEventListener('pointercancel',up);
    const close=()=>back.remove();back.querySelectorAll('.profile-editor-close,.profile-editor-close2').forEach(b=>b.onclick=close);
-    back.querySelector('.crop-save').onclick=()=>{const out=document.createElement('canvas'),size=512;out.width=size;out.height=size;const ctx=out.getContext('2d');const ring=stage.querySelector('.crop-ring').getBoundingClientRect(),sr=stage.getBoundingClientRect();const cropSize=ring.width;const centerX=sr.left+sr.width/2,centerY=sr.top+sr.height/2;const scaleFactor=size/cropSize;const iw=img.naturalWidth*crop.scale,ih=img.naturalHeight*crop.scale;const imgLeft=sr.left+sr.width/2-iw/2+crop.x,imgTop=sr.top+sr.height/2-ih/2+crop.y;const sx=(centerX-cropSize/2-imgLeft)/crop.scale,sy=(centerY-cropSize/2-imgTop)/crop.scale,sw=cropSize/crop.scale;ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(img,sx,sy,sw,sw,0,0,size,size);const dataUrl=out.toDataURL('image/jpeg',.88);if(photoInput)photoInput.value=dataUrl;const nm=q('#profileName')?.value||'Mateus';setAvatar(dataUrl,nm);try{const raw=JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}');raw.profile={...(raw.profile||{}),photo:dataUrl,name:raw.profile?.name||nm};localStorage.setItem('mateusWorkspaceV4',JSON.stringify(raw));}catch(e){}window.mwSyncAvatars?.();close()};
+    back.querySelector('.crop-save').onclick=()=>{const out=document.createElement('canvas'),size=512;out.width=size;out.height=size;const ctx=out.getContext('2d');const ringRect=ring.getBoundingClientRect(),sr=stage.getBoundingClientRect();const cropSize=ringRect.width;const centerX=sr.left+sr.width/2,centerY=sr.top+sr.height/2;const iw=img.naturalWidth*crop.scale,ih=img.naturalHeight*crop.scale;const imgLeft=sr.left+sr.width/2-iw/2+crop.x,imgTop=sr.top+sr.height/2-ih/2+crop.y;const sx=(centerX-cropSize/2-imgLeft)/crop.scale,sy=(centerY-cropSize/2-imgTop)/crop.scale,sw=cropSize/crop.scale;ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(img,sx,sy,sw,sw,0,0,size,size);const dataUrl=out.toDataURL('image/jpeg',.88);if(photoInput)photoInput.value=dataUrl;const nm=q('#profileName')?.value||'Mateus';setAvatar(dataUrl,nm);try{const raw=JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}');raw.profile={...(raw.profile||{}),photo:dataUrl,name:raw.profile?.name||nm};localStorage.setItem('mateusWorkspaceV4',JSON.stringify(raw));}catch(e){}window.mwSyncAvatars?.();close()};
  }
  choose?.addEventListener('click',()=>fileInput?.click());fileInput?.addEventListener('change',()=>{const f=fileInput.files?.[0];if(!f)return;if(!f.type.startsWith('image/'))return;const r=new FileReader();r.onload=()=>openCrop(r.result);r.readAsDataURL(f)});
  edit?.addEventListener('click',()=>{const src=photoInput?.value||getData().profile?.photo;if(src)openCrop(src);else fileInput?.click()});
@@ -4287,7 +4512,7 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
     queue.push(t); if(input) input.value='';
     processQueue();
   };
-  const show=()=>{modal.classList.remove('hidden','is-closing');modal.setAttribute('aria-hidden','false');setTimeout(()=>input.focus(),60)};
+  const show=()=>{modal.classList.remove('hidden','is-closing');modal.setAttribute('aria-hidden','false');setTimeout(()=>input.focus(),320)};
   const hide=()=>{if(modal.classList.contains('hidden')||modal.classList.contains('is-closing'))return;modal.classList.add('is-closing');modal.setAttribute('aria-hidden','true');try{speechSynthesis.cancel()}catch(e){}setTimeout(()=>{modal.classList.add('hidden');modal.classList.remove('is-closing');},180)};
   open.addEventListener('click',show); close.addEventListener('click',hide);
   modal.addEventListener('click',e=>{if(e.target===modal)hide()});
@@ -7152,20 +7377,38 @@ img,svg,video,canvas{max-width:100%}
       <button type="button" id="mwBottomMenu" class="mw-bottomnav-avatar" aria-label="Menu"></button>`;
     document.body.appendChild(nav);
   }
+  const avatarMenuBtn = document.getElementById('mwBottomMenu');
+  const MOBILE_NAV_VIEWS = ['home', 'college', 'notes'];
+  /* Fonte única de verdade pro "quem está ativo" na barra: lê o estado
+     real do app (a view atual + se a gaveta lateral está aberta) em vez
+     de cada gatilho tentar adivinhar/mexer direto nas classes — assim
+     nunca sobra mais de um item marcado, e o avatar herda o destaque
+     sempre que a tela atual não é nenhum dos 3 ícones (ex.: Configurações,
+     aberta pelo próprio perfil) ou enquanto a gaveta está aberta. */
+  const syncBottomNavActive = () => {
+    if (!avatarMenuBtn) return;
+    const drawerOpen = app.classList.contains('mw-mobile-open');
+    const currentView = document.querySelector('.view.active')?.id?.replace('view-', '') || 'home';
+    const inMobileNav = MOBILE_NAV_VIEWS.includes(currentView);
+    nav.querySelectorAll('button[data-view]').forEach(b => b.classList.toggle('active', inMobileNav && b.dataset.view === currentView));
+    avatarMenuBtn.classList.toggle('mw-avatar-active', drawerOpen || !inMobileNav);
+  };
+  window.mwSyncBottomNavActive = syncBottomNavActive;
   const syncChrome = () => {
     const inApp = !app.classList.contains('hidden');
     document.body.classList.toggle('mw-in-app', inApp);
     document.body.classList.toggle('mw-drawer-open', app.classList.contains('mw-mobile-open'));
+    syncBottomNavActive();
   };
   syncChrome();
   new MutationObserver(syncChrome).observe(app, {attributes:true, attributeFilter:['class']});
   nav.querySelectorAll('button[data-view]').forEach(b => {
     b.addEventListener('click', () => {
       document.querySelector(`#nav [data-view="${b.dataset.view}"]`)?.click();
-      nav.querySelectorAll('button[data-view]').forEach(x => x.classList.toggle('active', x===b));
+      syncBottomNavActive();
     });
   });
-  document.getElementById('mwBottomMenu')?.addEventListener('click', () => {
+  avatarMenuBtn?.addEventListener('click', () => {
     document.getElementById('mwMobileMenu')?.click();
     syncChrome();
   });
@@ -11328,7 +11571,7 @@ body.light #mateusAiModal #mateusAiInput { color:#15334a!important; caret-color:
 body.light #mateusAiModal .eva-attach,
 body.light #mateusAiModal .eva-voice { background:#e8eef8!important; border-color:#c9d6e8!important; color:#152033!important; }
 body.light #mateusAiModal .mateus-ai-status { color:#5b7291!important; }
-@media(max-width:700px){ #mateusAiModal .mateus-ai-card { top:auto; right:10px; bottom:10px; width:calc(100vw - 20px); height:min(76dvh,620px); max-height:76dvh; border-radius:27px!important; } }
+@media(max-width:700px){ #mateusAiModal .mateus-ai-card { top:auto; right:10px; bottom:calc(10px + var(--mw-eva-kb-gap,0px)); width:calc(100vw - 20px); height:min(76dvh,620px); max-height:calc(var(--mw-eva-vv-h,76dvh) - 20px); border-radius:27px!important; } }
 </style>
 <script id="mw-premium-eva-behavior">
 (() => {
@@ -11338,6 +11581,24 @@ body.light #mateusAiModal .mateus-ai-status { color:#5b7291!important; }
   const name=()=>{try{return String(JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}').profile?.name||'Mateus').trim()||'Mateus'}catch{return 'Mateus'}};
   const setWelcome=()=>{ if(!welcome)return; const hour=new Date().getHours(); const greeting=hour<12?'Bom dia':hour<18?'Boa tarde':'Boa noite'; welcome.textContent=`${greeting}, ${name()}. Como posso ajudar?`; };
   setWelcome(); open?.addEventListener('click',()=>setTimeout(setWelcome,0));
+
+  /* No iOS o teclado encolhe a "visual viewport" sem mexer na viewport
+     de layout que o position:fixed usa — por isso o cartão fixo no
+     rodapé (mobile) ficava colado no fundo "de verdade" da tela mesmo
+     com o teclado por cima, escondendo o campo de digitar. Espelha a
+     altura/posição real visível em variáveis CSS pra o cartão subir e
+     encolher junto com o teclado, sem tocar em nada fora do mobile. */
+  if (window.visualViewport) {
+    const vv = window.visualViewport;
+    const syncEvaKeyboard = () => {
+      const kbGap = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+      document.documentElement.style.setProperty('--mw-eva-kb-gap', kbGap.toFixed(1) + 'px');
+      document.documentElement.style.setProperty('--mw-eva-vv-h', vv.height.toFixed(1) + 'px');
+    };
+    vv.addEventListener('resize', syncEvaKeyboard, { passive: true });
+    vv.addEventListener('scroll', syncEvaKeyboard, { passive: true });
+    syncEvaKeyboard();
+  }
 })();
 </script>
 <style id="mw-dashboard-functions-and-scroll">
@@ -13427,7 +13688,7 @@ html body.light #mwBottomNav{
     inset 0 -1px 0 rgba(15,23,42,.035)!important;
 }
 html body #mwBottomNav button{color:rgba(255,255,255,.68)}
-html body.light #mwBottomNav button{color:rgba(15,23,42,.55)}
+html body.light #mwBottomNav button{color:rgba(21,32,51,.62)}
 /* Botão como uma pequena superfície redonda dentro do vidro — maior
    que o ícone, dá espaço pro destaque do estado ativo (abaixo) parecer
    parte do material, não um recorte justo em volta do desenho. */
@@ -13463,7 +13724,22 @@ html body.light #mwBottomNav button.active{
   box-shadow:
     inset 0 0 0 1px rgba(15,23,42,.05),
     inset 0 1px 0 rgba(255,255,255,.45)!important;
+  color:#152033;
 }
+/* Light mode: preto elegante nos ícones da barra — contorno preto
+   translúcido quando inativo (herdado do "color" acima via currentColor
+   no stroke), preenchimento preto dentro do próprio desenho quando
+   ativo (nunca um círculo/quadrado atrás). O SVG "solid" traz
+   fill="#fff" fixo no markup — só faz sentido no vidro escuro — então a
+   cor é sobrescrita aqui exclusivamente para o tema claro; o modo
+   escuro continua branco, sem nenhuma mudança. */
+html body.light #mwBottomNav .mwnav-icon-solid{fill:#152033!important;filter:none}
+/* Light mode: o ícone de lua (topbar) ficava mais azulado que o sino ao
+   lado — aqui ele passa a usar exatamente a mesma cor neutra do sino
+   (medida diretamente do botão real, não só das regras de CSS, já que
+   várias delas se sobrepõem nesse arquivo). Só a lua, só no tema claro;
+   o sol e o modo escuro continuam intocados. */
+html body.light #app #themeToggle.mwv2-theme-btn .mwv2-icon-moon{color:#0b1830!important}
 /* Avatar no lugar do antigo ícone de menu — mesmo comportamento de
    clique (abre a gaveta lateral), só a aparência muda. Agora também
    participa da compressão (tamanho ligado a --mw-avatar), como parte
@@ -13471,6 +13747,7 @@ html body.light #mwBottomNav button.active{
    preenchimento de reserva (sem foto) deixou de ser azul: é um
    translúcido neutro, igual ao resto do vidro. */
 html body #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar{
+  position:relative;
   flex:0 0 auto!important;width:var(--mw-avatar)!important;height:var(--mw-avatar)!important;min-width:var(--mw-avatar)!important;min-height:var(--mw-avatar)!important;
   border-radius:50%!important;overflow:hidden;
   display:grid;place-items:center;margin:0!important;
@@ -13487,6 +13764,27 @@ html body.light #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar{
    azul grossa, é o próprio vidro reagindo ao toque. */
 html body #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar.mw-avatar-pressed{
   box-shadow:0 0 0 5px rgba(255,255,255,.18);
+}
+/* Estado ativo do avatar (gaveta aberta) — o mesmo tratamento de vidro
+   dos outros itens, mas via ::after em vez de background-image: o
+   próprio elemento tem background-image trocado por JS pra mostrar a
+   foto (ou "none" quando não há foto), e um background-image!important
+   direto na regra brigaria com isso; um pseudo-elemento por cima nunca
+   encosta na propriedade que a foto usa, então funciona igual com ou
+   sem foto de perfil. */
+html body #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar::after{
+  content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;
+  opacity:0;transition:opacity .18s ease;
+  background-image:radial-gradient(150% 220% at 50% 8%,rgba(255,255,255,.16),rgba(255,255,255,.02) 72%);
+  box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.24);
+}
+html body #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar.mw-avatar-active::after{opacity:1}
+html body.light #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar::after{
+  background-image:radial-gradient(150% 220% at 50% 8%,rgba(15,23,42,.09),rgba(15,23,42,.01) 72%);
+  box-shadow:inset 0 0 0 1.5px rgba(15,23,42,.18);
+}
+@media(prefers-reduced-motion:reduce){
+  html body #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar::after{transition:none}
 }
 @media(prefers-reduced-motion:reduce){
   html body #mwBottomNav{transition:none}
@@ -13793,8 +14091,37 @@ html{background:var(--mw-bg,#0b0c0e)!important}
   const app = document.getElementById('app');
   if (app) new MutationObserver(sync).observe(app, { attributes: true, attributeFilter: ['class'] });
   window.addEventListener('storage', sync);
+  // Reforço: também resincroniza em resize/orientationchange e quando o
+  // visualViewport muda (teclado abrindo/fechando, barra de endereço do
+  // Safari escondendo/aparecendo) — o tom não depende do scroll em si,
+  // mas qualquer um desses gatilhos pode acontecer no meio de uma virada
+  // de tema/tela, então mantém tudo sempre no valor mais atual.
+  window.addEventListener('resize', sync, { passive: true });
+  window.addEventListener('orientationchange', sync);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', sync, { passive: true });
+  }
 })();
 </script>
+<style id="mw-viewport-height-hardening">
+/* Reforço estrutural pedido explicitamente: preferir 100dvh (viewport
+   dinâmica real) sobre 100vh onde a altura da tela é a base do layout,
+   com 100vh como fallback pra navegadores sem suporte a dvh (a segunda
+   declaração da mesma propriedade só é aplicada se o valor for válido
+   — em navegador sem dvh ela é ignorada e o vh anterior continua valendo).
+   #app e #loginScreen já usam min-height:100vh na regra base; aqui só
+   ACRESCENTA a variante dvh por cima, sem remover nada existente. */
+@media(max-width:860px){
+  html body #app:not(.hidden){
+    min-height:100vh!important;
+    min-height:100dvh!important;
+  }
+  html body #loginScreen:not(.hidden){
+    min-height:100vh!important;
+    min-height:100dvh!important;
+  }
+}
+</style>
 <style id="mw-avatar-containment">
 /* Blindagem estrutural dos avatares: a base do arquivo tinha três
    raios de borda diferentes (10px via JS lock, 11px no CSS, 12px em
@@ -13822,6 +14149,16 @@ html body #profileAvatarPreview{border-radius:18px!important}
 html body #mwBottomNav button:active{transform:scale(.88)!important}
 @media(prefers-reduced-motion:reduce){
   html body #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar:hover{filter:none}
+}
+</style>
+<style id="mw-bottomnav-position-nudge">
+/* Ajuste fino pedido: só a posição vertical sobe alguns pixels — nada
+   de tamanho, largura, arredondamento, vidro, animação, espaçamento ou
+   ícones muda aqui, só o "bottom" da regra base (mw-mobile-fix). */
+@media(max-width:860px){
+  html body #mwBottomNav{
+    bottom:calc(16px + env(safe-area-inset-bottom,0px))!important;
+  }
 }
 </style>
 <style id="mw-back-button">
