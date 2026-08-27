@@ -13347,105 +13347,141 @@ html body .mwv2-auth-pane{padding:38px 46px 28px!important}
 }
 </style>
 <style id="mw-bottomnav-instagram">
-/* Bottom nav estilo Instagram: só ícones (sem legenda) + avatar circular
-   no lugar do menu-hambúrguer, cápsula flutuante em Liquid Glass de
-   verdade (tint bem baixo + blur/saturação/brilho altos, não um card
-   azul com opacity reduzida). A barra nunca desaparece — só fica mais
-   compacta e discreta conforme --mw-nav-compact sobe, e volta ao
-   normal ao subir a página. */
+/* Correção de material + física, pedida depois que a primeira versão
+   ainda lia como "cápsula azul com blur" em vez de vidro de verdade.
+
+   MATERIAL: a camada de tint fixo azul-marinho (rgba(20,28,48,...) /
+   rgba(10,15,26,...)) que existia por baixo dos outros gradientes foi
+   removida — mesmo em alfa baixo, ela empurrava a leitura de cor pro
+   azul o tempo inteiro, independente do que estivesse atrás. No lugar
+   entra uma camada neutra (R≈G≈B, sem matiz) que só varia luminosidade;
+   quem dá cor de verdade ao vidro agora é só o backdrop-filter (blur +
+   saturate) enxergando o conteúdo real atrás — um fundo azul atrás
+   continua parecendo azul através do vidro (adaptativo), mas o vidro
+   em si não tem mais cor própria fixa. A "border" sólida também saiu:
+   uma linha de 1px com alfa constante lê como uma borda desenhada;
+   dois anéis via box-shadow inset (um bem por fora, outro por dentro)
+   leem como a borda física de um material. Uma vinheta radial extra
+   (também neutra) cria diferença sutil de luminosidade entre centro e
+   bordas — a "profundidade" pedida, sem gradiente colorido.
+
+   FÍSICA: antes só padding/blur variavam ~2-8px — uma diferença quase
+   imperceptível que balançava sem comprimir de verdade. Agora um
+   conjunto de variáveis (--mw-icon/--mw-avatar/--mw-gap/--mw-pad-x/
+   --mw-pad-y/--mw-btn-w), todas amarradas ao mesmo --mw-nav-compact,
+   mudam juntas e com amplitude real: altura, respiro entre ícones,
+   tamanho do avatar e dos ícones — a cápsula visivelmente fecha ao
+   descer e reabre ao subir. A elasticidade final vem da mola no JS
+   (mw-liquid-nav-scroll), não de uma escala fixa aqui. */
 @media(max-width:860px){
   html body #mwBottomNav button{
     flex-direction:row!important;gap:0!important;font-size:0!important;
-    flex:0 0 auto!important;width:50px!important;
+    flex:0 0 auto!important;width:var(--mw-btn-w)!important;
   }
-  html body #mwBottomNav svg{width:21px!important;height:21px!important}
 }
 html body #mwBottomNav{
+  /* Variáveis únicas que dirigem toda a compressão — um componente só
+     mudando propriedades, nunca uma troca de elementos. */
+  --mw-icon:clamp(14px,calc(22px - var(--mw-nav-compact,0) * 7px),22.5px);
+  --mw-avatar:clamp(25px,calc(38px - var(--mw-nav-compact,0) * 11px),38.6px);
+  --mw-pad-y:clamp(4px,calc(13px - var(--mw-nav-compact,0) * 8px),13.4px);
+  --mw-pad-x:clamp(8px,calc(17px - var(--mw-nav-compact,0) * 8px),17.4px);
+  --mw-gap:clamp(2px,calc(9px - var(--mw-nav-compact,0) * 6px),9.4px);
+  --mw-btn-w:clamp(37px,calc(52px - var(--mw-nav-compact,0) * 13px),52.6px);
+
   /* Largura de conteúdo, centralizada — não esticada de ponta a ponta
-     da tela. Esticar em flex:1 era a causa raiz dos ícones "largados"
-     e do avatar parecendo espremido: cada botão virava uma célula
-     enorme e vazia em vez de um alvo de toque compacto. */
+     da tela. */
   left:50%!important;right:auto!important;
   transform:translateX(-50%)!important;
   width:auto!important;max-width:calc(100vw - 32px);
   align-items:center!important;
-  gap:5px!important;
-  padding:calc(9px - var(--mw-nav-compact,0) * 2px) calc(11px - var(--mw-nav-compact,0) * 2px)!important;
+  gap:var(--mw-gap)!important;
+  padding:var(--mw-pad-y) var(--mw-pad-x)!important;
   border-radius:999px!important;
-  /* Vidro de verdade: tint bem baixo, um brilho radial no canto
-     superior esquerdo simulando refração de luz na superfície, e
-     blur+saturação altos fazendo o trabalho pesado da leitura de
-     "vidro" em vez de uma cor sólida por trás. O background-color
-     precisa virar transparent explicitamente — a regra base mais
-     antiga usa o shorthand "background:#101826", que fixa um
-     background-color sólido escuro por baixo; sem isso aqui, os
-     gradientes translúcidos do modo claro ficavam pintados por cima
-     de um fundo opaco escuro e o vidro nunca ficava claro de verdade. */
   background-color:transparent!important;
-  /* Menos tint ainda — o Liquid Glass do Control Center do iPhone é
-     quase só blur + refração, praticamente sem cor própria por baixo. */
   background-image:
-    radial-gradient(130% 150% at 12% -15%,rgba(255,255,255,.2),transparent 55%),
-    linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.01) 40%,rgba(255,255,255,.04)),
-    linear-gradient(160deg,rgba(20,28,48,calc(.07 + var(--mw-nav-compact,0) * .14)),rgba(10,15,26,calc(.1 + var(--mw-nav-compact,0) * .12)))!important;
-  backdrop-filter:blur(calc(28px + var(--mw-nav-compact,0) * 8px)) saturate(210%) brightness(1.1)!important;
-  -webkit-backdrop-filter:blur(calc(28px + var(--mw-nav-compact,0) * 8px)) saturate(210%) brightness(1.1)!important;
-  /* Duas bordas, como um vidro de verdade tem duas superfícies: uma
-     bem sutil por fora (contorno do card) e outra por dentro (inset),
-     ligeiramente mais visível, marcando onde a "peça de vidro" da
-     navegação começa e termina sem depender só do contraste do fundo. */
-  border:1px solid rgba(255,255,255,calc(.14 - var(--mw-nav-compact,0) * .05))!important;
+    radial-gradient(120% 150% at 16% -25%,rgba(255,255,255,.20),transparent 55%),
+    radial-gradient(150% 170% at 50% 120%,rgba(0,0,0,.10),transparent 62%),
+    linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.008) 45%,rgba(255,255,255,.025)),
+    linear-gradient(160deg,rgba(9,9,11,calc(.045 + var(--mw-nav-compact,0) * .085)),rgba(4,4,6,calc(.075 + var(--mw-nav-compact,0) * .085)))!important;
+  backdrop-filter:blur(calc(26px + var(--mw-nav-compact,0) * 10px)) saturate(190%) brightness(1.06)!important;
+  -webkit-backdrop-filter:blur(calc(26px + var(--mw-nav-compact,0) * 10px)) saturate(190%) brightness(1.06)!important;
+  border:none!important;
   box-shadow:
-    0 12px 32px -18px rgba(0,0,0,calc(.35 + var(--mw-nav-compact,0) * .15)),
-    inset 0 0 0 1px rgba(255,255,255,calc(.16 - var(--mw-nav-compact,0) * .05)),
-    inset 0 1px 0 rgba(255,255,255,calc(.26 - var(--mw-nav-compact,0) * .08)),
-    inset 0 -1px 0 rgba(255,255,255,.03)!important;
+    0 10px 26px -16px rgba(0,0,0,calc(.30 + var(--mw-nav-compact,0) * .12)),
+    inset 0 0 0 1px rgba(255,255,255,calc(.11 - var(--mw-nav-compact,0) * .04)),
+    inset 0 1.5px 0 rgba(255,255,255,calc(.20 - var(--mw-nav-compact,0) * .07)),
+    inset 0 -1px 0 rgba(0,0,0,.05)!important;
   transition:box-shadow .2s ease;
 }
 html body.light #mwBottomNav{
   background-image:
-    radial-gradient(130% 150% at 12% -15%,rgba(255,255,255,.7),transparent 55%),
-    linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,.06) 40%,rgba(255,255,255,.18)),
-    linear-gradient(160deg,rgba(255,255,255,calc(.06 + var(--mw-nav-compact,0) * .12)),rgba(240,246,255,calc(.09 + var(--mw-nav-compact,0) * .11)))!important;
-  border-color:rgba(15,23,42,calc(.07 - var(--mw-nav-compact,0) * .03))!important;
+    radial-gradient(120% 150% at 16% -25%,rgba(255,255,255,.55),transparent 55%),
+    radial-gradient(150% 170% at 50% 120%,rgba(15,23,42,.05),transparent 62%),
+    linear-gradient(180deg,rgba(255,255,255,.30),rgba(255,255,255,.05) 45%,rgba(255,255,255,.12)),
+    linear-gradient(160deg,rgba(255,255,255,calc(.045 + var(--mw-nav-compact,0) * .06)),rgba(240,242,246,calc(.055 + var(--mw-nav-compact,0) * .06)))!important;
   box-shadow:
-    0 12px 28px -18px rgba(30,41,59,.18),
-    inset 0 0 0 1px rgba(15,23,42,.07),
-    inset 0 1px 0 rgba(255,255,255,.7),
-    inset 0 -1px 0 rgba(15,23,42,.03)!important;
+    0 10px 22px -16px rgba(30,41,59,.14),
+    inset 0 0 0 1px rgba(15,23,42,.055),
+    inset 0 1.5px 0 rgba(255,255,255,.55),
+    inset 0 -1px 0 rgba(15,23,42,.035)!important;
 }
 html body #mwBottomNav button{color:rgba(255,255,255,.68)}
 html body.light #mwBottomNav button{color:rgba(15,23,42,.55)}
+/* Botão como uma pequena superfície redonda dentro do vidro — maior
+   que o ícone, dá espaço pro destaque do estado ativo (abaixo) parecer
+   parte do material, não um recorte justo em volta do desenho. */
+html body #mwBottomNav button{
+  height:calc(var(--mw-icon) + 12px)!important;
+  min-height:0!important;
+  border-radius:999px!important;
+  overflow:hidden;
+  transition:background-image .18s ease,box-shadow .18s ease;
+}
 /* Ícone com dois estados desenhados de verdade — contorno translúcido
    quando inativo, preenchimento branco quando ativo — em vez de um
    fundo/círculo/quadrado aparecendo atrás do ícone. Os dois SVGs
    ocupam a mesma célula (grid) e fazem crossfade com uma pequena
    elasticidade de escala. */
-html body #mwBottomNav .mwnav-icon{position:relative;display:grid;place-items:center;width:21px;height:21px}
-html body #mwBottomNav .mwnav-icon svg{grid-area:1/1;width:21px;height:21px;transition:opacity .28s ease,transform .32s cubic-bezier(.34,1.5,.64,1)}
+html body #mwBottomNav .mwnav-icon{position:relative;display:grid;place-items:center;width:var(--mw-icon);height:var(--mw-icon)}
+html body #mwBottomNav .mwnav-icon svg{grid-area:1/1;width:var(--mw-icon);height:var(--mw-icon);transition:opacity .28s ease,transform .32s cubic-bezier(.34,1.5,.64,1)}
 html body #mwBottomNav .mwnav-icon-line{opacity:1;transform:scale(1)}
 html body #mwBottomNav .mwnav-icon-solid{opacity:0;transform:scale(.72);filter:drop-shadow(0 1px 2px rgba(0,0,0,.28))}
 html body #mwBottomNav button.active .mwnav-icon-line{opacity:0;transform:scale(1.15)}
 html body #mwBottomNav button.active .mwnav-icon-solid{opacity:1;transform:scale(1)}
-html body #mwBottomNav button.active{background:transparent!important;box-shadow:none!important}
+/* Estado ativo: uma pequena alteração na própria superfície do vidro —
+   um highlight translúcido + anel sutil — não um botão/círculo sólido
+   atrás do ícone. */
+html body #mwBottomNav button.active{
+  background-image:radial-gradient(150% 220% at 50% 8%,rgba(255,255,255,.10),rgba(255,255,255,.01) 72%)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.07),
+    inset 0 1px 0 rgba(255,255,255,.15)!important;
+}
+html body.light #mwBottomNav button.active{
+  background-image:radial-gradient(150% 220% at 50% 8%,rgba(15,23,42,.055),rgba(15,23,42,.006) 72%)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(15,23,42,.05),
+    inset 0 1px 0 rgba(255,255,255,.45)!important;
+}
 /* Avatar no lugar do antigo ícone de menu — mesmo comportamento de
-   clique (abre a gaveta lateral), só a aparência muda. Tamanho fixo
-   (não anima com o compact) pra nunca reduzir a área de toque, e
-   align-items:center no container garante que ele fique exatamente
-   no mesmo eixo vertical dos ícones ao lado, mesmo tendo altura
-   diferente dos botões. */
+   clique (abre a gaveta lateral), só a aparência muda. Agora também
+   participa da compressão (tamanho ligado a --mw-avatar), como parte
+   do mesmo material comprimindo, não um elemento à parte — e o
+   preenchimento de reserva (sem foto) deixou de ser azul: é um
+   translúcido neutro, igual ao resto do vidro. */
 html body #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar{
-  flex:0 0 auto!important;width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important;
+  flex:0 0 auto!important;width:var(--mw-avatar)!important;height:var(--mw-avatar)!important;min-width:var(--mw-avatar)!important;min-height:var(--mw-avatar)!important;
   border-radius:50%!important;overflow:hidden;
   display:grid;place-items:center;margin:0!important;
-  background-color:rgba(56,99,235,.28);background-size:cover!important;background-position:center!important;
+  background-color:rgba(255,255,255,.14);background-size:cover!important;background-position:center!important;
   font-size:12.5px!important;font-weight:800;letter-spacing:.01em;color:#eaf6ff;
-  border:1.5px solid rgba(255,255,255,calc(.4 - var(--mw-nav-compact,0) * .16));
+  border:1.5px solid rgba(255,255,255,calc(.36 - var(--mw-nav-compact,0) * .14));
   box-shadow:0 0 0 0 rgba(255,255,255,0);
   transition:border-color .2s ease,box-shadow .3s ease;
 }
 html body.light #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar{
-  color:#0b1830;border-color:rgba(15,23,42,calc(.22 - var(--mw-nav-compact,0) * .1));
+  color:#0b1830;background-color:rgba(15,23,42,.08);border-color:rgba(15,23,42,calc(.20 - var(--mw-nav-compact,0) * .09));
 }
 /* Toque no avatar: um anel translúcido pulsa e some — nada de borda
    azul grossa, é o próprio vidro reagindo ao toque. */
@@ -13465,23 +13501,53 @@ html body #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar.mw-avatar-pressed{
      negativo subindo), sem threshold binário — pequenas oscilações só
      empurram o acumulador um pouco, nunca alternam um estado on/off.
      Funciona com touch, mouse wheel, trackpad, arrastar a scrollbar e
-     teclado, porque todos eles disparam o evento nativo "scroll". */
+     teclado, porque todos eles disparam o evento nativo "scroll".
+
+     A versão anterior usava um lerp simples (current += (target -
+     current) * 0.12): isso NUNCA ultrapassa o alvo, então por mais que
+     a amplitude visual (CSS) fosse pequena, o movimento também não
+     tinha nenhum caráter de mola — só desacelerava suavemente até
+     parar, o que lê como "elástico" sem nunca ter comprimido de
+     verdade. Trocado por uma mola massa-mola-amortecedor de verdade
+     (levemente subamortecida, ~5% de ultrapassagem no acerto): o
+     grosso do movimento é a própria mola perseguindo o alvo — essa É a
+     compressão — e só no instante de assentar ela passa um pouco do
+     alvo e volta, e essa pontinha final é a elasticidade (o
+     acabamento, não o movimento inteiro). */
   const html = document.documentElement;
   const main = document.querySelector('#app .main');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const DIST = 170;
   const TOP_RESET = 16;
-  let lastY = 0, accum = 0, target = 0, current = 0, raf = null;
+  const STIFFNESS = 210;
+  const DAMPING = 16;
+  let lastY = 0, accum = 0, target = 0, current = 0, velocity = 0, raf = null;
 
   const getY = () => Math.max(main ? main.scrollTop : 0, window.scrollY || document.documentElement.scrollTop || 0);
 
   const loop = () => {
-    const ease = reduceMotion ? 1 : 0.12;
-    current += (target - current) * ease;
-    if (Math.abs(target - current) < 0.001) current = target;
-    html.style.setProperty('--mw-nav-compact', current.toFixed(3));
-    if (current !== target) raf = requestAnimationFrame(loop);
-    else raf = null;
+    if (reduceMotion) {
+      current = target;
+      html.style.setProperty('--mw-nav-compact', current.toFixed(3));
+      raf = null;
+      return;
+    }
+    const dt = 1 / 60;
+    const force = (target - current) * STIFFNESS - velocity * DAMPING;
+    velocity += force * dt;
+    current += velocity * dt;
+    // Margem pequena além de [0,1] pra mola poder ultrapassar o alvo de
+    // verdade (a elasticidade), sem nunca disparar pra um valor absurdo.
+    current = Math.max(-0.08, Math.min(1.1, current));
+    html.style.setProperty('--mw-nav-compact', current.toFixed(4));
+    if (Math.abs(target - current) > 0.0015 || Math.abs(velocity) > 0.002) {
+      raf = requestAnimationFrame(loop);
+    } else {
+      current = target;
+      velocity = 0;
+      html.style.setProperty('--mw-nav-compact', current.toFixed(4));
+      raf = null;
+    }
   };
 
   const update = () => {
@@ -13686,12 +13752,49 @@ html body #app.mw-mobile-open .topbar.topbar{z-index:1!important}
    conteúdo: <html> nunca teve uma cor de fundo própria (só <body>
    tinha). Como html é o elemento que efetivamente rola agora (ver
    mw-mobile-fix, overflow-y:auto só nele), qualquer overscroll/rubber
-   band no iOS expõe o fundo padrão do navegador atrás dele — preto —
-   em vez do fundo real do app. Referenciar a mesma variável de tema
-   usada pelo body garante que os dois fiquem sempre idênticos, sem
-   precisar duplicar cada override de tema manualmente. */
+   band no iOS expõe o fundo do próprio html atrás dele em vez do
+   fundo real do app. Um valor fixo aqui (mesmo lendo --mw-bg) sempre
+   fica dessincronizado: o arquivo tem várias definições concorrentes
+   de --mw-bg (nenhuma delas com uma variante para body.light) e o
+   fundo real do #app é definido em outro lugar, direto em hex, sem
+   passar por --mw-bg — então esse valor fixo não acompanha a troca de
+   tema. Confirmado por medição: em modo claro o html continuava
+   rgb(7,9,22) (escuro) enquanto o #app já estava rgb(238,241,246)
+   (claro) — exatamente a área preta/escura aparecendo sobre um app
+   claro. O valor aqui é só o estado inicial antes do JS (abaixo)
+   assumir e manter isso sincronizado de verdade em qualquer tema. */
 html{background:var(--mw-bg,#0b0c0e)!important}
 </style>
+<script id="mw-html-background-sync-js">
+(() => {
+  /* Em vez de adivinhar qual variável/hex vence a cascata pro fundo
+     real do app (o arquivo tem dezenas de regras concorrentes ao
+     longo do histórico), lê o background-color já computado do que
+     está realmente visível (#app ou a tela de login) e aplica esse
+     valor exato no <html> — sempre em sincronia com o tema atual,
+     sem precisar duplicar cada override manualmente. */
+  const html = document.documentElement;
+  const pickSource = () => {
+    const app = document.getElementById('app');
+    if (app && !app.classList.contains('hidden')) return app;
+    const login = document.getElementById('loginScreen');
+    if (login && !login.classList.contains('hidden')) return login;
+    return document.body;
+  };
+  const sync = () => {
+    const src = pickSource();
+    const bg = getComputedStyle(src).backgroundColor;
+    if (bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent') {
+      html.style.setProperty('background-color', bg, 'important');
+    }
+  };
+  sync();
+  new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  const app = document.getElementById('app');
+  if (app) new MutationObserver(sync).observe(app, { attributes: true, attributeFilter: ['class'] });
+  window.addEventListener('storage', sync);
+})();
+</script>
 <style id="mw-avatar-containment">
 /* Blindagem estrutural dos avatares: a base do arquivo tinha três
    raios de borda diferentes (10px via JS lock, 11px no CSS, 12px em
