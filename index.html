@@ -7146,9 +7146,9 @@ img,svg,video,canvas{max-width:100%}
     nav = document.createElement('nav');
     nav.id = 'mwBottomNav';
     nav.innerHTML = `
-      <button type="button" data-view="home" class="active" aria-label="Início"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.7 2.6 10.4V21h6.7v-6.3h5.4V21h6.7V10.4L12 2.7Z"/><path d="M9.3 21v-5.6h5.4V21Z" opacity=".4"/></svg></button>
-      <button type="button" data-view="college" aria-label="Faculdade"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 1.6 8.3 12 13.6l8.7-4.4V15h1.7V8.3L12 3Z"/><path d="M5.6 10.9v4.3c0 1.9 2.9 3.4 6.4 3.4s6.4-1.5 6.4-3.4v-4.3l-6.4 3.3-6.4-3.3Z" opacity=".4"/></svg></button>
-      <button type="button" data-view="notes" aria-label="Notas"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.5 2.2h7.6l5.4 5.4V21.8h-13V2.2Z"/><path d="M14.1 2.2v5.4h5.4Z" opacity=".4"/></svg></button>
+      <button type="button" data-view="home" class="active" aria-label="Início"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.6 12 3.4l8.5 7.2"/><path d="M5.6 9.7V20a1 1 0 0 0 1 1h3.7v-5.8h3.4V21h3.7a1 1 0 0 0 1-1V9.7"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M12 2.7 2.6 10.4V21h6.7v-6.3h5.4V21h6.7V10.4L12 2.7Z"/></svg></span></button>
+      <button type="button" data-view="college" aria-label="Faculdade"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 2.8 8.7 12 13.4l9.2-4.7L12 4Z"/><path d="M6.6 11.3v4c0 1.7 2.6 3 5.9 3.2 3.3-.2 5.9-1.5 5.9-3.2v-4"/><path d="M20.5 9.4v5.3"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M12 3 1.6 8.3 12 13.6l8.7-4.4V15h1.7V8.3L12 3Z"/><path d="M5.6 10.9v4.3c0 1.9 2.9 3.4 6.4 3.4s6.4-1.5 6.4-3.4v-4.3l-6.4 3.3-6.4-3.3Z" opacity=".55"/></svg></span></button>
+      <button type="button" data-view="notes" aria-label="Notas"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 2.6h7l5.3 5.3v13.5h-12.3V2.6Z"/><path d="M13.5 2.6v5.3h5.3"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M6.5 2.2h7.6l5.4 5.4V21.8h-13V2.2Z"/><path d="M14.1 2.2v5.4h5.4Z" opacity=".55"/></svg></span></button>
       <button type="button" id="mwBottomMenu" class="mw-bottomnav-avatar" aria-label="Menu"></button>`;
     document.body.appendChild(nav);
   }
@@ -13224,6 +13224,11 @@ html body #app .mw-theme-icon.mw-theme-flash::after{opacity:1!important;transfor
    então nada no conteúdo abaixo reflui/pula durante a rolagem. */
 html:root{--mw-nav-compact:0}
 html body #app .topbar.topbar{
+  /* background-color precisa ser transparent explicitamente — outras
+     regras mais antigas usam o shorthand "background:#202327" (ou
+     rgba sólido), o que fixa um background-color opaco por baixo dos
+     gradientes translúcidos daqui e arruinava o vidro no modo claro. */
+  background-color:transparent!important;
   background-image:
     linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.02) 45%,rgba(255,255,255,.05)),
     linear-gradient(105deg,rgba(10,26,48,calc(.22 + var(--mw-nav-compact,0) * .22)),rgba(16,46,78,calc(.18 + var(--mw-nav-compact,0) * .2)))!important;
@@ -13365,40 +13370,49 @@ html body #mwBottomNav{
   width:auto!important;max-width:calc(100vw - 32px);
   align-items:center!important;
   gap:5px!important;
-  padding:calc(7px - var(--mw-nav-compact,0) * 1.5px) calc(9px - var(--mw-nav-compact,0) * 1.5px)!important;
+  padding:calc(9px - var(--mw-nav-compact,0) * 2px) calc(11px - var(--mw-nav-compact,0) * 2px)!important;
   border-radius:999px!important;
+  /* Vidro de verdade: tint bem baixo, um brilho radial no canto
+     superior esquerdo simulando refração de luz na superfície, e
+     blur+saturação altos fazendo o trabalho pesado da leitura de
+     "vidro" em vez de uma cor sólida por trás. O background-color
+     precisa virar transparent explicitamente — a regra base mais
+     antiga usa o shorthand "background:#101826", que fixa um
+     background-color sólido escuro por baixo; sem isso aqui, os
+     gradientes translúcidos do modo claro ficavam pintados por cima
+     de um fundo opaco escuro e o vidro nunca ficava claro de verdade. */
+  background-color:transparent!important;
   background-image:
-    linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.02) 45%,rgba(255,255,255,.06)),
-    linear-gradient(160deg,rgba(20,28,48,calc(.24 + var(--mw-nav-compact,0) * .16)),rgba(10,15,26,calc(.28 + var(--mw-nav-compact,0) * .14)))!important;
-  backdrop-filter:blur(calc(20px + var(--mw-nav-compact,0) * 8px)) saturate(180%) brightness(1.05)!important;
-  -webkit-backdrop-filter:blur(calc(20px + var(--mw-nav-compact,0) * 8px)) saturate(180%) brightness(1.05)!important;
-  border:1px solid rgba(255,255,255,calc(.2 - var(--mw-nav-compact,0) * .08))!important;
-  box-shadow:0 10px 30px -16px rgba(0,0,0,calc(.4 + var(--mw-nav-compact,0) * .15)),inset 0 1px 0 rgba(255,255,255,calc(.22 - var(--mw-nav-compact,0) * .08)),inset 0 -1px 0 rgba(255,255,255,.04)!important;
+    radial-gradient(130% 150% at 12% -15%,rgba(255,255,255,.22),transparent 55%),
+    linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.015) 40%,rgba(255,255,255,.05)),
+    linear-gradient(160deg,rgba(20,28,48,calc(.13 + var(--mw-nav-compact,0) * .15)),rgba(10,15,26,calc(.17 + var(--mw-nav-compact,0) * .13)))!important;
+  backdrop-filter:blur(calc(26px + var(--mw-nav-compact,0) * 8px)) saturate(200%) brightness(1.08)!important;
+  -webkit-backdrop-filter:blur(calc(26px + var(--mw-nav-compact,0) * 8px)) saturate(200%) brightness(1.08)!important;
+  border:1px solid rgba(255,255,255,calc(.24 - var(--mw-nav-compact,0) * .09))!important;
+  box-shadow:0 12px 32px -18px rgba(0,0,0,calc(.35 + var(--mw-nav-compact,0) * .15)),inset 0 1px 0 rgba(255,255,255,calc(.28 - var(--mw-nav-compact,0) * .08)),inset 0 -1px 0 rgba(255,255,255,.04)!important;
   transition:box-shadow .2s ease;
 }
 html body.light #mwBottomNav{
   background-image:
-    linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.15) 45%,rgba(255,255,255,.3)),
-    linear-gradient(160deg,rgba(255,255,255,calc(.16 + var(--mw-nav-compact,0) * .14)),rgba(240,246,255,calc(.2 + var(--mw-nav-compact,0) * .14)))!important;
-  border-color:rgba(15,23,42,calc(.1 - var(--mw-nav-compact,0) * .04))!important;
+    radial-gradient(130% 150% at 12% -15%,rgba(255,255,255,.75),transparent 55%),
+    linear-gradient(180deg,rgba(255,255,255,.46),rgba(255,255,255,.1) 40%,rgba(255,255,255,.24)),
+    linear-gradient(160deg,rgba(255,255,255,calc(.1 + var(--mw-nav-compact,0) * .13)),rgba(240,246,255,calc(.14 + var(--mw-nav-compact,0) * .12)))!important;
+  border-color:rgba(15,23,42,calc(.09 - var(--mw-nav-compact,0) * .03))!important;
 }
-html body #mwBottomNav button svg{
-  transform:scale(calc(1 - var(--mw-nav-compact,0) * .09));
-}
-/* Estado ativo como uma "lasca" de vidro se movendo, não um círculo
-   azul sólido: highlight translúcido com blur e brilho no topo. */
-html body #mwBottomNav button.active{
-  background:linear-gradient(160deg,rgba(255,255,255,.26),rgba(255,255,255,.07))!important;
-  -webkit-backdrop-filter:blur(8px) saturate(160%)!important;
-  backdrop-filter:blur(8px) saturate(160%)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 -6px 10px -6px rgba(0,0,0,.25),0 2px 10px -4px rgba(0,0,0,.3)!important;
-  color:#fff!important;
-}
-html body.light #mwBottomNav button.active{
-  background:linear-gradient(160deg,rgba(37,99,235,.22),rgba(37,99,235,.08))!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 2px 10px -4px rgba(37,99,235,.25)!important;
-  color:#1d3a8a!important;
-}
+html body #mwBottomNav button{color:rgba(255,255,255,.68)}
+html body.light #mwBottomNav button{color:rgba(15,23,42,.55)}
+/* Ícone com dois estados desenhados de verdade — contorno translúcido
+   quando inativo, preenchimento branco quando ativo — em vez de um
+   fundo/círculo/quadrado aparecendo atrás do ícone. Os dois SVGs
+   ocupam a mesma célula (grid) e fazem crossfade com uma pequena
+   elasticidade de escala. */
+html body #mwBottomNav .mwnav-icon{position:relative;display:grid;place-items:center;width:21px;height:21px}
+html body #mwBottomNav .mwnav-icon svg{grid-area:1/1;width:21px;height:21px;transition:opacity .28s ease,transform .32s cubic-bezier(.34,1.5,.64,1)}
+html body #mwBottomNav .mwnav-icon-line{opacity:1;transform:scale(1)}
+html body #mwBottomNav .mwnav-icon-solid{opacity:0;transform:scale(.72);filter:drop-shadow(0 1px 2px rgba(0,0,0,.28))}
+html body #mwBottomNav button.active .mwnav-icon-line{opacity:0;transform:scale(1.15)}
+html body #mwBottomNav button.active .mwnav-icon-solid{opacity:1;transform:scale(1)}
+html body #mwBottomNav button.active{background:transparent!important;box-shadow:none!important}
 /* Avatar no lugar do antigo ícone de menu — mesmo comportamento de
    clique (abre a gaveta lateral), só a aparência muda. Tamanho fixo
    (não anima com o compact) pra nunca reduzir a área de toque, e
@@ -13412,14 +13426,21 @@ html body #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar{
   background-color:rgba(56,99,235,.28);background-size:cover!important;background-position:center!important;
   font-size:12.5px!important;font-weight:800;letter-spacing:.01em;color:#eaf6ff;
   border:1.5px solid rgba(255,255,255,calc(.4 - var(--mw-nav-compact,0) * .16));
-  transition:border-color .2s ease;
+  box-shadow:0 0 0 0 rgba(255,255,255,0);
+  transition:border-color .2s ease,box-shadow .3s ease;
 }
 html body.light #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar{
   color:#0b1830;border-color:rgba(15,23,42,calc(.22 - var(--mw-nav-compact,0) * .1));
 }
+/* Toque no avatar: um anel translúcido pulsa e some — nada de borda
+   azul grossa, é o próprio vidro reagindo ao toque. */
+html body #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar.mw-avatar-pressed{
+  box-shadow:0 0 0 5px rgba(255,255,255,.18);
+}
 @media(prefers-reduced-motion:reduce){
   html body #mwBottomNav{transition:none}
-  html body #mwBottomNav button svg{transform:none!important}
+  html body #mwBottomNav .mwnav-icon svg{transition:opacity .15s linear;transform:none!important}
+  html body #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar{transition:none}
 }
 </style>
 <script id="mw-liquid-nav-scroll">
@@ -13461,6 +13482,19 @@ html body.light #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar{
   main?.addEventListener('scroll', update, { passive:true });
   window.addEventListener('scroll', update, { passive:true });
   update();
+
+  /* Toque no avatar: um anel translúcido pulsa e some sozinho — a
+     mesma lógica de "o vidro respondeu ao toque" usada nos ícones,
+     sem alterar o clique que já abre a gaveta lateral. */
+  const avatarBtn = document.getElementById('mwBottomMenu');
+  if (avatarBtn) {
+    const press = () => avatarBtn.classList.add('mw-avatar-pressed');
+    const release = () => setTimeout(() => avatarBtn.classList.remove('mw-avatar-pressed'), 220);
+    avatarBtn.addEventListener('pointerdown', press);
+    avatarBtn.addEventListener('pointerup', release);
+    avatarBtn.addEventListener('pointercancel', release);
+    avatarBtn.addEventListener('pointerleave', release);
+  }
 })();
 </script>
 <style id="mw-drawer-liquid-glass">
@@ -13495,6 +13529,17 @@ html body.light #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar{
    card "Olá, Mateus" flutuando por cima do drawer. Enquanto a gaveta
    está aberta, a topbar volta a um z-index baixo. */
 html body #app.mw-mobile-open .topbar.topbar{z-index:1!important}
+</style>
+<style id="mw-html-background-fix">
+/* Causa raiz da área preta ao rolar/dar bounce além do fim do
+   conteúdo: <html> nunca teve uma cor de fundo própria (só <body>
+   tinha). Como html é o elemento que efetivamente rola agora (ver
+   mw-mobile-fix, overflow-y:auto só nele), qualquer overscroll/rubber
+   band no iOS expõe o fundo padrão do navegador atrás dele — preto —
+   em vez do fundo real do app. Referenciar a mesma variável de tema
+   usada pelo body garante que os dois fiquem sempre idênticos, sem
+   precisar duplicar cada override de tema manualmente. */
+html{background:var(--mw-bg,#0b0c0e)!important}
 </style>
 <style id="mw-avatar-containment">
 /* Blindagem estrutural dos avatares: a base do arquivo tinha três
