@@ -2980,7 +2980,10 @@ body.light #app .calendar-card .calendar-nav button:hover{
 
     <div class="mw-reference-footer">
       <button type="button" class="mw-reference-row" id="mwSidebarDarkToggle" aria-label="Alternar modo escuro">
-        <span class="mw-row-icon mw-moon-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M21 14.55A9.1 9.1 0 0 1 9.45 3a.95.95 0 0 0-1.22.98 7.35 7.35 0 1 0 11.8 11.8.95.95 0 0 0 .97-1.23z"/></svg></span>
+        <span class="mw-row-icon mw-moon-icon mw-theme-icon" aria-hidden="true">
+          <svg class="mw-theme-icon-sun" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.5v2.4M12 19.1v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/></svg>
+          <svg class="mw-theme-icon-moon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M21 14.55A9.1 9.1 0 0 1 9.45 3a.95.95 0 0 0-1.22.98 7.35 7.35 0 1 0 11.8 11.8.95.95 0 0 0 .97-1.23z"/></svg>
+        </span>
         <span class="mw-row-label label">Modo escuro</span>
         <span class="mw-switch" aria-hidden="true"><i></i></span>
       </button>
@@ -3161,23 +3164,25 @@ body.light #app .calendar-card .calendar-nav button:hover{
 .mw-app-footer-links{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px}
 .mw-app-footer-links button{border:0;background:none;color:var(--muted2);font-size:11px;padding:6px 2px;min-height:28px;cursor:pointer;transition:color .18s ease}
 .mw-app-footer-links button:hover{color:var(--blue2)}
-.mw-app-footer-social{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.mw-app-footer-social{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:4px;border-radius:14px;background:var(--panel2)}
 .mw-app-footer-icon{
-  display:grid;place-items:center;width:34px;height:34px;border:1px solid var(--line);border-radius:10px;
-  background:var(--panel2);color:var(--muted2);flex:0 0 auto;cursor:pointer;
-  transition:transform .2s ease,background .2s ease,border-color .2s ease,color .2s ease;
+  display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:10px;
+  background:transparent;box-shadow:none;appearance:none;-webkit-appearance:none;
+  color:var(--muted2);flex:0 0 auto;cursor:pointer;
+  transition:transform .2s ease,background .2s ease,color .2s ease;
 }
 .mw-app-footer-icon svg{width:15px;height:15px}
-.mw-app-footer-icon:hover{transform:translateY(-2px);color:var(--text)}
-.mw-app-footer-icon[data-social="instagram"]:hover{background:linear-gradient(135deg,rgba(245,133,41,.26),rgba(221,42,123,.3) 45%,rgba(129,52,175,.3) 72%,rgba(81,91,212,.26));border-color:rgba(221,42,123,.45)}
-.mw-app-footer-icon[data-social="facebook"]:hover{background:rgba(56,101,246,.2);border-color:rgba(56,101,246,.5)}
-.mw-app-footer-divider{width:1px;height:24px;background:var(--line);margin:0 2px;flex:0 0 auto}
+.mw-app-footer-icon:hover{transform:translateY(-1px);color:var(--text);background:rgba(127,148,181,.14)}
+.mw-app-footer-icon[data-social="instagram"]:hover{background:linear-gradient(135deg,rgba(245,133,41,.26),rgba(221,42,123,.3) 45%,rgba(129,52,175,.3) 72%,rgba(81,91,212,.26))}
+.mw-app-footer-icon[data-social="facebook"]:hover{background:rgba(56,101,246,.2)}
+.mw-app-footer-divider{width:1px;height:20px;background:var(--line);margin:0 4px;flex:0 0 auto}
 .mw-app-store-badge{
-  display:flex;align-items:center;gap:8px;padding:6px 12px;border-radius:11px;border:1px solid var(--line);
-  background:var(--panel2);color:var(--muted2);cursor:not-allowed;flex:0 0 auto;opacity:.75;
-  transition:opacity .2s ease;
+  display:flex;align-items:center;gap:7px;padding:5px 12px 5px 8px;border-radius:10px;border:0;
+  background:transparent;box-shadow:none;appearance:none;-webkit-appearance:none;
+  color:var(--muted2);cursor:default;flex:0 0 auto;
+  transition:background .2s ease;
 }
-.mw-app-store-badge:hover{opacity:1}
+.mw-app-store-badge:hover{background:rgba(127,148,181,.14)}
 .mw-app-store-badge span{display:flex;flex-direction:column;align-items:flex-start;line-height:1.15;text-align:left}
 .mw-app-store-badge small{font-size:8.5px;color:var(--muted2)}
 .mw-app-store-badge strong{font-size:11px;color:var(--text)}
@@ -3188,8 +3193,8 @@ body.light #app .calendar-card .calendar-nav button:hover{
   z-index:60;backdrop-filter:blur(14px);white-space:nowrap;
 }
 .mw-app-footer-toast.show{opacity:1;transform:translate(-50%,0)}
-body.light .mw-app-footer-icon{background:rgba(15,23,42,.04)}
-body.light .mw-app-store-badge{background:rgba(15,23,42,.04)}
+body.light .mw-app-footer-icon:hover,
+body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
 @media(max-width:760px){
   .mw-app-footer{flex-direction:column;align-items:flex-start;text-align:left;padding:20px 4px 16px}
   .mw-app-footer-social{width:100%}
@@ -10910,24 +10915,14 @@ html body.light .eva-chips button{
   const emailEl = q('#mwSidebarEmail');
   if (emailEl && !emailEl.textContent.trim()) emailEl.textContent = course;
 
-  /* Microfone: pede permissão e transcreve */
+  /* Microfone: a transcrição de verdade já é tratada em outro script
+     (Web Speech API). Chamar getUserMedia aqui também abria um SEGUNDO
+     stream de áudio concorrente com o mesmo microfone, o que corrompia
+     a transcrição (texto saindo embaralhado). Aqui só cobre o caso do
+     navegador não suportar transcrição por voz. */
   const voice = q('#evaVoiceBtn');
-  const input = q('#mateusAiInput');
   const status = q('#mateusAiStatus');
-  const form = q('#mateusAiForm');
   const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (voice) {
-    voice.addEventListener('click', async () => {
-      try {
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-          await navigator.mediaDevices.getUserMedia({ audio: true });
-          if (status) status.textContent = 'Microfone liberado. Pode falar.';
-        }
-      } catch {
-        if (status) status.textContent = 'Permita o microfone no navegador para eu transcrever o que você falar.';
-      }
-    }, { capture: true });
-  }
   if (voice && !Rec && status) {
     voice.addEventListener('click', () => {
       status.textContent = 'Este navegador não transcreve voz. Use Chrome ou Edge, ou escreva no campo.';
@@ -13025,6 +13020,37 @@ html,body{overscroll-behavior-y:none}
 .mw-due-badge.today{background:rgba(250,204,21,.16);color:#fde68a}
 body.light .mw-due-badge.overdue{background:rgba(225,29,72,.12);color:#e11d48}
 body.light .mw-due-badge.today{background:rgba(202,138,4,.14);color:#a16207}
+</style>
+<style id="mw-ai-head-icons">
+/* Os botões de expandir/copiar do cabeçalho da Nyc AI não tinham fundo,
+   raio ou tamanho definidos (só o hover) — cada um ficava com o estilo
+   padrão do navegador, inconsistente entre si e com o botão de fechar
+   ao lado. Agora os três seguem o mesmo padrão visual. */
+#mateusAiModal .eva-fullscreen,
+#mateusAiModal .eva-share{
+  width:34px;height:34px;min-width:34px;border:0;border-radius:10px;
+  background:rgba(255,255,255,.06);color:inherit;
+  display:grid;place-items:center;cursor:pointer;
+}
+body.light #mateusAiModal .eva-fullscreen,
+body.light #mateusAiModal .eva-share{background:rgba(15,23,42,.06)}
+</style>
+<style id="mw-theme-toggle-icons">
+/* Sol no modo claro, lua (estilo "Não Perturbe" do iPhone) no modo
+   escuro — antes era sempre a mesma lua parada, sem indicar o tema
+   atual. Troca com um giro + fade suave, e o botão/interruptor ganham
+   um efeito de toque ao alternar. */
+html body #app .mw-theme-icon{position:relative!important;display:grid!important;place-items:center!important}
+html body #app .mw-theme-icon svg{grid-area:1/1;transition:opacity .3s ease,transform .45s cubic-bezier(.34,1.4,.64,1)}
+html body #app .mw-theme-icon-sun{color:#f5b942;opacity:0;transform:scale(.4) rotate(-45deg)}
+html body #app .mw-theme-icon-moon{color:#5e5ce6;opacity:1;transform:scale(1) rotate(0deg)}
+html body #app.mw-sidebar-collapsed .mw-theme-icon-sun,
+html body #app:not(.mw-sidebar-collapsed) .mw-theme-icon-sun{opacity:0;transform:scale(.4) rotate(-45deg)}
+html body.light #app .mw-theme-icon-sun{opacity:1!important;transform:scale(1) rotate(0deg)!important}
+html body.light #app .mw-theme-icon-moon{opacity:0!important;transform:scale(.4) rotate(45deg)!important}
+html body #app #mwSidebarDarkToggle{transition:background .2s ease,transform .15s ease!important}
+html body #app #mwSidebarDarkToggle:active{transform:scale(.97)!important}
+html body #app #mwSidebarDarkToggle .mw-switch i{transition:transform .38s cubic-bezier(.34,1.56,.64,1)!important}
 </style>
 <script id="mw-search-shortcut">
 (() => {
