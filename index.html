@@ -13512,6 +13512,142 @@ html body #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar.mw-avatar-pressed{
   }
 })();
 </script>
+<style id="mw-bottomnav-lens">
+/* Lente circular de Liquid Glass que segue o arrasto na bottom nav,
+   igual ao gesto de "arrastar pra trocar de aba" do WhatsApp/iOS: uma
+   bolha de vidro maior que a própria barra, com aberração cromática
+   sutil na borda (deslocamento de cor vermelho/azul) e brilho radial
+   simulando refração. Só aparece durante um arrasto real — um toque
+   normal (sem movimento) nunca a mostra, então o clique de sempre
+   continua funcionando exatamente igual. */
+html body #mwBottomNav{position:fixed}
+html body #mwLiquidLens{
+  position:absolute;
+  top:50%;left:0;
+  width:58px;height:58px;
+  margin:-29px 0 0 -29px;
+  border-radius:50%;
+  pointer-events:none;
+  opacity:0;
+  transform:scale(.7);
+  transition:opacity .16s ease,transform .16s cubic-bezier(.34,1.5,.64,1);
+  background-image:radial-gradient(circle at 32% 28%,rgba(255,255,255,.5),rgba(255,255,255,.08) 55%,rgba(255,255,255,.02) 75%);
+  backdrop-filter:blur(3px) saturate(220%) brightness(1.22);
+  -webkit-backdrop-filter:blur(3px) saturate(220%) brightness(1.22);
+  box-shadow:
+    0 8px 20px -8px rgba(0,0,0,.5),
+    inset 0 0 0 1px rgba(255,255,255,.45),
+    -1.5px 0 3px rgba(255,60,120,.4),
+    1.5px 0 3px rgba(60,160,255,.4);
+  z-index:3;
+  will-change:transform,left,opacity;
+}
+html body #mwLiquidLens.mw-lens-show{opacity:1;transform:scale(1)}
+html body.light #mwLiquidLens{
+  background-image:radial-gradient(circle at 32% 28%,rgba(255,255,255,.85),rgba(255,255,255,.25) 55%,rgba(255,255,255,.06) 75%);
+  box-shadow:
+    0 8px 20px -8px rgba(30,41,59,.28),
+    inset 0 0 0 1px rgba(255,255,255,.8),
+    -1.5px 0 3px rgba(255,60,120,.3),
+    1.5px 0 3px rgba(60,160,255,.3);
+}
+/* Ícone/avatar sob a lente reagem exatamente como no estado ativo
+   (mesmo crossfade contorno→preenchimento, mesmo anel do avatar),
+   sem duplicar nenhuma regra visual nova. */
+html body #mwBottomNav button.mw-lens-hover .mwnav-icon-line{opacity:0;transform:scale(1.15)}
+html body #mwBottomNav button.mw-lens-hover .mwnav-icon-solid{opacity:1;transform:scale(1)}
+html body #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar.mw-lens-hover{
+  box-shadow:0 0 0 5px rgba(255,255,255,.18);
+}
+@media(prefers-reduced-motion:reduce){
+  html body #mwLiquidLens{display:none!important}
+}
+</style>
+<script id="mw-bottomnav-lens-js">
+(() => {
+  const nav = document.getElementById('mwBottomNav');
+  if (!nav) return;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduceMotion) return;
+
+  const lens = document.createElement('div');
+  lens.id = 'mwLiquidLens';
+  nav.appendChild(lens);
+
+  const buttons = () => Array.from(nav.querySelectorAll('button'));
+  const THRESHOLD = 8;
+  let startX = 0, startY = 0, startTarget = null, dragging = false, hovered = null, pointerId = null;
+
+  const clearHover = () => { if (hovered) { hovered.classList.remove('mw-lens-hover'); hovered = null; } };
+
+  const nearestButton = (clientX) => {
+    let best = null, bestDist = Infinity;
+    buttons().forEach((btn) => {
+      const r = btn.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const d = Math.abs(clientX - cx);
+      if (d < bestDist) { bestDist = d; best = btn; }
+    });
+    return best;
+  };
+
+  const moveLensTo = (clientX) => {
+    const navRect = nav.getBoundingClientRect();
+    const x = Math.max(0, Math.min(navRect.width, clientX - navRect.left));
+    lens.style.left = x + 'px';
+    const target = nearestButton(clientX);
+    if (target !== hovered) {
+      clearHover();
+      hovered = target;
+      if (hovered) hovered.classList.add('mw-lens-hover');
+    }
+  };
+
+  const endDrag = (navigate) => {
+    lens.classList.remove('mw-lens-show');
+    if (navigate && hovered) hovered.click();
+    clearHover();
+    dragging = false;
+    startTarget = null;
+    pointerId = null;
+  };
+
+  nav.addEventListener('pointerdown', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    startX = e.clientX;
+    startY = e.clientY;
+    startTarget = btn;
+    pointerId = e.pointerId;
+    dragging = false;
+  });
+
+  nav.addEventListener('pointermove', (e) => {
+    if (startTarget === null || e.pointerId !== pointerId) return;
+    const dx = e.clientX - startX, dy = e.clientY - startY;
+    if (!dragging) {
+      if (Math.abs(dx) + Math.abs(dy) < THRESHOLD) return;
+      dragging = true;
+      hovered = startTarget;
+      hovered.classList.add('mw-lens-hover');
+      lens.classList.add('mw-lens-show');
+    }
+    e.preventDefault();
+    moveLensTo(e.clientX);
+  }, { passive: false });
+
+  const onPointerUp = (e) => {
+    if (pointerId === null || e.pointerId !== pointerId) return;
+    if (dragging) e.preventDefault();
+    endDrag(dragging);
+  };
+  nav.addEventListener('pointerup', onPointerUp);
+  nav.addEventListener('pointercancel', () => {
+    if (pointerId === null) return;
+    endDrag(false);
+  });
+})();
+</script>
 <style id="mw-drawer-liquid-glass">
 /* Liquid Glass na gaveta lateral do mobile (o "drawer" que abre pelo
    avatar/menu) — mesma linguagem visual da bottom nav e da topbar
