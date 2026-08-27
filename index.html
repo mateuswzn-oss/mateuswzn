@@ -14308,5 +14308,25 @@ body.light [tabindex]:focus-visible{
 }
 </style>
 
+<style id="mw-drawer-avatar-column-fix">
+/* O avatar da gaveta lateral (perfil, dentro do menu mobile) ficava uns
+   16px mais à esquerda que a logo "MW" e os ícones do menu (Dashboard,
+   Faculdade...) — os três deveriam ocupar a mesma coluna. A causa: uma
+   regra bem antiga (".mw-reference-sidebar .mw-reference-profile
+   .mw-profile-main{padding:2px 3px}") tem, por acaso, mais classes no
+   seletor do que as tentativas mais novas de igualar esse espaçamento,
+   então ela sempre vencia mesmo sendo a mais antiga — especificidade CSS
+   não segue a ordem em que as regras foram escritas. Em vez de um
+   margin-left isolado no avatar, a correção usa a mesma estrutura que já
+   alinha a logo e os ícones do menu: o padding esquerdo do próprio botão
+   que envolve o avatar (mw-profile-main), agora com especificidade maior
+   que a regra antiga, então o eixo vertical do ícone fica idêntico em
+   qualquer plataforma (a lógica é puramente estrutural, não depende de
+   iOS/Android/web). */
+html body #app .mw-reference-sidebar .mw-reference-profile .mw-profile-main{
+  padding-left:19px!important;
+}
+</style>
+
 </body>
 </html>
