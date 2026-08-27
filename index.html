@@ -4106,11 +4106,11 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
    const move=e=>{if(!crop.drag)return;crop.x=crop.ox+(e.clientX-crop.sx);crop.y=crop.oy+(e.clientY-crop.sy);position()};
    const up=()=>{crop.drag=false;stage.classList.remove('dragging')};stage.addEventListener('pointerdown',down);stage.addEventListener('pointermove',move);stage.addEventListener('pointerup',up);stage.addEventListener('pointercancel',up);
    const close=()=>back.remove();back.querySelectorAll('.profile-editor-close,.profile-editor-close2').forEach(b=>b.onclick=close);
-    back.querySelector('.crop-save').onclick=()=>{const out=document.createElement('canvas'),size=512;out.width=size;out.height=size;const ctx=out.getContext('2d');const ring=stage.querySelector('.crop-ring').getBoundingClientRect(),sr=stage.getBoundingClientRect();const cropSize=ring.width;const centerX=sr.left+sr.width/2,centerY=sr.top+sr.height/2;const scaleFactor=size/cropSize;const iw=img.naturalWidth*crop.scale,ih=img.naturalHeight*crop.scale;const imgLeft=sr.left+sr.width/2-iw/2+crop.x,imgTop=sr.top+sr.height/2-ih/2+crop.y;const sx=(centerX-cropSize/2-imgLeft)/crop.scale,sy=(centerY-cropSize/2-imgTop)/crop.scale,sw=cropSize/crop.scale;ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(img,sx,sy,sw,sw,0,0,size,size);const dataUrl=out.toDataURL('image/jpeg',.88);if(photoInput)photoInput.value=dataUrl;setAvatar(dataUrl,q('#profileName')?.value||'Mateus');close()};
+    back.querySelector('.crop-save').onclick=()=>{const out=document.createElement('canvas'),size=512;out.width=size;out.height=size;const ctx=out.getContext('2d');const ring=stage.querySelector('.crop-ring').getBoundingClientRect(),sr=stage.getBoundingClientRect();const cropSize=ring.width;const centerX=sr.left+sr.width/2,centerY=sr.top+sr.height/2;const scaleFactor=size/cropSize;const iw=img.naturalWidth*crop.scale,ih=img.naturalHeight*crop.scale;const imgLeft=sr.left+sr.width/2-iw/2+crop.x,imgTop=sr.top+sr.height/2-ih/2+crop.y;const sx=(centerX-cropSize/2-imgLeft)/crop.scale,sy=(centerY-cropSize/2-imgTop)/crop.scale,sw=cropSize/crop.scale;ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(img,sx,sy,sw,sw,0,0,size,size);const dataUrl=out.toDataURL('image/jpeg',.88);if(photoInput)photoInput.value=dataUrl;const nm=q('#profileName')?.value||'Mateus';setAvatar(dataUrl,nm);try{const raw=JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}');raw.profile={...(raw.profile||{}),photo:dataUrl,name:raw.profile?.name||nm};localStorage.setItem('mateusWorkspaceV4',JSON.stringify(raw));}catch(e){}window.mwSyncAvatars?.();close()};
  }
  choose?.addEventListener('click',()=>fileInput?.click());fileInput?.addEventListener('change',()=>{const f=fileInput.files?.[0];if(!f)return;if(!f.type.startsWith('image/'))return;const r=new FileReader();r.onload=()=>openCrop(r.result);r.readAsDataURL(f)});
  edit?.addEventListener('click',()=>{const src=photoInput?.value||getData().profile?.photo;if(src)openCrop(src);else fileInput?.click()});
-  remove?.addEventListener('click',()=>{if(photoInput)photoInput.value='';setAvatar('',q('#profileName')?.value||'Mateus');fileInput&&(fileInput.value='');try{if(typeof data!=='undefined'){data.profile={...(data.profile||{}),photo:''};persistWorkspace?.();}}catch(e){}});
+  remove?.addEventListener('click',()=>{if(photoInput)photoInput.value='';setAvatar('',q('#profileName')?.value||'Mateus');fileInput&&(fileInput.value='');try{const raw=JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}');raw.profile={...(raw.profile||{}),photo:''};localStorage.setItem('mateusWorkspaceV4',JSON.stringify(raw));}catch(e){}window.mwSyncAvatars?.();});
  q('#saveProfile')?.addEventListener('click',()=>setTimeout(syncProfile,20));
  q('#profileName')?.addEventListener('input',()=>{if(!photoInput?.value)setAvatar('',q('#profileName').value)});
  syncProfile();
@@ -9671,6 +9671,11 @@ html body.light .eva-voice{
   q('#saveProfile')?.addEventListener('click', () => setTimeout(applyPhoto, 60));
   q('#removeProfilePhoto')?.addEventListener('click', () => setTimeout(applyPhoto, 60));
   window.addEventListener('storage', applyPhoto);
+  // Exposto pra qualquer outro ponto do app (ex.: o modal de recorte de
+  // foto) pedir uma resincronização imediata de todos os avatares,
+  // sem esperar o próximo "Salvar" — sempre lê o estado mais atual do
+  // localStorage e busca os elementos de novo (nunca usa referência velha).
+  window.mwSyncAvatars = applyPhoto;
 
   /* Nyc AI: efeito no enviar + copiar conversa + mic visual */
   const form = q('#mateusAiForm');
@@ -13408,6 +13413,39 @@ html body.light #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar{
   update();
 })();
 </script>
+<style id="mw-drawer-liquid-glass">
+/* Liquid Glass na gaveta lateral do mobile (o "drawer" que abre pelo
+   avatar/menu) — mesma linguagem visual da bottom nav e da topbar
+   (gradiente translúcido + blur + borda sutil), mas só nesse contexto
+   de overlay flutuante do celular. A sidebar fixa do desktop continua
+   exatamente como está, sem blur nem transparência. */
+@media(max-width:860px){
+  html body #app aside.sidebar.mw-reference-sidebar.mw-sidebar-polished{
+    background:linear-gradient(165deg,rgba(13,20,34,.86),rgba(6,11,22,.92))!important;
+    backdrop-filter:blur(28px) saturate(150%)!important;
+    -webkit-backdrop-filter:blur(28px) saturate(150%)!important;
+    border-right:1px solid rgba(125,194,255,.14)!important;
+    box-shadow:0 0 60px -12px rgba(2,10,24,.6)!important;
+  }
+  html body.light #app aside.sidebar.mw-reference-sidebar.mw-sidebar-polished{
+    background:linear-gradient(165deg,rgba(255,255,255,.88),rgba(240,246,255,.92))!important;
+    border-right-color:rgba(15,23,42,.1)!important;
+  }
+  /* O scrim por trás da gaveta também ganha um leve blur, reforçando a
+     sensação de vidro separando o drawer do conteúdo atrás dele. */
+  html body #mwSidebarScrim{
+    backdrop-filter:blur(6px)!important;-webkit-backdrop-filter:blur(6px)!important;
+  }
+}
+</style>
+<style id="mw-topbar-drawer-stacking-fix">
+/* O z-index alto da topbar (necessário pra ela ficar acima dos cards
+   isolados do dashboard, corrigindo o menu de notificações) também a
+   colocava acima da gaveta lateral no mobile — abrir o menu deixava o
+   card "Olá, Mateus" flutuando por cima do drawer. Enquanto a gaveta
+   está aberta, a topbar volta a um z-index baixo. */
+html body #app.mw-mobile-open .topbar.topbar{z-index:1!important}
+</style>
 <style id="mw-avatar-containment">
 /* Blindagem estrutural dos avatares: a base do arquivo tinha três
    raios de borda diferentes (10px via JS lock, 11px no CSS, 12px em
