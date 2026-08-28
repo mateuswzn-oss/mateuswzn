@@ -2696,6 +2696,8 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
 .mwv2-forgot{text-align:right;margin:0 0 14px}
 .mwv2-forgot button{border:0;background:none;color:var(--muted2);font-size:10.5px;cursor:pointer}
 .mwv2-forgot button:hover{color:var(--blue2);text-decoration:underline}
+.mwv2-demo-btn{display:block;width:100%;margin-top:10px;border:1px solid rgba(104,171,245,.3);background:rgba(56,189,248,.07);color:#bcdfff;border-radius:100px;height:40px;font-size:11px;letter-spacing:.03em;transition:.2s;box-shadow:none}
+.mwv2-demo-btn:hover{background:rgba(56,189,248,.14);border-color:rgba(104,171,245,.5)}
 #status.status{min-height:16px;margin:2px 0 6px;text-align:left;font-size:11px}
 
 /* Entrar e Criar conta com o MESMO desenho: pílula compacta, sem sombra */
@@ -2891,6 +2893,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
           <div class="mwv2-forgot"><button type="button" id="forgotPasswordLink">Esqueci minha senha</button></div>
 
           <button class="ref-primary" id="loginButton" type="button">ENTRAR</button>
+          <button type="button" id="demoLogin" class="mwv2-demo-btn">Entrar em modo demonstração</button>
           <div class="status" id="status"></div>
         </div>
 
@@ -3855,6 +3858,53 @@ window.toast = toast;
     q('#loginButton').addEventListener('click',()=>authenticate(userInput.value,passInput.value));
   }
   refreshLogin();
+
+  /* MODO DEMONSTRAÇÃO — restaurado exatamente como existia antes do
+     commit 2aa88d5, que o havia removido.
+
+     O que ele é: uma sessão LOCAL de demonstração. Grava um e-mail
+     demo em localStorage e revela o app. Não autentica nada, não fala
+     com backend, não cria usuário real e não toca em senha.
+
+     O que ele NÃO é: um caminho de autenticação. A separação entre
+     demonstração e login real é mantida por uma marca própria
+     (mwDemoSession), usada só pra sinalizar visualmente o estado — ela
+     nunca concede permissão nem substitui verificação de credencial. */
+  const MW_DEMO_EMAIL='demo@mateus.workspace';
+  const demoBtn=q('#demoLogin');
+  if(demoBtn){
+    const cleanDemo=demoBtn.cloneNode(true);
+    demoBtn.replaceWith(cleanDemo);
+    cleanDemo.addEventListener('click',e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      if(cleanDemo.dataset.busy==='1') return;
+      cleanDemo.dataset.busy='1';
+      try{
+        localStorage.setItem('mwSession','1');
+        localStorage.setItem('mateusActiveUserV2',MW_DEMO_EMAIL);
+        localStorage.setItem('mwLastEmail',MW_DEMO_EMAIL);
+        localStorage.setItem('mwDemoSession','1');
+        const screen=q('#loginScreen');
+        const app=q('#app');
+        if(screen) screen.classList.add('hidden');
+        if(app){app.classList.remove('hidden');app.style.display='';}
+        const h=q('.hello h2');
+        if(h) h.textContent='Olá, Mateus!';
+        notify('');
+        window.mwSyncDemoBadge?.();
+      }catch(err){
+        notify('Não foi possível abrir o modo demonstração. Tente novamente.',true);
+        console.error('Modo demonstração:',err);
+      }finally{
+        cleanDemo.dataset.busy='0';
+      }
+    },{once:false});
+  }
+  /* Entrar de verdade (ou sair) encerra a marca de demonstração, pra que
+     uma sessão real nunca herde o rótulo de demo. */
+  q('#loginButton')?.addEventListener('click',()=>{ try{ localStorage.removeItem('mwDemoSession'); }catch{} });
+  q('#logout')?.addEventListener('click',()=>{ try{ localStorage.removeItem('mwDemoSession'); }catch{} });
 
   q('#togglePassword')?.addEventListener('click',()=>{const show=passInput.type==='password';passInput.type=show?'text':'password';q('#togglePassword').textContent=show?'◉':'◌'});
 
@@ -15331,6 +15381,57 @@ html.mw-kb-open,html.mw-kb-open body{overscroll-behavior-y:auto!important}
       if (!shrunk && open && !isField(document.activeElement)) setOpen(false);
     }, { passive: true });
   }
+})();
+</script>
+
+<style id="mw-demo-mode">
+/* Regras de layout do botão de demonstração que existiam antes da
+   remoção (commit 2aa88d5), restauradas na íntegra. */
+@media(max-width:860px){
+  #loginScreen.reference-login #demoLogin{display:block!important;width:100%!important;text-align:center!important;font-size:14px!important;padding:12px!important;min-height:44px!important}
+}
+#loginScreen #demoLogin{position:relative;z-index:6}
+
+/* Separação explícita entre DEMONSTRAÇÃO e sessão real. O modo demo
+   sempre foi apenas uma sessão local — ele não autentica, não fala com
+   backend e não cria usuário. Antes isso não aparecia em lugar nenhum
+   depois de entrar. Agora uma faixa discreta marca o estado, pra que
+   protótipo nunca seja confundido com funcionalidade real. */
+html body #mwDemoBadge{
+  position:fixed;left:50%;transform:translateX(-50%);
+  top:calc(6px + env(safe-area-inset-top,0px));
+  z-index:120;pointer-events:none;
+  display:none;align-items:center;gap:6px;
+  padding:4px 11px;border-radius:999px;
+  font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  color:#fbbf24;background:rgba(245,158,11,.14);
+  border:1px solid rgba(245,158,11,.34);
+  backdrop-filter:blur(14px) saturate(160%);
+  -webkit-backdrop-filter:blur(14px) saturate(160%);
+}
+html body.mw-demo-session #mwDemoBadge{display:flex}
+html body.light #mwDemoBadge{color:#92400e;background:rgba(217,119,6,.12);border-color:rgba(217,119,6,.30)}
+</style>
+<script id="mw-demo-mode-js">
+(() => {
+  /* Sinaliza a sessão de demonstração. Só leitura de uma marca local e
+     uma classe no body — não altera autenticação, permissão nem dado. */
+  const badge = document.createElement('div');
+  badge.id = 'mwDemoBadge';
+  badge.setAttribute('aria-live', 'polite');
+  badge.textContent = 'Modo demonstração';
+  document.body.appendChild(badge);
+
+  const sync = () => {
+    let demo = false;
+    try { demo = localStorage.getItem('mwDemoSession') === '1'; } catch {}
+    const inApp = !document.getElementById('app')?.classList.contains('hidden');
+    document.body.classList.toggle('mw-demo-session', demo && inApp);
+  };
+  window.mwSyncDemoBadge = sync;
+  sync();
+  const app = document.getElementById('app');
+  if (app) new MutationObserver(sync).observe(app, { attributes: true, attributeFilter: ['class'] });
 })();
 </script>
 
