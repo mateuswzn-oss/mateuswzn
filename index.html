@@ -2703,8 +2703,6 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
   width:100%;height:52px;margin-top:4px;border-radius:100px!important;
   font-size:11.5px;letter-spacing:.12em;box-shadow:none!important;
 }
-.mwv2-demo-btn{display:block;width:100%;margin-top:10px;border:1px solid rgba(104,171,245,.3);background:rgba(56,189,248,.07);color:#bcdfff;border-radius:100px;height:40px;font-size:11px;letter-spacing:.03em;transition:.2s;box-shadow:none}
-.mwv2-demo-btn:hover{background:rgba(56,189,248,.14);border-color:rgba(104,171,245,.5)}
 #inlineCreateError.form-error{min-height:14px;margin:0 0 8px;font-size:11px}
 #inlineCreateForm{display:flex;flex-direction:column}
 #inlineCreateForm .mw-original-car-btn,
@@ -2893,7 +2891,6 @@ body.light .mw-faceid-gate-card p{color:#526988}
           <div class="mwv2-forgot"><button type="button" id="forgotPasswordLink">Esqueci minha senha</button></div>
 
           <button class="ref-primary" id="loginButton" type="button">ENTRAR</button>
-          <button type="button" id="demoLogin" class="mwv2-demo-btn">Entrar em modo demonstração</button>
           <div class="status" id="status"></div>
         </div>
 
@@ -3069,8 +3066,8 @@ body.light .mw-faceid-gate-card p{color:#526988}
 
     <div class="mw-reference-profile" id="mwSidebarProfile">
       <button type="button" class="mw-profile-main" id="mwSidebarProfileBtn" aria-label="Abrir perfil">
-        <span class="mw-profile-avatar" id="mwSidebarAvatar">MW</span>
-        <span class="mw-profile-copy label"><strong id="mwSidebarName">Mateus</strong><small id="mwSidebarEmail">Engenharia de Software</small></span>
+        <span class="mw-avatar-wrap" aria-hidden="true"><span class="mw-profile-avatar" id="mwSidebarAvatar">MW</span><span class="mw-online-dot"></span></span>
+        <span class="mw-profile-copy label"><strong id="mwSidebarName">Mateus</strong><small id="mwSidebarEmail">Engenharia de Software</small><span class="mw-online-label"><i class="mw-online-label-dot" aria-hidden="true"></i>Online</span></span>
       </button>
     </div>
 
@@ -3085,6 +3082,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
       <button data-view="notes"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 2.8h7.4c.4 0 .8.16 1.1.44l3.26 3.26c.28.28.44.66.44 1.06V17.8A3.2 3.2 0 0 1 16 21H7A3.2 3.2 0 0 1 3.8 17.8V6A3.2 3.2 0 0 1 7 2.8zm7.6 1.5v2.7c0 .5.4.9.9.9h2.7l-3.6-3.6z"/><path d="M15.05 11.2 9.2 17.05c-.14.14-.32.24-.52.28l-2.12.42a.55.55 0 0 1-.65-.65l.42-2.12c.04-.2.14-.38.28-.52l5.85-5.85a1.55 1.55 0 0 1 2.19 2.19z"/><path d="M8.2 11.6h4.4a.7.7 0 1 0 0-1.4H8.2a.7.7 0 1 0 0 1.4z" opacity=".35"/></svg></span><span class="label">Anotações</span></button>
       <button data-view="files"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.2 2.8h6.2c.4 0 .8.16 1.1.44l4.26 4.26c.28.28.44.66.44 1.06v9.24A4.2 4.2 0 0 1 15 22H7.2A4.2 4.2 0 0 1 3 17.8V7A4.2 4.2 0 0 1 7.2 2.8zm6.4 1.6v3.4c0 .6.5 1.1 1.1 1.1h3.4l-4.5-4.5z"/></svg></span><span class="label">Arquivos</span></button>
       <button data-view="support" id="mwNavSupport"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.4"/><path d="M5.2 5.2l3.6 3.6M18.8 5.2l-3.6 3.6M5.2 18.8l3.6-3.6M18.8 18.8l-3.6-3.6"/></svg></span><span class="label">Suporte</span></button>
+      <button data-view="admin" id="mwNavAdmin"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd"><path d="M12 2.4c.22 0 .44.04.65.13l6.6 2.75c.72.3 1.15.99 1.15 1.77v6.15c0 4.62-3.2 8.06-7.62 9.98a1.9 1.9 0 0 1-1.56 0C6.8 21.3 3.6 17.86 3.6 13.24V7.05c0-.78.43-1.47 1.15-1.77l6.6-2.75c.21-.09.43-.13.65-.13zm3.68 6.53a.95.95 0 0 0-1.34-.06l-3.5 3.28-1.28-1.26a.95.95 0 1 0-1.34 1.35l1.94 1.9a.95.95 0 0 0 1.32.01l4.16-3.9a.95.95 0 0 0 .04-1.32z"/></svg></span><span class="label">Painel Admin</span></button>
     </nav>
 
     <div class="mw-reference-spacer"></div>
@@ -3224,6 +3222,41 @@ body.light .mw-faceid-gate-card p{color:#526988}
       <div class="settings-group"><h4>Backup</h4><p>Seus dados ficam salvos só neste navegador. Exporte um arquivo de backup pra não perder nada ao trocar de aparelho ou limpar os dados do navegador.</p><div class="profile-actions"><button class="small-btn" id="exportBackup">Exportar backup</button><button class="small-btn" id="importBackupBtn">Importar backup</button><input type="file" id="importBackupFile" accept="application/json" hidden></div><div class="form-error" id="importBackupError"></div></div>
       <div class="settings-group"><h4>Dados</h4><p>Remove disciplinas, atividades, projetos e anotações salvos neste navegador.</p><button class="small-btn danger mw-clear-btn" id="clearAll">Apagar todos os dados</button></div>
     </section></section>
+
+    <section class="view" id="view-admin">
+      <section class="card section mw-admin-warning" role="alert">
+        <div class="mw-admin-warning-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.6 1.9 20.4a1 1 0 0 0 .87 1.5h18.46a1 1 0 0 0 .87-1.5L12 2.6z"/><path d="M12 9.4v4.6"/><circle cx="12" cy="17.2" r="1" fill="currentColor" stroke="none"/></svg></div>
+        <div class="mw-admin-warning-copy">
+          <strong>Protótipo visual — sem proteção real de backend</strong>
+          <p>Esta tela é só a interface do Painel Admin, feita para revisar layout e dados de exemplo. Ela <u>não tem nenhuma autorização real por trás</u>: não existe verificação de papel (role) no servidor, e qualquer pessoa com acesso ao app hoje consegue abrir esta view. <strong>Não conecte dados reais de usuários aqui</strong> até existir um backend que confira <code>role === "admin"</code> em cada requisição antes de responder — nunca uma checagem só no front-end (tipo esconder o botão ou comparar o nome do usuário em JavaScript).</p>
+        </div>
+      </section>
+
+      <section class="card section">
+        <div class="section-head"><h3>Painel Admin</h3><span>Visão geral · dados de exemplo</span></div>
+        <div class="mw-admin-stats">
+          <div class="mw-admin-stat"><span class="mw-admin-stat-label">Usuários registrados</span><strong id="mwAdminStatUsers">—</strong></div>
+          <div class="mw-admin-stat"><span class="mw-admin-stat-label">Online agora</span><strong id="mwAdminStatOnline">—</strong></div>
+          <div class="mw-admin-stat"><span class="mw-admin-stat-label">Último acesso</span><strong id="mwAdminStatLastAccess">—</strong></div>
+          <div class="mw-admin-stat"><span class="mw-admin-stat-label">Status do sistema</span><strong class="mw-admin-status-ok">Operacional</strong></div>
+        </div>
+      </section>
+
+      <section class="card section">
+        <div class="section-head"><h3>Usuários</h3><span>Exemplo — não reflete dados reais de produção</span></div>
+        <div class="mw-admin-table-wrap">
+          <table class="mw-admin-table">
+            <thead><tr><th>Nome</th><th>E-mail</th><th>Papel</th><th>Último acesso</th><th>Status</th></tr></thead>
+            <tbody id="mwAdminUsersBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card section">
+        <div class="section-head"><h3>Logs administrativos</h3><span>Acessos, login/logout e alterações — exemplo</span></div>
+        <ul class="mw-admin-log-list" id="mwAdminLogList"></ul>
+      </section>
+    </section>
 
     <footer class="mw-app-footer">
       <div class="mw-app-footer-brand">
@@ -3790,37 +3823,6 @@ window.toast = toast;
     q('#loginButton').addEventListener('click',()=>authenticate(userInput.value,passInput.value));
   }
   refreshLogin();
-
-  // Demo access — intentionally minimal: no async work, no render loop, no duplicate handlers.
-  const demoBtn=q('#demoLogin');
-  if(demoBtn){
-    const cleanDemo=demoBtn.cloneNode(true);
-    demoBtn.replaceWith(cleanDemo);
-    cleanDemo.addEventListener('click',e=>{
-      e.preventDefault();
-      e.stopPropagation();
-      if(cleanDemo.dataset.busy==='1') return;
-      cleanDemo.dataset.busy='1';
-      try{
-        const demoEmail='demo@mateus.workspace';
-        localStorage.setItem('mwSession','1');
-        localStorage.setItem('mateusActiveUserV2',demoEmail);
-        localStorage.setItem('mwLastEmail',demoEmail);
-        const screen=q('#loginScreen');
-        const app=q('#app');
-        if(screen) screen.classList.add('hidden');
-        if(app){app.classList.remove('hidden');app.style.display='';}
-        const h=q('.hello h2');
-        if(h) h.textContent='Olá, Mateus!';
-        notify('');
-      }catch(err){
-        notify('Não foi possível abrir o modo demonstração. Tente novamente.',true);
-        console.error('Modo demonstração:',err);
-      }finally{
-        cleanDemo.dataset.busy='0';
-      }
-    },{once:false});
-  }
 
   q('#togglePassword')?.addEventListener('click',()=>{const show=passInput.type==='password';passInput.type=show?'text':'password';q('#togglePassword').textContent=show?'◉':'◌'});
 
@@ -7210,7 +7212,6 @@ img,svg,video,canvas{max-width:100%}
   #loginScreen.reference-login .ref-primary,#loginScreen.reference-login .switch-btn{width:100%!important;height:48px!important;min-height:48px!important}
   #loginScreen.reference-login .social-row{display:flex!important;justify-content:center!important;gap:12px!important;margin:14px 0}
   #loginScreen.reference-login .social-icon{width:52px!important;height:52px!important;flex:0 0 52px!important;border-radius:16px!important}
-  #loginScreen.reference-login #demoLogin{display:block!important;width:100%!important;text-align:center!important;font-size:14px!important;padding:12px!important;min-height:44px!important}
   #loginScreen.reference-login .auth-switch-panel{
     position:relative!important;inset:auto!important;width:100%!important;height:auto!important;
     transform:none!important;padding:18px 16px 22px!important;border-left:0!important;
@@ -7417,7 +7418,6 @@ img,svg,video,canvas{max-width:100%}
     width:100% !important; height:auto !important; min-height:0 !important;
     z-index:1 !important;
   }
-  #loginScreen #demoLogin{position:relative; z-index:6;}
   #app.hidden{display:none !important;}
 
   #loginScreen,#loginScreen.reference-login{
@@ -7506,14 +7506,34 @@ img,svg,video,canvas{max-width:100%}
     nav = document.createElement('nav');
     nav.id = 'mwBottomNav';
     nav.innerHTML = `
-      <button type="button" data-view="home" class="active" aria-label="Início"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.6 12 3.4l8.5 7.2"/><path d="M5.6 9.7V20a1 1 0 0 0 1 1h3.7v-5.8h3.4V21h3.7a1 1 0 0 0 1-1V9.7"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M12 2.7 2.6 10.4V21h6.7v-6.3h5.4V21h6.7V10.4L12 2.7Z"/></svg></span></button>
-      <button type="button" data-view="college" aria-label="Faculdade"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 2.8 8.7 12 13.4l9.2-4.7L12 4Z"/><path d="M6.6 11.3v4c0 1.7 2.6 3 5.9 3.2 3.3-.2 5.9-1.5 5.9-3.2v-4"/><path d="M20.5 9.4v5.3"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M12 3 1.6 8.3 12 13.6l8.7-4.4V15h1.7V8.3L12 3Z"/><path d="M5.6 10.9v4.3c0 1.9 2.9 3.4 6.4 3.4s6.4-1.5 6.4-3.4v-4.3l-6.4 3.3-6.4-3.3Z" opacity=".55"/></svg></span></button>
-      <button type="button" data-view="notes" aria-label="Notas"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 2.6h7l5.3 5.3v13.5h-12.3V2.6Z"/><path d="M13.5 2.6v5.3h5.3"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M6.5 2.2h7.6l5.4 5.4V21.8h-13V2.2Z"/><path d="M14.1 2.2v5.4h5.4Z" opacity=".55"/></svg></span></button>
-      <button type="button" id="mwBottomMenu" class="mw-bottomnav-avatar" aria-label="Menu"></button>`;
+      <button type="button" data-view="home" class="active" aria-label="Início"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.6 12 3.4l8.5 7.2"/><path d="M5.6 9.7V20a1 1 0 0 0 1 1h3.7v-5.8h3.4V21h3.7a1 1 0 0 0 1-1V9.7"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M12 2.7 2.6 10.4V21h6.7v-6.3h5.4V21h6.7V10.4L12 2.7Z"/></svg></span><span class="mwnav-label">Início</span></button>
+      <button type="button" data-view="college" aria-label="Faculdade"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 2.8 8.7 12 13.4l9.2-4.7L12 4Z"/><path d="M6.6 11.3v4c0 1.7 2.6 3 5.9 3.2 3.3-.2 5.9-1.5 5.9-3.2v-4"/><path d="M20.5 9.4v5.3"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M12 3 1.6 8.3 12 13.6l8.7-4.4V15h1.7V8.3L12 3Z"/><path d="M5.6 10.9v4.3c0 1.9 2.9 3.4 6.4 3.4s6.4-1.5 6.4-3.4v-4.3l-6.4 3.3-6.4-3.3Z" opacity=".55"/></svg></span><span class="mwnav-label">Faculdade</span></button>
+      <button type="button" data-view="files" aria-label="Arquivos"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 2.6h7l5.3 5.3v13.5h-12.3V2.6Z"/><path d="M13.5 2.6v5.3h5.3"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M6.5 2.2h7.6l5.4 5.4V21.8h-13V2.2Z"/><path d="M14.1 2.2v5.4h5.4Z" opacity=".55"/></svg></span><span class="mwnav-label">Arquivos</span></button>
+      <button type="button" data-ai="1" aria-label="Nick IA"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 14 9.5 20.5 12 14 14.5 12 21 10 14.5 3.5 12 10 9.5 Z"/><path d="M18.5 3.5 19.3 5.7 21.5 6.5 19.3 7.3 18.5 9.5 17.7 7.3 15.5 6.5 17.7 5.7 Z"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M12 2 14.3 9.3 21.6 12 14.3 14.7 12 22 9.7 14.7 2.4 12 9.7 9.3 Z"/><path d="M18.6 3 19.5 5.6 22 6.6 19.5 7.6 18.6 10.2 17.7 7.6 15.2 6.6 17.7 5.6 Z" opacity=".55"/></svg></span><span class="mwnav-label">Nick IA</span></button>
+      <button type="button" id="mwBottomMenu" class="mw-bottomnav-avatar" aria-label="Perfil"><span class="mwnav-label">Perfil</span></button>`;
     document.body.appendChild(nav);
   }
   const avatarMenuBtn = document.getElementById('mwBottomMenu');
-  const MOBILE_NAV_VIEWS = ['home', 'college', 'notes'];
+  const aiNavBtn = nav.querySelector('button[data-ai]');
+  const MOBILE_NAV_VIEWS = ['home', 'college', 'files'];
+  let aiModalOpen = false;
+  // Duas rotinas diferentes de sincronizar o avatar (foto/iniciais) fazem
+  // "el.textContent = ..." neste mesmo botão sempre que o perfil muda —
+  // isso apaga qualquer filho, inclusive o rótulo "Perfil" adicionado
+  // aqui. Em vez de mexer nas duas rotinas, um observador garante que o
+  // rótulo sempre volte, não importa quem limpou o conteúdo por último.
+  if (avatarMenuBtn) {
+    const ensureProfileLabel = () => {
+      if (!avatarMenuBtn.querySelector('.mwnav-label')) {
+        const lbl = document.createElement('span');
+        lbl.className = 'mwnav-label';
+        lbl.textContent = 'Perfil';
+        avatarMenuBtn.appendChild(lbl);
+      }
+    };
+    new MutationObserver(ensureProfileLabel).observe(avatarMenuBtn, { childList: true });
+    ensureProfileLabel();
+  }
   /* Fonte única de verdade pro "quem está ativo" na barra: lê o estado
      real do app (a view atual + se a gaveta lateral está aberta) em vez
      de cada gatilho tentar adivinhar/mexer direto nas classes — assim
@@ -7525,8 +7545,10 @@ img,svg,video,canvas{max-width:100%}
     const drawerOpen = app.classList.contains('mw-mobile-open');
     const currentView = document.querySelector('.view.active')?.id?.replace('view-', '') || 'home';
     const inMobileNav = MOBILE_NAV_VIEWS.includes(currentView);
-    nav.querySelectorAll('button[data-view]').forEach(b => b.classList.toggle('active', inMobileNav && b.dataset.view === currentView));
-    avatarMenuBtn.classList.toggle('mw-avatar-active', drawerOpen || !inMobileNav);
+    nav.querySelectorAll('button[data-view]').forEach(b => b.classList.toggle('active', !aiModalOpen && inMobileNav && b.dataset.view === currentView));
+    aiNavBtn?.classList.toggle('active', aiModalOpen);
+    avatarMenuBtn.classList.toggle('mw-avatar-active', !aiModalOpen && (drawerOpen || !inMobileNav));
+    window.mwNavLensSync?.();
   };
   window.mwSyncBottomNavActive = syncBottomNavActive;
   const syncChrome = () => {
@@ -7547,6 +7569,21 @@ img,svg,video,canvas{max-width:100%}
     document.getElementById('mwMobileMenu')?.click();
     syncChrome();
   });
+  // "Nick IA": não é uma view — abre o modal da Nyc AI e fica marcado como
+  // ativo enquanto ele estiver aberto, voltando pro item real assim que
+  // fechar (pelo X, Esc, clique fora, ou pelo próprio botão da barra).
+  const aiModalEl = document.getElementById('mateusAiModal');
+  aiNavBtn?.addEventListener('click', () => {
+    document.getElementById('mateusAiBtn')?.click();
+    aiModalOpen = true;
+    syncBottomNavActive();
+  });
+  if (aiModalEl) {
+    new MutationObserver(() => {
+      const nowOpen = !aiModalEl.classList.contains('hidden');
+      if (nowOpen !== aiModalOpen) { aiModalOpen = nowOpen; syncBottomNavActive(); }
+    }).observe(aiModalEl, {attributes:true, attributeFilter:['class']});
+  }
 })();
 </script>
 <style id="mw-lupa-sino-eva-palette">
@@ -13778,12 +13815,18 @@ html body .mwv2-auth-pane{padding:38px 46px 28px!important}
 html body #mwBottomNav{
   /* Variáveis únicas que dirigem toda a compressão — um componente só
      mudando propriedades, nunca uma troca de elementos. */
-  --mw-icon:clamp(14px,calc(22px - var(--mw-nav-compact,0) * 7px),22.5px);
-  --mw-avatar:clamp(25px,calc(38px - var(--mw-nav-compact,0) * 11px),38.6px);
-  --mw-pad-y:clamp(4px,calc(13px - var(--mw-nav-compact,0) * 8px),13.4px);
-  --mw-pad-x:clamp(8px,calc(17px - var(--mw-nav-compact,0) * 8px),17.4px);
-  --mw-gap:clamp(2px,calc(9px - var(--mw-nav-compact,0) * 6px),9.4px);
-  --mw-btn-w:clamp(37px,calc(52px - var(--mw-nav-compact,0) * 13px),52.6px);
+  /* Amplitude medida na gravação de referência: a barra inteira encolhe
+     de forma UNIFORME para ~0,83 do tamanho (≈17%), não 40%+. Cada
+     variável abaixo perde exatamente 17% do seu valor cheio, então
+     ícone, avatar, respiro e paddings encolhem juntos, na mesma
+     proporção — é isso que faz parecer uma peça só diminuindo em vez de
+     um menu se achatando. */
+  --mw-icon:clamp(17px,calc(22px - var(--mw-nav-compact,0) * 3.7px),22.5px);
+  --mw-avatar:clamp(30px,calc(38px - var(--mw-nav-compact,0) * 6.5px),38.6px);
+  --mw-pad-y:clamp(9px,calc(13px - var(--mw-nav-compact,0) * 2.2px),13.4px);
+  --mw-pad-x:clamp(13px,calc(17px - var(--mw-nav-compact,0) * 2.9px),17.4px);
+  --mw-gap:clamp(6px,calc(9px - var(--mw-nav-compact,0) * 1.5px),9.4px);
+  --mw-btn-w:clamp(42px,calc(52px - var(--mw-nav-compact,0) * 8.8px),52.6px);
 
   /* Largura de conteúdo, centralizada — não esticada de ponta a ponta
      da tela. */
@@ -13947,37 +13990,76 @@ html body.light #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar::after{
      compressão — e só no instante de assentar ela passa um pouco do
      alvo e volta, e essa pontinha final é a elasticidade (o
      acabamento, não o movimento inteiro). */
+  /* Constantes medidas quadro a quadro na gravação de referência
+     (60fps): a barra vai de escala 1,00 a ~0,83 (≈17% — o CSS aplica
+     essa mesma proporção em ícone, avatar, gaps e paddings), a
+     compressão leva ~330ms, a expansão ~460ms (mais lenta que a
+     compressão), e a ultrapassagem no fim é de meros ~0,6% — quase
+     imperceptível, não um quique.
+
+     ζ (razão de amortecimento) = DAMPING / (2·√STIFFNESS). Com ζ≈0,85 a
+     ultrapassagem teórica é exp(-πζ/√(1-ζ²)) ≈ 0,6%, batendo com o
+     medido. O par stiffness/damping é diferente por direção justamente
+     porque expandir é visivelmente mais lento que comprimir. */
   const html = document.documentElement;
   const main = document.querySelector('#app .main');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const DIST = 170;
   const TOP_RESET = 16;
-  const STIFFNESS = 210;
-  const DAMPING = 16;
-  let lastY = 0, accum = 0, target = 0, current = 0, velocity = 0, raf = null;
+  // Comprimir: ~330ms de acomodação, ζ≈0,85.
+  const K_IN = 245, C_IN = 26.5;
+  // Expandir: ~480ms, mesmo ζ — só mais macio.
+  const K_OUT = 125, C_OUT = 19;
+  // Passo fixo da integração. A mola avança pelo tempo REAL decorrido,
+  // em substeps deste tamanho: assim ela leva os mesmos ~330ms/~480ms
+  // num aparelho a 120fps e num que esteja engasgando a 20fps. Com dt
+  // fixo por quadro (como estava antes), perder quadros deixava a
+  // animação proporcionalmente mais lenta.
+  const STEP = 1 / 120;
+  const MAX_CATCHUP = 0.1;
+  /* Na referência a barra NÃO acompanha a rolagem proporcionalmente:
+     ela troca de estado por direção e segura esse estado enquanto o
+     dedo está parado. Um limiar pequeno pra descer (responde quase na
+     hora) e um um pouco maior pra subir (evita que um solavanco de
+     inércia reabra a barra sozinho). */
+  const DOWN_TRIGGER = 12;
+  const UP_TRIGGER = 42;
+  let lastY = 0, dirAccum = 0, target = 0, current = 0, velocity = 0, raf = null, lastT = 0;
 
   const getY = () => Math.max(main ? main.scrollTop : 0, window.scrollY || document.documentElement.scrollTop || 0);
 
-  const loop = () => {
+  const loop = (now) => {
     if (reduceMotion) {
       current = target;
       html.style.setProperty('--mw-nav-compact', current.toFixed(3));
       raf = null;
       return;
     }
-    const dt = 1 / 60;
-    const force = (target - current) * STIFFNESS - velocity * DAMPING;
-    velocity += force * dt;
-    current += velocity * dt;
-    // Margem pequena além de [0,1] pra mola poder ultrapassar o alvo de
-    // verdade (a elasticidade), sem nunca disparar pra um valor absurdo.
-    current = Math.max(-0.08, Math.min(1.1, current));
+    // Tempo real decorrido desde o quadro anterior, limitado pra que uma
+    // pausa longa (aba em segundo plano) não faça a mola dar um salto.
+    let elapsed = lastT ? Math.min((now - lastT) / 1000, MAX_CATCHUP) : STEP;
+    lastT = now;
+    // A direção do movimento define a rigidez: expandir é mais macio que
+    // comprimir, como na referência.
+    const goingIn = target > current;
+    const k = goingIn ? K_IN : K_OUT;
+    const c = goingIn ? C_IN : C_OUT;
+    while (elapsed > 0) {
+      const dt = Math.min(STEP, elapsed);
+      elapsed -= dt;
+      const force = (target - current) * k - velocity * c;
+      velocity += force * dt;
+      current += velocity * dt;
+    }
+    // Margem mínima além de [0,1]: só o suficiente pra caber a
+    // ultrapassagem de ~0,6% da referência, nada além disso.
+    current = Math.max(-0.03, Math.min(1.03, current));
     html.style.setProperty('--mw-nav-compact', current.toFixed(4));
     if (Math.abs(target - current) > 0.0015 || Math.abs(velocity) > 0.002) {
       raf = requestAnimationFrame(loop);
     } else {
       current = target;
       velocity = 0;
+      lastT = 0;
       html.style.setProperty('--mw-nav-compact', current.toFixed(4));
       raf = null;
     }
@@ -13987,10 +14069,21 @@ html body.light #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar::after{
     const y = getY();
     const delta = y - lastY;
     lastY = y;
-    if (y <= TOP_RESET) accum = 0;
-    else accum = Math.max(0, Math.min(DIST, accum + delta));
-    target = accum / DIST;
-    if (!raf) raf = requestAnimationFrame(loop);
+    if (y <= TOP_RESET) {
+      // No topo a barra está sempre inteira, independente do acumulado.
+      dirAccum = 0;
+      target = 0;
+    } else {
+      // Zera o acumulador ao inverter a direção, pra cada gesto ser
+      // medido a partir do ponto em que ele começou.
+      if ((delta > 0) !== (dirAccum > 0)) dirAccum = 0;
+      dirAccum += delta;
+      if (dirAccum >= DOWN_TRIGGER) target = 1;
+      else if (dirAccum <= -UP_TRIGGER) target = 0;
+      // Entre os dois limiares o alvo permanece como está: parar de
+      // rolar não desfaz nem completa nada sozinho.
+    }
+    if (!raf) { lastT = 0; raf = requestAnimationFrame(loop); }
   };
 
   main?.addEventListener('scroll', update, { passive:true });
@@ -14524,6 +14617,319 @@ html body #app .topbar.topbar{
   padding-top:calc(14px + env(safe-area-inset-top,0px))!important;
 }
 </style>
+
+<style id="mw-login-safe-area-fix">
+/* Mesmo problema já corrigido na .topbar do app: no modo instalado em
+   tela cheia do iOS (sem a barra do Safari), nada empurra o card de
+   login/criar-conta pra baixo da barra de status/Dynamic Island — as
+   abas "Entrar | Criar" (que no mobile viram uma fileira horizontal no
+   topo do card) acabavam coladas atrás do relógio/sinal. env() resolve
+   pra 0px fora desse contexto, então isso não muda nada no Safari
+   normal, Android ou desktop.
+   #loginScreen nunca teve a classe "reference-login" de verdade no
+   HTML — as várias regras ".reference-login" espalhadas pelo arquivo
+   são código morto que nunca chegou a casar com o elemento. Quem
+   realmente vence em mobile é "#loginScreen{padding:20px 16px 28px}"
+   (sem env()), então a correção precisa mirar o seletor real. */
+@media(max-width:860px){
+  html body #loginScreen{
+    padding-top:calc(20px + env(safe-area-inset-top,0px))!important;
+    padding-bottom:calc(28px + env(safe-area-inset-bottom,0px))!important;
+  }
+}
+</style>
+
+<style id="mw-nav-label-reveal">
+/* O nome do item só aparece ao lado do ícone que está ativo — nunca em
+   baixo/cima, nunca nos outros quatro. O botão herdava font-size:0 pra
+   nunca mostrar texto nenhum; aqui devolvemos o tamanho só pro rótulo. */
+html body #mwBottomNav .mwnav-label{
+  display:inline-block;font-size:11.5px!important;font-weight:700;letter-spacing:.01em;
+  white-space:nowrap;max-width:0;margin-left:0;opacity:0;transform:translateX(-4px);
+  overflow:hidden;transition:opacity .28s ease .1s,transform .28s ease .1s;
+}
+html body #mwBottomNav button.active .mwnav-label{
+  max-width:120px;margin-left:7px;opacity:1;transform:translateX(0);
+}
+@media(max-width:860px){
+  html body #mwBottomNav button.active{
+    width:auto!important;padding:0 15px!important;gap:0!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  html body #mwBottomNav .mwnav-label{transition:opacity .15s ease!important;transform:none!important}
+}
+</style>
+
+<style id="mw-nav-active-lens">
+/* Lente única que desliza fisicamente entre os itens (em vez de cada
+   botão ligar/desligar seu próprio destaque no lugar) — o mesmo vidro
+   que já existia por trás do item ativo, só que agora como um objeto
+   compartilhado que se move, comprime e expande ao trocar de item. */
+html body #mwNavActiveLens{
+  position:absolute;left:0;top:var(--mw-pad-y,10px);
+  height:calc(var(--mw-icon,22px) + 12px);
+  border-radius:999px;pointer-events:none;z-index:0;opacity:0;
+  background-image:radial-gradient(150% 220% at 50% 8%,rgba(255,255,255,.10),rgba(255,255,255,.01) 72%);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.07),inset 0 1px 0 rgba(255,255,255,.15);
+  transition:transform .5s cubic-bezier(.34,1.15,.3,1),width .5s cubic-bezier(.34,1.15,.3,1),opacity .2s ease;
+  will-change:transform,width;
+}
+html body #mwNavActiveLens.mw-lens-ready{opacity:1}
+html body.light #mwNavActiveLens{
+  background-image:radial-gradient(150% 220% at 50% 8%,rgba(15,23,42,.055),rgba(15,23,42,.006) 72%);
+  box-shadow:inset 0 0 0 1px rgba(15,23,42,.05),inset 0 1px 0 rgba(255,255,255,.45);
+}
+/* A lente única substitui o destaque que cada botão desenhava sozinho
+   (regra antiga preservada, só neutralizada aqui pra não desenhar duas
+   vezes a mesma superfície). Ícone e rótulo ficam acima da lente. */
+html body #mwBottomNav button.active{background-image:none!important;box-shadow:none!important}
+html body.light #mwBottomNav button.active{background-image:none!important;box-shadow:none!important}
+html body #mwBottomNav button,html body #mwBottomNav .mwnav-icon,html body #mwBottomNav .mwnav-label{position:relative;z-index:1}
+@media(prefers-reduced-motion:reduce){
+  html body #mwNavActiveLens{transition:opacity .2s ease!important}
+}
+</style>
+<script id="mw-nav-active-lens-js">
+(() => {
+  const nav = document.getElementById('mwBottomNav');
+  if (!nav) return;
+  let lens = document.getElementById('mwNavActiveLens');
+  if (!lens) {
+    lens = document.createElement('span');
+    lens.id = 'mwNavActiveLens';
+    lens.setAttribute('aria-hidden', 'true');
+    nav.appendChild(lens);
+  }
+  function place() {
+    const active = nav.querySelector('#mwBottomNav > button.active');
+    if (!active) { lens.classList.remove('mw-lens-ready'); return; }
+    const navRect = nav.getBoundingClientRect();
+    const btnRect = active.getBoundingClientRect();
+    lens.style.width = btnRect.width + 'px';
+    lens.style.transform = `translateX(${btnRect.left - navRect.left}px)`;
+    lens.classList.add('mw-lens-ready');
+  }
+  // Duplo rAF: espera o navegador aplicar a mudança de classe/largura do
+  // botão ativo (a largura em si muda na hora; só a revelação do rótulo
+  // anima) antes de medir o retângulo final, senão a lente mede o
+  // tamanho antigo e "corrige" num segundo salto visível.
+  window.mwNavLensSync = () => requestAnimationFrame(() => requestAnimationFrame(place));
+  window.addEventListener('resize', () => window.mwNavLensSync(), { passive: true });
+  window.mwNavLensSync();
+})();
+</script>
+
+<style id="mw-sidebar-liquid-glass">
+/* Sidebar/topbar real Liquid Glass: um bloco depois derrubou o material
+   translúcido original (#app .mw-sidebar-polished, linha ~1249) com um
+   fundo sólido opaco (#app .sidebar/.topbar, linha ~5119, e as variantes
+   claras). Reaplica o mesmo material da bottom nav — transparência real,
+   blur, saturação, realce interno sutil — em vez de editar as regras
+   antigas (evita quebrar o que já depende delas). */
+html body #app .sidebar.sidebar,
+html body #app .topbar.topbar{
+  background-color:transparent!important;
+  background-image:
+    radial-gradient(120% 150% at 10% -12%,rgba(255,255,255,.10),transparent 55%),
+    radial-gradient(150% 170% at 105% 112%,rgba(69,19,188,.16),transparent 62%),
+    linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.008) 45%,rgba(255,255,255,.02)),
+    linear-gradient(160deg,rgba(9,10,22,.56),rgba(4,5,12,.64))!important;
+  backdrop-filter:blur(26px) saturate(180%) brightness(1.05)!important;
+  -webkit-backdrop-filter:blur(26px) saturate(180%) brightness(1.05)!important;
+  border-color:rgba(255,255,255,.10)!important;
+  box-shadow:
+    0 20px 50px -22px rgba(0,0,0,.35),
+    inset 0 0 0 1px rgba(255,255,255,.08),
+    inset 0 1.5px 0 rgba(255,255,255,.13)!important;
+}
+html body.light #app .sidebar.sidebar,
+html body.light #app .topbar.topbar{
+  background-color:transparent!important;
+  background-image:
+    radial-gradient(120% 150% at 10% -12%,rgba(255,255,255,.65),transparent 55%),
+    radial-gradient(150% 170% at 105% 112%,rgba(15,23,42,.04),transparent 62%),
+    linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.20) 45%,rgba(255,255,255,.32))!important;
+  backdrop-filter:blur(26px) saturate(160%)!important;
+  -webkit-backdrop-filter:blur(26px) saturate(160%)!important;
+  border-color:rgba(15,23,42,.08)!important;
+  box-shadow:
+    0 20px 44px -22px rgba(30,41,59,.16),
+    inset 0 0 0 1px rgba(15,23,42,.05),
+    inset 0 1.5px 0 rgba(255,255,255,.6)!important;
+}
+
+/* Status "Online": ponto discreto no avatar + rótulo com pulso sutil */
+html body #app .mw-avatar-wrap{position:relative!important;display:inline-flex!important}
+html body #app .mw-online-dot{
+  position:absolute!important;right:-1px;bottom:-1px;width:9px;height:9px;border-radius:50%!important;
+  background:#34d399!important;border:2px solid rgba(9,10,22,.92)!important;
+  box-shadow:0 0 0 0 rgba(52,211,153,.55);
+  animation:mwOnlineRing 2.6s ease-in-out infinite;
+}
+html body.light #app .mw-online-dot{border-color:rgba(255,255,255,.95)!important}
+html body #app .mw-online-label{
+  display:flex!important;align-items:center!important;gap:4px!important;
+  font-size:8px!important;font-weight:700!important;letter-spacing:.02em!important;
+  color:#34d399!important;margin-top:1px!important;
+}
+html body #app .mw-online-label-dot{
+  width:5px;height:5px;border-radius:50%;background:#34d399;display:inline-block!important;
+  animation:mwOnlinePulseSoft 2.6s ease-in-out infinite;
+}
+@keyframes mwOnlineRing{
+  0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,.45)}
+  50%{box-shadow:0 0 0 4px rgba(52,211,153,0)}
+}
+@keyframes mwOnlinePulseSoft{0%,100%{opacity:1}50%{opacity:.4}}
+@media(prefers-reduced-motion:reduce){
+  html body #app .mw-online-dot,html body #app .mw-online-label-dot{animation:none!important}
+}
+</style>
+
+<style id="mw-admin-panel">
+/* Painel Admin: prioridade desktop, não precisa aparecer no menu mobile
+   normal (a barra inferior já tem seus 5 itens fixos). */
+@media(max-width:860px){ html body #app #mwNavAdmin{display:none!important} }
+
+html body #app .mw-admin-warning{
+  display:flex!important;gap:12px!important;align-items:flex-start!important;
+  background:linear-gradient(135deg,rgba(245,158,11,.14),rgba(245,158,11,.05))!important;
+  border:1px solid rgba(245,158,11,.35)!important;
+}
+html body.light #app .mw-admin-warning{
+  background:linear-gradient(135deg,rgba(217,119,6,.10),rgba(217,119,6,.04))!important;
+  border-color:rgba(217,119,6,.30)!important;
+}
+html body #app .mw-admin-warning-icon{color:#f59e0b!important;flex:0 0 auto;margin-top:1px}
+html body.light #app .mw-admin-warning-icon{color:#b45309!important}
+html body #app .mw-admin-warning-copy strong{display:block;color:#fbbf24!important;font-size:14px;margin-bottom:4px}
+html body.light #app .mw-admin-warning-copy strong{color:#92400e!important}
+html body #app .mw-admin-warning-copy p{margin:0;font-size:12.5px;line-height:1.55;color:var(--mw-muted)}
+html body #app .mw-admin-warning-copy code{background:rgba(255,255,255,.08);padding:1px 5px;border-radius:5px;font-size:11.5px}
+
+html body #app .mw-admin-stats{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))!important;gap:12px!important}
+html body #app .mw-admin-stat{display:flex;flex-direction:column;gap:4px;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--mw-border)}
+html body.light #app .mw-admin-stat{background:rgba(15,23,42,.03)}
+html body #app .mw-admin-stat-label{font-size:11px;color:var(--mw-muted);text-transform:uppercase;letter-spacing:.04em}
+html body #app .mw-admin-stat strong{font-size:22px;font-weight:800}
+html body #app .mw-admin-status-ok{color:#34d399!important}
+
+html body #app .mw-admin-table-wrap{overflow-x:auto!important}
+html body #app .mw-admin-table{width:100%;border-collapse:collapse;font-size:13px;min-width:560px}
+html body #app .mw-admin-table th{text-align:left;padding:8px 10px;color:var(--mw-muted);font-size:11px;text-transform:uppercase;letter-spacing:.03em;border-bottom:1px solid var(--mw-border)}
+html body #app .mw-admin-table td{padding:9px 10px;border-bottom:1px solid var(--mw-border)}
+html body #app .mw-admin-table tr:last-child td{border-bottom:0}
+html body #app .mw-admin-role-badge{padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700}
+html body #app .mw-admin-role-badge.admin{background:rgba(114,38,255,.18);color:#c4b5fd}
+html body #app .mw-admin-role-badge.user{background:rgba(255,255,255,.07);color:var(--mw-muted)}
+html body #app .mw-admin-online-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px}
+html body #app .mw-admin-online-dot.on{background:#34d399}
+html body #app .mw-admin-online-dot.off{background:rgba(148,163,184,.5)}
+
+html body #app .mw-admin-log-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:0}
+html body #app .mw-admin-log-list li{display:flex;gap:10px;padding:9px 2px;border-bottom:1px solid var(--mw-border);font-size:12.5px}
+html body #app .mw-admin-log-list li:last-child{border-bottom:0}
+html body #app .mw-admin-log-time{color:var(--mw-muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+</style>
+<style id="mw-nav-lens-neutral">
+/* Referência do usuário (nav do Instagram + Central de Controle do iOS):
+   a lente do item ativo é vidro NEUTRO translúcido — o conteúdo atrás
+   continua aparecendo através dela. Não é uma pastilha azul.
+
+   O item ativo ainda recebia background-color:rgba(37,99,235,.28) de uma
+   regra antiga; o override da lente só tinha zerado background-image e
+   box-shadow, então a cor continuava pintando por baixo e o resultado
+   lia como "card azul opaco". Zera a cor também: quem desenha a
+   superfície do item ativo passa a ser só a lente compartilhada. */
+html body #mwBottomNav button.active,
+html body.light #mwBottomNav button.active{
+  background-color:transparent!important;
+}
+/* Lente um pouco mais presente, como na referência — ainda neutra e
+   translúcida, sem tingir de azul. */
+html body #mwNavActiveLens{
+  background-image:radial-gradient(150% 220% at 50% 8%,rgba(255,255,255,.17),rgba(255,255,255,.04) 74%)!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.10),inset 0 1px 0 rgba(255,255,255,.22)!important;
+}
+html body.light #mwNavActiveLens{
+  background-image:radial-gradient(150% 220% at 50% 8%,rgba(15,23,42,.085),rgba(15,23,42,.02) 74%)!important;
+  box-shadow:inset 0 0 0 1px rgba(15,23,42,.07),inset 0 1px 0 rgba(255,255,255,.55)!important;
+}
+/* No claro o rótulo do item ativo era quase branco — só era legível por
+   causa da pastilha azul que acabou de sair. Sobre vidro claro ele
+   precisa ser escuro, igual ao tratamento que os ícones já tinham. */
+html body.light #mwBottomNav button.active .mwnav-label{color:#151a22!important}
+</style>
+<script id="mw-admin-panel-js">
+(() => {
+  // ATENÇÃO — leia antes de ligar isto a dados reais:
+  // Este painel é 100% fachada visual (decisão explícita do usuário: "painel
+  // só visual por agora, com aviso claro"). Os dados abaixo são inventados
+  // no cliente só pra preencher o layout. NÃO existe verificação de permissão
+  // de verdade aqui — qualquer pessoa que abrir o app consegue ver esta tela.
+  // Antes de usar com usuários reais, um backend precisa:
+  //   1) guardar um campo role ("user" | "admin") por usuário no servidor;
+  //   2) checar esse role em CADA requisição de dado administrativo, no
+  //      servidor — nunca confiar em "if (user === 'Mateus')" ou em
+  //      esconder só o botão no front-end;
+  //   3) recusar e logar tentativas de acesso de quem não é admin, sem
+  //      devolver nenhum dado administrativo na resposta;
+  //   4) impedir que o próprio usuário mude seu papel, e nunca expor um
+  //      jeito público de virar admin;
+  //   5) registrar login/logout/admin e alterações administrativas.
+  const el = (tag, cls, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; };
+
+  const mockUsers = [
+    { name: 'Mateus', email: 'mateus@workspace.local', role: 'admin', lastAccess: 'agora', online: true },
+    { name: 'QA Tester', email: 'qa@teste.com', role: 'user', lastAccess: 'há 12 min', online: true },
+    { name: 'Convidado Beta', email: 'beta@teste.com', role: 'user', lastAccess: 'há 3 h', online: false },
+    { name: 'Ana Souza', email: 'ana.souza@teste.com', role: 'user', lastAccess: 'ontem', online: false },
+  ];
+  const mockLogs = [
+    { time: 'agora', text: 'Mateus (admin) abriu o Painel Admin.' },
+    { time: 'há 12 min', text: 'QA Tester fez login.' },
+    { time: 'há 40 min', text: 'Tentativa de acesso ao painel admin bloqueada (papel: user).' },
+    { time: 'há 3 h', text: 'Convidado Beta fez logout.' },
+    { time: 'ontem', text: 'Mateus (admin) alterou uma permissão de exemplo.' },
+  ];
+
+  function render() {
+    const usersBody = document.getElementById('mwAdminUsersBody');
+    const logList = document.getElementById('mwAdminLogList');
+    if (!usersBody || !logList) return;
+    if (usersBody.dataset.rendered) return;
+    usersBody.dataset.rendered = '1';
+
+    document.getElementById('mwAdminStatUsers').textContent = String(mockUsers.length);
+    document.getElementById('mwAdminStatOnline').textContent = String(mockUsers.filter(u => u.online).length);
+    document.getElementById('mwAdminStatLastAccess').textContent = mockUsers[0].lastAccess;
+
+    mockUsers.forEach(u => {
+      const tr = el('tr');
+      tr.appendChild(el('td', null, `<strong>${u.name}</strong>`));
+      tr.appendChild(el('td', null, u.email));
+      tr.appendChild(el('td', null, `<span class="mw-admin-role-badge ${u.role}">${u.role === 'admin' ? 'Admin' : 'Usuário'}</span>`));
+      tr.appendChild(el('td', null, u.lastAccess));
+      tr.appendChild(el('td', null, `<span class="mw-admin-online-dot ${u.online ? 'on' : 'off'}"></span>${u.online ? 'Online' : 'Offline'}`));
+      usersBody.appendChild(tr);
+    });
+
+    mockLogs.forEach(l => {
+      const li = el('li');
+      li.appendChild(el('span', 'mw-admin-log-time', l.time));
+      li.appendChild(el('span', null, l.text));
+      logList.appendChild(li);
+    });
+  }
+
+  const view = document.getElementById('view-admin');
+  if (view) {
+    render();
+    new MutationObserver(render).observe(view, { attributes: true, attributeFilter: ['class'] });
+  }
+})();
+</script>
 
 </body>
 </html>
