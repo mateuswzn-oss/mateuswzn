@@ -14868,16 +14868,22 @@ html body #mwBottomNav.mwbn > button .mwnav-icon{
   transform:translateX(0);
   transition:transform var(--mw-choreo-dur) var(--mw-choreo-ease);
 }
-html body #mwBottomNav.mwbn > button.active .mwnav-icon{
-  transform:translateX(calc(var(--mw-label-shift, 0px) * -1));
-}
+/* Com quatro slots (87px contra os 69,2px de cinco) passou a caber o
+   rótulo ao lado SEM deslocar o ícone. Então o ícone fica travado no
+   centro exato da própria coluna o tempo todo, como pedido: nada de
+   empurrar o avatar pra abrir espaço. */
+html body #mwBottomNav.mwbn > button.active .mwnav-icon{transform:translateX(0)}
 /* O rótulo sai do fluxo: encostado à direita do ícone já deslocado,
    centrado na vertical. */
 html body #mwBottomNav.mwbn .mwnav-label{
   position:absolute!important;
-  left:calc(50% + var(--mw-icon) * .5 + 6px - var(--mw-label-shift, 0px))!important;
+  /* Com o icone travado no centro, todo o rotulo cresce pra um lado so.
+     Medido: a 10px de fonte e 6px de respiro, "Faculdade" invadia o
+     icone vizinho em 4,7px (390) e 8,5px (375). Fonte e respiro
+     reduzidos ate a folga ficar positiva em toda a faixa. */
+  left:calc(50% + var(--mw-icon) * .5 + 4px)!important;
   top:50%!important;
-  font-size:10px!important;font-weight:700;letter-spacing:.01em;
+  font-size:9px!important;font-weight:700;letter-spacing:0!important;
   white-space:nowrap!important;pointer-events:none;
   opacity:0;
   transform:translate(-6px,-50%);
@@ -14910,12 +14916,14 @@ html body #mwBottomNav.mwbn > button .mwnav-icon{
 /* Com foto, a camada acompanha o mesmo deslocamento do ícone quando o
    rótulo entra, pra que o conjunto continue opticamente centrado. */
 html body #mwBottomNav.mwbn > button.active .mwnav-photo{
-  transform:translate(calc(-50% - var(--mw-label-shift, 0px)),-50%) scale(1);
+  transform:translate(-50%,-50%) scale(1);
 }
 
-/* Abaixo de 360px o nome encostaria no ícone vizinho (medido). Nessas
-   larguras a barra fica só com ícones e a lente, sem rótulo. */
-@media(max-width:359px){
+/* Abaixo de 375px o nome encostaria no ícone vizinho mesmo com a fonte
+   reduzida (medido: -3,6px de folga em 360). Nessas larguras a barra
+   fica só com ícones e a lente, sem rótulo — o item ativo continua
+   identificado pela lente e pelo ícone preenchido. */
+@media(max-width:374px){
   html body #mwBottomNav.mwbn .mwnav-label{display:none!important}
 }
 @media(prefers-reduced-motion:reduce){
