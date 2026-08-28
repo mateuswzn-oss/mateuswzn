@@ -7470,14 +7470,34 @@ img,svg,video,canvas{max-width:100%}
     nav = document.createElement('nav');
     nav.id = 'mwBottomNav';
     nav.innerHTML = `
-      <button type="button" data-view="home" class="active" aria-label="Início"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.6 12 3.4l8.5 7.2"/><path d="M5.6 9.7V20a1 1 0 0 0 1 1h3.7v-5.8h3.4V21h3.7a1 1 0 0 0 1-1V9.7"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M12 2.7 2.6 10.4V21h6.7v-6.3h5.4V21h6.7V10.4L12 2.7Z"/></svg></span></button>
-      <button type="button" data-view="college" aria-label="Faculdade"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 2.8 8.7 12 13.4l9.2-4.7L12 4Z"/><path d="M6.6 11.3v4c0 1.7 2.6 3 5.9 3.2 3.3-.2 5.9-1.5 5.9-3.2v-4"/><path d="M20.5 9.4v5.3"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M12 3 1.6 8.3 12 13.6l8.7-4.4V15h1.7V8.3L12 3Z"/><path d="M5.6 10.9v4.3c0 1.9 2.9 3.4 6.4 3.4s6.4-1.5 6.4-3.4v-4.3l-6.4 3.3-6.4-3.3Z" opacity=".55"/></svg></span></button>
-      <button type="button" data-view="notes" aria-label="Notas"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 2.6h7l5.3 5.3v13.5h-12.3V2.6Z"/><path d="M13.5 2.6v5.3h5.3"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M6.5 2.2h7.6l5.4 5.4V21.8h-13V2.2Z"/><path d="M14.1 2.2v5.4h5.4Z" opacity=".55"/></svg></span></button>
-      <button type="button" id="mwBottomMenu" class="mw-bottomnav-avatar" aria-label="Menu"></button>`;
+      <button type="button" data-view="home" class="active" aria-label="Início"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.6 12 3.4l8.5 7.2"/><path d="M5.6 9.7V20a1 1 0 0 0 1 1h3.7v-5.8h3.4V21h3.7a1 1 0 0 0 1-1V9.7"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M12 2.7 2.6 10.4V21h6.7v-6.3h5.4V21h6.7V10.4L12 2.7Z"/></svg></span><span class="mwnav-label">Início</span></button>
+      <button type="button" data-view="college" aria-label="Faculdade"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 2.8 8.7 12 13.4l9.2-4.7L12 4Z"/><path d="M6.6 11.3v4c0 1.7 2.6 3 5.9 3.2 3.3-.2 5.9-1.5 5.9-3.2v-4"/><path d="M20.5 9.4v5.3"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M12 3 1.6 8.3 12 13.6l8.7-4.4V15h1.7V8.3L12 3Z"/><path d="M5.6 10.9v4.3c0 1.9 2.9 3.4 6.4 3.4s6.4-1.5 6.4-3.4v-4.3l-6.4 3.3-6.4-3.3Z" opacity=".55"/></svg></span><span class="mwnav-label">Faculdade</span></button>
+      <button type="button" data-view="files" aria-label="Arquivos"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 2.6h7l5.3 5.3v13.5h-12.3V2.6Z"/><path d="M13.5 2.6v5.3h5.3"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M6.5 2.2h7.6l5.4 5.4V21.8h-13V2.2Z"/><path d="M14.1 2.2v5.4h5.4Z" opacity=".55"/></svg></span><span class="mwnav-label">Arquivos</span></button>
+      <button type="button" data-ai="1" aria-label="Nick IA"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 14 9.5 20.5 12 14 14.5 12 21 10 14.5 3.5 12 10 9.5 Z"/><path d="M18.5 3.5 19.3 5.7 21.5 6.5 19.3 7.3 18.5 9.5 17.7 7.3 15.5 6.5 17.7 5.7 Z"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M12 2 14.3 9.3 21.6 12 14.3 14.7 12 22 9.7 14.7 2.4 12 9.7 9.3 Z"/><path d="M18.6 3 19.5 5.6 22 6.6 19.5 7.6 18.6 10.2 17.7 7.6 15.2 6.6 17.7 5.6 Z" opacity=".55"/></svg></span><span class="mwnav-label">Nick IA</span></button>
+      <button type="button" id="mwBottomMenu" class="mw-bottomnav-avatar" aria-label="Perfil"><span class="mwnav-label">Perfil</span></button>`;
     document.body.appendChild(nav);
   }
   const avatarMenuBtn = document.getElementById('mwBottomMenu');
-  const MOBILE_NAV_VIEWS = ['home', 'college', 'notes'];
+  const aiNavBtn = nav.querySelector('button[data-ai]');
+  const MOBILE_NAV_VIEWS = ['home', 'college', 'files'];
+  let aiModalOpen = false;
+  // Duas rotinas diferentes de sincronizar o avatar (foto/iniciais) fazem
+  // "el.textContent = ..." neste mesmo botão sempre que o perfil muda —
+  // isso apaga qualquer filho, inclusive o rótulo "Perfil" adicionado
+  // aqui. Em vez de mexer nas duas rotinas, um observador garante que o
+  // rótulo sempre volte, não importa quem limpou o conteúdo por último.
+  if (avatarMenuBtn) {
+    const ensureProfileLabel = () => {
+      if (!avatarMenuBtn.querySelector('.mwnav-label')) {
+        const lbl = document.createElement('span');
+        lbl.className = 'mwnav-label';
+        lbl.textContent = 'Perfil';
+        avatarMenuBtn.appendChild(lbl);
+      }
+    };
+    new MutationObserver(ensureProfileLabel).observe(avatarMenuBtn, { childList: true });
+    ensureProfileLabel();
+  }
   /* Fonte única de verdade pro "quem está ativo" na barra: lê o estado
      real do app (a view atual + se a gaveta lateral está aberta) em vez
      de cada gatilho tentar adivinhar/mexer direto nas classes — assim
@@ -7489,8 +7509,10 @@ img,svg,video,canvas{max-width:100%}
     const drawerOpen = app.classList.contains('mw-mobile-open');
     const currentView = document.querySelector('.view.active')?.id?.replace('view-', '') || 'home';
     const inMobileNav = MOBILE_NAV_VIEWS.includes(currentView);
-    nav.querySelectorAll('button[data-view]').forEach(b => b.classList.toggle('active', inMobileNav && b.dataset.view === currentView));
-    avatarMenuBtn.classList.toggle('mw-avatar-active', drawerOpen || !inMobileNav);
+    nav.querySelectorAll('button[data-view]').forEach(b => b.classList.toggle('active', !aiModalOpen && inMobileNav && b.dataset.view === currentView));
+    aiNavBtn?.classList.toggle('active', aiModalOpen);
+    avatarMenuBtn.classList.toggle('mw-avatar-active', !aiModalOpen && (drawerOpen || !inMobileNav));
+    window.mwNavLensSync?.();
   };
   window.mwSyncBottomNavActive = syncBottomNavActive;
   const syncChrome = () => {
@@ -7511,6 +7533,21 @@ img,svg,video,canvas{max-width:100%}
     document.getElementById('mwMobileMenu')?.click();
     syncChrome();
   });
+  // "Nick IA": não é uma view — abre o modal da Nyc AI e fica marcado como
+  // ativo enquanto ele estiver aberto, voltando pro item real assim que
+  // fechar (pelo X, Esc, clique fora, ou pelo próprio botão da barra).
+  const aiModalEl = document.getElementById('mateusAiModal');
+  aiNavBtn?.addEventListener('click', () => {
+    document.getElementById('mateusAiBtn')?.click();
+    aiModalOpen = true;
+    syncBottomNavActive();
+  });
+  if (aiModalEl) {
+    new MutationObserver(() => {
+      const nowOpen = !aiModalEl.classList.contains('hidden');
+      if (nowOpen !== aiModalOpen) { aiModalOpen = nowOpen; syncBottomNavActive(); }
+    }).observe(aiModalEl, {attributes:true, attributeFilter:['class']});
+  }
 })();
 </script>
 <style id="mw-lupa-sino-eva-palette">
@@ -14509,6 +14546,87 @@ html body #app .topbar.topbar{
   }
 }
 </style>
+
+<style id="mw-nav-label-reveal">
+/* O nome do item só aparece ao lado do ícone que está ativo — nunca em
+   baixo/cima, nunca nos outros quatro. O botão herdava font-size:0 pra
+   nunca mostrar texto nenhum; aqui devolvemos o tamanho só pro rótulo. */
+html body #mwBottomNav .mwnav-label{
+  display:inline-block;font-size:11.5px!important;font-weight:700;letter-spacing:.01em;
+  white-space:nowrap;max-width:0;margin-left:0;opacity:0;transform:translateX(-4px);
+  overflow:hidden;transition:opacity .28s ease .1s,transform .28s ease .1s;
+}
+html body #mwBottomNav button.active .mwnav-label{
+  max-width:120px;margin-left:7px;opacity:1;transform:translateX(0);
+}
+@media(max-width:860px){
+  html body #mwBottomNav button.active{
+    width:auto!important;padding:0 15px!important;gap:0!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  html body #mwBottomNav .mwnav-label{transition:opacity .15s ease!important;transform:none!important}
+}
+</style>
+
+<style id="mw-nav-active-lens">
+/* Lente única que desliza fisicamente entre os itens (em vez de cada
+   botão ligar/desligar seu próprio destaque no lugar) — o mesmo vidro
+   que já existia por trás do item ativo, só que agora como um objeto
+   compartilhado que se move, comprime e expande ao trocar de item. */
+html body #mwNavActiveLens{
+  position:absolute;left:0;top:var(--mw-pad-y,10px);
+  height:calc(var(--mw-icon,22px) + 12px);
+  border-radius:999px;pointer-events:none;z-index:0;opacity:0;
+  background-image:radial-gradient(150% 220% at 50% 8%,rgba(255,255,255,.10),rgba(255,255,255,.01) 72%);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.07),inset 0 1px 0 rgba(255,255,255,.15);
+  transition:transform .5s cubic-bezier(.34,1.15,.3,1),width .5s cubic-bezier(.34,1.15,.3,1),opacity .2s ease;
+  will-change:transform,width;
+}
+html body #mwNavActiveLens.mw-lens-ready{opacity:1}
+html body.light #mwNavActiveLens{
+  background-image:radial-gradient(150% 220% at 50% 8%,rgba(15,23,42,.055),rgba(15,23,42,.006) 72%);
+  box-shadow:inset 0 0 0 1px rgba(15,23,42,.05),inset 0 1px 0 rgba(255,255,255,.45);
+}
+/* A lente única substitui o destaque que cada botão desenhava sozinho
+   (regra antiga preservada, só neutralizada aqui pra não desenhar duas
+   vezes a mesma superfície). Ícone e rótulo ficam acima da lente. */
+html body #mwBottomNav button.active{background-image:none!important;box-shadow:none!important}
+html body.light #mwBottomNav button.active{background-image:none!important;box-shadow:none!important}
+html body #mwBottomNav button,html body #mwBottomNav .mwnav-icon,html body #mwBottomNav .mwnav-label{position:relative;z-index:1}
+@media(prefers-reduced-motion:reduce){
+  html body #mwNavActiveLens{transition:opacity .2s ease!important}
+}
+</style>
+<script id="mw-nav-active-lens-js">
+(() => {
+  const nav = document.getElementById('mwBottomNav');
+  if (!nav) return;
+  let lens = document.getElementById('mwNavActiveLens');
+  if (!lens) {
+    lens = document.createElement('span');
+    lens.id = 'mwNavActiveLens';
+    lens.setAttribute('aria-hidden', 'true');
+    nav.appendChild(lens);
+  }
+  function place() {
+    const active = nav.querySelector('#mwBottomNav > button.active');
+    if (!active) { lens.classList.remove('mw-lens-ready'); return; }
+    const navRect = nav.getBoundingClientRect();
+    const btnRect = active.getBoundingClientRect();
+    lens.style.width = btnRect.width + 'px';
+    lens.style.transform = `translateX(${btnRect.left - navRect.left}px)`;
+    lens.classList.add('mw-lens-ready');
+  }
+  // Duplo rAF: espera o navegador aplicar a mudança de classe/largura do
+  // botão ativo (a largura em si muda na hora; só a revelação do rótulo
+  // anima) antes de medir o retângulo final, senão a lente mede o
+  // tamanho antigo e "corrige" num segundo salto visível.
+  window.mwNavLensSync = () => requestAnimationFrame(() => requestAnimationFrame(place));
+  window.addEventListener('resize', () => window.mwNavLensSync(), { passive: true });
+  window.mwNavLensSync();
+})();
+</script>
 
 </body>
 </html>
