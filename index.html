@@ -15424,6 +15424,51 @@ html body #mwNavActiveLens{
     inset 0 -1px 0 rgba(255,255,255,.05),
     0 4px 14px -8px rgba(0,0,0,.35)!important;
 }
+/* ============================================================
+   DISPERSÃO NO ARO — a franja colorida do vidro
+   ============================================================
+   Medido na gravação da tab bar do iOS 26 (quadro 190, aro esquerdo):
+     • a altura do texto DENTRO e FORA da lente é a mesma, 35px — ou
+       seja, o miolo do vidro é plano, não é lupa;
+     • a separação entre os canais R, G e B chega a 166 de 255 numa
+       faixa de ~25px no aro, e é 0 a 3 fora dela.
+   Isso é dispersão: no aro curvo cada cor é desviada um pouco
+   diferente. É a assinatura mais reconhecível do efeito.
+
+   POR QUE NÃO É O FILTRO SVG DE VERDADE.
+   Cheguei a implementar a refração real (feDisplacementMap rodado três
+   vezes, uma por canal) e ela funciona. Mas medi o custo com a lente em
+   movimento: o quadro mediano continua em 16,7ms, porém o p95 sobe de
+   17ms para 33-39ms e caem de 4 a 6 quadros por transição — num
+   Chromium de DESKTOP. Filtro SVG pinta na thread principal, e é
+   exatamente a classe de coisa que fez a splash engasgar no aparelho.
+   Numa barra que precisa responder na hora, isso não se paga.
+
+   Então aqui fica só o aro colorido, que é gradiente estático e
+   composita de graça: zero custo por quadro. A compressão dos rótulos
+   vizinhos, essa sim, exigiria o filtro. */
+html body #mwNavActiveLens::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;
+  pointer-events:none;padding:1.5px;
+  background:conic-gradient(from 195deg,
+    rgba(255,122,61,.95), rgba(255,214,102,.9) 9%,
+    rgba(126,240,255,.9) 20%, rgba(150,120,255,.85) 31%,
+    transparent 40%, transparent 84%, rgba(255,122,61,.95));
+  /* Truque de borda em gradiente: duas máscaras subtraídas deixam só o
+     aro, e ele acompanha o border-radius exatamente — ao contrário de
+     um radial-gradient, que viraria elipse numa cápsula. */
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  mask-composite:exclude;
+  mix-blend-mode:screen;
+  opacity:.5;
+}
+html body.light #mwNavActiveLens::after{opacity:.34}
+@media(prefers-reduced-motion:reduce){
+  html body #mwNavActiveLens::after{opacity:.34}
+}
+
 html body.light #mwNavActiveLens{
   background-image:
     linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.16) 55%,rgba(255,255,255,.3))!important;
@@ -15665,9 +15710,35 @@ html body #mwBottomNav:has(> button.mw-avatar-active) > button.active .mwnav-lab
      A largura do conjunto fica guardada no próprio botão para a lente
      não ter de remedir o texto depois. */
   const measure = () => {
+    /* GUARDA CONTRA MEDIR NO VAZIO.
+
+       Este era o bug do "nome por dentro do ícone" ao abrir o app: a
+       barra só ganha display quando o app entra em body.mw-in-app, e
+       essa decisão (sessão salva -> dashboard) acontece DEPOIS que este
+       script roda. Medindo com a barra em display:none, todo
+       getBoundingClientRect volta 0, então lblW=0 -> o rótulo era
+       posicionado no centro do slot, ou seja, em cima do ícone, e a
+       bolha ficava do tamanho só do ícone.
+
+       Pior: como o valor 0 ficava gravado, nada voltava a medir. Só
+       "consertava" se algo disparasse um resize por acaso — daí a
+       sensação de que sair e entrar na conta resolvia.
+
+       Agora, sem layout, a função desiste e NÃO grava nada. Quem
+       dispara a medição de verdade é o ResizeObserver lá embaixo, no
+       instante em que a barra ganha tamanho. */
+    if (!nav.offsetWidth) return false;
     const icon = parseFloat(getComputedStyle(nav).getPropertyValue('--mw-icon')) || 30;
     const k = navScale();
-    nav.querySelectorAll(':scope > button').forEach(b => {
+    const botoes = [...nav.querySelectorAll(':scope > button')];
+    // Se algum rótulo visível ainda mede 0, o texto não foi disposto:
+    // melhor tentar de novo depois do que gravar um valor errado.
+    const prematuro = botoes.some(b => {
+      const l = b.querySelector('.mwnav-label');
+      return l && getComputedStyle(l).display !== 'none' && !l.getBoundingClientRect().width;
+    });
+    if (prematuro) return false;
+    botoes.forEach(b => {
       const lbl = b.querySelector('.mwnav-label');
       const lblW = (lbl && getComputedStyle(lbl).display !== 'none')
         ? lbl.getBoundingClientRect().width / k : 0;
@@ -15681,6 +15752,7 @@ html body #mwBottomNav:has(> button.mw-avatar-active) > button.active .mwnav-lab
       b.style.setProperty('--mw-lx', lx.toFixed(2) + 'px');
       b.dataset.groupw = groupW.toFixed(2);
     });
+    return true;
   };
 
   const place = () => {
@@ -15724,6 +15796,20 @@ html body #mwBottomNav:has(> button.mw-avatar-active) > button.active .mwnav-lab
   const remeasure = () => { measure(); place(); };
   window.mwNavLensSync = place;
   window.addEventListener('resize', remeasure, { passive: true });
+
+  /* O gatilho que resolve a corrida de vez: o ResizeObserver dispara no
+     exato instante em que a barra ganha tamanho — ou seja, quando o app
+     entra em body.mw-in-app e ela deixa de ser display:none. Também
+     cobre girar o aparelho, fechar a gaveta e o teclado abrindo. */
+  if (window.ResizeObserver) {
+    /* Sem condição nenhuma além de "tem tamanho". A primeira versão
+       disto só remedia quando a LARGURA mudava — e ao voltar de
+       display:none a largura é a mesma de antes, então não remedia
+       nada. Como o observador só dispara em mudança real de layout
+       (raro) e medir custa quatro elementos, medir sempre é mais
+       simples e mais seguro do que tentar adivinhar quando vale a pena. */
+    new ResizeObserver(() => { if (nav.offsetWidth) remeasure(); }).observe(nav);
+  }
   /* As fontes podem chegar depois do primeiro layout e mudar a largura
      do texto. Sem isso, --mw-lx e a lente ficariam calibrados na
      métrica da fonte de fallback. */
