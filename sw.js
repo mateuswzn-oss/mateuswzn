@@ -1,5 +1,10 @@
-const CACHE_NAME = 'mw-shell-v1';
-const SHELL_URLS = ['/', '/index.html', '/manifest.json', '/icon-192.png', '/icon-512.png'];
+const CACHE_NAME = 'mw-shell-v2';
+// Caminhos relativos de propósito: o site roda numa subpasta do GitHub
+// Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
+// absoluto como "/index.html" aponta pra raiz do domínio (404) em vez da
+// subpasta real — foi exatamente isso que quebrou o app instalado na
+// tela de início (o manifest.json tinha o mesmo erro).
+const SHELL_URLS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -33,6 +38,6 @@ self.addEventListener('fetch', (event) => {
         caches.open(CACHE_NAME).then((cache) => cache.put(req, copy)).catch(() => {});
         return res;
       })
-      .catch(() => caches.match(req).then((cached) => cached || caches.match('/index.html')))
+      .catch(() => caches.match(req).then((cached) => cached || caches.match('./index.html')))
   );
 });
