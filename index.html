@@ -14439,5 +14439,21 @@ html body #app .mw-reference-sidebar .mw-reference-profile .mw-profile-main{
 })();
 </script>
 
+<style id="mw-topbar-safe-area-fix">
+/* .topbar é position:sticky;top:0 (definido antes). No Safari normal
+   isso funciona porque a própria barra de endereço do navegador já
+   ocupa o espaço da barra de status/Dynamic Island, então "top:0" da
+   página já começa abaixo dela. Quando o app roda instalado na tela de
+   início (modo standalone, sem a barra do Safari), não existe mais nada
+   empurrando o conteúdo pra baixo — a página cobre a tela inteira, e
+   ".topbar" gruda exatamente atrás do relógio/sinal, ficando invisível.
+   env(safe-area-inset-top) resolve pra 0px em qualquer contexto que não
+   tenha essa área reservada (Safari normal, Android, desktop), então
+   isso não muda nada fora do modo instalado no iOS. */
+html body #app .topbar.topbar{
+  padding-top:calc(14px + env(safe-area-inset-top,0px))!important;
+}
+</style>
+
 </body>
 </html>
