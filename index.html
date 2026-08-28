@@ -3538,9 +3538,25 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
   var loader = document.getElementById('mwBootLoader');
   var mwBootBar = document.getElementById('mwBootBarFill');
   var mwBootPercent = document.getElementById('mwBootPercent');
-  var MW_BOOT_MS = 4500;
+  /* O preloader era um cronômetro puro de 4500ms: a barra e o percentual
+     só mediam o tempo passado, sem nenhuma relação com o app estar
+     pronto. Ou seja, era exatamente o "delay artificial" que não se quer
+     — segurava 4,5s mesmo com tudo carregado.
+
+     Agora a saída é governada pela PRONTIDÃO, com um piso e um teto:
+     - MW_BOOT_MIN: tempo mínimo visível, pra não dar um flash feio
+       quando o app já está pronto instantaneamente;
+     - MW_BOOT_MAX: teto de segurança, pra nunca prender o app se algum
+       recurso demorar ou falhar.
+     Entre os dois, sai assim que estiver pronto. */
+  var MW_BOOT_MIN = 1100;
+  var MW_BOOT_MAX = 3000;
+  var mwBootDone = false;
   function mwBootFinish(){
-    if (!loader) return;
+    if (!loader || mwBootDone) return;
+    mwBootDone = true;
+    if (mwBootBar) mwBootBar.style.width = '100%';
+    if (mwBootPercent) mwBootPercent.textContent = '100%';
     document.body.classList.add('mw-boot-revealing');
     loader.classList.add('mw-boot-hide');
     setTimeout(function(){
@@ -3550,12 +3566,28 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
   }
   if (loader) {
     var mwBootStart = performance.now();
+    var mwAppReady = false;
+    /* "Pronto" = o documento terminou de carregar E o próximo quadro já
+       foi desenhado (dois rAF garantem que o primeiro layout real já
+       aconteceu, então a revelação não mostra uma tela meio montada). */
+    var markReady = function(){
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){ mwAppReady = true; });
+      });
+    };
+    if (document.readyState === 'complete') markReady();
+    else window.addEventListener('load', markReady, { once: true });
+
     (function mwBootTick(now){
-      var pct = Math.min(100, Math.round(((now - mwBootStart) / MW_BOOT_MS) * 100));
+      var elapsed = now - mwBootStart;
+      /* A barra reflete o progresso real quando o app já está pronto, e
+         avança de forma contida enquanto espera — nunca finge 100%. */
+      var byTime = elapsed / MW_BOOT_MAX;
+      var pct = Math.min(99, Math.round((mwAppReady ? Math.max(byTime, elapsed / MW_BOOT_MIN) : byTime) * 100));
       if (mwBootBar) mwBootBar.style.width = pct + '%';
       if (mwBootPercent) mwBootPercent.textContent = pct + '%';
-      if (pct < 100) requestAnimationFrame(mwBootTick);
-      else mwBootFinish();
+      if ((mwAppReady && elapsed >= MW_BOOT_MIN) || elapsed >= MW_BOOT_MAX) mwBootFinish();
+      else requestAnimationFrame(mwBootTick);
     })(mwBootStart);
   }
 })();
@@ -7184,7 +7216,12 @@ img,svg,video,canvas{max-width:100%}
 
   /* LOGIN */
   #loginScreen,#loginScreen.reference-login{
-    display:block!important;height:auto!important;min-height:100dvh!important;
+    display:block!important;height:auto!important;
+    /* svh, nao dvh: a "small viewport height" e estavel — nao encolhe
+       quando o teclado virtual abre. Com dvh o container do login
+       redimensionava no meio da animacao do teclado, e o cartao
+       centralizado pulava e nao voltava. */
+    min-height:100vh!important;min-height:100svh!important;
     padding:max(16px,env(safe-area-inset-top)) 14px 28px!important;
     overflow-x:hidden!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch;
   }
@@ -14399,7 +14436,8 @@ html{background:var(--mw-bg,#0b0c0e)!important}
   }
   html body #loginScreen:not(.hidden){
     min-height:100vh!important;
-    min-height:100dvh!important;
+    /* svh no lugar de dvh: ver comentario na regra do login acima. */
+    min-height:100svh!important;
   }
 }
 </style>
@@ -15207,6 +15245,92 @@ html body #mwBottomNav:has(> button.mw-avatar-active) > button.active .mwnav-lab
   window.mwNavLensSync = place;
   window.addEventListener('resize', place, { passive: true });
   place();
+})();
+</script>
+
+<style id="mw-login-keyboard">
+/* ============================================================
+   TECLADO VIRTUAL NO LOGIN — DEIXAR O NAVEGADOR FAZER O NATURAL
+   ============================================================
+   Sintoma: ao tocar em e-mail/senha a tela se deslocava e depois não
+   voltava, às vezes exigindo um gesto de dois dedos pra desfazer.
+
+   Três causas somadas:
+
+   1. min-height:100dvh no #loginScreen. dvh acompanha a viewport
+      dinâmica, então o container REDIMENSIONAVA durante a animação do
+      teclado e o cartão centralizado pulava. Trocado por svh na
+      origem (a small viewport height é estável).
+
+   2. html{scroll-behavior:smooth} declarado em cinco lugares. Quando o
+      teclado abre, o Safari rola o documento pra revelar o campo — com
+      smooth global esse scroll vira animação, que pode ser interrompida
+      pela própria animação do teclado e ficar no meio do caminho. É a
+      origem direta do "ficou preso deslocado". Aqui o smooth é
+      desligado só enquanto há um campo do login em foco.
+
+   3. overscroll-behavior-y:none em html,body, que tira o comportamento
+      elástico natural e reforça a sensação de tela travada. Liberado
+      apenas no contexto do login. */
+html.mw-kb-open{scroll-behavior:auto!important}
+html.mw-kb-open,html.mw-kb-open body{overscroll-behavior-y:auto!important}
+/* Com o teclado aberto o cartão deixa de ser centrado verticalmente:
+   alinhar ao topo mantém o campo em foco na área visível sem que a
+   aplicação precise rolar nada à força. */
+@media(max-width:860px){
+  html.mw-kb-open body #loginScreen:not(.hidden){
+    display:block!important;
+    padding-top:max(12px,env(safe-area-inset-top))!important;
+    padding-bottom:16px!important;
+  }
+}
+</style>
+<script id="mw-login-keyboard-js">
+(() => {
+  /* Controlador do teclado no login. Não briga com o navegador: não
+     chama scrollIntoView nem scrollTo durante o foco. Só marca que o
+     teclado está aberto (pro CSS acima soltar o smooth e o overscroll)
+     e, quando ele fecha, devolve a rolagem ao topo UMA vez, de forma
+     instantânea — que é justamente o passo que faltava e deixava a tela
+     presa deslocada. */
+  const login = document.getElementById('loginScreen');
+  if (!login) return;
+  const isField = el => !!el && el.closest && el.closest('#loginScreen') &&
+    /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName);
+
+  let open = false;
+  const setOpen = v => {
+    if (v === open) return;
+    open = v;
+    document.documentElement.classList.toggle('mw-kb-open', v);
+    if (!v) {
+      // Teclado fechou: desfaz o deslocamento que o navegador aplicou.
+      // 'instant' de propósito — com smooth a volta animava e podia ser
+      // cortada no meio, deixando a página num offset intermediário.
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+  };
+
+  document.addEventListener('focusin', e => { if (isField(e.target)) setOpen(true); });
+  document.addEventListener('focusout', e => {
+    if (!isField(e.target)) return;
+    // Espera um tique: trocar de um campo pro outro dispara focusout
+    // antes do focusin, e não é fechamento de teclado.
+    setTimeout(() => { if (!isField(document.activeElement)) setOpen(false); }, 60);
+  });
+
+  /* visualViewport é a fonte confiável de "o teclado está aberto" no
+     iOS: a viewport visual encolhe sem que a de layout mude. Serve de
+     confirmação pro caso de o foco sair sem disparar focusout (ex.: o
+     usuário fecha o teclado pelo botão do próprio teclado). */
+  if (window.visualViewport) {
+    const vv = window.visualViewport;
+    vv.addEventListener('resize', () => {
+      if (login.classList.contains('hidden')) return;
+      const shrunk = (window.innerHeight - vv.height) > 120;
+      if (!shrunk && open && !isField(document.activeElement)) setOpen(false);
+    }, { passive: true });
+  }
 })();
 </script>
 
