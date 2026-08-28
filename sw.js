@@ -1,6 +1,6 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
-const CACHE_NAME = 'mw-shell-v3';
+const CACHE_NAME = 'mw-shell-v4';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
@@ -71,7 +71,37 @@ self.addEventListener('fetch', (event) => {
       cache.match(req).then((cacheado) => {
         const naRede = fetch(req)
           .then((res) => {
-            if (res && res.ok) cache.put(req, res.clone()).catch(() => {});
+            if (res && res.ok) {
+              /* AVISO DE VERSÃO NOVA.
+
+                 Stale-while-revalidate tem um efeito colateral
+                 conhecido: a versão recém-publicada só apareceria na
+                 PRÓXIMA abertura, porque esta já respondeu do cache. Do
+                 lado de cá isso vira "abri o app e o problema ainda
+                 está lá; só some se eu fechar e abrir de novo".
+
+                 A resposta nova é comparada com a que estava em cache
+                 pelo ETag (ou Last-Modified, quando o servidor não
+                 manda ETag). Sendo diferente, os clientes são avisados
+                 — e a PÁGINA decide o que fazer: recarregar no meio de
+                 uma edição do usuário seria pior que a espera.
+
+                 O aviso sai só DEPOIS de o cache.put resolver. Avisando
+                 antes, a página recarregava, a recarga era servida do
+                 cache que ainda era o antigo, e a trava anti-laço
+                 impedia uma segunda tentativa — ficava presa na versão
+                 velha. Foi exatamente o que aconteceu no primeiro
+                 teste. */
+              const antigo = cacheado &&
+                (cacheado.headers.get('etag') || cacheado.headers.get('last-modified'));
+              const atual = res.headers.get('etag') || res.headers.get('last-modified');
+              const mudou = !!(cacheado && atual && antigo && atual !== antigo);
+              cache.put(req, res.clone()).then(() => {
+                if (!mudou) return;
+                return self.clients.matchAll({ includeUncontrolled: true })
+                  .then((cs) => cs.forEach((c) => c.postMessage({ tipo: 'mw-versao-nova' })));
+              }).catch(() => {});
+            }
             return res;
           })
           .catch(() => cacheado || cache.match('./index.html'));
