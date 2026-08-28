@@ -2807,6 +2807,32 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
   </div>
   <div class="mwb-espera"><i id="mwBootBarFill"></i></div>
 </div>
+<script>
+/* ============================================================
+   O PORTÃO DA ORDEM DO BOOT
+   ============================================================
+   window.mwBootPronto só resolve depois que a transição de saída do
+   preloader terminou por completo. Quem depende disso — hoje a
+   autenticação biométrica — espera esta promessa em vez de chutar um
+   setTimeout.
+
+   Ela é criada AQUI, logo depois do markup do loader, e não lá embaixo
+   junto com o resto do script de boot, por uma razão de ordem: o
+   script do Face ID é lido ANTES daquele trecho. Se a promessa
+   nascesse lá, no momento em que o Face ID fosse consultá-la ela ainda
+   seria undefined — e ele cairia no comportamento antigo, disparando
+   na hora.
+
+   O teto de 8s é rede de segurança: se por qualquer motivo o script de
+   boot não rodar (erro de parse, markup removido), ninguém pode ficar
+   preso esperando para sempre. */
+(function(){
+  var liberar;
+  window.mwBootPronto = new Promise(function(res){ liberar = res; });
+  window.mwLiberarBoot = function(){ if (liberar) { liberar(); liberar = null; } };
+  setTimeout(window.mwLiberarBoot, 8000);
+})();
+</script>
 <style id="mwv2-login-style">
 /* ============================================================
    TELA DE LOGIN V2 — nav lateral + hero + formulário deslizante,
@@ -3683,6 +3709,28 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
   function revealApp(){ loginScreen.classList.add('hidden'); app.classList.remove('hidden'); }
   function revealLogin(){ if (gate) gate.classList.add('hidden'); loginScreen.classList.remove('hidden'); app.classList.add('hidden'); }
 
+  /* ============================================================
+     ORDEM DO BOOT — a biometria é a ÚLTIMA coisa
+     ============================================================
+     Antes, este trecho rodava de forma síncrona durante a leitura do
+     documento: mostrava o portão e, 80ms depois, chamava
+     navigator.credentials.get(). Como a folha nativa do Face ID desenha
+     por cima de TUDO, ela subia em cima do preloader — no meio da
+     animação de entrada. Era esse o problema.
+
+     A separação agora é explícita:
+
+       prepararPortao()  monta a tela e os botões ATRÁS do loader, para
+                         que a revelação mostre o portão, e nunca o
+                         login nem o workspace meio montado. Não toca
+                         no sensor.
+
+       pedirBiometria()  só é chamado depois que window.mwBootPronto
+                         resolve — ou seja, depois que a transição de
+                         saída terminou e o preloader já saiu do DOM.
+
+     A ordem resultante é exatamente a pedida:
+       fundo -> animação -> finalização -> Face ID -> workspace. */
   function runFaceIdGate(){
     var gateBtn = document.getElementById('mwFaceIdGateBtn');
     var fallbackBtn = document.getElementById('mwFaceIdGateFallback');
@@ -3704,17 +3752,25 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
     };
     gateBtn && gateBtn.addEventListener('click', attempt);
     fallbackBtn && fallbackBtn.addEventListener('click', function(){ gate.classList.add('hidden'); revealLogin(); });
+    /* O portão fica montado por baixo do preloader. Ele tem o mesmo
+       fundo escuro da animação, então quando a revelação cruza não há
+       mudança brusca nem lampejo — o azul continua. */
+    loginScreen.classList.add('hidden');
     gate.classList.remove('hidden');
-    // Melhor esforço: tenta autenticar assim que a tela aparece; se o
-    // navegador exigir um toque pra liberar o sensor, o botão "Continuar
-    // com Face ID" acima continua funcionando normalmente com um toque.
-    setTimeout(attempt, 80);
+    return attempt;
   }
 
   try {
     if (localStorage.getItem('mwSession') === '1') {
       if (isEnabled() && isIOS && hasWebAuthn && gate) {
-        runFaceIdGate();
+        var pedirBiometria = runFaceIdGate();
+        /* AQUI está a ordem. O sensor só é acionado quando a promessa
+           resolve, e ela só resolve depois de o preloader sair de vez.
+           Se algo der errado com a promessa, o botão "Continuar com
+           Face ID" continua disponível — o usuário nunca fica preso. */
+        (window.mwBootPronto || Promise.resolve())
+          .then(function(){ requestAnimationFrame(pedirBiometria); })
+          .catch(function(){});
       } else {
         loginScreen.classList.add('hidden');
         app.classList.remove('hidden');
@@ -3756,14 +3812,10 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
   var MW_BOOT_SAIDA = 520;   // igual à duração das animações de saída
   var mwBootDone = false;
 
-  /* SINAL DE CONCLUSÃO — a ordem do fluxo depende disto.
-     Quem precisa esperar a transição terminar (a autenticação
-     biométrica, principalmente) não deve chutar um setTimeout: espera
-     esta promessa. Ela resolve DEPOIS que o preloader saiu de vez. */
-  var mwBootResolver;
-  window.mwBootPronto = new Promise(function(res){ mwBootResolver = res; });
+  /* A promessa já foi criada logo abaixo do markup do loader (ver o
+     comentário lá). Aqui só a liberamos, no instante certo. */
   function mwBootSinaliza(){
-    if (mwBootResolver) { mwBootResolver(); mwBootResolver = null; }
+    if (window.mwLiberarBoot) window.mwLiberarBoot();
     document.dispatchEvent(new CustomEvent('mw:boot-fim'));
   }
 
