@@ -2850,7 +2850,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
           <p class="mwv2-switch-text">Já tem conta? <button type="button" data-switch="signin">Entrar.</button></p>
 
           <label for="newUsername">Nome de usuário</label>
-          <div class="mwv2-input-wrap"><input id="newUsername" required pattern="[A-Za-z0-9._-]{3,20}" placeholder="Nome de usuário"></div>
+          <div class="mwv2-input-wrap"><input id="newUsername" required pattern="[A-Za-z0-9._\-]{3,20}" placeholder="Nome de usuário"></div>
 
           <label for="newEmail">E-mail</label>
           <div class="mwv2-input-wrap"><input id="newEmail" type="email" required placeholder="E-mail"></div>
@@ -3622,6 +3622,22 @@ window.persistWorkspace = persistWorkspace;
 window.applyTheme = applyTheme;
 window.renderAll = renderAll;
 window.loadProfileFields = loadProfileFields;
+/* "save" precisava ficar acessível fora deste IIFE pelo mesmo motivo dos
+   quatro globais acima: os painéis de Disciplinas/Projetos/Atividades/
+   Anotações (mw-area-workspace-interactions, adicionado bem depois) e o
+   diálogo de exclusão deles chamam save() esperando que exista global —
+   sem isso, todo "Salvar"/"Excluir" desses painéis lançava
+   "ReferenceError: save is not defined" no meio do handler, então nada
+   era persistido no localStorage (o item só existia em memória até a
+   próxima navegação) e o restante do handler — fechar o painel, atualizar
+   a lista, mostrar o toast — nunca rodava. */
+window.save = save;
+/* Mesmo problema do save() acima: os painéis de Disciplinas/Projetos/
+   Atividades/Anotações chamam toast(...) na última linha do handler para
+   confirmar "Salvo"/"Excluído" — sem expor global, essa chamada lançava
+   ReferenceError depois que os dados já tinham sido salvos, então o dado
+   ficava salvo corretamente mas o usuário nunca via a confirmação. */
+window.toast = toast;
 })();
 </script>
 <script>
@@ -3660,7 +3676,7 @@ window.loadProfileFields = loadProfileFields;
   /* Account creation */
   const create=q('#createAccountLink');
   function authModal(title,html){let m=q('#accountModal');if(!m){m=document.createElement('div');m.id='accountModal';m.className='modal';document.body.appendChild(m)}m.innerHTML=`<div class="modal-box auth-modal-card"><div class="modal-head"><h3>${title}</h3><button class="close" data-close>×</button></div>${html}</div>`;m.classList.remove('hidden');m.querySelector('[data-close]').onclick=()=>m.classList.add('hidden');return m}
-  create?.addEventListener('click',()=>{const m=authModal('Criar sua conta',`<form id="createForm"><div class="form-field"><label>Nome completo</label><input id="newName" required placeholder="Ex.: Mateus Silva"></div><div class="form-field"><label>Nome de usuário</label><input id="newUsername" required pattern="[A-Za-z0-9._-]{3,20}" placeholder="Ex.: mateus.dev"><small class="field-hint">3–20 caracteres: letras, números, ponto, hífen ou sublinhado.</small></div><div class="form-field"><label>E-mail</label><input id="newEmail" type="email" required placeholder="voce@exemplo.com"></div><div class="form-field"><label>Senha</label><input id="newPass" type="password" required placeholder="Escolha uma senha segura"></div><div class="form-field"><label>Confirmar senha</label><input id="newPass2" type="password" required placeholder="Digite a senha novamente"></div><div class="form-error" id="createError"></div><div class="profile-actions"><button class="save-btn" type="submit">Criar conta</button></div><p style="color:var(--muted);font-size:12px">Sua conta e seus dados ficam separados por usuário neste navegador.</p></form>`);m.querySelector('#createForm').onsubmit=e=>{e.preventDefault();const u=users(),name=m.querySelector('#newName').value.trim(),username=m.querySelector('#newUsername').value.trim(),email=m.querySelector('#newEmail').value.trim().toLowerCase(),p=m.querySelector('#newPass').value,p2=m.querySelector('#newPass2').value,err=m.querySelector('#createError');const usernames=Object.values(u).map(x=>(x.username||'').toLowerCase());if(!/^[A-Za-z0-9._-]{3,20}$/.test(username)){err.textContent='Nome de usuário inválido. Use 3–20 caracteres.';return}if(usernames.includes(username.toLowerCase())){err.textContent='Esse nome de usuário já está em uso. Escolha outro.';return}if(u[email]){err.textContent='Este e-mail já possui uma conta.';return}if(p!==p2){err.textContent='As senhas não coincidem.';return}if(!p){err.textContent='Digite uma senha.';return}u[email]={name,username,email,password:p,data:defaultData(name,email)};saveUsers(u);m.classList.add('hidden');userInput.value=email;passInput.value='';refreshLogin();notify('Conta criada com sucesso. Agora você pode entrar.');};});
+  create?.addEventListener('click',()=>{const m=authModal('Criar sua conta',`<form id="createForm"><div class="form-field"><label>Nome completo</label><input id="newName" required placeholder="Ex.: Mateus Silva"></div><div class="form-field"><label>Nome de usuário</label><input id="newUsername" required pattern="[A-Za-z0-9._\-]{3,20}" placeholder="Ex.: mateus.dev"><small class="field-hint">3–20 caracteres: letras, números, ponto, hífen ou sublinhado.</small></div><div class="form-field"><label>E-mail</label><input id="newEmail" type="email" required placeholder="voce@exemplo.com"></div><div class="form-field"><label>Senha</label><input id="newPass" type="password" required placeholder="Escolha uma senha segura"></div><div class="form-field"><label>Confirmar senha</label><input id="newPass2" type="password" required placeholder="Digite a senha novamente"></div><div class="form-error" id="createError"></div><div class="profile-actions"><button class="save-btn" type="submit">Criar conta</button></div><p style="color:var(--muted);font-size:12px">Sua conta e seus dados ficam separados por usuário neste navegador.</p></form>`);m.querySelector('#createForm').onsubmit=e=>{e.preventDefault();const u=users(),name=m.querySelector('#newName').value.trim(),username=m.querySelector('#newUsername').value.trim(),email=m.querySelector('#newEmail').value.trim().toLowerCase(),p=m.querySelector('#newPass').value,p2=m.querySelector('#newPass2').value,err=m.querySelector('#createError');const usernames=Object.values(u).map(x=>(x.username||'').toLowerCase());if(!/^[A-Za-z0-9._-]{3,20}$/.test(username)){err.textContent='Nome de usuário inválido. Use 3–20 caracteres.';return}if(usernames.includes(username.toLowerCase())){err.textContent='Esse nome de usuário já está em uso. Escolha outro.';return}if(u[email]){err.textContent='Este e-mail já possui uma conta.';return}if(p!==p2){err.textContent='As senhas não coincidem.';return}if(!p){err.textContent='Digite uma senha.';return}u[email]={name,username,email,password:p,data:defaultData(name,email)};saveUsers(u);m.classList.add('hidden');userInput.value=email;passInput.value='';refreshLogin();notify('Conta criada com sucesso. Agora você pode entrar.');};});
 
   /* legacy recovery modal disabled; login-only OTP controller handles recovery */
 
@@ -4860,6 +4876,19 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
           const greeting=q('.hello h2');
           if(greeting)greeting.textContent='Olá, '+username+'! 👋';
           window.scrollTo(0,0);
+
+          /* Sem isto, "mwFinalBusy" ficava travado em '1' pra sempre: o
+             guard no início do submit (if(clean.dataset.mwFinalBusy==='1')
+             return;) bloqueava qualquer conta seguinte criada na mesma
+             aba (ex.: sair e criar outra conta sem recarregar a página) —
+             o clique em "Criar conta" simplesmente não fazia nada, sem
+             nenhum erro visível. Resetar aqui permite criar quantas
+             contas o usuário quiser na mesma sessão do navegador. */
+          clean.dataset.mwFinalBusy='0';
+          btn.disabled=false;
+          btn.classList.remove('mw-success');
+          if(car)car.style.left='';
+          clean.reset();
         },2000);
       }
     }
@@ -14327,6 +14356,48 @@ html body #app .mw-reference-sidebar .mw-reference-profile .mw-profile-main{
   padding-left:19px!important;
 }
 </style>
+
+<script id="mw-account-data-resync-fix">
+(()=>{
+  /* Bug: entrar, criar conta, trocar de conta ou recuperar senha sempre
+     grava a conta certa em "mateusWorkspaceV4"/"mateusWorkspaceUsersV2"
+     no localStorage — isso nunca foi o problema. O problema é que a
+     variável global "data" (usada por save()/persistWorkspace()/
+     renderAll() no primeiro <script> da página) só é lida do localStorage
+     UMA vez, no carregamento inicial da página. Como nenhum dos vários
+     fluxos de login/criação de conta/demo recarrega a página, "data" em
+     memória continuava sendo da sessão anterior (ou vazia). Qualquer ação
+     de salvar depois disso (adicionar disciplina, editar perfil, mudar
+     tema) chamava persistWorkspace(), que serializa essa "data" antiga
+     por cima dos dados corretos — apagando o que já existia na conta.
+     Todo caminho de entrada no app (login, criar conta, demo, OTP,
+     Face ID) sem exceção remove a classe "hidden" de #app depois de
+     gravar no localStorage; observar essa única transição garante que a
+     "data" em memória seja recarregada do storage certo sempre que uma
+     conta é revelada, sem precisar tocar em cada um desses fluxos. */
+  const app=document.getElementById('app');
+  if(!app) return;
+  const defaults={subjects:[],projects:[],activities:[],notes:[],profile:{name:'Mateus',email:'',photo:''},theme:'dark'};
+  function reloadWorkspaceData(){
+    try{
+      window.data={...defaults,...JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}')};
+    }catch{
+      window.data={...defaults};
+    }
+    window.applyTheme?.();
+    window.renderAll?.();
+    window.loadProfileFields?.();
+    window.mwSyncAvatars?.();
+    window.mwSyncBottomNavActive?.();
+  }
+  let wasHidden=app.classList.contains('hidden');
+  new MutationObserver(()=>{
+    const isHidden=app.classList.contains('hidden');
+    if(wasHidden&&!isHidden) reloadWorkspaceData();
+    wasHidden=isHidden;
+  }).observe(app,{attributes:true,attributeFilter:['class']});
+})();
+</script>
 
 </body>
 </html>
