@@ -2537,109 +2537,269 @@ body.light #app .calendar-card .calendar-nav button:hover{
 </head>
 <body>
 <style id="mw-boot-loader-style">
-/* Tela de carregamento: cobre tudo desde o primeiro instante, então a
-   decisão "voltar pro login ou pro dashboard" (mais abaixo) nunca aparece
-   como um flash — ela acontece por trás, escondida, e só then o loader some.
-   Preloader 100% desenhado (sem foto): núcleo com o monograma, dois anéis
-   girando em sentidos opostos, três faíscas orbitando, barra de progresso
-   real sincronizada com o tempo de exibição e contador percentual. */
-#mwBootLoader{position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;overflow:hidden;background:radial-gradient(circle at 20% 45%,rgba(37,99,235,.19),transparent 32%),radial-gradient(circle at 85% 15%,rgba(124,92,255,.15),transparent 30%),radial-gradient(circle at 50% 100%,rgba(56,189,248,.10),transparent 40%),linear-gradient(135deg,#020617,#061226 55%,#020617);transition:opacity .5s ease}
+/* ============================================================
+   TELA DE CARREGAMENTO — abertura de marca, não spinner
+   ============================================================
+   A versão anterior era um "loader genérico": dois anéis girando em
+   loop, três faíscas orbitando, barra e percentual sempre visíveis.
+   Loop é o oposto de abertura de marca — um anel que gira para sempre
+   não conta nada, só informa "espere".
+
+   A referência (abertura do Crunchyroll, medida quadro a quadro na
+   gravação a 60fps) tem uma NARRATIVA com começo, clímax e fim, e
+   nenhum spinner:
+     1150ms  um anel aparece sozinho no centro da tela
+     1450ms  o anel colapsa num arco fino — a energia se concentra
+     1650ms  ESTOURO: as letras entram espalhadas, com faíscas
+     1750ms  as letras se materializam fora de cor
+     2450ms  lockup final, estável
+   Duração da animação: ~1300ms. Depois ela SEGURA e some.
+
+   Um detalhe que a medição revelou e que faz metade do efeito: o anel
+   inicial está no centro exato da tela (x=294 de 590) e o lockup final
+   também (x=294,5) — ou seja, a MARCA começa centrada e DESLIZA PARA A
+   ESQUERDA enquanto o nome se abre à direita, de modo que o conjunto
+   permaneça sempre centrado. Sem isso, o nome parece empurrado; com
+   isso, parece que ele nasceu de dentro da marca.
+
+   Aqui a mesma estrutura, com a identidade do Workspace e dentro de
+   1100ms — que é exatamente o piso que o preloader já tinha
+   (MW_BOOT_MIN). Ou seja: nenhum atraso novo foi introduzido, a
+   animação só passou a ocupar um tempo que já existia.
+
+   Tudo é HTML + CSS puro, sem depender de JS: o loader é a primeira
+   coisa que a tela mostra e precisa animar antes de qualquer script. */
+#mwBootLoader{
+  position:fixed;inset:0;z-index:99999;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 46%,rgba(37,99,235,.16),transparent 46%),
+    radial-gradient(circle at 82% 12%,rgba(124,92,255,.10),transparent 34%),
+    linear-gradient(160deg,#020617,#050f21 55%,#020617);
+  transition:opacity .5s ease;
+}
 #mwBootLoader.mw-boot-hide{opacity:0;pointer-events:none}
-#mwBootLoader::before,#mwBootLoader::after{content:"";position:absolute;border-radius:50%;filter:blur(1px);pointer-events:none;background:radial-gradient(circle,rgba(255,255,255,.5),transparent 70%);animation:mwBootDrift 7s ease-in-out infinite}
-#mwBootLoader::before{width:3px;height:3px;top:28%;left:22%;animation-delay:-1.5s}
-#mwBootLoader::after{width:2px;height:2px;top:68%;left:76%;animation-delay:-4s}
-@keyframes mwBootDrift{0%,100%{transform:translate(0,0);opacity:.25}50%{transform:translate(14px,-18px);opacity:.85}}
 
-.mw-boot-orbit{position:relative;width:132px;height:132px;display:grid;place-items:center;animation:mwBootOrbitIn .6s cubic-bezier(.22,.9,.3,1.2) both}
-@keyframes mwBootOrbitIn{0%{opacity:0;transform:scale(.7)}100%{opacity:1;transform:scale(1)}}
+/* O palco carrega o deslocamento do conjunto. --mw-boot-shift é a
+   metade da largura do nome mais o vão: com ele, no primeiro quadro a
+   MARCA está no centro exato da tela; no último, o conjunto inteiro é
+   que está. */
+.mw-boot-stage{
+  --mw-mark:62px;
+  --mw-gap:14px;
+  /* Valor de segurança: o script logo abaixo do markup MEDE o nome e
+     corrige isto antes do primeiro quadro. Cravar o número à mão não
+     funciona — medido, o deslocamento certo é 130px numa tela de 375 e
+     147px numa de 430, e um chute de 104px deixava a marca 38px à
+     esquerda do centro da tela, quebrando justamente o efeito de "o
+     nome nasceu de dentro da marca". */
+  --mw-boot-shift:147px;
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+  gap:var(--mw-gap);
+  transform:translateX(var(--mw-boot-shift));
+  animation:mwBootRecentre .58s cubic-bezier(.22,.72,.24,1) .52s both;
+}
+@keyframes mwBootRecentre{from{transform:translateX(var(--mw-boot-shift))}to{transform:translateX(0)}}
 
-.mw-boot-glow{position:absolute;inset:-14px;border-radius:50%;background:radial-gradient(circle,rgba(56,189,248,.38),rgba(124,92,255,.12) 55%,transparent 72%);animation:mwBootGlow 2.4s ease-in-out infinite;pointer-events:none}
-@keyframes mwBootGlow{0%,100%{opacity:.55;transform:scale(.9)}50%{opacity:1;transform:scale(1.1)}}
+/* ---------- 1) O anel que aparece sozinho ---------- */
+/* Anel, estouro e faíscas partem do CENTRO DA MARCA, não do canto do
+   palco — senão o estouro acontece 6 a 9px fora do lugar de onde a
+   marca nasce, e o olho percebe. */
+.mw-boot-seed{
+  position:absolute;left:calc(var(--mw-mark) / 2);top:50%;
+  width:96px;height:96px;margin:-48px 0 0 -48px;
+  pointer-events:none;
+  animation:mwBootSeedOut .16s ease .42s both;
+}
+.mw-boot-seed circle{
+  fill:none;stroke:url(#mwBootRing);stroke-width:5;stroke-linecap:round;
+  stroke-dasharray:270;stroke-dashoffset:270;
+  animation:mwBootDraw .34s cubic-bezier(.4,0,.2,1) .08s forwards;
+}
+@keyframes mwBootDraw{to{stroke-dashoffset:0}}
+/* O colapso: o anel achata e some, entregando a energia ao estouro. */
+@keyframes mwBootSeedOut{
+  from{opacity:1;transform:scaleY(1) scaleX(1)}
+  to{opacity:0;transform:scaleY(.06) scaleX(.72)}
+}
 
-.mw-boot-ring{position:absolute;border-radius:50%}
-.mw-boot-ring-a{inset:0;padding:2px;background:conic-gradient(from 0deg,#67e8f9,#7c5cff,#2563eb,transparent 58%,#67e8f9);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 2.5px),#000 calc(100% - 2.5px));mask:radial-gradient(farthest-side,transparent calc(100% - 2.5px),#000 calc(100% - 2.5px));animation:mwBootSpin 2.1s linear infinite}
-.mw-boot-ring-b{inset:16px;border:1.5px dashed rgba(148,197,255,.38);animation:mwBootSpinReverse 3.4s linear infinite}
-@keyframes mwBootSpin{to{transform:rotate(360deg)}}
-@keyframes mwBootSpinReverse{to{transform:rotate(-360deg)}}
+/* ---------- 2) O estouro ---------- */
+.mw-boot-flash{
+  position:absolute;left:calc(var(--mw-mark) / 2);top:50%;
+  width:96px;height:96px;margin:-48px 0 0 -48px;
+  border-radius:50%;pointer-events:none;
+  border:2px solid rgba(147,197,253,.9);
+  opacity:0;
+  /* forwards, e NÃO both: com "both" o navegador aplica o quadro 0%
+     durante o atraso, e o quadro 0% do estouro é opacity .9 — o anel
+     ficava visível desde o primeiro instante, estragando a entrada.
+     Com "forwards" ele usa o estilo normal (opacity:0) enquanto espera. */
+  animation:mwBootFlash .46s cubic-bezier(.16,.8,.3,1) .54s forwards;
+}
+@keyframes mwBootFlash{
+  0%{opacity:.9;transform:scale(.5);border-width:3px}
+  100%{opacity:0;transform:scale(2.5);border-width:0}
+}
+.mw-boot-spark{
+  position:absolute;left:calc(var(--mw-mark) / 2);top:50%;
+  width:4px;height:4px;margin:-2px 0 0 -2px;
+  border-radius:50%;pointer-events:none;opacity:0;
+  background:#bae6fd;box-shadow:0 0 8px 2px rgba(186,230,253,.6);
+  animation:mwBootSpark .5s cubic-bezier(.12,.7,.3,1) both;
+  animation-delay:calc(.54s + var(--d,0ms));
+}
+@keyframes mwBootSpark{
+  0%{opacity:0;transform:rotate(var(--a)) translateX(14px) scale(.4)}
+  22%{opacity:1}
+  100%{opacity:0;transform:rotate(var(--a)) translateX(var(--r,86px)) scale(.2)}
+}
 
-.mw-boot-spark-layer{position:absolute;inset:0;animation:mwBootSpin 2.1s linear infinite}
-.mw-boot-spark{position:absolute;top:50%;left:50%;width:5px;height:5px;border-radius:50%;background:#a5f3ff;box-shadow:0 0 10px 2px rgba(165,243,255,.75)}
-.mw-boot-spark.s1{transform:translate(-50%,-50%) rotate(0deg) translateX(66px)}
-.mw-boot-spark.s2{transform:translate(-50%,-50%) rotate(120deg) translateX(66px);opacity:.75;background:#c4b5fd;box-shadow:0 0 10px 2px rgba(196,181,253,.7)}
-.mw-boot-spark.s3{transform:translate(-50%,-50%) rotate(240deg) translateX(66px);opacity:.55;background:#93c5fd;box-shadow:0 0 8px 2px rgba(147,197,253,.65)}
-
-.mw-boot-mark{position:relative;z-index:1;width:64px;height:64px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(145deg,#3b82f6,#1d4ed8,#7c5cff);box-shadow:0 14px 30px -10px rgba(37,99,235,.6),inset 0 1px 0 rgba(255,255,255,.25);animation:mwBootBreathe 2.4s ease-in-out infinite}
-@keyframes mwBootBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.045)}}
-
-/* O M e o W são DESENHADOS, não simplesmente exibidos. Cada letra é um
-   traço SVG cujo tracejado começa totalmente "vazio" e se preenche —
-   é a construção que dá a sensação de sistema inicializando. Tudo em
-   stroke-dashoffset e opacity, propriedades que o compositor anima sem
-   custo de layout, sem nenhum JavaScript por quadro. */
+/* ---------- 3) A marca sai de dentro do estouro ---------- */
+.mw-boot-mark{
+  position:relative;z-index:1;flex:none;
+  width:var(--mw-mark);height:var(--mw-mark);border-radius:calc(var(--mw-mark) * .3);
+  display:grid;place-items:center;
+  background:linear-gradient(145deg,#3b82f6,#1d4ed8 55%,#7c5cff);
+  box-shadow:0 16px 34px -12px rgba(37,99,235,.65),inset 0 1px 0 rgba(255,255,255,.28);
+  animation:mwBootMarkIn .42s cubic-bezier(.2,1.5,.4,1) .54s both;
+}
+@keyframes mwBootMarkIn{
+  0%{opacity:0;transform:scale(.28)}
+  100%{opacity:1;transform:scale(1)}
+}
 .mw-boot-glyph{width:38px;height:26px;overflow:visible}
-.mw-boot-stroke{
-  /* 96 cobre com folga o comprimento de cada traço; o excesso apenas
-     mantém o traço oculto por mais tempo, o que é inofensivo. */
-  stroke-dasharray:96;stroke-dashoffset:96;
-  filter:drop-shadow(0 1px 3px rgba(3,12,32,.45));
-  animation:mwBootDraw .85s cubic-bezier(.5,0,.2,1) forwards;
+
+/* ---------- 4) O nome se materializa letra a letra ---------- */
+.mw-boot-word{
+  position:relative;z-index:1;
+  /* Pilha de sistema de propósito: a splash é a primeira coisa que
+     aparece e não pode esperar webfont. Se a Inter chegasse no meio, a
+     largura do nome mudaria e o deslocamento medido ficaria errado. */
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,ui-sans-serif,system-ui,sans-serif;
+  font-size:27px;font-weight:800;letter-spacing:-.018em;
+  color:#eaf3ff;white-space:nowrap;line-height:1;
 }
-.mw-boot-stroke-m{animation-delay:.12s}
-.mw-boot-stroke-w{animation-delay:.34s}
-@keyframes mwBootDraw{from{stroke-dashoffset:96}to{stroke-dashoffset:0}}
-@media(prefers-reduced-motion:reduce){
-  /* Sem movimento: as letras simplesmente já estão desenhadas. */
-  .mw-boot-stroke{animation:none!important;stroke-dashoffset:0!important}
-  .mw-boot-mark{animation:none!important}
+/* Cada letra entra da sua própria direção, como no estouro da
+   referência: deslocada, girada e menor, assentando com um leve
+   passo além. O atraso é escalonado por --i, então o nome se escreve
+   em cascata em vez de aparecer inteiro. */
+.mw-boot-word i{
+  display:inline-block;font-style:normal;
+  opacity:0;
+  transform:translate(var(--x,0px),var(--y,0px)) rotate(var(--r,0deg)) scale(.6);
+  animation:mwBootLetter .46s cubic-bezier(.2,1.35,.35,1) both;
+  animation-delay:calc(.6s + var(--i) * 26ms);
+}
+@keyframes mwBootLetter{
+  0%{opacity:0;transform:translate(var(--x,0px),var(--y,0px)) rotate(var(--r,0deg)) scale(.6)}
+  60%{opacity:1}
+  100%{opacity:1;transform:translate(0,0) rotate(0) scale(1)}
+}
+.mw-boot-word .mw-boot-sp{width:.28em}
+/* Um brilho passa uma única vez quando tudo já assentou — o acabamento,
+   não um loop. */
+.mw-boot-word::after{
+  content:"";position:absolute;inset:-2px -8px;pointer-events:none;
+  background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.5) 50%,transparent 62%);
+  mix-blend-mode:overlay;opacity:0;
+  animation:mwBootSheen .7s ease 1.02s both;
+}
+@keyframes mwBootSheen{
+  0%{opacity:0;transform:translateX(-42%)}
+  35%{opacity:1}
+  100%{opacity:0;transform:translateX(42%)}
 }
 
-.mw-boot-copy{display:flex;flex-direction:column;align-items:center;gap:12px;animation:mwBootTextIn .5s ease .15s both}
-@keyframes mwBootTextIn{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:translateY(0)}}
-.mw-boot-text{margin:0;position:relative;font-family:Inter,ui-sans-serif,system-ui,sans-serif;font-size:12.5px;letter-spacing:.06em;text-align:center;text-transform:uppercase;background:linear-gradient(90deg,#8da4c7 0%,#8da4c7 40%,#eaf5ff 50%,#8da4c7 60%,#8da4c7 100%);background-size:240% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:mwBootShimmer 2.6s linear infinite}
-@keyframes mwBootShimmer{0%{background-position:120% 0}100%{background-position:-120% 0}}
-.mw-boot-bar{width:148px;height:3px;border-radius:99px;background:rgba(148,163,184,.18);overflow:hidden}
-.mw-boot-bar i{display:block;height:100%;width:0%;border-radius:inherit;background:linear-gradient(90deg,#38bdf8,#7c5cff);transition:width .12s linear}
-.mw-boot-percent{font-family:Inter,ui-sans-serif,system-ui,sans-serif;font-size:11px;font-weight:700;letter-spacing:.03em;color:#67e8f9;font-variant-numeric:tabular-nums}
-
-@media(prefers-reduced-motion:reduce){
-  .mw-boot-orbit,.mw-boot-copy{animation:none!important;opacity:1!important;transform:none!important}
-  .mw-boot-glow,.mw-boot-ring-a,.mw-boot-ring-b,.mw-boot-spark-layer,.mw-boot-mark,.mw-boot-text,#mwBootLoader::before,#mwBootLoader::after{animation:none!important}
-  .mw-boot-bar i{transition:none!important}
+/* ---------- 5) Espera longa: um fio, e só se precisar ---------- */
+/* A referência não tem barra nem percentual — e uma barra que aparece
+   sempre acusa espera mesmo quando não há espera nenhuma. Aqui o fio
+   só nasce depois de 1,25s: num boot rápido ninguém o vê, e num boot
+   lento ele dá o retorno necessário. */
+.mw-boot-wait{
+  position:absolute;left:50%;bottom:14%;transform:translateX(-50%);
+  width:132px;height:2px;border-radius:99px;
+  background:rgba(148,163,184,.16);overflow:hidden;
+  opacity:0;animation:mwBootWaitIn .45s ease 1.25s both;
 }
-/* Animação de entrada: toca por baixo do loader enquanto ele desaparece
-   (crossfade), em qualquer uma das três telas que podem ficar visíveis
-   ao final do boot — login, o app direto, ou a tela do Face ID. */
+@keyframes mwBootWaitIn{to{opacity:1}}
+.mw-boot-wait i{
+  display:block;height:100%;width:0%;border-radius:inherit;
+  background:linear-gradient(90deg,#38bdf8,#7c5cff);
+  transition:width .18s linear;
+}
+
+/* Medido: em 320px o conjunto ocupava 316,4px numa tela de 320 — 1,8px
+   de folga de cada lado. Encolhe em dois degraus para o lockup nunca
+   encostar na borda. */
+@media(max-width:400px){
+  .mw-boot-stage{--mw-mark:56px;--mw-gap:12px}
+  .mw-boot-word{font-size:24px}
+}
+@media(max-width:359px){
+  .mw-boot-stage{--mw-mark:50px;--mw-gap:10px}
+  .mw-boot-word{font-size:21px}
+}
+
+/* Sem movimento: o lockup final, já montado, sem estouro nem cascata. */
+@media(prefers-reduced-motion:reduce){
+  .mw-boot-stage{animation:none!important;transform:none!important}
+  .mw-boot-seed,.mw-boot-flash,.mw-boot-spark{display:none!important}
+  .mw-boot-mark,.mw-boot-word i{animation:none!important;opacity:1!important;transform:none!important}
+  .mw-boot-word::after{display:none!important}
+  .mw-boot-wait{animation:none!important;opacity:1!important}
+  .mw-boot-wait i{transition:none!important}
+}
+
+/* A revelação do que está por trás continua igual. */
 body.mw-boot-revealing #loginScreen:not(.hidden),
 body.mw-boot-revealing #app:not(.hidden),
 body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
-  animation:mwAppRevealIn .65s cubic-bezier(.22,.9,.3,1) both;
+  animation:mwBootReveal .62s cubic-bezier(.22,.9,.3,1) both;
 }
-@keyframes mwAppRevealIn{
-  0%{opacity:0;transform:scale(.985) translateY(10px);filter:blur(6px)}
-  100%{opacity:1;transform:scale(1) translateY(0);filter:blur(0)}
-}
+@keyframes mwBootReveal{0%{opacity:0;transform:scale(.985)}100%{opacity:1;transform:scale(1)}}
 @media(prefers-reduced-motion:reduce){
   body.mw-boot-revealing #loginScreen:not(.hidden),
   body.mw-boot-revealing #app:not(.hidden),
-  body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
-    animation:none!important;
-  }
+  body.mw-boot-revealing #mwFaceIdGate:not(.hidden){animation:none!important}
 }
 </style>
 <div id="mwBootLoader" aria-hidden="true">
-  <div class="mw-boot-orbit">
-    <span class="mw-boot-glow"></span>
-    <span class="mw-boot-ring mw-boot-ring-a"></span>
-    <span class="mw-boot-ring mw-boot-ring-b"></span>
-    <span class="mw-boot-spark-layer"><span class="mw-boot-spark s1"></span><span class="mw-boot-spark s2"></span><span class="mw-boot-spark s3"></span></span>
-    <span class="mw-boot-mark"><svg class="mw-boot-glyph" viewBox="0 0 64 44" fill="none" aria-hidden="true"><path class="mw-boot-stroke mw-boot-stroke-m" d="M6 34.5V11.5L17 26.5L28 11.5V34.5" stroke="url(#mwBootGrad)" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/><path class="mw-boot-stroke mw-boot-stroke-w" d="M36 11.5V34.5L47 19.5L58 34.5V11.5" stroke="url(#mwBootGrad)" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="mwBootGrad" x1="6" y1="11" x2="58" y2="35" gradientUnits="userSpaceOnUse"><stop stop-color="#7dd3fc"/><stop offset=".55" stop-color="#ffffff"/><stop offset="1" stop-color="#c4b5fd"/></linearGradient></defs></svg></span>
+  <div class="mw-boot-stage">
+    <svg class="mw-boot-seed" viewBox="0 0 96 96" aria-hidden="true"><defs><linearGradient id="mwBootRing" x1="0" y1="0" x2="96" y2="96" gradientUnits="userSpaceOnUse"><stop stop-color="#67e8f9"/><stop offset=".5" stop-color="#3b82f6"/><stop offset="1" stop-color="#7c5cff"/></linearGradient></defs><circle cx="48" cy="48" r="43"/></svg>
+    <span class="mw-boot-flash"></span>
+    <span class="mw-boot-spark" style="--a:18deg;--r:88px;--d:0ms"></span>
+    <span class="mw-boot-spark" style="--a:62deg;--r:74px;--d:26ms"></span>
+    <span class="mw-boot-spark" style="--a:118deg;--r:92px;--d:12ms"></span>
+    <span class="mw-boot-spark" style="--a:166deg;--r:70px;--d:38ms"></span>
+    <span class="mw-boot-spark" style="--a:208deg;--r:86px;--d:8ms"></span>
+    <span class="mw-boot-spark" style="--a:254deg;--r:78px;--d:32ms"></span>
+    <span class="mw-boot-spark" style="--a:302deg;--r:94px;--d:18ms"></span>
+    <span class="mw-boot-spark" style="--a:342deg;--r:72px;--d:44ms"></span>
+    <span class="mw-boot-mark"><svg class="mw-boot-glyph" viewBox="0 0 64 44" fill="none" aria-hidden="true"><path d="M6 34.5V11.5L17 26.5L28 11.5V34.5" stroke="url(#mwBootGrad)" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M36 11.5V34.5L47 19.5L58 34.5V11.5" stroke="url(#mwBootGrad)" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="mwBootGrad" x1="6" y1="11" x2="58" y2="35" gradientUnits="userSpaceOnUse"><stop stop-color="#7dd3fc"/><stop offset=".55" stop-color="#ffffff"/><stop offset="1" stop-color="#c4b5fd"/></linearGradient></defs></svg></span>
+    <span class="mw-boot-word" aria-label="Mateus Workspace"><i style="--i:0;--x:-9px;--y:-7px;--r:-13deg">M</i><i style="--i:1;--x:6px;--y:8px;--r:11deg">a</i><i style="--i:2;--x:-5px;--y:9px;--r:9deg">t</i><i style="--i:3;--x:8px;--y:-8px;--r:-8deg">e</i><i style="--i:4;--x:-7px;--y:-6px;--r:12deg">u</i><i style="--i:5;--x:5px;--y:9px;--r:-11deg">s</i><i class="mw-boot-sp" style="--i:6">&nbsp;</i><i style="--i:7;--x:9px;--y:-9px;--r:13deg">W</i><i style="--i:8;--x:-6px;--y:7px;--r:-10deg">o</i><i style="--i:9;--x:7px;--y:8px;--r:8deg">r</i><i style="--i:10;--x:-8px;--y:-7px;--r:-12deg">k</i><i style="--i:11;--x:6px;--y:-9px;--r:10deg">s</i><i style="--i:12;--x:-5px;--y:8px;--r:-9deg">p</i><i style="--i:13;--x:8px;--y:7px;--r:11deg">a</i><i style="--i:14;--x:-7px;--y:-8px;--r:-13deg">c</i><i style="--i:15;--x:5px;--y:9px;--r:9deg">e</i></span>
   </div>
-  <div class="mw-boot-copy">
-    <p class="mw-boot-text">Carregando seu workspace</p>
-    <div class="mw-boot-bar"><i id="mwBootBarFill"></i></div>
-    <span class="mw-boot-percent" id="mwBootPercent">0%</span>
-  </div>
+  <div class="mw-boot-wait"><i id="mwBootBarFill"></i></div>
 </div>
+<script>
+/* Mede o nome e ajusta o deslocamento do palco para que, no primeiro
+   quadro, a MARCA esteja no centro exato da tela — e no último, o
+   conjunto inteiro. É a mesma coisa que a referência faz e o que dá a
+   sensação de o nome ter saído de dentro da marca.
+
+   Roda de forma síncrona logo depois do markup, então acontece ANTES do
+   primeiro quadro: a animação já começa com o valor certo. Se por algum
+   motivo não rodar, o valor de segurança no CSS mantém a tela correta,
+   só com o centro um pouco deslocado. */
+(function(){
+  var palco = document.querySelector('.mw-boot-stage');
+  var nome = palco && palco.querySelector('.mw-boot-word');
+  if (!nome) return;
+  var vao = parseFloat(getComputedStyle(palco).gap) || 14;
+  palco.style.setProperty('--mw-boot-shift', ((nome.offsetWidth + vao) / 2).toFixed(1) + 'px');
+})();
+</script>
 <style id="mwv2-login-style">
 /* ============================================================
    TELA DE LOGIN V2 — nav lateral + hero + formulário deslizante,
@@ -3558,11 +3718,12 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
   // Duração fixa (não depende do evento "load" da janela: esperar
   // fontes/ícones externos terminarem de carregar podia travar esse
   // loader pra sempre em contextos com rede restrita, ex.: preview do
-  // Arquivos/Quick Look no iPhone). A barra e o percentual andam de
-  // verdade junto com o tempo real de exibição, via requestAnimationFrame.
+  // Arquivos/Quick Look no iPhone). O fio de espera anda de verdade
+  // junto com o tempo real de exibição, via requestAnimationFrame — e
+  // só fica visível depois de 1,25s, então num boot rápido a tela é
+  // puro logo, sem acusar espera que não existe.
   var loader = document.getElementById('mwBootLoader');
   var mwBootBar = document.getElementById('mwBootBarFill');
-  var mwBootPercent = document.getElementById('mwBootPercent');
   /* O preloader era um cronômetro puro de 4500ms: a barra e o percentual
      só mediam o tempo passado, sem nenhuma relação com o app estar
      pronto. Ou seja, era exatamente o "delay artificial" que não se quer
@@ -3581,7 +3742,6 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
     if (!loader || mwBootDone) return;
     mwBootDone = true;
     if (mwBootBar) mwBootBar.style.width = '100%';
-    if (mwBootPercent) mwBootPercent.textContent = '100%';
     document.body.classList.add('mw-boot-revealing');
     loader.classList.add('mw-boot-hide');
     setTimeout(function(){
@@ -3605,12 +3765,11 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
 
     (function mwBootTick(now){
       var elapsed = now - mwBootStart;
-      /* A barra reflete o progresso real quando o app já está pronto, e
+      /* O fio reflete o progresso real quando o app já está pronto, e
          avança de forma contida enquanto espera — nunca finge 100%. */
       var byTime = elapsed / MW_BOOT_MAX;
       var pct = Math.min(99, Math.round((mwAppReady ? Math.max(byTime, elapsed / MW_BOOT_MIN) : byTime) * 100));
       if (mwBootBar) mwBootBar.style.width = pct + '%';
-      if (mwBootPercent) mwBootPercent.textContent = pct + '%';
       if ((mwAppReady && elapsed >= MW_BOOT_MIN) || elapsed >= MW_BOOT_MAX) mwBootFinish();
       else requestAnimationFrame(mwBootTick);
     })(mwBootStart);
