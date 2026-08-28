@@ -14802,7 +14802,13 @@ html body #app .topbar.topbar{
    Sem este @media, o display:grid!important daqui venceria aquele
    display:none!important e a barra apareceria no desktop. */
 @media(max-width:860px){
-html body #mwBottomNav.mwbn{
+/* O display fica preso a body.mw-in-app, exatamente como a regra
+   original (body.mw-in-app #mwBottomNav). Sem esse escopo, o
+   display:grid!important daqui vencia a ausência de regra fora do app e
+   a barra aparecia na tela de login. Mesma classe de conflito que fez a
+   barra vazar pro desktop. */
+html body.mw-in-app.mw-drawer-open #mwBottomNav.mwbn{display:none!important}
+html body.mw-in-app #mwBottomNav.mwbn{
   display:grid!important;
   grid-template-columns:repeat(5,1fr)!important;
   align-items:center!important;
@@ -15434,6 +15440,58 @@ html body.light #mwDemoBadge{color:#92400e;background:rgba(217,119,6,.12);border
   if (app) new MutationObserver(sync).observe(app, { attributes: true, attributeFilter: ['class'] });
 })();
 </script>
+
+<style id="mw-login-fixed-viewport">
+/* ============================================================
+   LOGIN/CADASTRO: TELA FIXA, SEM ROLAGEM PRÓPRIA
+   ============================================================
+   Medição que localizou a causa (390x844): o conteúdo real do login
+   ocupa 766px (20 de padding + 718 da pilha + 28), ou seja, cabe
+   folgado no viewport de 844. Mesmo assim o scrollHeight era 984.
+
+   Os 140px de diferença vinham de UM elemento decorativo:
+   .mwv2-ambient.a2 é um círculo desfocado em position:absolute com
+   bottom:-140px. A regra base do #loginScreen tem overflow:hidden, que
+   o recortaria — mas o @media mobile sobrescreve com overflow-y:auto,
+   liberando o transbordo e transformando uma decoração em área
+   rolável. 984 - 844 = 140, exatamente a projeção do círculo.
+
+   Correção: os dois ambientes passam a position:fixed no mobile. Um
+   elemento fixed é posicionado pela viewport e NÃO contribui para o
+   scrollHeight de nenhum ancestral. Como o login ocupa a viewport
+   inteira, o resultado visual é idêntico — só deixa de gerar rolagem.
+
+   O overflow-y:auto continua: se numa tela realmente baixa o conteúdo
+   não couber, a rolagem existe como deve. O que sai é a rolagem
+   fantasma criada por decoração. */
+@media(max-width:860px){
+  html body #loginScreen .mwv2-ambient{position:fixed!important}
+  /* Trava de segurança: nada dentro do login pode gerar rolagem
+     horizontal, que no iOS é o que produz a sensação de tela
+     "deslocada de lado" e exige gesto pra reenquadrar. */
+  html body #loginScreen{overflow-x:hidden!important}
+}
+
+/* Em telas BAIXAS o conteúdo real não cabe: medido, a pilha do login
+   ocupa ~766px, então num iPhone SE (568) sobram 198px e num 667 sobram
+   99px. Em vez de esconder a rolagem, o conteúdo se adapta à altura
+   disponível — a mídia do topo é decorativa e é a peça que mais ocupa
+   (210px), então ela encolhe e, no limite, sai. A identidade visual e
+   todos os campos permanecem. */
+@media(max-width:860px) and (max-height:760px){
+  html body #loginScreen{padding-top:max(10px,env(safe-area-inset-top))!important;padding-bottom:14px!important}
+  /* O contêiner do herói tem altura própria: encolher só a mídia por
+     dentro não reduzia nada. É a altura DELE que precisa ceder. */
+  html body #loginScreen #mwv2Hero{height:112px!important;min-height:0!important;margin-bottom:6px!important}
+  html body #loginScreen #heroMediaShared{height:112px!important}
+}
+@media(max-width:860px) and (max-height:660px){
+  /* Abaixo disso nem a mídia reduzida cabe: ela sai por completo e a
+     tela fica só com as abas e o formulário, que é o essencial. */
+  html body #loginScreen #mwv2Hero{display:none!important}
+  html body #loginScreen .mwv2-nav{margin-bottom:8px!important}
+}
+</style>
 
 </body>
 </html>
