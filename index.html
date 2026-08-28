@@ -2568,8 +2568,30 @@ body.light #app .calendar-card .calendar-nav button:hover{
 .mw-boot-spark.s2{transform:translate(-50%,-50%) rotate(120deg) translateX(66px);opacity:.75;background:#c4b5fd;box-shadow:0 0 10px 2px rgba(196,181,253,.7)}
 .mw-boot-spark.s3{transform:translate(-50%,-50%) rotate(240deg) translateX(66px);opacity:.55;background:#93c5fd;box-shadow:0 0 8px 2px rgba(147,197,253,.65)}
 
-.mw-boot-mark{position:relative;z-index:1;width:64px;height:64px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(145deg,#3b82f6,#1d4ed8,#7c5cff);color:#eaf5ff;font-family:Inter,ui-sans-serif,system-ui,sans-serif;font-weight:800;font-size:20px;letter-spacing:-.02em;box-shadow:0 14px 30px -10px rgba(37,99,235,.6),inset 0 1px 0 rgba(255,255,255,.25);animation:mwBootBreathe 2.4s ease-in-out infinite}
+.mw-boot-mark{position:relative;z-index:1;width:64px;height:64px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(145deg,#3b82f6,#1d4ed8,#7c5cff);box-shadow:0 14px 30px -10px rgba(37,99,235,.6),inset 0 1px 0 rgba(255,255,255,.25);animation:mwBootBreathe 2.4s ease-in-out infinite}
 @keyframes mwBootBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.045)}}
+
+/* O M e o W são DESENHADOS, não simplesmente exibidos. Cada letra é um
+   traço SVG cujo tracejado começa totalmente "vazio" e se preenche —
+   é a construção que dá a sensação de sistema inicializando. Tudo em
+   stroke-dashoffset e opacity, propriedades que o compositor anima sem
+   custo de layout, sem nenhum JavaScript por quadro. */
+.mw-boot-glyph{width:38px;height:26px;overflow:visible}
+.mw-boot-stroke{
+  /* 96 cobre com folga o comprimento de cada traço; o excesso apenas
+     mantém o traço oculto por mais tempo, o que é inofensivo. */
+  stroke-dasharray:96;stroke-dashoffset:96;
+  filter:drop-shadow(0 1px 3px rgba(3,12,32,.45));
+  animation:mwBootDraw .85s cubic-bezier(.5,0,.2,1) forwards;
+}
+.mw-boot-stroke-m{animation-delay:.12s}
+.mw-boot-stroke-w{animation-delay:.34s}
+@keyframes mwBootDraw{from{stroke-dashoffset:96}to{stroke-dashoffset:0}}
+@media(prefers-reduced-motion:reduce){
+  /* Sem movimento: as letras simplesmente já estão desenhadas. */
+  .mw-boot-stroke{animation:none!important;stroke-dashoffset:0!important}
+  .mw-boot-mark{animation:none!important}
+}
 
 .mw-boot-copy{display:flex;flex-direction:column;align-items:center;gap:12px;animation:mwBootTextIn .5s ease .15s both}
 @keyframes mwBootTextIn{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:translateY(0)}}
@@ -2610,7 +2632,7 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
     <span class="mw-boot-ring mw-boot-ring-a"></span>
     <span class="mw-boot-ring mw-boot-ring-b"></span>
     <span class="mw-boot-spark-layer"><span class="mw-boot-spark s1"></span><span class="mw-boot-spark s2"></span><span class="mw-boot-spark s3"></span></span>
-    <span class="mw-boot-mark">MW</span>
+    <span class="mw-boot-mark"><svg class="mw-boot-glyph" viewBox="0 0 64 44" fill="none" aria-hidden="true"><path class="mw-boot-stroke mw-boot-stroke-m" d="M6 34.5V11.5L17 26.5L28 11.5V34.5" stroke="url(#mwBootGrad)" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/><path class="mw-boot-stroke mw-boot-stroke-w" d="M36 11.5V34.5L47 19.5L58 34.5V11.5" stroke="url(#mwBootGrad)" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="mwBootGrad" x1="6" y1="11" x2="58" y2="35" gradientUnits="userSpaceOnUse"><stop stop-color="#7dd3fc"/><stop offset=".55" stop-color="#ffffff"/><stop offset="1" stop-color="#c4b5fd"/></linearGradient></defs></svg></span>
   </div>
   <div class="mw-boot-copy">
     <p class="mw-boot-text">Carregando seu workspace</p>
@@ -7600,13 +7622,10 @@ img,svg,video,canvas{max-width:100%}
       <button type="button" data-view="home" class="active" aria-label="Início"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.6 12 3.4l8.5 7.2"/><path d="M5.6 9.7V20a1 1 0 0 0 1 1h3.7v-5.8h3.4V21h3.7a1 1 0 0 0 1-1V9.7"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M12 2.7 2.6 10.4V21h6.7v-6.3h5.4V21h6.7V10.4L12 2.7Z"/></svg></span><span class="mwnav-label">Início</span></button>
       <button type="button" data-view="college" aria-label="Faculdade"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 2.8 8.7 12 13.4l9.2-4.7L12 4Z"/><path d="M6.6 11.3v4c0 1.7 2.6 3 5.9 3.2 3.3-.2 5.9-1.5 5.9-3.2v-4"/><path d="M20.5 9.4v5.3"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M12 3 1.6 8.3 12 13.6l8.7-4.4V15h1.7V8.3L12 3Z"/><path d="M5.6 10.9v4.3c0 1.9 2.9 3.4 6.4 3.4s6.4-1.5 6.4-3.4v-4.3l-6.4 3.3-6.4-3.3Z" opacity=".55"/></svg></span><span class="mwnav-label">Faculdade</span></button>
       <button type="button" data-view="files" aria-label="Arquivos"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 2.6h7l5.3 5.3v13.5h-12.3V2.6Z"/><path d="M13.5 2.6v5.3h5.3"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M6.5 2.2h7.6l5.4 5.4V21.8h-13V2.2Z"/><path d="M14.1 2.2v5.4h5.4Z" opacity=".55"/></svg></span><span class="mwnav-label">Arquivos</span></button>
-      <button type="button" data-ai="1" aria-label="Nick IA"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 14 9.5 20.5 12 14 14.5 12 21 10 14.5 3.5 12 10 9.5 Z"/><path d="M18.5 3.5 19.3 5.7 21.5 6.5 19.3 7.3 18.5 9.5 17.7 7.3 15.5 6.5 17.7 5.7 Z"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M12 2 14.3 9.3 21.6 12 14.3 14.7 12 22 9.7 14.7 2.4 12 9.7 9.3 Z"/><path d="M18.6 3 19.5 5.6 22 6.6 19.5 7.6 18.6 10.2 17.7 7.6 15.2 6.6 17.7 5.6 Z" opacity=".55"/></svg></span><span class="mwnav-label">Nick IA</span></button>
-      <button type="button" id="mwBottomMenu" data-view="profile" aria-label="Perfil"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.9"/><path d="M4.6 20.2c0-3.7 3.3-6.1 7.4-6.1s7.4 2.4 7.4 6.1"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="7.8" r="4.3"/><path d="M12 13.6c-4.3 0-7.8 2.6-7.8 6.1 0 .5.4.9.9.9h13.8c.5 0 .9-.4.9-.9 0-3.5-3.5-6.1-7.8-6.1Z"/></svg></span><span class="mwnav-label">Perfil</span></button>`;
+      <button type="button" id="mwBottomMenu" data-view="profile" aria-label="Perfil"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.9"/><path d="M4.6 20.2c0-3.7 3.3-6.1 7.4-6.1s7.4 2.4 7.4 6.1"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="7.8" r="4.3"/><path d="M12 13.6c-4.3 0-7.8 2.6-7.8 6.1 0 .5.4.9.9.9h13.8c.5 0 .9-.4.9-.9 0-3.5-3.5-6.1-7.8-6.1Z"/></svg></span><span class="mwnav-photo" aria-hidden="true"></span><span class="mwnav-label">Perfil</span></button>`;
     document.body.appendChild(nav);
   }
   const avatarMenuBtn = document.getElementById('mwBottomMenu');
-  const aiNavBtn = nav.querySelector('button[data-ai]');
-  const aiModalEl = document.getElementById('mateusAiModal');
 
   /* ============================================================
      MÁQUINA DE ESTADOS DA BOTTOM NAV — FONTE ÚNICA DE VERDADE
@@ -7624,16 +7643,12 @@ img,svg,video,canvas{max-width:100%}
      Agora existe UMA variável (navState). Ela só muda por uma
      ação explícita do usuário. O DOM é uma consequência dela,
      nunca a fonte. */
-  const NAV_STATES = ['home', 'college', 'files', 'ai', 'profile'];
-  // Views que a barra representa diretamente. 'ai' e 'profile' não
-  // são views: abrem modal e gaveta.
+  const NAV_STATES = ['home', 'college', 'files', 'profile'];
+  // Views que a barra representa diretamente. 'profile' não é view:
+  // abre a gaveta lateral.
   const NAV_VIEWS = { home: 'home', college: 'college', files: 'files' };
 
   let navState = 'home';
-  // View para onde voltar quando a IA fechar. Determinístico: guarda o
-  // estado real de antes de abrir, em vez de deduzir depois (era isso
-  // que fazia cair sempre no mesmo item como se fosse fallback).
-  let stateBeforeAi = 'home';
   /* Última coisa que o USUÁRIO pediu explicitamente. Os observadores de
      modal/gaveta chegam atrasados (a classe muda de forma assíncrona) e
      não podem sobrepor um pedido mais novo — é isso que garante que, em
@@ -7642,7 +7657,7 @@ img,svg,video,canvas{max-width:100%}
 
   const render = () => {
     nav.querySelectorAll(':scope > button').forEach(b => {
-      const id = b.dataset.ai !== undefined ? 'ai' : b.dataset.view;
+      const id = b.dataset.view;
       b.classList.toggle('active', id === navState);
       b.setAttribute('aria-current', id === navState ? 'page' : 'false');
     });
@@ -7664,9 +7679,6 @@ img,svg,video,canvas{max-width:100%}
     if (!navigate) return;
     if (NAV_VIEWS[next]) {
       document.querySelector(`#nav [data-view="${NAV_VIEWS[next]}"]`)?.click();
-    } else if (next === 'ai') {
-      stateBeforeAi = NAV_VIEWS[prev] ? prev : 'home';
-      document.getElementById('mateusAiBtn')?.click();
     } else if (next === 'profile') {
       document.getElementById('mwMobileMenu')?.click();
     }
@@ -7688,25 +7700,17 @@ img,svg,video,canvas{max-width:100%}
   new MutationObserver(syncChrome).observe(app, {attributes:true, attributeFilter:['class']});
 
   nav.querySelectorAll(':scope > button').forEach(b => {
-    const id = b.dataset.ai !== undefined ? 'ai' : b.dataset.view;
+    const id = b.dataset.view;
     b.addEventListener('click', () => setNavState(id));
   });
 
   /* A IA e a gaveta podem ser fechadas por fora da barra (X, Esc,
      clique no scrim). Esses observadores só informam o fato; quem
      decide o estado continua sendo setNavState. */
-  if (aiModalEl) {
-    new MutationObserver(() => {
-      const open = !aiModalEl.classList.contains('hidden');
-      /* Só assume "ai" se a IA ainda for o último pedido do usuário. Sem
-         essa guarda, um modal que termina de abrir DEPOIS de o usuário já
-         ter tocado em outro item forçava o estado de volta para "ai" —
-         e o fechamento seguinte então revertia para a view guardada,
-         fazendo a lente "voltar sozinha" para um item antigo. */
-      if (open && userIntent === 'ai' && navState !== 'ai') setNavState('ai', { navigate: false });
-      if (!open && navState === 'ai') setNavState(stateBeforeAi, { navigate: false });
-    }).observe(aiModalEl, {attributes:true, attributeFilter:['class']});
-  }
+  /* A IA saiu da barra: ela continua acessível pelo botão da topbar, mas
+     não é mais um estado de navegação. Por isso o observador do modal
+     que sincronizava esse estado foi removido junto — abrir ou fechar a
+     Nyc AI não mexe mais na barra. */
   new MutationObserver(() => {
     const drawerOpen = app.classList.contains('mw-mobile-open');
     if (drawerOpen && userIntent === 'profile' && navState !== 'profile') setNavState('profile', { navigate: false });
@@ -10220,6 +10224,24 @@ html body.light .eva-voice{
         if (el.id === 'profileAvatarPreview' && ini) { ini.style.display = ''; ini.textContent = initials; }
       }
     });
+    /* Bottom nav: a MESMA fonte de verdade (data.profile.photo) governa
+       o avatar da barra. Com foto, uma camada dedicada a exibe; sem
+       foto, ela some e o icone de pessoa reaparece. O botao nao volta a
+       receber textContent = iniciais — era isso que antes apagava os
+       filhos e deixava a letra "M" solta. */
+    const navBtn = q('#mwBottomNav [data-view="profile"]');
+    if (navBtn) {
+      const layer = navBtn.querySelector('.mwnav-photo');
+      if (layer) {
+        if (photo) {
+          layer.style.setProperty('background-image', 'url("' + photo + '")');
+          navBtn.classList.add('has-photo');
+        } else {
+          layer.style.removeProperty('background-image');
+          navBtn.classList.remove('has-photo');
+        }
+      }
+    }
     const nameEl = q('#mwSidebarName');
     const roleEl = q('#mwSidebarEmail');
     if (nameEl) nameEl.textContent = name;
@@ -13956,7 +13978,10 @@ html body #mwBottomNav{
      um menu se achatando. */
   /* Spec pede "ícones maiores e modernos": 22px -> 25px. O delta (4.2px)
      é recalculado pra manter exatamente os mesmos 17% de compressão. */
-  --mw-icon:clamp(20px,calc(25px - var(--mw-nav-compact,0) * 4.2px),25.5px);
+  /* Com 4 slots (86,5px cada em 390px) sobra mais respiro que com 5,
+     entao o icone sobe de 25 para 27px sem apertar nada. O delta da
+     compressao acompanha, mantendo os mesmos 17% medidos. */
+  --mw-icon:clamp(22px,calc(27px - var(--mw-nav-compact,0) * 4.6px),27.5px);
   --mw-avatar:clamp(30px,calc(38px - var(--mw-nav-compact,0) * 6.5px),38.6px);
   --mw-pad-y:clamp(9px,calc(13px - var(--mw-nav-compact,0) * 2.2px),13.4px);
   --mw-pad-x:clamp(13px,calc(17px - var(--mw-nav-compact,0) * 2.9px),17.4px);
@@ -14802,9 +14827,15 @@ html body #app .topbar.topbar{
    Sem este @media, o display:grid!important daqui venceria aquele
    display:none!important e a barra apareceria no desktop. */
 @media(max-width:860px){
-html body #mwBottomNav.mwbn{
+/* O display fica preso a body.mw-in-app, exatamente como a regra
+   original (body.mw-in-app #mwBottomNav). Sem esse escopo, o
+   display:grid!important daqui vencia a ausência de regra fora do app e
+   a barra aparecia na tela de login. Mesma classe de conflito que fez a
+   barra vazar pro desktop. */
+html body.mw-in-app.mw-drawer-open #mwBottomNav.mwbn{display:none!important}
+html body.mw-in-app #mwBottomNav.mwbn{
   display:grid!important;
-  grid-template-columns:repeat(5,1fr)!important;
+  grid-template-columns:repeat(4,1fr)!important;
   align-items:center!important;
   justify-items:center!important;
   gap:0!important;
@@ -14837,16 +14868,22 @@ html body #mwBottomNav.mwbn > button .mwnav-icon{
   transform:translateX(0);
   transition:transform var(--mw-choreo-dur) var(--mw-choreo-ease);
 }
-html body #mwBottomNav.mwbn > button.active .mwnav-icon{
-  transform:translateX(calc(var(--mw-label-shift, 0px) * -1));
-}
+/* Com quatro slots (87px contra os 69,2px de cinco) passou a caber o
+   rótulo ao lado SEM deslocar o ícone. Então o ícone fica travado no
+   centro exato da própria coluna o tempo todo, como pedido: nada de
+   empurrar o avatar pra abrir espaço. */
+html body #mwBottomNav.mwbn > button.active .mwnav-icon{transform:translateX(0)}
 /* O rótulo sai do fluxo: encostado à direita do ícone já deslocado,
    centrado na vertical. */
 html body #mwBottomNav.mwbn .mwnav-label{
   position:absolute!important;
-  left:calc(50% + var(--mw-icon) * .5 + 6px - var(--mw-label-shift, 0px))!important;
+  /* Com o icone travado no centro, todo o rotulo cresce pra um lado so.
+     Medido: a 10px de fonte e 6px de respiro, "Faculdade" invadia o
+     icone vizinho em 4,7px (390) e 8,5px (375). Fonte e respiro
+     reduzidos ate a folga ficar positiva em toda a faixa. */
+  left:calc(50% + var(--mw-icon) * .5 + 4px)!important;
   top:50%!important;
-  font-size:10px!important;font-weight:700;letter-spacing:.01em;
+  font-size:9px!important;font-weight:700;letter-spacing:0!important;
   white-space:nowrap!important;pointer-events:none;
   opacity:0;
   transform:translate(-6px,-50%);
@@ -14857,9 +14894,36 @@ html body #mwBottomNav.mwbn > button.active .mwnav-label{
   opacity:1;transform:translate(0,-50%);
 }
 }
-/* Abaixo de 360px o nome encostaria no ícone vizinho (medido). Nessas
-   larguras a barra fica só com ícones e a lente, sem rótulo. */
-@media(max-width:359px){
+/* Perfil: foto quando existe, ícone de pessoa quando não existe.
+   A camada da foto ocupa exatamente a caixa do ícone, então trocar
+   entre as duas não move nada — o avatar continua centrado no slot. */
+html body #mwBottomNav.mwbn .mwnav-photo{
+  position:absolute;left:50%;top:50%;
+  width:calc(var(--mw-icon) + 5px);height:calc(var(--mw-icon) + 5px);
+  transform:translate(-50%,-50%) scale(.85);
+  border-radius:50%;background-size:cover;background-position:center;
+  opacity:0;pointer-events:none;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);
+  transition:opacity var(--mw-choreo-dur) var(--mw-choreo-ease),
+             transform var(--mw-choreo-dur) var(--mw-choreo-ease);
+}
+html body #mwBottomNav.mwbn > button.has-photo .mwnav-photo{opacity:1;transform:translate(-50%,-50%) scale(1)}
+html body #mwBottomNav.mwbn > button.has-photo .mwnav-icon{opacity:0}
+html body #mwBottomNav.mwbn > button .mwnav-icon{
+  transition:opacity var(--mw-choreo-dur) var(--mw-choreo-ease),
+             transform var(--mw-choreo-dur) var(--mw-choreo-ease);
+}
+/* Com foto, a camada acompanha o mesmo deslocamento do ícone quando o
+   rótulo entra, pra que o conjunto continue opticamente centrado. */
+html body #mwBottomNav.mwbn > button.active .mwnav-photo{
+  transform:translate(-50%,-50%) scale(1);
+}
+
+/* Abaixo de 375px o nome encostaria no ícone vizinho mesmo com a fonte
+   reduzida (medido: -3,6px de folga em 360). Nessas larguras a barra
+   fica só com ícones e a lente, sem rótulo — o item ativo continua
+   identificado pela lente e pelo ícone preenchido. */
+@media(max-width:374px){
   html body #mwBottomNav.mwbn .mwnav-label{display:none!important}
 }
 @media(prefers-reduced-motion:reduce){
@@ -15434,6 +15498,58 @@ html body.light #mwDemoBadge{color:#92400e;background:rgba(217,119,6,.12);border
   if (app) new MutationObserver(sync).observe(app, { attributes: true, attributeFilter: ['class'] });
 })();
 </script>
+
+<style id="mw-login-fixed-viewport">
+/* ============================================================
+   LOGIN/CADASTRO: TELA FIXA, SEM ROLAGEM PRÓPRIA
+   ============================================================
+   Medição que localizou a causa (390x844): o conteúdo real do login
+   ocupa 766px (20 de padding + 718 da pilha + 28), ou seja, cabe
+   folgado no viewport de 844. Mesmo assim o scrollHeight era 984.
+
+   Os 140px de diferença vinham de UM elemento decorativo:
+   .mwv2-ambient.a2 é um círculo desfocado em position:absolute com
+   bottom:-140px. A regra base do #loginScreen tem overflow:hidden, que
+   o recortaria — mas o @media mobile sobrescreve com overflow-y:auto,
+   liberando o transbordo e transformando uma decoração em área
+   rolável. 984 - 844 = 140, exatamente a projeção do círculo.
+
+   Correção: os dois ambientes passam a position:fixed no mobile. Um
+   elemento fixed é posicionado pela viewport e NÃO contribui para o
+   scrollHeight de nenhum ancestral. Como o login ocupa a viewport
+   inteira, o resultado visual é idêntico — só deixa de gerar rolagem.
+
+   O overflow-y:auto continua: se numa tela realmente baixa o conteúdo
+   não couber, a rolagem existe como deve. O que sai é a rolagem
+   fantasma criada por decoração. */
+@media(max-width:860px){
+  html body #loginScreen .mwv2-ambient{position:fixed!important}
+  /* Trava de segurança: nada dentro do login pode gerar rolagem
+     horizontal, que no iOS é o que produz a sensação de tela
+     "deslocada de lado" e exige gesto pra reenquadrar. */
+  html body #loginScreen{overflow-x:hidden!important}
+}
+
+/* Em telas BAIXAS o conteúdo real não cabe: medido, a pilha do login
+   ocupa ~766px, então num iPhone SE (568) sobram 198px e num 667 sobram
+   99px. Em vez de esconder a rolagem, o conteúdo se adapta à altura
+   disponível — a mídia do topo é decorativa e é a peça que mais ocupa
+   (210px), então ela encolhe e, no limite, sai. A identidade visual e
+   todos os campos permanecem. */
+@media(max-width:860px) and (max-height:760px){
+  html body #loginScreen{padding-top:max(10px,env(safe-area-inset-top))!important;padding-bottom:14px!important}
+  /* O contêiner do herói tem altura própria: encolher só a mídia por
+     dentro não reduzia nada. É a altura DELE que precisa ceder. */
+  html body #loginScreen #mwv2Hero{height:112px!important;min-height:0!important;margin-bottom:6px!important}
+  html body #loginScreen #heroMediaShared{height:112px!important}
+}
+@media(max-width:860px) and (max-height:660px){
+  /* Abaixo disso nem a mídia reduzida cabe: ela sai por completo e a
+     tela fica só com as abas e o formulário, que é o essencial. */
+  html body #loginScreen #mwv2Hero{display:none!important}
+  html body #loginScreen .mwv2-nav{margin-bottom:8px!important}
+}
+</style>
 
 </body>
 </html>
