@@ -3082,6 +3082,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
       <button data-view="notes"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 2.8h7.4c.4 0 .8.16 1.1.44l3.26 3.26c.28.28.44.66.44 1.06V17.8A3.2 3.2 0 0 1 16 21H7A3.2 3.2 0 0 1 3.8 17.8V6A3.2 3.2 0 0 1 7 2.8zm7.6 1.5v2.7c0 .5.4.9.9.9h2.7l-3.6-3.6z"/><path d="M15.05 11.2 9.2 17.05c-.14.14-.32.24-.52.28l-2.12.42a.55.55 0 0 1-.65-.65l.42-2.12c.04-.2.14-.38.28-.52l5.85-5.85a1.55 1.55 0 0 1 2.19 2.19z"/><path d="M8.2 11.6h4.4a.7.7 0 1 0 0-1.4H8.2a.7.7 0 1 0 0 1.4z" opacity=".35"/></svg></span><span class="label">Anotações</span></button>
       <button data-view="files"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.2 2.8h6.2c.4 0 .8.16 1.1.44l4.26 4.26c.28.28.44.66.44 1.06v9.24A4.2 4.2 0 0 1 15 22H7.2A4.2 4.2 0 0 1 3 17.8V7A4.2 4.2 0 0 1 7.2 2.8zm6.4 1.6v3.4c0 .6.5 1.1 1.1 1.1h3.4l-4.5-4.5z"/></svg></span><span class="label">Arquivos</span></button>
       <button data-view="support" id="mwNavSupport"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.4"/><path d="M5.2 5.2l3.6 3.6M18.8 5.2l-3.6 3.6M5.2 18.8l3.6-3.6M18.8 18.8l-3.6-3.6"/></svg></span><span class="label">Suporte</span></button>
+      <button data-view="admin" id="mwNavAdmin"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd"><path d="M12 2.4c.22 0 .44.04.65.13l6.6 2.75c.72.3 1.15.99 1.15 1.77v6.15c0 4.62-3.2 8.06-7.62 9.98a1.9 1.9 0 0 1-1.56 0C6.8 21.3 3.6 17.86 3.6 13.24V7.05c0-.78.43-1.47 1.15-1.77l6.6-2.75c.21-.09.43-.13.65-.13zm3.68 6.53a.95.95 0 0 0-1.34-.06l-3.5 3.28-1.28-1.26a.95.95 0 1 0-1.34 1.35l1.94 1.9a.95.95 0 0 0 1.32.01l4.16-3.9a.95.95 0 0 0 .04-1.32z"/></svg></span><span class="label">Painel Admin</span></button>
     </nav>
 
     <div class="mw-reference-spacer"></div>
@@ -3221,6 +3222,41 @@ body.light .mw-faceid-gate-card p{color:#526988}
       <div class="settings-group"><h4>Backup</h4><p>Seus dados ficam salvos só neste navegador. Exporte um arquivo de backup pra não perder nada ao trocar de aparelho ou limpar os dados do navegador.</p><div class="profile-actions"><button class="small-btn" id="exportBackup">Exportar backup</button><button class="small-btn" id="importBackupBtn">Importar backup</button><input type="file" id="importBackupFile" accept="application/json" hidden></div><div class="form-error" id="importBackupError"></div></div>
       <div class="settings-group"><h4>Dados</h4><p>Remove disciplinas, atividades, projetos e anotações salvos neste navegador.</p><button class="small-btn danger mw-clear-btn" id="clearAll">Apagar todos os dados</button></div>
     </section></section>
+
+    <section class="view" id="view-admin">
+      <section class="card section mw-admin-warning" role="alert">
+        <div class="mw-admin-warning-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.6 1.9 20.4a1 1 0 0 0 .87 1.5h18.46a1 1 0 0 0 .87-1.5L12 2.6z"/><path d="M12 9.4v4.6"/><circle cx="12" cy="17.2" r="1" fill="currentColor" stroke="none"/></svg></div>
+        <div class="mw-admin-warning-copy">
+          <strong>Protótipo visual — sem proteção real de backend</strong>
+          <p>Esta tela é só a interface do Painel Admin, feita para revisar layout e dados de exemplo. Ela <u>não tem nenhuma autorização real por trás</u>: não existe verificação de papel (role) no servidor, e qualquer pessoa com acesso ao app hoje consegue abrir esta view. <strong>Não conecte dados reais de usuários aqui</strong> até existir um backend que confira <code>role === "admin"</code> em cada requisição antes de responder — nunca uma checagem só no front-end (tipo esconder o botão ou comparar o nome do usuário em JavaScript).</p>
+        </div>
+      </section>
+
+      <section class="card section">
+        <div class="section-head"><h3>Painel Admin</h3><span>Visão geral · dados de exemplo</span></div>
+        <div class="mw-admin-stats">
+          <div class="mw-admin-stat"><span class="mw-admin-stat-label">Usuários registrados</span><strong id="mwAdminStatUsers">—</strong></div>
+          <div class="mw-admin-stat"><span class="mw-admin-stat-label">Online agora</span><strong id="mwAdminStatOnline">—</strong></div>
+          <div class="mw-admin-stat"><span class="mw-admin-stat-label">Último acesso</span><strong id="mwAdminStatLastAccess">—</strong></div>
+          <div class="mw-admin-stat"><span class="mw-admin-stat-label">Status do sistema</span><strong class="mw-admin-status-ok">Operacional</strong></div>
+        </div>
+      </section>
+
+      <section class="card section">
+        <div class="section-head"><h3>Usuários</h3><span>Exemplo — não reflete dados reais de produção</span></div>
+        <div class="mw-admin-table-wrap">
+          <table class="mw-admin-table">
+            <thead><tr><th>Nome</th><th>E-mail</th><th>Papel</th><th>Último acesso</th><th>Status</th></tr></thead>
+            <tbody id="mwAdminUsersBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card section">
+        <div class="section-head"><h3>Logs administrativos</h3><span>Acessos, login/logout e alterações — exemplo</span></div>
+        <ul class="mw-admin-log-list" id="mwAdminLogList"></ul>
+      </section>
+    </section>
 
     <footer class="mw-app-footer">
       <div class="mw-app-footer-brand">
@@ -14694,6 +14730,121 @@ html body #app .mw-online-label-dot{
   html body #app .mw-online-dot,html body #app .mw-online-label-dot{animation:none!important}
 }
 </style>
+
+<style id="mw-admin-panel">
+/* Painel Admin: prioridade desktop, não precisa aparecer no menu mobile
+   normal (a barra inferior já tem seus 5 itens fixos). */
+@media(max-width:860px){ html body #app #mwNavAdmin{display:none!important} }
+
+html body #app .mw-admin-warning{
+  display:flex!important;gap:12px!important;align-items:flex-start!important;
+  background:linear-gradient(135deg,rgba(245,158,11,.14),rgba(245,158,11,.05))!important;
+  border:1px solid rgba(245,158,11,.35)!important;
+}
+html body.light #app .mw-admin-warning{
+  background:linear-gradient(135deg,rgba(217,119,6,.10),rgba(217,119,6,.04))!important;
+  border-color:rgba(217,119,6,.30)!important;
+}
+html body #app .mw-admin-warning-icon{color:#f59e0b!important;flex:0 0 auto;margin-top:1px}
+html body.light #app .mw-admin-warning-icon{color:#b45309!important}
+html body #app .mw-admin-warning-copy strong{display:block;color:#fbbf24!important;font-size:14px;margin-bottom:4px}
+html body.light #app .mw-admin-warning-copy strong{color:#92400e!important}
+html body #app .mw-admin-warning-copy p{margin:0;font-size:12.5px;line-height:1.55;color:var(--mw-muted)}
+html body #app .mw-admin-warning-copy code{background:rgba(255,255,255,.08);padding:1px 5px;border-radius:5px;font-size:11.5px}
+
+html body #app .mw-admin-stats{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))!important;gap:12px!important}
+html body #app .mw-admin-stat{display:flex;flex-direction:column;gap:4px;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--mw-border)}
+html body.light #app .mw-admin-stat{background:rgba(15,23,42,.03)}
+html body #app .mw-admin-stat-label{font-size:11px;color:var(--mw-muted);text-transform:uppercase;letter-spacing:.04em}
+html body #app .mw-admin-stat strong{font-size:22px;font-weight:800}
+html body #app .mw-admin-status-ok{color:#34d399!important}
+
+html body #app .mw-admin-table-wrap{overflow-x:auto!important}
+html body #app .mw-admin-table{width:100%;border-collapse:collapse;font-size:13px;min-width:560px}
+html body #app .mw-admin-table th{text-align:left;padding:8px 10px;color:var(--mw-muted);font-size:11px;text-transform:uppercase;letter-spacing:.03em;border-bottom:1px solid var(--mw-border)}
+html body #app .mw-admin-table td{padding:9px 10px;border-bottom:1px solid var(--mw-border)}
+html body #app .mw-admin-table tr:last-child td{border-bottom:0}
+html body #app .mw-admin-role-badge{padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700}
+html body #app .mw-admin-role-badge.admin{background:rgba(114,38,255,.18);color:#c4b5fd}
+html body #app .mw-admin-role-badge.user{background:rgba(255,255,255,.07);color:var(--mw-muted)}
+html body #app .mw-admin-online-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px}
+html body #app .mw-admin-online-dot.on{background:#34d399}
+html body #app .mw-admin-online-dot.off{background:rgba(148,163,184,.5)}
+
+html body #app .mw-admin-log-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:0}
+html body #app .mw-admin-log-list li{display:flex;gap:10px;padding:9px 2px;border-bottom:1px solid var(--mw-border);font-size:12.5px}
+html body #app .mw-admin-log-list li:last-child{border-bottom:0}
+html body #app .mw-admin-log-time{color:var(--mw-muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+</style>
+<script id="mw-admin-panel-js">
+(() => {
+  // ATENÇÃO — leia antes de ligar isto a dados reais:
+  // Este painel é 100% fachada visual (decisão explícita do usuário: "painel
+  // só visual por agora, com aviso claro"). Os dados abaixo são inventados
+  // no cliente só pra preencher o layout. NÃO existe verificação de permissão
+  // de verdade aqui — qualquer pessoa que abrir o app consegue ver esta tela.
+  // Antes de usar com usuários reais, um backend precisa:
+  //   1) guardar um campo role ("user" | "admin") por usuário no servidor;
+  //   2) checar esse role em CADA requisição de dado administrativo, no
+  //      servidor — nunca confiar em "if (user === 'Mateus')" ou em
+  //      esconder só o botão no front-end;
+  //   3) recusar e logar tentativas de acesso de quem não é admin, sem
+  //      devolver nenhum dado administrativo na resposta;
+  //   4) impedir que o próprio usuário mude seu papel, e nunca expor um
+  //      jeito público de virar admin;
+  //   5) registrar login/logout/admin e alterações administrativas.
+  const el = (tag, cls, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; };
+
+  const mockUsers = [
+    { name: 'Mateus', email: 'mateus@workspace.local', role: 'admin', lastAccess: 'agora', online: true },
+    { name: 'QA Tester', email: 'qa@teste.com', role: 'user', lastAccess: 'há 12 min', online: true },
+    { name: 'Convidado Beta', email: 'beta@teste.com', role: 'user', lastAccess: 'há 3 h', online: false },
+    { name: 'Ana Souza', email: 'ana.souza@teste.com', role: 'user', lastAccess: 'ontem', online: false },
+  ];
+  const mockLogs = [
+    { time: 'agora', text: 'Mateus (admin) abriu o Painel Admin.' },
+    { time: 'há 12 min', text: 'QA Tester fez login.' },
+    { time: 'há 40 min', text: 'Tentativa de acesso ao painel admin bloqueada (papel: user).' },
+    { time: 'há 3 h', text: 'Convidado Beta fez logout.' },
+    { time: 'ontem', text: 'Mateus (admin) alterou uma permissão de exemplo.' },
+  ];
+
+  function render() {
+    const usersBody = document.getElementById('mwAdminUsersBody');
+    const logList = document.getElementById('mwAdminLogList');
+    if (!usersBody || !logList) return;
+    if (usersBody.dataset.rendered) return;
+    usersBody.dataset.rendered = '1';
+
+    document.getElementById('mwAdminStatUsers').textContent = String(mockUsers.length);
+    document.getElementById('mwAdminStatOnline').textContent = String(mockUsers.filter(u => u.online).length);
+    document.getElementById('mwAdminStatLastAccess').textContent = mockUsers[0].lastAccess;
+
+    mockUsers.forEach(u => {
+      const tr = el('tr');
+      tr.appendChild(el('td', null, `<strong>${u.name}</strong>`));
+      tr.appendChild(el('td', null, u.email));
+      tr.appendChild(el('td', null, `<span class="mw-admin-role-badge ${u.role}">${u.role === 'admin' ? 'Admin' : 'Usuário'}</span>`));
+      tr.appendChild(el('td', null, u.lastAccess));
+      tr.appendChild(el('td', null, `<span class="mw-admin-online-dot ${u.online ? 'on' : 'off'}"></span>${u.online ? 'Online' : 'Offline'}`));
+      usersBody.appendChild(tr);
+    });
+
+    mockLogs.forEach(l => {
+      const li = el('li');
+      li.appendChild(el('span', 'mw-admin-log-time', l.time));
+      li.appendChild(el('span', null, l.text));
+      logList.appendChild(li);
+    });
+  }
+
+  const view = document.getElementById('view-admin');
+  if (view) {
+    render();
+    new MutationObserver(render).observe(view, { attributes: true, attributeFilter: ['class'] });
+  }
+})();
+</script>
 
 </body>
 </html>
