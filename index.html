@@ -14940,5 +14940,140 @@ html body.light #mwBottomNav button.active .mwnav-label{color:#151a22!important}
 })();
 </script>
 
+<style id="mw-nav-choreography">
+/* Coreografia do item ativo da bottom nav: UMA transição, não três.
+
+   Diagnóstico medido quadro a quadro antes desta correção (Início ->
+   Faculdade): a largura do botão começava a mudar em 15ms, a lente só
+   em 65ms e a opacidade do rótulo em 132ms — 117ms de defasagem entre a
+   primeira e a última peça. Era isso que lia como "parcelado".
+
+   Três causas, todas legadas:
+
+   1. #mwBottomNav button.active tinha animation:mw-bottomnav-pop com a
+      curva cubic-bezier(.34,1.56,.64,1) e keyframe scale(1.06) no meio.
+      Além do quique proibido, ela escalava o botão — e como
+      getBoundingClientRect() devolve o retângulo JÁ transformado, a
+      lente media um tamanho inflado e precisava se corrigir depois.
+      Era a origem real do segundo movimento da lente.
+   2. O svg do item ativo tinha mw-bottomnav-icon-pop, que faz
+      translateY(-3px): o ícone literalmente pulava.
+   3. O rótulo tinha transition-delay de .1s, entrando depois de tudo.
+
+   Correção: mesma duração e mesma curva (sem overshoot) para lente,
+   rótulo e troca de ícone, com atraso zero, e as animações legadas
+   desligadas. */
+html body #mwBottomNav{
+  /* Fonte única da duração e da curva — impossível dessincronizar. */
+  --mw-choreo-dur:.3s;
+  --mw-choreo-ease:cubic-bezier(.4,0,.2,1);
+}
+
+/* 1) Desliga o "pop" legado do botão e o pulo vertical do ícone. */
+html body #mwBottomNav button.active,
+html body #mwBottomNav button.mw-avatar-active{animation:none!important}
+html body #mwBottomNav button.active svg,
+html body #mwBottomNav button.mw-avatar-active svg{animation:none!important}
+
+/* 2) Rótulo: entra na mesma janela, sem atraso. Só opacity e transform,
+      e o deslocamento é curto (4px) de propósito. */
+html body #mwBottomNav .mwnav-label{
+  transition:opacity var(--mw-choreo-dur) var(--mw-choreo-ease),
+             transform var(--mw-choreo-dur) var(--mw-choreo-ease)!important;
+}
+
+/* 3) Lente: mesma janela e mesma curva, sem overshoot (a anterior era
+      cubic-bezier(.34,1.15,.3,1), que passava do alvo e voltava). */
+html body #mwNavActiveLens{
+  transition:transform var(--mw-choreo-dur) var(--mw-choreo-ease),
+             width var(--mw-choreo-dur) var(--mw-choreo-ease),
+             opacity var(--mw-choreo-dur) var(--mw-choreo-ease)!important;
+}
+
+/* 4) Troca contorno->preenchido do ícone: entrava com
+      cubic-bezier(.34,1.5,.64,1), que também quicava. Mesma janela. */
+html body #mwBottomNav .mwnav-icon svg{
+  transition:opacity var(--mw-choreo-dur) var(--mw-choreo-ease),
+             transform var(--mw-choreo-dur) var(--mw-choreo-ease)!important;
+}
+
+/* 5) Perfil usa exatamente a mesma coreografia. O avatar recebe
+      .mw-avatar-active (classe própria) em vez de .active, então nem o
+      rótulo aparecia nele nem a lente o acompanhava.
+
+      Isso vale quando a tela atual não é nenhum dos itens da barra
+      (Configurações, Admin, Disciplinas...): aí o avatar é o slot ativo
+      e mostra "Perfil" normalmente. Ao abrir a gaveta a barra inteira
+      fica display:none (regra antiga de body.mw-drawer-open), então
+      nesse caso não há coreografia visível — é só estado interno. */
+      NÃO habilitado: o botão do avatar não tem o mesmo esqueleto dos
+      outros. As iniciais são texto solto direto no botão (uma rotina
+      antiga faz textContent = iniciais), então com o rótulo ligado o
+      nome cai EMBAIXO das iniciais dentro do círculo de 38px, empilhado
+      e cortado — o layout vertical que não queremos. Colocar o nome ao
+      lado exige envolver as iniciais/foto num elemento próprio, e essa
+      é uma área que já quebrou várias vezes (recorte da foto,
+      alinhamento). Fica de fora desta etapa, que é só coreografia.
+      A lente, essa sim, já acompanha o quinto slot corretamente. */
+/* Enquanto a gaveta está aberta o controlador deixa DOIS itens ativos ao
+   mesmo tempo (o botão da view atual continua .active e o avatar ganha
+   .mw-avatar-active). Com a barra escondida isso nunca apareceu; agora
+   que o avatar também revela rótulo, os dois apareceriam juntos se a
+   barra ficasse visível. O avatar vence e cala o outro rótulo — um só
+   rótulo visível, sempre. */
+html body #mwBottomNav:has(> button.mw-avatar-active) > button.active .mwnav-label{
+  max-width:0!important;margin-left:0!important;opacity:0!important;
+  transform:translateX(-4px)!important;
+}
+@media(max-width:860px){
+  html body #mwBottomNav button.mw-avatar-active{
+    width:auto!important;padding:0 15px!important;gap:0!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  html body #mwBottomNav{--mw-choreo-dur:.01s}
+}
+</style>
+<script id="mw-nav-choreography-js">
+(() => {
+  /* Colocação SÍNCRONA da lente. A versão anterior usava duplo
+     requestAnimationFrame pra "esperar o layout assentar" — o que era
+     necessário só porque a animação de pop legada estava escalando o
+     botão e sujando a medição. Com o pop desligado, o retângulo logo
+     após a troca de classe já é o final, então medir na hora é correto
+     e a lente passa a partir no MESMO instante que o rótulo, em vez de
+     ~50ms depois.
+
+     Sem setTimeout, sem delay, sem fila. A troca rápida é resolvida
+     pela própria natureza das transições CSS: um novo alvo no meio do
+     caminho é reinterpolado a partir do valor corrente, então a última
+     interação sempre vence e nada fica preso. */
+  const nav = document.getElementById('mwBottomNav');
+  const lens = document.getElementById('mwNavActiveLens');
+  if (!nav || !lens) return;
+
+  /* O avatar tem prioridade: enquanto a gaveta está aberta o controlador
+     mantém DOIS itens ativos (a view atual e o avatar), e a lente
+     precisa apontar para um só — o mesmo que exibe o rótulo. */
+  const activeSlot = () =>
+    nav.querySelector(':scope > button.mw-avatar-active') ||
+    nav.querySelector(':scope > button.active');
+
+  const place = () => {
+    const active = activeSlot();
+    if (!active) { lens.classList.remove('mw-lens-ready'); return; }
+    const navRect = nav.getBoundingClientRect();
+    const btnRect = active.getBoundingClientRect();
+    lens.style.width = btnRect.width + 'px';
+    lens.style.transform = `translateX(${btnRect.left - navRect.left}px)`;
+    lens.classList.add('mw-lens-ready');
+  };
+
+  window.mwNavLensSync = place;
+  window.addEventListener('resize', place, { passive: true });
+  place();
+})();
+</script>
+
 </body>
 </html>
