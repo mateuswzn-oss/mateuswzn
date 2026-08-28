@@ -14776,6 +14776,35 @@ html body #app .mw-admin-log-list li{display:flex;gap:10px;padding:9px 2px;borde
 html body #app .mw-admin-log-list li:last-child{border-bottom:0}
 html body #app .mw-admin-log-time{color:var(--mw-muted);white-space:nowrap;font-variant-numeric:tabular-nums}
 </style>
+<style id="mw-nav-lens-neutral">
+/* Referência do usuário (nav do Instagram + Central de Controle do iOS):
+   a lente do item ativo é vidro NEUTRO translúcido — o conteúdo atrás
+   continua aparecendo através dela. Não é uma pastilha azul.
+
+   O item ativo ainda recebia background-color:rgba(37,99,235,.28) de uma
+   regra antiga; o override da lente só tinha zerado background-image e
+   box-shadow, então a cor continuava pintando por baixo e o resultado
+   lia como "card azul opaco". Zera a cor também: quem desenha a
+   superfície do item ativo passa a ser só a lente compartilhada. */
+html body #mwBottomNav button.active,
+html body.light #mwBottomNav button.active{
+  background-color:transparent!important;
+}
+/* Lente um pouco mais presente, como na referência — ainda neutra e
+   translúcida, sem tingir de azul. */
+html body #mwNavActiveLens{
+  background-image:radial-gradient(150% 220% at 50% 8%,rgba(255,255,255,.17),rgba(255,255,255,.04) 74%)!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.10),inset 0 1px 0 rgba(255,255,255,.22)!important;
+}
+html body.light #mwNavActiveLens{
+  background-image:radial-gradient(150% 220% at 50% 8%,rgba(15,23,42,.085),rgba(15,23,42,.02) 74%)!important;
+  box-shadow:inset 0 0 0 1px rgba(15,23,42,.07),inset 0 1px 0 rgba(255,255,255,.55)!important;
+}
+/* No claro o rótulo do item ativo era quase branco — só era legível por
+   causa da pastilha azul que acabou de sair. Sobre vidro claro ele
+   precisa ser escuro, igual ao tratamento que os ícones já tinham. */
+html body.light #mwBottomNav button.active .mwnav-label{color:#151a22!important}
+</style>
 <script id="mw-admin-panel-js">
 (() => {
   // ATENÇÃO — leia antes de ligar isto a dados reais:
