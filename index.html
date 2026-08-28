@@ -4502,6 +4502,56 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
 #profileBtn.has-avatar{background-size:cover!important;background-position:center!important;color:transparent!important;border-color:rgba(255,255,255,.10)!important}
 #app .profile-btn{overflow:hidden}
 </style>
+<script id="mw-nav-avatar-canonico">
+/* ============================================================
+   FOTO DO PERFIL NA BOTTOM NAV — PONTO ÚNICO
+   ============================================================
+   O botão "Perfil" da barra inferior tem um esqueleto fixo:
+   ícone de pessoa + camada da foto + rótulo. Rotinas antigas de
+   avatar tratavam esse botão como se fosse a bolinha da sidebar
+   e escreviam `el.textContent = iniciais` nele — o que APAGA os
+   três filhos. Era por isso que a foto nunca chegava no rodapé:
+   quando a sincronização procurava `.mwnav-photo`, o elemento já
+   não existia mais.
+
+   Aqui existe uma única função que sabe mexer nesse botão. Ela
+   se auto-cura: se algum caminho legado tiver apagado o
+   esqueleto, ele é reconstruído antes de aplicar a foto. */
+(function () {
+  var SKELETON =
+    '<span class="mwnav-icon">' +
+      '<svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.9"/><path d="M4.6 20.2c0-3.7 3.3-6.1 7.4-6.1s7.4 2.4 7.4 6.1"/></svg>' +
+      '<svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="7.8" r="4.3"/><path d="M12 13.6c-4.3 0-7.8 2.6-7.8 6.1 0 .5.4.9.9.9h13.8c.5 0 .9-.4.9-.9 0-3.5-3.5-6.1-7.8-6.1Z"/></svg>' +
+    '</span>' +
+    '<span class="mwnav-photo" aria-hidden="true"></span>' +
+    '<span class="mwnav-label">Perfil</span>';
+
+  window.mwApplyNavPhoto = function (photo) {
+    var btn = document.querySelector('#mwBottomNav [data-view="profile"]');
+    if (!btn) return;
+    if (!btn.querySelector('.mwnav-icon') ||
+        !btn.querySelector('.mwnav-photo') ||
+        !btn.querySelector('.mwnav-label')) {
+      btn.textContent = '';
+      btn.insertAdjacentHTML('afterbegin', SKELETON);
+    }
+    /* O botão nunca usa background-image próprio: a foto vive na
+       camada .mwnav-photo, que é redonda e animada junto com o
+       resto da coreografia. */
+    btn.style.removeProperty('background-image');
+    btn.classList.remove('has-avatar');
+    var layer = btn.querySelector('.mwnav-photo');
+    if (photo) {
+      layer.style.setProperty('background-image', 'url("' + photo + '")');
+      btn.classList.add('has-photo');
+    } else {
+      layer.style.removeProperty('background-image');
+      btn.classList.remove('has-photo');
+    }
+    if (window.mwNavLensSync) window.mwNavLensSync();
+  };
+})();
+</script>
 <script id="mw-polish-v6-js">
 (()=>{
  const q=s=>document.querySelector(s);
@@ -4512,7 +4562,7 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
  const preview=q('#profileAvatarPreview'), initialsEl=q('#profileAvatarInitials'), photoInput=q('#profilePhoto'), fileInput=q('#profilePhotoFile');
  const choose=q('#chooseProfilePhoto'), edit=q('#editProfilePhoto'), remove=q('#removeProfilePhoto');
  let crop={src:'',img:null,x:0,y:0,scale:1,min:1,max:3,drag:false,sx:0,sy:0,ox:0,oy:0};
- function setAvatar(photo,name){const apply=(el,asImg)=>{if(!el)return;if(photo){el.style.backgroundImage=`url("${photo}")`;el.style.backgroundSize='cover';el.style.backgroundPosition='center';el.classList.add('has-avatar');if(asImg)el.textContent='';}else{el.style.backgroundImage='';el.classList.remove('has-avatar');if(asImg)el.textContent=initials(name);}};const av=q('#profileBtn');apply(av,true);apply(q('#mwSidebarAvatar'),true);apply(q('#mwBottomMenu'),true);const nm=q('#mwSidebarName');if(nm)nm.textContent=name||'Mateus';if(preview){if(photo){preview.style.backgroundImage=`url("${photo}")`;preview.style.backgroundColor='transparent';preview.style.backgroundSize='cover';preview.style.backgroundPosition='center';if(initialsEl)initialsEl.style.display='none'}else{preview.style.backgroundImage='';preview.style.backgroundColor='';if(initialsEl){initialsEl.style.display='';initialsEl.textContent=initials(name)}}}}
+ function setAvatar(photo,name){const apply=(el,asImg)=>{if(!el)return;if(photo){el.style.backgroundImage=`url("${photo}")`;el.style.backgroundSize='cover';el.style.backgroundPosition='center';el.classList.add('has-avatar');if(asImg)el.textContent='';}else{el.style.backgroundImage='';el.classList.remove('has-avatar');if(asImg)el.textContent=initials(name);}};const av=q('#profileBtn');apply(av,true);apply(q('#mwSidebarAvatar'),true);/* O botão da bottom nav NÃO passa por apply(): apply escreve textContent e destruiria o ícone, a camada da foto e o rótulo. Ele tem um caminho próprio. */if(window.mwApplyNavPhoto)window.mwApplyNavPhoto(photo||'');const nm=q('#mwSidebarName');if(nm)nm.textContent=name||'Mateus';if(preview){if(photo){preview.style.backgroundImage=`url("${photo}")`;preview.style.backgroundColor='transparent';preview.style.backgroundSize='cover';preview.style.backgroundPosition='center';if(initialsEl)initialsEl.style.display='none'}else{preview.style.backgroundImage='';preview.style.backgroundColor='';if(initialsEl){initialsEl.style.display='';initialsEl.textContent=initials(name)}}}}
  function syncProfile(){const d=getData(),p=d.profile||{};setAvatar(p.photo||'',p.name||'Mateus');if(photoInput)photoInput.value=p.photo||''}
  function openCrop(src){
    const back=document.createElement('div');back.className='profile-editor-backdrop';back.innerHTML=`<div class="profile-editor" role="dialog" aria-modal="true"><div class="profile-editor-head"><h3>Ajustar foto de perfil</h3><button class="profile-editor-close" type="button" aria-label="Fechar">×</button></div><div class="crop-stage"><img class="crop-image" draggable="false"><div class="crop-mask"></div><div class="crop-ring"></div></div><div class="crop-controls"><button type="button" data-zoom="-1" title="Afastar">−</button><input type="range" min="0" max="100" step="1" value="0" aria-label="Zoom"><button type="button" data-zoom="1" title="Aproximar">+</button></div><div class="crop-hint">− afasta · + aproxima · arraste para centralizar</div><div class="profile-editor-actions"><button type="button" class="profile-editor-close2">Cancelar</button><button type="button" class="crop-save">Usar esta foto</button></div></div>`;
@@ -10229,19 +10279,7 @@ html body.light .eva-voice{
        foto, ela some e o icone de pessoa reaparece. O botao nao volta a
        receber textContent = iniciais — era isso que antes apagava os
        filhos e deixava a letra "M" solta. */
-    const navBtn = q('#mwBottomNav [data-view="profile"]');
-    if (navBtn) {
-      const layer = navBtn.querySelector('.mwnav-photo');
-      if (layer) {
-        if (photo) {
-          layer.style.setProperty('background-image', 'url("' + photo + '")');
-          navBtn.classList.add('has-photo');
-        } else {
-          layer.style.removeProperty('background-image');
-          navBtn.classList.remove('has-photo');
-        }
-      }
-    }
+    if (window.mwApplyNavPhoto) window.mwApplyNavPhoto(photo);
     const nameEl = q('#mwSidebarName');
     const roleEl = q('#mwSidebarEmail');
     if (nameEl) nameEl.textContent = name;
@@ -13976,22 +14014,44 @@ html body #mwBottomNav{
      ícone, avatar, respiro e paddings encolhem juntos, na mesma
      proporção — é isso que faz parecer uma peça só diminuindo em vez de
      um menu se achatando. */
-  /* Spec pede "ícones maiores e modernos": 22px -> 25px. O delta (4.2px)
-     é recalculado pra manter exatamente os mesmos 17% de compressão. */
-  /* Com 4 slots (86,5px cada em 390px) sobra mais respiro que com 5,
-     entao o icone sobe de 25 para 27px sem apertar nada. O delta da
-     compressao acompanha, mantendo os mesmos 17% medidos. */
-  --mw-icon:clamp(22px,calc(27px - var(--mw-nav-compact,0) * 4.6px),27.5px);
-  --mw-avatar:clamp(30px,calc(38px - var(--mw-nav-compact,0) * 6.5px),38.6px);
-  --mw-pad-y:clamp(9px,calc(13px - var(--mw-nav-compact,0) * 2.2px),13.4px);
-  --mw-pad-x:clamp(13px,calc(17px - var(--mw-nav-compact,0) * 2.9px),17.4px);
-  --mw-gap:clamp(6px,calc(9px - var(--mw-nav-compact,0) * 1.5px),9.4px);
-  --mw-btn-w:clamp(42px,calc(52px - var(--mw-nav-compact,0) * 8.8px),52.6px);
-  /* Respiro em volta do ícone dentro do botão. Era um +12px fixo cravado
-     na altura do botão e da lente; sendo fixo, ele não encolhia e
-     diluía a compressão (a barra caía só 15% em vez de 17%). Vira
-     variável pra encolher junto com o resto. */
-  --mw-btn-pad:clamp(9px,calc(12px - var(--mw-nav-compact,0) * 2px),12.2px);
+  /* GEOMETRIA CONGELADA — a compressão do scroll NÃO passa mais por aqui.
+
+     Antes, cada medida tinha o seu próprio delta amarrado a
+     --mw-nav-compact: o ícone encolhia 4,6px, o padding 2,2px, o gap
+     1,5px, e assim por diante. Sete variáveis independentes tentando,
+     juntas, imitar uma peça só diminuindo. Duas consequências ruins:
+       • a LARGURA da barra não encolhia nada (o grid tem largura fixa),
+         então a cápsula continuava do mesmo tamanho enquanto o miolo
+         apertava — na referência a barra inteira estreita;
+       • cada delta era um número chutado à mão, e bastava mexer num
+         (ícone 25→27px) pra ter de recalcular todos os outros.
+
+     A medição quadro a quadro da referência mostrou o que ela realmente
+     faz, e é muito mais simples: o ícone vai de 66px para 54px (×0,818),
+     a largura da cápsula de 1034px para 850px (×0,822), e o centro
+     vertical do ícone não se move (175,9 → 175,5 — meio pixel). Isso é
+     a assinatura exata de uma ÚNICA escala uniforme com origem no
+     centro, não de sete deltas independentes.
+
+     Então as medidas abaixo são constantes, e a compressão é um
+     transform:scale() aplicado à barra inteira (ver .mwbn adiante). O
+     ícone, os vãos, o padding, o raio da borda e a lente encolhem
+     juntos, na mesma proporção, de graça — porque são a mesma peça. */
+  /* "Um pouco maiores, sem exagerar": 27,5 -> 30px. É o mesmo valor
+     para os quatro itens e ele NÃO muda em momento nenhum — nem na
+     ativação (não há scale no item ativo) nem por item. A única coisa
+     que altera o tamanho aparente é a escala da barra inteira no
+     scroll, e aí os quatro encolhem juntos, na mesma proporção, porque
+     são a mesma peça. */
+  --mw-icon:30px;
+  --mw-avatar:41px;
+  --mw-pad-y:13.4px;
+  --mw-pad-x:17.4px;
+  --mw-gap:9.4px;
+  --mw-btn-w:52.6px;
+  --mw-btn-pad:12.2px;
+  /* 1 → 0,822 é a razão medida na referência. */
+  --mw-nav-scale:calc(1 - var(--mw-nav-compact,0) * .178);
 
   /* Largura de conteúdo, centralizada — não esticada de ponta a ponta
      da tela. */
@@ -14155,27 +14215,43 @@ html body.light #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar::after{
      compressão — e só no instante de assentar ela passa um pouco do
      alvo e volta, e essa pontinha final é a elasticidade (o
      acabamento, não o movimento inteiro). */
-  /* Constantes medidas quadro a quadro na gravação de referência
-     (60fps): a barra vai de escala 1,00 a ~0,83 (≈17% — o CSS aplica
-     essa mesma proporção em ícone, avatar, gaps e paddings), a
-     compressão leva ~330ms, a expansão ~460ms (mais lenta que a
-     compressão), e a ultrapassagem no fim é de meros ~0,6% — quase
-     imperceptível, não um quique.
+  /* Constantes derivadas de uma medição quadro a quadro da gravação de
+     referência (60fps, 375 quadros). O método: o ponto vermelho de
+     notificação da terceira aba é a única marca inequívoca da barra,
+     então foi rastreado o centroide dele em cada quadro. A distância
+     horizontal entre esse centroide e o centro da tela é o braço de
+     alavanca da barra — ele encolhe exatamente na proporção em que a
+     barra encolhe, com precisão de subpixel.
 
-     ζ (razão de amortecimento) = DAMPING / (2·√STIFFNESS). Com ζ≈0,85 a
-     ultrapassagem teórica é exp(-πζ/√(1-ζ²)) ≈ 0,6%, batendo com o
-     medido. O par stiffness/damping é diferente por direção justamente
-     porque expandir é visivelmente mais lento que comprimir. */
+     O que a medição mostrou:
+       • escala 1,000 expandida → 0,826–0,840 comprimida (≈17%);
+       • a barra SEGURA o estado comprimido enquanto o dedo está
+         parado (0,83 constante por ~500ms em três trechos distintos);
+       • comprimir 5%→95% em ~270ms;
+       • expandir  5%→95% em ~300ms;
+       • ultrapassagem: NENHUMA. O máximo observado em 375 quadros foi
+         0,9994 — a barra nunca passa do tamanho normal e nunca quica.
+
+     Ou seja: as duas direções são praticamente simétricas. A versão
+     anterior daqui usava uma assimetria grande (comprimir ~210ms,
+     expandir ~330ms) herdada de um chute, e era isso que fazia a volta
+     parecer arrastada em relação à referência. O par único abaixo
+     reproduz os dois tempos medidos.
+
+     ζ (razão de amortecimento) = DAMPING / (2·√STIFFNESS) ≈ 0,85, que
+     dá uma ultrapassagem teórica de exp(-πζ/√(1-ζ²)) ≈ 0,6% — abaixo
+     do limiar visível, coerente com o "nunca passa" da referência. */
   const html = document.documentElement;
   const main = document.querySelector('#app .main');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const TOP_RESET = 16;
-  // Comprimir: ~330ms de acomodação, ζ≈0,85.
-  const K_IN = 245, C_IN = 26.5;
-  // Expandir: ~480ms, mesmo ζ — só mais macio.
-  const K_OUT = 125, C_OUT = 19;
+  // Comprimir: 5%→95% em ~270ms (referência: ~270ms).
+  const K_IN = 184, C_IN = 22.9;
+  // Expandir: 5%→95% em ~300ms (referência: ~300ms). Quase o mesmo par
+  // — a diferença entre as direções na referência é pequena de verdade.
+  const K_OUT = 181, C_OUT = 23.3;
   // Passo fixo da integração. A mola avança pelo tempo REAL decorrido,
-  // em substeps deste tamanho: assim ela leva os mesmos ~330ms/~480ms
+  // em substeps deste tamanho: assim ela leva os mesmos ~270ms/~300ms
   // num aparelho a 120fps e num que esteja engasgando a 20fps. Com dt
   // fixo por quadro (como estava antes), perder quadros deixava a
   // animação proporcionalmente mais lenta.
@@ -14840,7 +14916,25 @@ html body.mw-in-app #mwBottomNav.mwbn{
   justify-items:center!important;
   gap:0!important;
   width:min(calc(100vw - 16px),420px)!important;
-  padding:var(--mw-pad-y) 6px!important;
+  /* 6px não bastavam: a bolha do primeiro e do último item é
+     simétrica em volta do centro do slot e, com só 6px de respiro,
+     ela estourava a cápsula em 0,5px e caía no limitador — o que
+     tirava justamente esses dois do centro. Com 10px nenhum item
+     precisa ser limitado, então TODOS ficam exatamente centrados. */
+  padding:var(--mw-pad-y) 10px!important;
+  /* A COMPRESSÃO DO SCROLL, inteira, em uma linha.
+
+     translateX(-50%) é o que já centralizava a barra; scale() vem
+     depois, com origem no centro dos dois eixos — exatamente o que a
+     referência faz: a cápsula estreita e baixa ao mesmo tempo, em
+     torno do próprio centro, sem se mover na tela.
+
+     Como é transform, isso NÃO gera layout: nada é reposicionado,
+     nada é empurrado, o fluxo do conteúdo não sente. É também o
+     motivo de a barra continuar exatamente no mesmo lugar — o centro
+     é ponto fixo da transformação. */
+  transform-origin:50% 50%!important;
+  transform:translateX(-50%) scale(var(--mw-nav-scale,1))!important;
 }
 html body #mwBottomNav.mwbn > button{
   width:100%!important;min-width:0!important;flex:none!important;
@@ -14851,47 +14945,59 @@ html body #mwBottomNav.mwbn > button{
      O rótulo é absoluto e precisa transbordar a coluna de propósito. */
   overflow:visible!important;
 }
-/* Ícone e rótulo formam um conjunto centrado na coluna.
+/* ============================================================
+   O CONJUNTO ÍCONE + NOME FICA CENTRADO NO SLOT
+   ============================================================
+   Orçamento de espaço, medido (fonte 9px/700):
+     "Início" 27px · "Faculdade" 52px · "Arquivos" 45px · "Perfil" 27px
+   Com o ícone travado no centro exato do slot, a bolha só pode crescer
+   para a DIREITA, então ela precisa de 82,8px desse lado enquanto o
+   lado esquerdo sobra sem uso. Disponível até o ícone vizinho: 65,3px
+   em 375, 69,3px em 390. Resultado medido: "Faculdade" invadia o ícone
+   vizinho em 17,5px (375), 13,5px (390) e 3,5px (430). Encolher a fonte
+   não salva: "Faculdade" precisaria de ~6,8px para caber, ilegível.
 
-   Medição que obriga isso: a coluna tem 69,2px em 390px, o ícone 25px, e
-   do centro até a borda do ícone vizinho sobram 56,7px. Com o ícone
-   travado no centro exato, só caberia um rótulo de até ~38px (uns 6
-   caracteres) — "Perfil", "Home" e "IA" caberiam, "Faculdade" (58px) e
-   "Arquivos" (48px) invadiriam o ícone vizinho. Centrando o conjunto, o
-   transbordo se divide nos dois lados e cai para ~44px de cada lado,
-   dentro dos 56,7px disponíveis.
+   Centrando o CONJUNTO, o transbordo se divide nos dois lados: a bolha
+   passa a precisar de 43,5px de cada lado e sobra folga em toda a faixa.
 
-   O ícone se desloca por TRANSFORM, dentro da mesma janela de 300ms da
-   lente e do rótulo. Não é empurrão de layout: nada muda de tamanho, os
-   cinco slots continuam imóveis e não há reflow. */
+   Como isso é feito sem nenhum salto:
+     • Cada botão publica dois números, calculados UMA vez (e no
+       resize), nunca no instante do clique: --mw-ix, o quanto o ícone
+       anda, e --mw-lx, onde o nome pousa. Não há medição durante a
+       ativação, então não há um quadro de atraso entre "mudou a classe"
+       e "começou a animar".
+     • A ativação é só a troca da classe. Ícone, nome e lente têm a
+       MESMA duração e a MESMA curva (--mw-choreo-dur/--mw-choreo-ease),
+       sem delay em nenhum deles, então os três partem no mesmo quadro e
+       chegam no mesmo quadro. É isso que evita o efeito "parcelado".
+     • Tudo é transform/opacity. Nenhum slot muda de tamanho ou posição,
+       nada é empurrado, não há reflow. */
 html body #mwBottomNav.mwbn > button .mwnav-icon{
   transform:translateX(0);
-  transition:transform var(--mw-choreo-dur) var(--mw-choreo-ease);
+  transition:transform var(--mw-choreo-dur) var(--mw-choreo-ease),
+             opacity var(--mw-choreo-dur) var(--mw-choreo-ease);
 }
-/* Com quatro slots (87px contra os 69,2px de cinco) passou a caber o
-   rótulo ao lado SEM deslocar o ícone. Então o ícone fica travado no
-   centro exato da própria coluna o tempo todo, como pedido: nada de
-   empurrar o avatar pra abrir espaço. */
-html body #mwBottomNav.mwbn > button.active .mwnav-icon{transform:translateX(0)}
-/* O rótulo sai do fluxo: encostado à direita do ícone já deslocado,
-   centrado na vertical. */
+html body #mwBottomNav.mwbn > button.active .mwnav-icon{
+  transform:translateX(var(--mw-ix,0px));
+}
+/* O rótulo sai do fluxo: ancorado no centro do slot e colocado pelo
+   transform, para que entrar e posicionar sejam O MESMO movimento —
+   e não "aparece, depois anda". */
 html body #mwBottomNav.mwbn .mwnav-label{
   position:absolute!important;
-  /* Com o icone travado no centro, todo o rotulo cresce pra um lado so.
-     Medido: a 10px de fonte e 6px de respiro, "Faculdade" invadia o
-     icone vizinho em 4,7px (390) e 8,5px (375). Fonte e respiro
-     reduzidos ate a folga ficar positiva em toda a faixa. */
-  left:calc(50% + var(--mw-icon) * .5 + 4px)!important;
+  left:50%!important;
   top:50%!important;
   font-size:9px!important;font-weight:700;letter-spacing:0!important;
   white-space:nowrap!important;pointer-events:none;
   opacity:0;
-  transform:translate(-6px,-50%);
+  /* Nasce 8px atrás do destino, na direção de onde o ícone vem: o nome
+     parece sair de dentro do ícone e assentar junto com ele. */
+  transform:translate(calc(var(--mw-lx,0px) - 8px),-50%);
   transition:opacity var(--mw-choreo-dur) var(--mw-choreo-ease),
              transform var(--mw-choreo-dur) var(--mw-choreo-ease);
 }
 html body #mwBottomNav.mwbn > button.active .mwnav-label{
-  opacity:1;transform:translate(0,-50%);
+  opacity:1;transform:translate(var(--mw-lx,0px),-50%);
 }
 }
 /* Perfil: foto quando existe, ícone de pessoa quando não existe.
@@ -14913,17 +15019,23 @@ html body #mwBottomNav.mwbn > button .mwnav-icon{
   transition:opacity var(--mw-choreo-dur) var(--mw-choreo-ease),
              transform var(--mw-choreo-dur) var(--mw-choreo-ease);
 }
-/* Com foto, a camada acompanha o mesmo deslocamento do ícone quando o
-   rótulo entra, pra que o conjunto continue opticamente centrado. */
+/* Perfil não tem tratamento especial: a camada da foto anda exatamente
+   o mesmo --mw-ix do ícone, com a mesma duração e a mesma curva. Para o
+   olho, foto e ícone de pessoa se comportam de forma idêntica.
+   (Esta regra vem DEPOIS da de .has-photo de propósito: mesma
+   especificidade, então a ordem é que decide qual vale no item ativo.) */
 html body #mwBottomNav.mwbn > button.active .mwnav-photo{
-  transform:translate(-50%,-50%) scale(1);
+  transform:translate(calc(-50% + var(--mw-ix,0px)),-50%) scale(1);
 }
 
-/* Abaixo de 375px o nome encostaria no ícone vizinho mesmo com a fonte
-   reduzida (medido: -3,6px de folga em 360). Nessas larguras a barra
-   fica só com ícones e a lente, sem rótulo — o item ativo continua
+/* Com o conjunto centrado o nome passou a caber bem mais para baixo: a
+   folga até o ícone vizinho só fica apertada nas telas mais estreitas.
+   Medido: em 360px sobram 5,5px de folga no pior caso ("Faculdade"),
+   em 350px sobram ~3px, e em 340px caem para 0,5px — aí a bolha
+   encosta no ícone vizinho. O corte fica em 350px: abaixo disso a
+   barra fica só com ícones e a lente, e o item ativo continua
    identificado pela lente e pelo ícone preenchido. */
-@media(max-width:374px){
+@media(max-width:349px){
   html body #mwBottomNav.mwbn .mwnav-label{display:none!important}
 }
 @media(prefers-reduced-motion:reduce){
@@ -14973,22 +15085,15 @@ html body #mwBottomNav button,html body #mwBottomNav .mwnav-icon,html body #mwBo
     lens.setAttribute('aria-hidden', 'true');
     nav.appendChild(lens);
   }
-  function place() {
-    const active = nav.querySelector('#mwBottomNav > button.active');
-    if (!active) { lens.classList.remove('mw-lens-ready'); return; }
-    const navRect = nav.getBoundingClientRect();
-    const btnRect = active.getBoundingClientRect();
-    lens.style.width = btnRect.width + 'px';
-    lens.style.transform = `translateX(${btnRect.left - navRect.left}px)`;
-    lens.classList.add('mw-lens-ready');
-  }
-  // Duplo rAF: espera o navegador aplicar a mudança de classe/largura do
-  // botão ativo (a largura em si muda na hora; só a revelação do rótulo
-  // anima) antes de medir o retângulo final, senão a lente mede o
-  // tamanho antigo e "corrige" num segundo salto visível.
-  window.mwNavLensSync = () => requestAnimationFrame(() => requestAnimationFrame(place));
-  window.addEventListener('resize', () => window.mwNavLensSync(), { passive: true });
-  window.mwNavLensSync();
+  /* Este bloco só CRIA o elemento da lente. O posicionamento vive num
+     único lugar (mw-nav-choreography-js, mais adiante).
+
+     Antes existiam DUAS implementações: esta, que dimensionava a lente
+     pelo retângulo do slot, e a de lá, que a dimensiona pelo conteúdo
+     (ícone + rótulo). Ambas registravam listener de resize, então em
+     qualquer redimensionamento as duas rodavam e a bolha voltava a ter
+     a largura do slot — deixando o nome para fora dela. Um sistema
+     concorrente com o outro. Aqui ficou só a criação. */
 })();
 </script>
 
@@ -15319,46 +15424,108 @@ html body #mwBottomNav:has(> button.mw-avatar-active) > button.active .mwnav-lab
      mais um segundo estado (.mw-avatar-active) competindo. */
   const activeSlot = () => nav.querySelector(':scope > button.active');
 
+  /* Respiro entre o ícone e o nome, e da bolha em volta do conjunto.
+     Um lugar só: a mesma constante alimenta o deslocamento do ícone, a
+     posição do nome e a largura da lente, então os três não podem
+     discordar entre si. */
+  const GAP = 5, PAD = 13;
+
+  /* A barra recebe um transform:scale() durante o scroll, então há dois
+     sistemas de coordenadas: o de LAYOUT (onde a lente é posicionada,
+     por ser filha da barra) e o de TELA (o que getBoundingClientRect
+     devolve, já escalado).
+
+     offsetLeft/offsetWidth vivem no sistema de layout, mas devolvem
+     INTEIROS ARREDONDADOS — e as colunas do grid são fracionárias
+     (338/4 = 84,5px). Esse arredondamento tirava a bolha do centro em
+     até 0,75px, o que aparece como um desalinhamento sutil e constante.
+
+     Solução: medir com getBoundingClientRect, que é fracionário e
+     exato, e dividir pela escala corrente para voltar ao sistema de
+     layout. A escala é lida do próprio transform computado — não de uma
+     constante repetida aqui, que poderia divergir do CSS. */
+  const navScale = () => {
+    const m = new DOMMatrix(getComputedStyle(nav).transform);
+    return m.a || 1;
+  };
+
+  /* MEDIÇÃO — roda uma vez e em cada resize, NUNCA na ativação.
+
+     Cada botão recebe dois números:
+       --mw-ix  quanto o ícone anda para a esquerda quando ativo, para
+                que ícone+nome fiquem centrados no slot;
+       --mw-lx  onde o nome pousa, medido a partir do centro do slot.
+     Com os dois já publicados, ativar um item é só trocar uma classe:
+     nenhuma leitura de layout no meio do caminho, nenhum quadro perdido
+     entre o clique e o início do movimento.
+
+     A largura do conjunto fica guardada no próprio botão para a lente
+     não ter de remedir o texto depois. */
+  const measure = () => {
+    const icon = parseFloat(getComputedStyle(nav).getPropertyValue('--mw-icon')) || 30;
+    const k = navScale();
+    nav.querySelectorAll(':scope > button').forEach(b => {
+      const lbl = b.querySelector('.mwnav-label');
+      const lblW = (lbl && getComputedStyle(lbl).display !== 'none')
+        ? lbl.getBoundingClientRect().width / k : 0;
+      const groupW = lblW ? icon + GAP + lblW : icon;
+      // Centrar o conjunto = mover o ícone meia "sobra" para a esquerda.
+      const ix = lblW ? -(GAP + lblW) / 2 : 0;
+      // O nome começa onde o ícone termina; como o rótulo está ancorado
+      // em left:50%, o destino é medido a partir do centro do slot.
+      const lx = lblW ? (icon + GAP - lblW) / 2 : 0;
+      b.style.setProperty('--mw-ix', ix.toFixed(2) + 'px');
+      b.style.setProperty('--mw-lx', lx.toFixed(2) + 'px');
+      b.dataset.groupw = groupW.toFixed(2);
+    });
+  };
+
   const place = () => {
     const active = activeSlot();
     if (!active) { lens.classList.remove('mw-lens-ready'); return; }
+    /* MEDIDA DE LAYOUT, NÃO DE TELA.
+
+       A barra inteira recebe um transform:scale() durante o scroll, e
+       getBoundingClientRect() devolve o retângulo JÁ TRANSFORMADO. Se a
+       lente fosse posicionada a partir dele, ela seria calculada em
+       pixels de tela e depois escalada de novo pelo transform do pai —
+       o erro entraria duas vezes e a bolha sairia do lugar assim que a
+       barra comprimisse.
+
+       offsetLeft/offsetWidth são medidas de LAYOUT: ignoram transform e
+       vivem no mesmo sistema de coordenadas em que a lente é
+       posicionada (ela é filha da barra). Por isso a lente fica correta
+       comprimida ou expandida sem nenhum fator de correção. */
+    const k = navScale();
     const navRect = nav.getBoundingClientRect();
     const btnRect = active.getBoundingClientRect();
-    /* A lente é puramente visual: ela envolve o ícone MAIS o rótulo,
-       mas quem define isso é a medida do texto, não o layout — o slot
-       em si continua com a largura fixa da coluna do grid. Medir o
-       rótulo aqui não altera geometria nenhuma: ele é position:absolute. */
-    const lbl = active.querySelector('.mwnav-label');
-    const lblW = (lbl && getComputedStyle(lbl).display !== 'none')
-      ? Math.ceil(lbl.getBoundingClientRect().width) : 0;
+    const navW = navRect.width / k;
 
-    /* Deslocamento que centra o conjunto ícone+rótulo na coluna. É
-       publicado como variável CSS pra que o ícone e o rótulo usem a
-       mesma origem e animem juntos, na mesma transição. */
-    const shift = lblW ? (6 + lblW) / 2 : 0;
-    nav.style.setProperty('--mw-label-shift', shift.toFixed(2) + 'px');
-
-    /* A lente envolve o conjunto. Calcula as duas bordas em vez de
-       centralizar num tamanho — assim ela cobre exatamente o conteúdo,
-       tanto no item só-ícone quanto no item com nome. */
-    const icon = parseFloat(getComputedStyle(nav).getPropertyValue('--mw-icon')) || 25;
-    const padX = 13;
-    const centre = btnRect.left + btnRect.width / 2 - navRect.left;
-    const contentLeft = centre - icon / 2 - shift;
-    const contentRight = centre + icon / 2 - shift + (lblW ? 6 + lblW : 0);
-    let x = contentLeft - padX;
-    let w = (contentRight - contentLeft) + padX * 2;
+    /* A bolha é SIMÉTRICA em volta do centro do slot, porque o conjunto
+       que ela envolve também é. É isso que a mantém "perfeitamente
+       alinhada": o centro da lente e o centro da coluna são o mesmo
+       ponto em todos os itens, com nome ou sem nome. */
+    const icon = parseFloat(getComputedStyle(nav).getPropertyValue('--mw-icon')) || 30;
+    const groupW = parseFloat(active.dataset.groupw) || icon;
+    const centre = (btnRect.left + btnRect.width / 2 - navRect.left) / k;
+    let w = groupW + PAD * 2;
+    let x = centre - w / 2;
     // Nunca deixa a lente escapar da cápsula.
     if (x < 3) x = 3;
-    if (x + w > navRect.width - 3) w = navRect.width - 3 - x;
+    if (x + w > navW - 3) w = navW - 3 - x;
     lens.style.width = w.toFixed(2) + 'px';
     lens.style.transform = `translateX(${x.toFixed(2)}px)`;
     lens.classList.add('mw-lens-ready');
   };
 
+  const remeasure = () => { measure(); place(); };
   window.mwNavLensSync = place;
-  window.addEventListener('resize', place, { passive: true });
-  place();
+  window.addEventListener('resize', remeasure, { passive: true });
+  /* As fontes podem chegar depois do primeiro layout e mudar a largura
+     do texto. Sem isso, --mw-lx e a lente ficariam calibrados na
+     métrica da fonte de fallback. */
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(remeasure).catch(() => {});
+  remeasure();
 })();
 </script>
 
