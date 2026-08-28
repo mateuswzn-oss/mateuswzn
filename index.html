@@ -3873,6 +3873,33 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
   /* Se o loader nem existir (ex.: markup removido), ninguém pode ficar
      esperando para sempre. */
   if (!loader) mwBootSinaliza();
+
+  /* ============================================================
+     VERSÃO NOVA CHEGANDO DURANTE O BOOT
+     ============================================================
+     O service worker responde do cache para a abertura ser instantânea
+     e busca a versão nova em segundo plano. O efeito colateral é que
+     ela só valeria na PRÓXIMA abertura — do lado de cá, "abri e o
+     problema ainda está lá; só some se eu fechar e abrir de novo".
+
+     Se a versão nova chega enquanto o preloader ainda está na tela,
+     dá para trocar agora: a tela está coberta, então recarregar é
+     invisível. Só nessa janela — depois que o app apareceu, recarregar
+     por conta própria poderia descartar algo que o usuário digitou.
+
+     A trava em sessionStorage impede laço: no máximo uma recarga por
+     sessão, aconteça o que acontecer. */
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message', function(ev){
+      if (!ev.data || ev.data.tipo !== 'mw-versao-nova') return;
+      if (mwBootDone || !document.getElementById('mwBootLoader')) return;
+      try {
+        if (sessionStorage.getItem('mwRecarregouPorVersao') === '1') return;
+        sessionStorage.setItem('mwRecarregouPorVersao', '1');
+      } catch (e) { return; }
+      location.reload();
+    });
+  }
   if (loader) {
     var mwBootStart = performance.now();
     var mwAppReady = false;
