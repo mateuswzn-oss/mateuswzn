@@ -13815,12 +13815,18 @@ html body .mwv2-auth-pane{padding:38px 46px 28px!important}
 html body #mwBottomNav{
   /* Variáveis únicas que dirigem toda a compressão — um componente só
      mudando propriedades, nunca uma troca de elementos. */
-  --mw-icon:clamp(14px,calc(22px - var(--mw-nav-compact,0) * 7px),22.5px);
-  --mw-avatar:clamp(25px,calc(38px - var(--mw-nav-compact,0) * 11px),38.6px);
-  --mw-pad-y:clamp(4px,calc(13px - var(--mw-nav-compact,0) * 8px),13.4px);
-  --mw-pad-x:clamp(8px,calc(17px - var(--mw-nav-compact,0) * 8px),17.4px);
-  --mw-gap:clamp(2px,calc(9px - var(--mw-nav-compact,0) * 6px),9.4px);
-  --mw-btn-w:clamp(37px,calc(52px - var(--mw-nav-compact,0) * 13px),52.6px);
+  /* Amplitude medida na gravação de referência: a barra inteira encolhe
+     de forma UNIFORME para ~0,83 do tamanho (≈17%), não 40%+. Cada
+     variável abaixo perde exatamente 17% do seu valor cheio, então
+     ícone, avatar, respiro e paddings encolhem juntos, na mesma
+     proporção — é isso que faz parecer uma peça só diminuindo em vez de
+     um menu se achatando. */
+  --mw-icon:clamp(17px,calc(22px - var(--mw-nav-compact,0) * 3.7px),22.5px);
+  --mw-avatar:clamp(30px,calc(38px - var(--mw-nav-compact,0) * 6.5px),38.6px);
+  --mw-pad-y:clamp(9px,calc(13px - var(--mw-nav-compact,0) * 2.2px),13.4px);
+  --mw-pad-x:clamp(13px,calc(17px - var(--mw-nav-compact,0) * 2.9px),17.4px);
+  --mw-gap:clamp(6px,calc(9px - var(--mw-nav-compact,0) * 1.5px),9.4px);
+  --mw-btn-w:clamp(42px,calc(52px - var(--mw-nav-compact,0) * 8.8px),52.6px);
 
   /* Largura de conteúdo, centralizada — não esticada de ponta a ponta
      da tela. */
@@ -13984,37 +13990,76 @@ html body.light #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar::after{
      compressão — e só no instante de assentar ela passa um pouco do
      alvo e volta, e essa pontinha final é a elasticidade (o
      acabamento, não o movimento inteiro). */
+  /* Constantes medidas quadro a quadro na gravação de referência
+     (60fps): a barra vai de escala 1,00 a ~0,83 (≈17% — o CSS aplica
+     essa mesma proporção em ícone, avatar, gaps e paddings), a
+     compressão leva ~330ms, a expansão ~460ms (mais lenta que a
+     compressão), e a ultrapassagem no fim é de meros ~0,6% — quase
+     imperceptível, não um quique.
+
+     ζ (razão de amortecimento) = DAMPING / (2·√STIFFNESS). Com ζ≈0,85 a
+     ultrapassagem teórica é exp(-πζ/√(1-ζ²)) ≈ 0,6%, batendo com o
+     medido. O par stiffness/damping é diferente por direção justamente
+     porque expandir é visivelmente mais lento que comprimir. */
   const html = document.documentElement;
   const main = document.querySelector('#app .main');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const DIST = 170;
   const TOP_RESET = 16;
-  const STIFFNESS = 210;
-  const DAMPING = 16;
-  let lastY = 0, accum = 0, target = 0, current = 0, velocity = 0, raf = null;
+  // Comprimir: ~330ms de acomodação, ζ≈0,85.
+  const K_IN = 245, C_IN = 26.5;
+  // Expandir: ~480ms, mesmo ζ — só mais macio.
+  const K_OUT = 125, C_OUT = 19;
+  // Passo fixo da integração. A mola avança pelo tempo REAL decorrido,
+  // em substeps deste tamanho: assim ela leva os mesmos ~330ms/~480ms
+  // num aparelho a 120fps e num que esteja engasgando a 20fps. Com dt
+  // fixo por quadro (como estava antes), perder quadros deixava a
+  // animação proporcionalmente mais lenta.
+  const STEP = 1 / 120;
+  const MAX_CATCHUP = 0.1;
+  /* Na referência a barra NÃO acompanha a rolagem proporcionalmente:
+     ela troca de estado por direção e segura esse estado enquanto o
+     dedo está parado. Um limiar pequeno pra descer (responde quase na
+     hora) e um um pouco maior pra subir (evita que um solavanco de
+     inércia reabra a barra sozinho). */
+  const DOWN_TRIGGER = 12;
+  const UP_TRIGGER = 42;
+  let lastY = 0, dirAccum = 0, target = 0, current = 0, velocity = 0, raf = null, lastT = 0;
 
   const getY = () => Math.max(main ? main.scrollTop : 0, window.scrollY || document.documentElement.scrollTop || 0);
 
-  const loop = () => {
+  const loop = (now) => {
     if (reduceMotion) {
       current = target;
       html.style.setProperty('--mw-nav-compact', current.toFixed(3));
       raf = null;
       return;
     }
-    const dt = 1 / 60;
-    const force = (target - current) * STIFFNESS - velocity * DAMPING;
-    velocity += force * dt;
-    current += velocity * dt;
-    // Margem pequena além de [0,1] pra mola poder ultrapassar o alvo de
-    // verdade (a elasticidade), sem nunca disparar pra um valor absurdo.
-    current = Math.max(-0.08, Math.min(1.1, current));
+    // Tempo real decorrido desde o quadro anterior, limitado pra que uma
+    // pausa longa (aba em segundo plano) não faça a mola dar um salto.
+    let elapsed = lastT ? Math.min((now - lastT) / 1000, MAX_CATCHUP) : STEP;
+    lastT = now;
+    // A direção do movimento define a rigidez: expandir é mais macio que
+    // comprimir, como na referência.
+    const goingIn = target > current;
+    const k = goingIn ? K_IN : K_OUT;
+    const c = goingIn ? C_IN : C_OUT;
+    while (elapsed > 0) {
+      const dt = Math.min(STEP, elapsed);
+      elapsed -= dt;
+      const force = (target - current) * k - velocity * c;
+      velocity += force * dt;
+      current += velocity * dt;
+    }
+    // Margem mínima além de [0,1]: só o suficiente pra caber a
+    // ultrapassagem de ~0,6% da referência, nada além disso.
+    current = Math.max(-0.03, Math.min(1.03, current));
     html.style.setProperty('--mw-nav-compact', current.toFixed(4));
     if (Math.abs(target - current) > 0.0015 || Math.abs(velocity) > 0.002) {
       raf = requestAnimationFrame(loop);
     } else {
       current = target;
       velocity = 0;
+      lastT = 0;
       html.style.setProperty('--mw-nav-compact', current.toFixed(4));
       raf = null;
     }
@@ -14024,10 +14069,21 @@ html body.light #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar::after{
     const y = getY();
     const delta = y - lastY;
     lastY = y;
-    if (y <= TOP_RESET) accum = 0;
-    else accum = Math.max(0, Math.min(DIST, accum + delta));
-    target = accum / DIST;
-    if (!raf) raf = requestAnimationFrame(loop);
+    if (y <= TOP_RESET) {
+      // No topo a barra está sempre inteira, independente do acumulado.
+      dirAccum = 0;
+      target = 0;
+    } else {
+      // Zera o acumulador ao inverter a direção, pra cada gesto ser
+      // medido a partir do ponto em que ele começou.
+      if ((delta > 0) !== (dirAccum > 0)) dirAccum = 0;
+      dirAccum += delta;
+      if (dirAccum >= DOWN_TRIGGER) target = 1;
+      else if (dirAccum <= -UP_TRIGGER) target = 0;
+      // Entre os dois limiares o alvo permanece como está: parar de
+      // rolar não desfaz nem completa nada sozinho.
+    }
+    if (!raf) { lastT = 0; raf = requestAnimationFrame(loop); }
   };
 
   main?.addEventListener('scroll', update, { passive:true });
