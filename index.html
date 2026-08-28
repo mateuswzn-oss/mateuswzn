@@ -2703,8 +2703,6 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
   width:100%;height:52px;margin-top:4px;border-radius:100px!important;
   font-size:11.5px;letter-spacing:.12em;box-shadow:none!important;
 }
-.mwv2-demo-btn{display:block;width:100%;margin-top:10px;border:1px solid rgba(104,171,245,.3);background:rgba(56,189,248,.07);color:#bcdfff;border-radius:100px;height:40px;font-size:11px;letter-spacing:.03em;transition:.2s;box-shadow:none}
-.mwv2-demo-btn:hover{background:rgba(56,189,248,.14);border-color:rgba(104,171,245,.5)}
 #inlineCreateError.form-error{min-height:14px;margin:0 0 8px;font-size:11px}
 #inlineCreateForm{display:flex;flex-direction:column}
 #inlineCreateForm .mw-original-car-btn,
@@ -2893,7 +2891,6 @@ body.light .mw-faceid-gate-card p{color:#526988}
           <div class="mwv2-forgot"><button type="button" id="forgotPasswordLink">Esqueci minha senha</button></div>
 
           <button class="ref-primary" id="loginButton" type="button">ENTRAR</button>
-          <button type="button" id="demoLogin" class="mwv2-demo-btn">Entrar em modo demonstração</button>
           <div class="status" id="status"></div>
         </div>
 
@@ -3790,37 +3787,6 @@ window.toast = toast;
     q('#loginButton').addEventListener('click',()=>authenticate(userInput.value,passInput.value));
   }
   refreshLogin();
-
-  // Demo access — intentionally minimal: no async work, no render loop, no duplicate handlers.
-  const demoBtn=q('#demoLogin');
-  if(demoBtn){
-    const cleanDemo=demoBtn.cloneNode(true);
-    demoBtn.replaceWith(cleanDemo);
-    cleanDemo.addEventListener('click',e=>{
-      e.preventDefault();
-      e.stopPropagation();
-      if(cleanDemo.dataset.busy==='1') return;
-      cleanDemo.dataset.busy='1';
-      try{
-        const demoEmail='demo@mateus.workspace';
-        localStorage.setItem('mwSession','1');
-        localStorage.setItem('mateusActiveUserV2',demoEmail);
-        localStorage.setItem('mwLastEmail',demoEmail);
-        const screen=q('#loginScreen');
-        const app=q('#app');
-        if(screen) screen.classList.add('hidden');
-        if(app){app.classList.remove('hidden');app.style.display='';}
-        const h=q('.hello h2');
-        if(h) h.textContent='Olá, Mateus!';
-        notify('');
-      }catch(err){
-        notify('Não foi possível abrir o modo demonstração. Tente novamente.',true);
-        console.error('Modo demonstração:',err);
-      }finally{
-        cleanDemo.dataset.busy='0';
-      }
-    },{once:false});
-  }
 
   q('#togglePassword')?.addEventListener('click',()=>{const show=passInput.type==='password';passInput.type=show?'text':'password';q('#togglePassword').textContent=show?'◉':'◌'});
 
@@ -7210,7 +7176,6 @@ img,svg,video,canvas{max-width:100%}
   #loginScreen.reference-login .ref-primary,#loginScreen.reference-login .switch-btn{width:100%!important;height:48px!important;min-height:48px!important}
   #loginScreen.reference-login .social-row{display:flex!important;justify-content:center!important;gap:12px!important;margin:14px 0}
   #loginScreen.reference-login .social-icon{width:52px!important;height:52px!important;flex:0 0 52px!important;border-radius:16px!important}
-  #loginScreen.reference-login #demoLogin{display:block!important;width:100%!important;text-align:center!important;font-size:14px!important;padding:12px!important;min-height:44px!important}
   #loginScreen.reference-login .auth-switch-panel{
     position:relative!important;inset:auto!important;width:100%!important;height:auto!important;
     transform:none!important;padding:18px 16px 22px!important;border-left:0!important;
@@ -7417,7 +7382,6 @@ img,svg,video,canvas{max-width:100%}
     width:100% !important; height:auto !important; min-height:0 !important;
     z-index:1 !important;
   }
-  #loginScreen #demoLogin{position:relative; z-index:6;}
   #app.hidden{display:none !important;}
 
   #loginScreen,#loginScreen.reference-login{
@@ -14522,6 +14486,27 @@ html body #app .mw-reference-sidebar .mw-reference-profile .mw-profile-main{
    isso não muda nada fora do modo instalado no iOS. */
 html body #app .topbar.topbar{
   padding-top:calc(14px + env(safe-area-inset-top,0px))!important;
+}
+</style>
+
+<style id="mw-login-safe-area-fix">
+/* Mesmo problema já corrigido na .topbar do app: no modo instalado em
+   tela cheia do iOS (sem a barra do Safari), nada empurra o card de
+   login/criar-conta pra baixo da barra de status/Dynamic Island — as
+   abas "Entrar | Criar" (que no mobile viram uma fileira horizontal no
+   topo do card) acabavam coladas atrás do relógio/sinal. env() resolve
+   pra 0px fora desse contexto, então isso não muda nada no Safari
+   normal, Android ou desktop.
+   #loginScreen nunca teve a classe "reference-login" de verdade no
+   HTML — as várias regras ".reference-login" espalhadas pelo arquivo
+   são código morto que nunca chegou a casar com o elemento. Quem
+   realmente vence em mobile é "#loginScreen{padding:20px 16px 28px}"
+   (sem env()), então a correção precisa mirar o seletor real. */
+@media(max-width:860px){
+  html body #loginScreen{
+    padding-top:calc(20px + env(safe-area-inset-top,0px))!important;
+    padding-bottom:calc(28px + env(safe-area-inset-bottom,0px))!important;
+  }
 }
 </style>
 
