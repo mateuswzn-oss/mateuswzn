@@ -2627,7 +2627,7 @@ body.light #app .calendar-card .calendar-nav button:hover{
   display:flex;flex-direction:row;align-items:center;
   gap:16px;
   transform:translateX(var(--mwb-desloc));
-  animation:mwbRecentra .8s cubic-bezier(.24,.62,.3,1) 1.5s both;
+  animation:mwbRecentra .88s cubic-bezier(.24,.62,.3,1) 1.98s both;
   will-change:transform,opacity;
 }
 @keyframes mwbRecentra{
@@ -2650,7 +2650,7 @@ body.light #app .calendar-card .calendar-nav button:hover{
     rgba(124,92,255,.07) 58%, transparent 74%);
   opacity:0;transform:scale(.55);
   will-change:transform,opacity;
-  animation:mwbHalo .92s cubic-bezier(.24,.62,.3,1) .9s both;
+  animation:mwbHalo 1.1s cubic-bezier(.24,.62,.3,1) 1.2s both;
 }
 @keyframes mwbHalo{
   from{opacity:0;transform:scale(.55)}
@@ -2668,16 +2668,19 @@ body.light #app .calendar-card .calendar-nav button:hover{
 .mwb-traco{
   fill:none;stroke-width:5.2;stroke-linecap:round;stroke-linejoin:round;
   stroke-dasharray:84;stroke-dashoffset:84;
-  animation:mwbTracar .84s cubic-bezier(.42,.02,.24,1) both;
+  /* 0,84s -> 1,08s: o traço nasce com mais calma. A curva também ficou
+     menos agressiva no arranque (.42,.02 -> .34,.02), que é o que se
+     sente como "começo mais lento". */
+  animation:mwbTracar 1.08s cubic-bezier(.34,.02,.24,1) both;
 }
 /* O rastro: um pedaço curto e claro que corre à frente do traço. */
 .mwb-rastro{
   fill:none;stroke:#dff2ff;stroke-width:5.6;stroke-linecap:round;stroke-linejoin:round;
   stroke-dasharray:7 84;stroke-dashoffset:84;opacity:.92;
-  animation:mwbRastro .84s cubic-bezier(.42,.02,.24,1) both;
+  animation:mwbRastro 1.08s cubic-bezier(.34,.02,.24,1) both;
 }
-.mwb-m{animation-delay:.14s}
-.mwb-w{animation-delay:.62s}
+.mwb-m{animation-delay:.22s}
+.mwb-w{animation-delay:.84s}
 @keyframes mwbTracar{to{stroke-dashoffset:0}}
 @keyframes mwbRastro{
   0%{stroke-dashoffset:84;opacity:0}
@@ -2707,7 +2710,7 @@ body.light #app .calendar-card .calendar-nav button:hover{
     transparent 38%, rgba(255,255,255,.92) 50%, transparent 62%);
   opacity:0;transform:translateX(-46%);
   will-change:transform,opacity;
-  animation:mwbBrilho .82s cubic-bezier(.36,.1,.28,1) 1.5s both;
+  animation:mwbBrilho .95s cubic-bezier(.36,.1,.28,1) 1.95s both;
 }
 @keyframes mwbBrilho{
   0%{opacity:0;transform:translateX(-46%)}
@@ -2726,7 +2729,7 @@ body.light #app .calendar-card .calendar-nav button:hover{
   color:rgba(232,244,255,.92);white-space:nowrap;line-height:1;
   opacity:0;transform:translateX(-14px);
   will-change:transform,opacity;
-  animation:mwbNome .72s cubic-bezier(.24,.62,.3,1) 1.5s both;
+  animation:mwbNome .8s cubic-bezier(.24,.62,.3,1) 1.98s both;
 }
 @keyframes mwbNome{
   from{opacity:0;transform:translateX(-14px)}
@@ -2765,7 +2768,7 @@ body.light #app .calendar-card .calendar-nav button:hover{
   position:absolute;left:50%;bottom:13%;transform:translateX(-50%);
   width:120px;height:2px;border-radius:99px;
   background:rgba(148,163,184,.14);overflow:hidden;
-  opacity:0;animation:mwbEsperaEntra .5s ease 2.6s both;
+  opacity:0;animation:mwbEsperaEntra .5s ease 3.4s both;
 }
 @keyframes mwbEsperaEntra{to{opacity:1}}
 .mwb-espera i{
@@ -2829,6 +2832,76 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
   </div>
   <div class="mwb-espera"><i id="mwBootBarFill"></i></div>
 </div>
+<script>
+/* ============================================================
+   ZERAGEM ÚNICA DAS CONTAS + SENHA COM HASH
+   ============================================================
+   ZERAGEM: apaga TODAS as contas, sessões e dados já cadastrados,
+   UMA vez por aparelho. A marca em localStorage garante que isso não
+   se repita a cada abertura — sem ela, todo boot apagaria a conta
+   recém-criada. Para zerar de novo no futuro, basta trocar o valor de
+   MW_MARCA_RESET.
+
+   SENHA: as contas guardavam a senha em TEXTO PURO no localStorage
+   ("password":"MinhaSenha123"). Qualquer script na página, qualquer
+   extensão e qualquer pessoa com o aparelho na mão liam a senha
+   direto. Agora guarda-se um hash SHA-256 com sal por conta.
+
+   Um aviso honesto, que fica registrado aqui: isto NÃO é autenticação
+   de verdade. Não há servidor — todo o "login" acontece no navegador,
+   e quem souber mexer no console entra sem senha. O hash impede que a
+   senha em si vaze (e ela costuma ser reaproveitada em outros
+   serviços), que é o dano real. Segurança de verdade só com backend. */
+(function(){
+  var MW_MARCA_RESET = 'mwContasZeradas-2026-08';
+  try {
+    if (localStorage.getItem(MW_MARCA_RESET) !== '1') {
+      ['mateusWorkspaceUsersV2','mateusActiveUserV2','mateusWorkspaceV4',
+       'mwSession','mwLastEmail','mwDemoSession',
+       'mwFaceIdEnabled','mwFaceIdCredentialId'].forEach(function(k){
+        try { localStorage.removeItem(k); } catch (e) {}
+      });
+      localStorage.setItem(MW_MARCA_RESET, '1');
+    }
+  } catch (e) {}
+
+  var hex = function(buf){
+    return [].map.call(new Uint8Array(buf), function(b){
+      return ('0' + b.toString(16)).slice(-2);
+    }).join('');
+  };
+  window.mwSenha = {
+    novoSal: function(){
+      var a = new Uint8Array(16);
+      crypto.getRandomValues(a);
+      return hex(a.buffer);
+    },
+    hash: function(senha, sal){
+      /* crypto.subtle exige contexto seguro (https ou localhost). Se não
+         houver, a conta é gravada sem hash e marcada como tal, para o
+         login saber comparar do jeito antigo em vez de recusar todo
+         mundo. Em produção o site é https, então este caminho é raro. */
+      if (!(window.crypto && crypto.subtle && window.isSecureContext)) {
+        return Promise.resolve(null);
+      }
+      var dados = new TextEncoder().encode(sal + ':' + senha);
+      return crypto.subtle.digest('SHA-256', dados).then(hex).catch(function(){ return null; });
+    },
+    /* Confere a senha contra a conta, aceitando os dois formatos: o novo
+       (sal + hash) e o antigo (texto puro), para nenhuma conta existente
+       ficar trancada do lado de fora. */
+    confere: function(conta, senha){
+      if (!conta) return Promise.resolve(false);
+      if (conta.sal && conta.hash) {
+        return window.mwSenha.hash(senha, conta.sal).then(function(h){
+          return !!h && h === conta.hash;
+        });
+      }
+      return Promise.resolve(conta.password === senha);
+    }
+  };
+})();
+</script>
 <script>
 /* ============================================================
    O PORTÃO DA ORDEM DO BOOT
@@ -3842,8 +3915,11 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
      é justamente o que não se quer. Não é espera artificial — é a
      duração da própria animação. O teto de 3200ms continua sendo a
      rede de segurança para não prender o app se algo demorar. */
-  var MW_BOOT_MIN = 2350;
-  var MW_BOOT_MAX = 3200;
+  /* A entrada agora termina em ~2780ms (o nome assenta) e respira mais
+     um instante antes de sair — foi o pedido de "um pouquinho mais
+     lento e demorar um tempinho a mais antes do login". */
+  var MW_BOOT_MIN = 3100;
+  var MW_BOOT_MAX = 4000;
   var MW_BOOT_SAIDA = 520;   // igual à duração das animações de saída
   var mwBootDone = false;
 
@@ -5239,13 +5315,31 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
         const usersKey='mateusWorkspaceUsersV2';let users={};try{users=JSON.parse(localStorage.getItem(usersKey)||'{}')}catch{}
         const key=raw.includes('@')?raw.toLowerCase():Object.keys(users).find(k=>(users[k]?.username||'').toLowerCase()===raw.toLowerCase());
         const status=q('#status');
-        if(!key){if(status){status.textContent='Conta não encontrada. Verifique os dados ou crie uma conta.';status.classList.add('error');}return;}
-        if(users[key]?.password!==pass){if(status){status.textContent='Senha incorreta. Tente novamente.';status.classList.add('error');}return;}
+        /* Faltava conferir se a conta EXISTE: quando o texto tinha "@",
+           a chave era montada a partir dele mesmo sem haver conta, então
+           um e-mail desconhecido caía na checagem de senha e recebia
+           "Senha incorreta" — mensagem errada, que faz procurar erro no
+           lugar errado. */
+        if(!key||!users[key]){if(status){status.textContent='Conta não encontrada. Verifique os dados ou crie uma conta.';status.classList.add('error');}return;}
+        Promise.resolve(window.mwSenha?window.mwSenha.confere(users[key],pass):(users[key]?.password===pass)).then(function(ok){
+        if(!ok){if(status){status.textContent='Senha incorreta. Tente novamente.';status.classList.add('error');}return;}
         if(status){status.textContent='';status.classList.remove('error');}
+        /* Conta antiga com senha em texto puro: aproveita este login,
+           que já provou saber a senha, para migrar para sal + hash. */
+        if(users[key] && users[key].password && !users[key].hash && window.mwSenha){
+          var sal2=window.mwSenha.novoSal();
+          window.mwSenha.hash(pass,sal2).then(function(h2){
+            if(!h2) return;
+            delete users[key].password;
+            users[key].sal=sal2; users[key].hash=h2;
+            try{localStorage.setItem('mateusWorkspaceUsersV2',JSON.stringify(users));}catch(e){}
+          });
+        }
         try{localStorage.setItem('mateusActiveUserV2',key);localStorage.setItem('mateusWorkspaceV4',JSON.stringify(users[key].data||{}));localStorage.setItem('mwSession','1');localStorage.setItem('mwLastEmail',key);}catch{}
         loginScreen.classList.add('hidden');const app=q('#app');if(app){app.classList.remove('hidden');app.style.display='';}
         const h=q('.hello h2');if(h&&users[key]?.name)h.textContent=`Olá, ${users[key].name}! 👋`;
         window.scrollTo(0,0);
+        });
       },500);
     });
     btn.addEventListener('keydown',e=>{if(e.key==='Enter')e.preventDefault();});
@@ -5399,8 +5493,15 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
 
         setTimeout(()=>{
           const data={subjects:[],projects:[],activities:[],notes:[],profile:{name:username,email,photo:''},theme:'dark'};
-          users[email]={name:username,username,email,password:pass,data};
-          localStorage.setItem('mateusWorkspaceUsersV2',JSON.stringify(users));
+          /* A senha vira sal + hash SHA-256. Nada de texto puro no
+             localStorage — ver o comentário do bloco mwSenha lá em cima. */
+          const sal=window.mwSenha?window.mwSenha.novoSal():'';
+          Promise.resolve(window.mwSenha?window.mwSenha.hash(pass,sal):null).then(function(h){
+            users[email]=h
+              ? {name:username,username,email,sal:sal,hash:h,data}
+              : {name:username,username,email,password:pass,data};
+            localStorage.setItem('mateusWorkspaceUsersV2',JSON.stringify(users));
+          });
           localStorage.setItem('mwLastEmail',email);
           localStorage.setItem('mateusActiveUserV2',email);
           localStorage.setItem('mateusWorkspaceV4',JSON.stringify(data));
@@ -16169,5 +16270,91 @@ html:has(body.light){background-color:#edf5ff!important}
    algum aparelho. Não muda nada visualmente — a cor é a mesma. */
 #mwBootLoader{inset:-2px 0!important}
 </style>
+<style id="mw-entrada-workspace">
+/* ============================================================
+   ENTRADA DO CONTEÚDO — as coisas aparecendo, não surgindo prontas
+   ============================================================
+   Quando o workspace é revelado (depois do preloader ou de um login),
+   os blocos sobem em cascata em vez de aparecerem todos de uma vez.
+   É só transform e opacity, então roda no compositor.
+
+   A classe sai sozinha depois da animação (ver o script), senão os
+   elementos ficariam presos com will-change e a cascata se repetiria a
+   cada re-render. */
+body.mw-entrando #app .main > *{
+  opacity:0;
+  animation:mwEntraBloco .62s cubic-bezier(.22,.72,.26,1) both;
+  animation-delay:calc(var(--mw-i,0) * 70ms);
+}
+@keyframes mwEntraBloco{
+  from{opacity:0;transform:translateY(16px) scale(.985)}
+  to{opacity:1;transform:none}
+}
+/* Os cartões de número entram um pouquinho depois do bloco que os
+   contém, para a cascata ter duas camadas em vez de um bloco só. */
+body.mw-entrando #app .main > * .card,
+body.mw-entrando #app .main > * .stat{
+  opacity:0;
+  animation:mwEntraCartao .5s cubic-bezier(.22,.72,.26,1) both;
+  animation-delay:calc(var(--mw-i,0) * 70ms + var(--mw-j,0) * 45ms + 90ms);
+}
+@keyframes mwEntraCartao{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:none}
+}
+@media(prefers-reduced-motion:reduce){
+  body.mw-entrando #app .main > *,
+  body.mw-entrando #app .main > * .card,
+  body.mw-entrando #app .main > * .stat{animation:none!important;opacity:1!important;transform:none!important}
+}
+</style>
+<script id="mw-entrada-workspace-js">
+(function(){
+  /* Dispara a cascata sempre que o workspace passa de escondido para
+     visível — vindo do preloader, de um login ou de um cadastro. Um
+     MutationObserver na classe do #app é o único ponto que enxerga os
+     três casos, em vez de espalhar chamadas por cada caminho de
+     entrada. */
+  var app = document.getElementById('app');
+  if (!app) return;
+  var rodando = false;
+
+  function numerar(){
+    var main = app.querySelector('.main');
+    if (!main) return;
+    var blocos = main.children;
+    for (var i = 0; i < blocos.length; i++){
+      blocos[i].style.setProperty('--mw-i', Math.min(i, 9));
+      var filhos = blocos[i].querySelectorAll(':scope > .card, :scope > .stat, :scope .card, :scope .stat');
+      for (var j = 0; j < filhos.length && j < 8; j++){
+        filhos[j].style.setProperty('--mw-j', j);
+      }
+    }
+  }
+
+  function entrar(){
+    if (rodando) return;
+    rodando = true;
+    numerar();
+    document.body.classList.add('mw-entrando');
+    /* Tira a classe quando a cascata acaba: deixá-la ligada faria a
+       animação repetir a cada troca de seção e prenderia os elementos
+       em opacity:0 se algo fosse re-renderizado no meio. */
+    setTimeout(function(){
+      document.body.classList.remove('mw-entrando');
+      rodando = false;
+    }, 1500);
+  }
+
+  var visivel = !app.classList.contains('hidden');
+  new MutationObserver(function(){
+    var agora = !app.classList.contains('hidden');
+    if (agora && !visivel) entrar();
+    visivel = agora;
+  }).observe(app, { attributes: true, attributeFilter: ['class'] });
+
+  if (visivel) entrar();
+})();
+</script>
 </body>
 </html>
