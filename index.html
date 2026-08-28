@@ -5255,8 +5255,15 @@ body.light #app .search-wrap input:focus{
     syncCollapsed();
   });
 
-  profileMain?.addEventListener('click', () => q('#profileBtn')?.click());
-  profileSettings?.addEventListener('click', () => q('#profileBtn')?.click());
+  /* #profileBtn fica display:none no desktop (o acesso a Configurações é
+     pela sidebar) — por spec, .click() não faz nada em elemento que não
+     está sendo renderizado, então esses atalhos silenciosamente não
+     navegavam para nada. Chamar o onclick já atribuído a ele (que o
+     script principal define como showView('settings')) funciona porque
+     é uma chamada de função direta, sem depender de o elemento estar
+     visível. */
+  profileMain?.addEventListener('click', () => q('#profileBtn')?.onclick?.());
+  profileSettings?.addEventListener('click', () => q('#profileBtn')?.onclick?.());
   darkToggle?.addEventListener('click', () => {
     q('#themeToggle')?.click();
     setTimeout(syncTheme, 0);
@@ -5291,7 +5298,10 @@ body.light #app .search-wrap input:focus{
       if (avatar) avatar.textContent = name.slice(0,2).toUpperCase();
     } catch {}
   };
-  profileSettings?.addEventListener('click', () => profileBtn?.click());
+  /* Mesmo caso do outro script: profileBtn é display:none no desktop,
+     então .click() nele é um no-op silencioso por spec. Invocar o
+     onclick diretamente contorna isso. */
+  profileSettings?.addEventListener('click', () => profileBtn?.onclick?.());
   syncProfile();
   window.addEventListener('storage', syncProfile);
 })();
@@ -14396,6 +14406,36 @@ html body #app .mw-reference-sidebar .mw-reference-profile .mw-profile-main{
     if(wasHidden&&!isHidden) reloadWorkspaceData();
     wasHidden=isHidden;
   }).observe(app,{attributes:true,attributeFilter:['class']});
+})();
+</script>
+
+<script id="mw-search-filter-reset-fix">
+(()=>{
+  /* A pesquisa global aplica display:none direto no style de qualquer
+     .card/.lecture-card/.sem-item da página inteira que não contém o
+     termo digitado (não só na tela atual). Existem dois scripts
+     diferentes que fecham a caixa de pesquisa ao clicar fora, e nenhum
+     dos dois garante, em todo caso, que esse filtro seja desfeito — um só
+     fecha se o campo já estiver vazio, o outro fecha mas não limpa o
+     campo nem reaplica o filtro. Resultado: buscar algo e depois só
+     clicar em outro lugar (sem apagar a busca ou apertar Esc) deixava
+     cards de qualquer tela — inclusive o card inteiro de Configurações —
+     escondidos "para sempre", sem nenhuma pista visual do motivo.
+     Em vez de caçar e alterar os dois fechamentos, observamos a própria
+     transição (perdeu a classe "open") e desfazemos o filtro ali, um
+     único ponto que cobre os dois fluxos. */
+  const sw = document.querySelector('.search-wrap');
+  const inp = document.getElementById('globalSearch');
+  if (!sw || !inp) return;
+  const resetFilter = () => {
+    document.querySelectorAll('.card,.lecture-card,.sem-item').forEach(el => { el.style.display = ''; });
+  };
+  let wasOpen = sw.classList.contains('open');
+  new MutationObserver(() => {
+    const isOpen = sw.classList.contains('open');
+    if (wasOpen && !isOpen) { inp.value = ''; resetFilter(); }
+    wasOpen = isOpen;
+  }).observe(sw, { attributes: true, attributeFilter: ['class'] });
 })();
 </script>
 
