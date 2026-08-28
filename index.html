@@ -3066,8 +3066,8 @@ body.light .mw-faceid-gate-card p{color:#526988}
 
     <div class="mw-reference-profile" id="mwSidebarProfile">
       <button type="button" class="mw-profile-main" id="mwSidebarProfileBtn" aria-label="Abrir perfil">
-        <span class="mw-profile-avatar" id="mwSidebarAvatar">MW</span>
-        <span class="mw-profile-copy label"><strong id="mwSidebarName">Mateus</strong><small id="mwSidebarEmail">Engenharia de Software</small></span>
+        <span class="mw-avatar-wrap" aria-hidden="true"><span class="mw-profile-avatar" id="mwSidebarAvatar">MW</span><span class="mw-online-dot"></span></span>
+        <span class="mw-profile-copy label"><strong id="mwSidebarName">Mateus</strong><small id="mwSidebarEmail">Engenharia de Software</small><span class="mw-online-label"><i class="mw-online-label-dot" aria-hidden="true"></i>Online</span></span>
       </button>
     </div>
 
@@ -14627,6 +14627,73 @@ html body #mwBottomNav button,html body #mwBottomNav .mwnav-icon,html body #mwBo
   window.mwNavLensSync();
 })();
 </script>
+
+<style id="mw-sidebar-liquid-glass">
+/* Sidebar/topbar real Liquid Glass: um bloco depois derrubou o material
+   translúcido original (#app .mw-sidebar-polished, linha ~1249) com um
+   fundo sólido opaco (#app .sidebar/.topbar, linha ~5119, e as variantes
+   claras). Reaplica o mesmo material da bottom nav — transparência real,
+   blur, saturação, realce interno sutil — em vez de editar as regras
+   antigas (evita quebrar o que já depende delas). */
+html body #app .sidebar.sidebar,
+html body #app .topbar.topbar{
+  background-color:transparent!important;
+  background-image:
+    radial-gradient(120% 150% at 10% -12%,rgba(255,255,255,.10),transparent 55%),
+    radial-gradient(150% 170% at 105% 112%,rgba(69,19,188,.16),transparent 62%),
+    linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.008) 45%,rgba(255,255,255,.02)),
+    linear-gradient(160deg,rgba(9,10,22,.56),rgba(4,5,12,.64))!important;
+  backdrop-filter:blur(26px) saturate(180%) brightness(1.05)!important;
+  -webkit-backdrop-filter:blur(26px) saturate(180%) brightness(1.05)!important;
+  border-color:rgba(255,255,255,.10)!important;
+  box-shadow:
+    0 20px 50px -22px rgba(0,0,0,.35),
+    inset 0 0 0 1px rgba(255,255,255,.08),
+    inset 0 1.5px 0 rgba(255,255,255,.13)!important;
+}
+html body.light #app .sidebar.sidebar,
+html body.light #app .topbar.topbar{
+  background-color:transparent!important;
+  background-image:
+    radial-gradient(120% 150% at 10% -12%,rgba(255,255,255,.65),transparent 55%),
+    radial-gradient(150% 170% at 105% 112%,rgba(15,23,42,.04),transparent 62%),
+    linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.20) 45%,rgba(255,255,255,.32))!important;
+  backdrop-filter:blur(26px) saturate(160%)!important;
+  -webkit-backdrop-filter:blur(26px) saturate(160%)!important;
+  border-color:rgba(15,23,42,.08)!important;
+  box-shadow:
+    0 20px 44px -22px rgba(30,41,59,.16),
+    inset 0 0 0 1px rgba(15,23,42,.05),
+    inset 0 1.5px 0 rgba(255,255,255,.6)!important;
+}
+
+/* Status "Online": ponto discreto no avatar + rótulo com pulso sutil */
+html body #app .mw-avatar-wrap{position:relative!important;display:inline-flex!important}
+html body #app .mw-online-dot{
+  position:absolute!important;right:-1px;bottom:-1px;width:9px;height:9px;border-radius:50%!important;
+  background:#34d399!important;border:2px solid rgba(9,10,22,.92)!important;
+  box-shadow:0 0 0 0 rgba(52,211,153,.55);
+  animation:mwOnlineRing 2.6s ease-in-out infinite;
+}
+html body.light #app .mw-online-dot{border-color:rgba(255,255,255,.95)!important}
+html body #app .mw-online-label{
+  display:flex!important;align-items:center!important;gap:4px!important;
+  font-size:8px!important;font-weight:700!important;letter-spacing:.02em!important;
+  color:#34d399!important;margin-top:1px!important;
+}
+html body #app .mw-online-label-dot{
+  width:5px;height:5px;border-radius:50%;background:#34d399;display:inline-block!important;
+  animation:mwOnlinePulseSoft 2.6s ease-in-out infinite;
+}
+@keyframes mwOnlineRing{
+  0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,.45)}
+  50%{box-shadow:0 0 0 4px rgba(52,211,153,0)}
+}
+@keyframes mwOnlinePulseSoft{0%,100%{opacity:1}50%{opacity:.4}}
+@media(prefers-reduced-motion:reduce){
+  html body #app .mw-online-dot,html body #app .mw-online-label-dot{animation:none!important}
+}
+</style>
 
 </body>
 </html>
