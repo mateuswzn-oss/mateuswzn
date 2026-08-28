@@ -4311,7 +4311,7 @@ body.light .mw-photo-hint{color:#72767a;}
  function initials(name){return String(name||'Mateus Workspace').trim().split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0].toUpperCase()).join('')||'MW';}
  function syncAllAvatars(src){
    const name=$('#profileName')?.value||'Mateus';
-   const targets=[$('#profileBtn'),$('#workspaceProfileSocialBtn'),$('#mwSidebarAvatar'),$('#profileAvatarPreview'),$('#mwBottomMenu')].filter(Boolean);
+   const targets=[$('#profileBtn'),$('#workspaceProfileSocialBtn'),$('#mwSidebarAvatar'),$('#profileAvatarPreview')].filter(Boolean);
    targets.forEach(a=>{
      if(src){
        a.style.backgroundImage=`url("${src}")`;
@@ -7505,85 +7505,131 @@ img,svg,video,canvas{max-width:100%}
   if (!nav) {
     nav = document.createElement('nav');
     nav.id = 'mwBottomNav';
+    // Âncora da geometria nova (grid de 5 colunas fixas). Fica numa
+    // classe própria pra que as regras novas tenham um alvo limpo em vez
+    // de disputar especificidade com as antigas espalhadas pelo arquivo.
+    nav.className = 'mwbn';
     nav.innerHTML = `
       <button type="button" data-view="home" class="active" aria-label="Início"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.6 12 3.4l8.5 7.2"/><path d="M5.6 9.7V20a1 1 0 0 0 1 1h3.7v-5.8h3.4V21h3.7a1 1 0 0 0 1-1V9.7"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M12 2.7 2.6 10.4V21h6.7v-6.3h5.4V21h6.7V10.4L12 2.7Z"/></svg></span><span class="mwnav-label">Início</span></button>
       <button type="button" data-view="college" aria-label="Faculdade"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 2.8 8.7 12 13.4l9.2-4.7L12 4Z"/><path d="M6.6 11.3v4c0 1.7 2.6 3 5.9 3.2 3.3-.2 5.9-1.5 5.9-3.2v-4"/><path d="M20.5 9.4v5.3"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M12 3 1.6 8.3 12 13.6l8.7-4.4V15h1.7V8.3L12 3Z"/><path d="M5.6 10.9v4.3c0 1.9 2.9 3.4 6.4 3.4s6.4-1.5 6.4-3.4v-4.3l-6.4 3.3-6.4-3.3Z" opacity=".55"/></svg></span><span class="mwnav-label">Faculdade</span></button>
       <button type="button" data-view="files" aria-label="Arquivos"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 2.6h7l5.3 5.3v13.5h-12.3V2.6Z"/><path d="M13.5 2.6v5.3h5.3"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M6.5 2.2h7.6l5.4 5.4V21.8h-13V2.2Z"/><path d="M14.1 2.2v5.4h5.4Z" opacity=".55"/></svg></span><span class="mwnav-label">Arquivos</span></button>
       <button type="button" data-ai="1" aria-label="Nick IA"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 14 9.5 20.5 12 14 14.5 12 21 10 14.5 3.5 12 10 9.5 Z"/><path d="M18.5 3.5 19.3 5.7 21.5 6.5 19.3 7.3 18.5 9.5 17.7 7.3 15.5 6.5 17.7 5.7 Z"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M12 2 14.3 9.3 21.6 12 14.3 14.7 12 22 9.7 14.7 2.4 12 9.7 9.3 Z"/><path d="M18.6 3 19.5 5.6 22 6.6 19.5 7.6 18.6 10.2 17.7 7.6 15.2 6.6 17.7 5.6 Z" opacity=".55"/></svg></span><span class="mwnav-label">Nick IA</span></button>
-      <button type="button" id="mwBottomMenu" class="mw-bottomnav-avatar" aria-label="Perfil"><span class="mwnav-label">Perfil</span></button>`;
+      <button type="button" id="mwBottomMenu" data-view="profile" aria-label="Perfil"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.9"/><path d="M4.6 20.2c0-3.7 3.3-6.1 7.4-6.1s7.4 2.4 7.4 6.1"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="7.8" r="4.3"/><path d="M12 13.6c-4.3 0-7.8 2.6-7.8 6.1 0 .5.4.9.9.9h13.8c.5 0 .9-.4.9-.9 0-3.5-3.5-6.1-7.8-6.1Z"/></svg></span><span class="mwnav-label">Perfil</span></button>`;
     document.body.appendChild(nav);
   }
   const avatarMenuBtn = document.getElementById('mwBottomMenu');
   const aiNavBtn = nav.querySelector('button[data-ai]');
-  const MOBILE_NAV_VIEWS = ['home', 'college', 'files'];
-  let aiModalOpen = false;
-  // Duas rotinas diferentes de sincronizar o avatar (foto/iniciais) fazem
-  // "el.textContent = ..." neste mesmo botão sempre que o perfil muda —
-  // isso apaga qualquer filho, inclusive o rótulo "Perfil" adicionado
-  // aqui. Em vez de mexer nas duas rotinas, um observador garante que o
-  // rótulo sempre volte, não importa quem limpou o conteúdo por último.
-  if (avatarMenuBtn) {
-    const ensureProfileLabel = () => {
-      if (!avatarMenuBtn.querySelector('.mwnav-label')) {
-        const lbl = document.createElement('span');
-        lbl.className = 'mwnav-label';
-        lbl.textContent = 'Perfil';
-        avatarMenuBtn.appendChild(lbl);
-      }
-    };
-    new MutationObserver(ensureProfileLabel).observe(avatarMenuBtn, { childList: true });
-    ensureProfileLabel();
-  }
-  /* Fonte única de verdade pro "quem está ativo" na barra: lê o estado
-     real do app (a view atual + se a gaveta lateral está aberta) em vez
-     de cada gatilho tentar adivinhar/mexer direto nas classes — assim
-     nunca sobra mais de um item marcado, e o avatar herda o destaque
-     sempre que a tela atual não é nenhum dos 3 ícones (ex.: Configurações,
-     aberta pelo próprio perfil) ou enquanto a gaveta está aberta. */
-  const syncBottomNavActive = () => {
-    if (!avatarMenuBtn) return;
-    const drawerOpen = app.classList.contains('mw-mobile-open');
-    const currentView = document.querySelector('.view.active')?.id?.replace('view-', '') || 'home';
-    const inMobileNav = MOBILE_NAV_VIEWS.includes(currentView);
-    nav.querySelectorAll('button[data-view]').forEach(b => b.classList.toggle('active', !aiModalOpen && inMobileNav && b.dataset.view === currentView));
-    aiNavBtn?.classList.toggle('active', aiModalOpen);
-    avatarMenuBtn.classList.toggle('mw-avatar-active', !aiModalOpen && (drawerOpen || !inMobileNav));
+  const aiModalEl = document.getElementById('mateusAiModal');
+
+  /* ============================================================
+     MÁQUINA DE ESTADOS DA BOTTOM NAV — FONTE ÚNICA DE VERDADE
+     ============================================================
+     Antes: o estado era DERIVADO do DOM a cada sincronização —
+     lia .view.active, mais a flag aiModalOpen, mais se a gaveta
+     estava aberta, e cada um desses podia mudar por caminhos
+     diferentes (clique na barra, clique na sidebar do desktop,
+     observador de classe do #app, observador do modal, reload de
+     dados). Com o estado sendo recalculado por leitura, qualquer
+     um desses gatilhos disparando fora de ordem reescrevia o item
+     ativo — a origem de "a lente volta sozinha para o item
+     anterior".
+
+     Agora existe UMA variável (navState). Ela só muda por uma
+     ação explícita do usuário. O DOM é uma consequência dela,
+     nunca a fonte. */
+  const NAV_STATES = ['home', 'college', 'files', 'ai', 'profile'];
+  // Views que a barra representa diretamente. 'ai' e 'profile' não
+  // são views: abrem modal e gaveta.
+  const NAV_VIEWS = { home: 'home', college: 'college', files: 'files' };
+
+  let navState = 'home';
+  // View para onde voltar quando a IA fechar. Determinístico: guarda o
+  // estado real de antes de abrir, em vez de deduzir depois (era isso
+  // que fazia cair sempre no mesmo item como se fosse fallback).
+  let stateBeforeAi = 'home';
+  /* Última coisa que o USUÁRIO pediu explicitamente. Os observadores de
+     modal/gaveta chegam atrasados (a classe muda de forma assíncrona) e
+     não podem sobrepor um pedido mais novo — é isso que garante que, em
+     cliques rápidos, a última interação sempre vença. */
+  let userIntent = 'home';
+
+  const render = () => {
+    nav.querySelectorAll(':scope > button').forEach(b => {
+      const id = b.dataset.ai !== undefined ? 'ai' : b.dataset.view;
+      b.classList.toggle('active', id === navState);
+      b.setAttribute('aria-current', id === navState ? 'page' : 'false');
+    });
     window.mwNavLensSync?.();
   };
-  window.mwSyncBottomNavActive = syncBottomNavActive;
+
+  /* setNavState é o ÚNICO caminho para mudar de estado. Quem chama:
+     o clique de cada botão, e os observadores externos (modal da IA e
+     gaveta) que apenas TRADUZEM um fato do mundo para um estado — nunca
+     mexem em classe nenhuma diretamente. */
+  const setNavState = (next, { navigate = true } = {}) => {
+    // `navigate` distingue um pedido do usuário (que também navega) de um
+    // observador apenas espelhando um fato já ocorrido.
+    if (navigate) userIntent = next;
+    if (!NAV_STATES.includes(next) || next === navState) { render(); return; }
+    const prev = navState;
+    navState = next;
+    render();
+    if (!navigate) return;
+    if (NAV_VIEWS[next]) {
+      document.querySelector(`#nav [data-view="${NAV_VIEWS[next]}"]`)?.click();
+    } else if (next === 'ai') {
+      stateBeforeAi = NAV_VIEWS[prev] ? prev : 'home';
+      document.getElementById('mateusAiBtn')?.click();
+    } else if (next === 'profile') {
+      document.getElementById('mwMobileMenu')?.click();
+    }
+  };
+  window.mwSetNavState = setNavState;
+  // Leitura do estado corrente — usada por diagnóstico/testes. Só lê.
+  window.mwNavState = () => navState;
+  // Compatibilidade: chamadas antigas a mwSyncBottomNavActive agora só
+  // re-renderizam o estado corrente. Elas NÃO podem mais recalcular o
+  // estado a partir do DOM — era exatamente isso que sobrescrevia a IA.
+  window.mwSyncBottomNavActive = render;
+
   const syncChrome = () => {
     const inApp = !app.classList.contains('hidden');
     document.body.classList.toggle('mw-in-app', inApp);
     document.body.classList.toggle('mw-drawer-open', app.classList.contains('mw-mobile-open'));
-    syncBottomNavActive();
   };
   syncChrome();
   new MutationObserver(syncChrome).observe(app, {attributes:true, attributeFilter:['class']});
-  nav.querySelectorAll('button[data-view]').forEach(b => {
-    b.addEventListener('click', () => {
-      document.querySelector(`#nav [data-view="${b.dataset.view}"]`)?.click();
-      syncBottomNavActive();
-    });
+
+  nav.querySelectorAll(':scope > button').forEach(b => {
+    const id = b.dataset.ai !== undefined ? 'ai' : b.dataset.view;
+    b.addEventListener('click', () => setNavState(id));
   });
-  avatarMenuBtn?.addEventListener('click', () => {
-    document.getElementById('mwMobileMenu')?.click();
-    syncChrome();
-  });
-  // "Nick IA": não é uma view — abre o modal da Nyc AI e fica marcado como
-  // ativo enquanto ele estiver aberto, voltando pro item real assim que
-  // fechar (pelo X, Esc, clique fora, ou pelo próprio botão da barra).
-  const aiModalEl = document.getElementById('mateusAiModal');
-  aiNavBtn?.addEventListener('click', () => {
-    document.getElementById('mateusAiBtn')?.click();
-    aiModalOpen = true;
-    syncBottomNavActive();
-  });
+
+  /* A IA e a gaveta podem ser fechadas por fora da barra (X, Esc,
+     clique no scrim). Esses observadores só informam o fato; quem
+     decide o estado continua sendo setNavState. */
   if (aiModalEl) {
     new MutationObserver(() => {
-      const nowOpen = !aiModalEl.classList.contains('hidden');
-      if (nowOpen !== aiModalOpen) { aiModalOpen = nowOpen; syncBottomNavActive(); }
+      const open = !aiModalEl.classList.contains('hidden');
+      /* Só assume "ai" se a IA ainda for o último pedido do usuário. Sem
+         essa guarda, um modal que termina de abrir DEPOIS de o usuário já
+         ter tocado em outro item forçava o estado de volta para "ai" —
+         e o fechamento seguinte então revertia para a view guardada,
+         fazendo a lente "voltar sozinha" para um item antigo. */
+      if (open && userIntent === 'ai' && navState !== 'ai') setNavState('ai', { navigate: false });
+      if (!open && navState === 'ai') setNavState(stateBeforeAi, { navigate: false });
     }).observe(aiModalEl, {attributes:true, attributeFilter:['class']});
   }
+  new MutationObserver(() => {
+    const drawerOpen = app.classList.contains('mw-mobile-open');
+    if (drawerOpen && userIntent === 'profile' && navState !== 'profile') setNavState('profile', { navigate: false });
+    if (!drawerOpen && navState === 'profile') {
+      const view = document.querySelector('.view.active')?.id?.replace('view-', '');
+      setNavState(NAV_VIEWS[view] ? view : 'home', { navigate: false });
+    }
+  }).observe(app, {attributes:true, attributeFilter:['class']});
+
+  render();
 })();
 </script>
 <style id="mw-lupa-sino-eva-palette">
@@ -10067,7 +10113,7 @@ html body.light .eva-voice{
       name = (p.name || q('#profileName')?.value || 'Mateus').trim() || 'Mateus';
     } catch {}
     const initials = name.split(/\s+/).filter(Boolean).slice(0,2).map(x => x[0]).join('').toUpperCase() || 'MW';
-    const targets = [q('#mwSidebarAvatar'), q('#profileBtn'), q('#profileAvatarPreview'), q('#mwBottomMenu')].filter(Boolean);
+    const targets = [q('#mwSidebarAvatar'), q('#profileBtn'), q('#profileAvatarPreview')].filter(Boolean);
     targets.forEach(el => {
       if (photo) {
         el.style.setProperty('--mw-photo', 'url("' + photo + '")');
@@ -10082,7 +10128,7 @@ html body.light .eva-voice{
         el.style.removeProperty('--mw-photo');
         el.style.setProperty('background-image', 'none', 'important');
         el.classList.remove('has-avatar', 'has-photo');
-        if (el.id === 'mwSidebarAvatar' || el.id === 'profileBtn' || el.id === 'mwBottomMenu') el.textContent = initials;
+        if (el.id === 'mwSidebarAvatar' || el.id === 'profileBtn') el.textContent = initials;
         const ini = q('#profileAvatarInitials');
         if (el.id === 'profileAvatarPreview' && ini) { ini.style.display = ''; ini.textContent = initials; }
       }
@@ -14647,24 +14693,89 @@ html body #app .topbar.topbar{
 </style>
 
 <style id="mw-nav-label-reveal">
-/* O nome do item só aparece ao lado do ícone que está ativo — nunca em
-   baixo/cima, nunca nos outros quatro. O botão herdava font-size:0 pra
-   nunca mostrar texto nenhum; aqui devolvemos o tamanho só pro rótulo. */
-html body #mwBottomNav .mwnav-label{
-  display:inline-block;font-size:11.5px!important;font-weight:700;letter-spacing:.01em;
-  white-space:nowrap;max-width:0;margin-left:0;opacity:0;transform:translateX(-4px);
-  overflow:hidden;transition:opacity .28s ease .1s,transform .28s ease .1s;
-}
-html body #mwBottomNav button.active .mwnav-label{
-  max-width:120px;margin-left:7px;opacity:1;transform:translateX(0);
-}
+/* ============================================================
+   GEOMETRIA ESTRUTURAL DA BARRA — CINCO SLOTS QUE NUNCA SE MOVEM
+   ============================================================
+   Antes o rótulo entrava animando max-width de 0 -> 120px e
+   margin-left de 0 -> 7px, e o botão ativo virava width:auto.
+   Isso é LAYOUT: o slot ativo crescia e empurrava todos os
+   seguintes. Medido em 390px: o slot do Perfil ia de x=322,8 para
+   x=354, e como a barra termina em 374 e a viewport tem 390, o
+   Perfil literalmente saía da barra e da tela. Era essa a causa de
+   "o Perfil é jogado para fora".
+
+   Agora a barra é um grid de 5 colunas iguais. As colunas são fixas:
+   nenhum item muda de posição porque outro ficou ativo. O rótulo é
+   posicionado de forma absoluta dentro do próprio slot, então não
+   participa do layout e não provoca reflow nenhum — só opacity e
+   transform, como pedido. */
+/* Escopo estritamente mobile: no desktop a barra continua escondida pela
+   regra antiga (@media(min-width:861px){#mwBottomNav{display:none}}).
+   Sem este @media, o display:grid!important daqui venceria aquele
+   display:none!important e a barra apareceria no desktop. */
 @media(max-width:860px){
-  html body #mwBottomNav button.active{
-    width:auto!important;padding:0 15px!important;gap:0!important;
-  }
+html body #mwBottomNav.mwbn{
+  display:grid!important;
+  grid-template-columns:repeat(5,1fr)!important;
+  align-items:center!important;
+  justify-items:center!important;
+  gap:0!important;
+  width:min(calc(100vw - 16px),420px)!important;
+  padding:var(--mw-pad-y) 6px!important;
+}
+html body #mwBottomNav.mwbn > button{
+  width:100%!important;min-width:0!important;flex:none!important;
+  display:grid!important;place-items:center!important;
+  position:relative!important;background:transparent!important;
+  padding:0!important;
+  /* O botão tinha overflow:hidden, que cortava o nome ("Facul...").
+     O rótulo é absoluto e precisa transbordar a coluna de propósito. */
+  overflow:visible!important;
+}
+/* Ícone e rótulo formam um conjunto centrado na coluna.
+
+   Medição que obriga isso: a coluna tem 69,2px em 390px, o ícone 25px, e
+   do centro até a borda do ícone vizinho sobram 56,7px. Com o ícone
+   travado no centro exato, só caberia um rótulo de até ~38px (uns 6
+   caracteres) — "Perfil", "Home" e "IA" caberiam, "Faculdade" (58px) e
+   "Arquivos" (48px) invadiriam o ícone vizinho. Centrando o conjunto, o
+   transbordo se divide nos dois lados e cai para ~44px de cada lado,
+   dentro dos 56,7px disponíveis.
+
+   O ícone se desloca por TRANSFORM, dentro da mesma janela de 300ms da
+   lente e do rótulo. Não é empurrão de layout: nada muda de tamanho, os
+   cinco slots continuam imóveis e não há reflow. */
+html body #mwBottomNav.mwbn > button .mwnav-icon{
+  transform:translateX(0);
+  transition:transform var(--mw-choreo-dur) var(--mw-choreo-ease);
+}
+html body #mwBottomNav.mwbn > button.active .mwnav-icon{
+  transform:translateX(calc(var(--mw-label-shift, 0px) * -1));
+}
+/* O rótulo sai do fluxo: encostado à direita do ícone já deslocado,
+   centrado na vertical. */
+html body #mwBottomNav.mwbn .mwnav-label{
+  position:absolute!important;
+  left:calc(50% + var(--mw-icon) * .5 + 6px - var(--mw-label-shift, 0px))!important;
+  top:50%!important;
+  font-size:10px!important;font-weight:700;letter-spacing:.01em;
+  white-space:nowrap!important;pointer-events:none;
+  opacity:0;
+  transform:translate(-6px,-50%);
+  transition:opacity var(--mw-choreo-dur) var(--mw-choreo-ease),
+             transform var(--mw-choreo-dur) var(--mw-choreo-ease);
+}
+html body #mwBottomNav.mwbn > button.active .mwnav-label{
+  opacity:1;transform:translate(0,-50%);
+}
+}
+/* Abaixo de 360px o nome encostaria no ícone vizinho (medido). Nessas
+   larguras a barra fica só com ícones e a lente, sem rótulo. */
+@media(max-width:359px){
+  html body #mwBottomNav.mwbn .mwnav-label{display:none!important}
 }
 @media(prefers-reduced-motion:reduce){
-  html body #mwBottomNav .mwnav-label{transition:opacity .15s ease!important;transform:none!important}
+  html body #mwBottomNav.mwbn .mwnav-label{transition:opacity .12s linear!important}
 }
 </style>
 
@@ -15052,20 +15163,44 @@ html body #mwBottomNav:has(> button.mw-avatar-active) > button.active .mwnav-lab
   const lens = document.getElementById('mwNavActiveLens');
   if (!nav || !lens) return;
 
-  /* O avatar tem prioridade: enquanto a gaveta está aberta o controlador
-     mantém DOIS itens ativos (a view atual e o avatar), e a lente
-     precisa apontar para um só — o mesmo que exibe o rótulo. */
-  const activeSlot = () =>
-    nav.querySelector(':scope > button.mw-avatar-active') ||
-    nav.querySelector(':scope > button.active');
+  /* Com a máquina de estados, exatamente um botão tem .active — não há
+     mais um segundo estado (.mw-avatar-active) competindo. */
+  const activeSlot = () => nav.querySelector(':scope > button.active');
 
   const place = () => {
     const active = activeSlot();
     if (!active) { lens.classList.remove('mw-lens-ready'); return; }
     const navRect = nav.getBoundingClientRect();
     const btnRect = active.getBoundingClientRect();
-    lens.style.width = btnRect.width + 'px';
-    lens.style.transform = `translateX(${btnRect.left - navRect.left}px)`;
+    /* A lente é puramente visual: ela envolve o ícone MAIS o rótulo,
+       mas quem define isso é a medida do texto, não o layout — o slot
+       em si continua com a largura fixa da coluna do grid. Medir o
+       rótulo aqui não altera geometria nenhuma: ele é position:absolute. */
+    const lbl = active.querySelector('.mwnav-label');
+    const lblW = (lbl && getComputedStyle(lbl).display !== 'none')
+      ? Math.ceil(lbl.getBoundingClientRect().width) : 0;
+
+    /* Deslocamento que centra o conjunto ícone+rótulo na coluna. É
+       publicado como variável CSS pra que o ícone e o rótulo usem a
+       mesma origem e animem juntos, na mesma transição. */
+    const shift = lblW ? (6 + lblW) / 2 : 0;
+    nav.style.setProperty('--mw-label-shift', shift.toFixed(2) + 'px');
+
+    /* A lente envolve o conjunto. Calcula as duas bordas em vez de
+       centralizar num tamanho — assim ela cobre exatamente o conteúdo,
+       tanto no item só-ícone quanto no item com nome. */
+    const icon = parseFloat(getComputedStyle(nav).getPropertyValue('--mw-icon')) || 25;
+    const padX = 13;
+    const centre = btnRect.left + btnRect.width / 2 - navRect.left;
+    const contentLeft = centre - icon / 2 - shift;
+    const contentRight = centre + icon / 2 - shift + (lblW ? 6 + lblW : 0);
+    let x = contentLeft - padX;
+    let w = (contentRight - contentLeft) + padX * 2;
+    // Nunca deixa a lente escapar da cápsula.
+    if (x < 3) x = 3;
+    if (x + w > navRect.width - 3) w = navRect.width - 3 - x;
+    lens.style.width = w.toFixed(2) + 'px';
+    lens.style.transform = `translateX(${x.toFixed(2)}px)`;
     lens.classList.add('mw-lens-ready');
   };
 
