@@ -15223,15 +15223,41 @@ html body #mwBottomNav button.active,
 html body.light #mwBottomNav button.active{
   background-color:transparent!important;
 }
-/* Lente um pouco mais presente, como na referência — ainda neutra e
-   translúcida, sem tingir de azul. */
+/* ============================================================
+   EFEITO LÍQUIDO — a bolha é uma peça de vidro POR CIMA da cápsula
+   ============================================================
+   Medido no mockup da especificação: a barra tem 71px de altura e a
+   bolha 85px — ela transborda a cápsula em ~20% e fica com cara de
+   peça separada, flutuando sobre o vidro da barra, em vez de um
+   recorte cavado dentro dele. O raio é de squircle, não de pílula.
+
+   O vidro dela é mais transparente e mais leve que o da barra
+   ("Efeito líquido — bolha com vidro mais transparente e leve"):
+   quase nenhuma tinta própria, um brilho no topo e uma borda fina de
+   luz. Quem dá corpo é o desfoque do que está atrás, não uma camada
+   cinza por cima. */
 html body #mwNavActiveLens{
-  background-image:radial-gradient(150% 220% at 50% 8%,rgba(255,255,255,.17),rgba(255,255,255,.04) 74%)!important;
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.10),inset 0 1px 0 rgba(255,255,255,.22)!important;
+  height:calc((var(--mw-icon,30px) + var(--mw-btn-pad,12px)) * 1.2)!important;
+  top:calc(var(--mw-pad-y,10px) - (var(--mw-icon,30px) + var(--mw-btn-pad,12px)) * .1)!important;
+  border-radius:26px!important;
+  background-image:
+    linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.02) 55%,rgba(255,255,255,.05))!important;
+  backdrop-filter:blur(6px) saturate(150%) brightness(1.05);
+  -webkit-backdrop-filter:blur(6px) saturate(150%) brightness(1.05);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.13),
+    inset 0 1.5px 0 rgba(255,255,255,.26),
+    inset 0 -1px 0 rgba(255,255,255,.05),
+    0 4px 14px -8px rgba(0,0,0,.35)!important;
 }
 html body.light #mwNavActiveLens{
-  background-image:radial-gradient(150% 220% at 50% 8%,rgba(15,23,42,.085),rgba(15,23,42,.02) 74%)!important;
-  box-shadow:inset 0 0 0 1px rgba(15,23,42,.07),inset 0 1px 0 rgba(255,255,255,.55)!important;
+  background-image:
+    linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.16) 55%,rgba(255,255,255,.3))!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(15,23,42,.06),
+    inset 0 1.5px 0 rgba(255,255,255,.7),
+    inset 0 -1px 0 rgba(15,23,42,.02),
+    0 4px 12px -9px rgba(30,41,59,.28)!important;
 }
 /* No claro o rótulo do item ativo era quase branco — só era legível por
    causa da pastilha azul que acabou de sair. Sobre vidro claro ele
@@ -15332,8 +15358,11 @@ html body.light #mwBottomNav button.active .mwnav-label{color:#151a22!important}
    rótulo e troca de ícone, com atraso zero, e as animações legadas
    desligadas. */
 html body #mwBottomNav{
-  /* Fonte única da duração e da curva — impossível dessincronizar. */
-  --mw-choreo-dur:.3s;
+  /* Fonte única da duração e da curva — impossível dessincronizar.
+     A linha do tempo da ficha vai de 0ms a 480ms ("estado final"), com
+     marcos em 120/240/360. Uma janela só, usada por bolha, ícone e
+     nome — é isso que faz "tudo acontecer junto". */
+  --mw-choreo-dur:.48s;
   --mw-choreo-ease:cubic-bezier(.4,0,.2,1);
 }
 
