@@ -2610,21 +2610,44 @@ body.light #app .calendar-card .calendar-nav button:hover{
     linear-gradient(180deg,#020617,#07142c 46%,#020617);
 }
 
+/* LOCKUP HORIZONTAL: o símbolo MW se forma, e o nome "Workspace"
+   nasce AO LADO dele, não embaixo. Como o nome só aparece depois, o
+   conjunto começaria descentrado — por isso o palco entra deslocado
+   meia-largura do nome e volta ao centro conforme ele se abre, do mesmo
+   jeito que a barra inferior faz. O valor é MEDIDO pelo script logo
+   abaixo do markup, porque depende da fonte do sistema. */
+/* Tamanho FLUIDO em vez de degraus por media query: com degraus, uma
+   tela de 390px caía no tamanho grande e o lockup ficava com 9,8px de
+   folga — quase encostando na borda. Com clamp o conjunto acompanha a
+   largura e a folga fica confortável em toda a faixa. */
 .mwb-palco{
+  --mwb-simb:clamp(112px,33vw,168px);
+  --mwb-desloc:74px;
   position:relative;
-  display:flex;flex-direction:column;align-items:center;
-  gap:20px;
+  display:flex;flex-direction:row;align-items:center;
+  gap:16px;
+  transform:translateX(var(--mwb-desloc));
+  animation:mwbRecentra .8s cubic-bezier(.24,.62,.3,1) 1.5s both;
   will-change:transform,opacity;
+}
+@keyframes mwbRecentra{
+  from{transform:translateX(var(--mwb-desloc))}
+  to{transform:translateX(0)}
 }
 
 /* ---------- a luz que os traços acendem ---------- */
+/* Menor e mais discreto que antes: eram 250px com 34% de opacidade no
+   centro, o que virava um borrão grande e, como o nome ficava embaixo,
+   a luz parecia derramar para o rodapé. Agora tem o tamanho do símbolo
+   e fica ancorada NELE, não no conjunto. */
 .mwb-halo{
-  position:absolute;left:50%;top:34px;
-  width:250px;height:250px;margin:-125px 0 0 -125px;
+  position:absolute;left:calc(var(--mwb-simb) / 2);top:50%;
+  width:calc(var(--mwb-simb) * 1.08);height:calc(var(--mwb-simb) * 1.08);
+  margin:calc(var(--mwb-simb) * -.54) 0 0 calc(var(--mwb-simb) * -.54);
   border-radius:50%;pointer-events:none;
   background:radial-gradient(circle,
-    rgba(56,189,248,.34), rgba(37,99,235,.20) 34%,
-    rgba(124,92,255,.12) 56%, transparent 72%);
+    rgba(56,189,248,.22), rgba(37,99,235,.13) 36%,
+    rgba(124,92,255,.07) 58%, transparent 74%);
   opacity:0;transform:scale(.55);
   will-change:transform,opacity;
   animation:mwbHalo .92s cubic-bezier(.24,.62,.3,1) .9s both;
@@ -2635,7 +2658,7 @@ body.light #app .calendar-card .calendar-nav button:hover{
 }
 
 /* ---------- o símbolo ---------- */
-.mwb-glifo{width:172px;height:118px;overflow:visible;display:block}
+.mwb-glifo{width:var(--mwb-simb);height:auto;aspect-ratio:172/118;overflow:visible;display:block;flex:none}
 /* Trilho: o caminho inteiro, quase invisível. Dá a sensação de que o
    traço percorre algo que já existia, em vez de surgir do nada. */
 .mwb-trilho{
@@ -2671,8 +2694,9 @@ body.light #app .calendar-card .calendar-nav button:hover{
    A máscara é um data URI estático: não custa nada por quadro; só o
    gradiente interno se move, e ele é transform. */
 .mwb-brilho{
-  position:absolute;left:50%;top:0;
-  width:172px;height:118px;margin-left:-86px;
+  position:absolute;left:0;top:50%;
+  width:var(--mwb-simb);aspect-ratio:172/118;
+  transform:translateY(-50%);
   pointer-events:none;overflow:hidden;
   -webkit-mask:url("data:image/svg+xml;utf8,%3Csvg%20xmlns='http:%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox='0%200%2064%2044'%3E%3Cg%20fill='none'%20stroke='%23fff'%20stroke-width='5.2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M6%2034.5V11.5L17%2026.5L28%2011.5V34.5'%2F%3E%3Cpath%20d='M36%2011.5V34.5L47%2019.5L58%2034.5V11.5'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") center/100% 100% no-repeat;
   mask:url("data:image/svg+xml;utf8,%3Csvg%20xmlns='http:%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox='0%200%2064%2044'%3E%3Cg%20fill='none'%20stroke='%23fff'%20stroke-width='5.2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M6%2034.5V11.5L17%2026.5L28%2011.5V34.5'%2F%3E%3Cpath%20d='M36%2011.5V34.5L47%2019.5L58%2034.5V11.5'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") center/100% 100% no-repeat;
@@ -2693,18 +2717,20 @@ body.light #app .calendar-card .calendar-nav button:hover{
 }
 
 /* ---------- o nome, já com a marca formada ---------- */
+/* "Workspace" nasce colado no símbolo e desliza para o seu lugar,
+   como se tivesse saído de dentro dele. */
 .mwb-nome{
   position:relative;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,ui-sans-serif,system-ui,sans-serif;
-  font-size:15px;font-weight:600;letter-spacing:.20em;text-transform:uppercase;
-  color:rgba(226,241,255,.82);white-space:nowrap;line-height:1;
-  opacity:0;transform:translateY(8px);
+  font-size:clamp(22px,6.6vw,30px);font-weight:600;letter-spacing:-.01em;
+  color:rgba(232,244,255,.92);white-space:nowrap;line-height:1;
+  opacity:0;transform:translateX(-14px);
   will-change:transform,opacity;
-  animation:mwbNome .62s cubic-bezier(.24,.62,.3,1) 1.56s both;
+  animation:mwbNome .72s cubic-bezier(.24,.62,.3,1) 1.5s both;
 }
 @keyframes mwbNome{
-  from{opacity:0;transform:translateY(8px)}
-  to{opacity:1;transform:translateY(0)}
+  from{opacity:0;transform:translateX(-14px)}
+  to{opacity:1;transform:translateX(0)}
 }
 
 /* ---------- SAÍDA: continuação da mesma sequência ---------- */
@@ -2748,15 +2774,11 @@ body.light #app .calendar-card .calendar-nav button:hover{
   transition:width .18s linear;
 }
 
-@media(max-width:380px){
-  .mwb-glifo{width:150px;height:103px}
-  .mwb-brilho{width:150px;height:103px;margin-left:-75px}
-  .mwb-halo{width:218px;height:218px;margin:-109px 0 0 -109px}
-  .mwb-nome{font-size:13.5px}
-}
+@media(max-width:380px){ .mwb-palco{gap:13px} }
 
 /* Sem movimento: a marca já formada, sem traçado nem brilho. */
 @media(prefers-reduced-motion:reduce){
+  .mwb-palco{animation:none!important;transform:none!important}
   .mwb-traco{animation:none!important;stroke-dashoffset:0!important}
   .mwb-rastro,.mwb-brilho{display:none!important}
   .mwb-halo,.mwb-nome{animation:none!important;opacity:1!important;transform:none!important}
@@ -2803,7 +2825,7 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
       <path class="mwb-rastro mwb-w" d="M36 11.5V34.5L47 19.5L58 34.5V11.5"/>
     </svg>
     <span class="mwb-brilho" aria-hidden="true"><i></i></span>
-    <span class="mwb-nome">MW Workspace</span>
+    <span class="mwb-nome">Workspace</span>
   </div>
   <div class="mwb-espera"><i id="mwBootBarFill"></i></div>
 </div>
@@ -2827,6 +2849,19 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
    boot não rodar (erro de parse, markup removido), ninguém pode ficar
    preso esperando para sempre. */
 (function(){
+  /* Mede a metade de ("Workspace" + o vão) e publica em --mwb-desloc:
+     com isso, no primeiro quadro o SÍMBOLO está no centro exato da
+     tela, e no último o conjunto inteiro é que está. Cravar o número à
+     mão não funciona — depende da fonte do sistema, que muda entre
+     aparelhos. Roda de forma síncrona logo depois do markup, antes do
+     primeiro quadro. */
+  var palco = document.querySelector('.mwb-palco');
+  var nome = palco && palco.querySelector('.mwb-nome');
+  if (palco && nome) {
+    var vao = parseFloat(getComputedStyle(palco).gap) || 16;
+    palco.style.setProperty('--mwb-desloc', ((nome.offsetWidth + vao) / 2).toFixed(1) + 'px');
+  }
+
   var liberar;
   window.mwBootPronto = new Promise(function(res){ liberar = res; });
   window.mwLiberarBoot = function(){ if (liberar) { liberar(); liberar = null; } };
@@ -16081,5 +16116,31 @@ html body.light #mwDemoBadge{color:#92400e;background:rgba(217,119,6,.12);border
 }
 </style>
 
+<style id="mw-canvas-safe-area">
+/* ============================================================
+   A COR DA CANVAS — a faixa cinza no rodapé do app instalado
+   ============================================================
+   Medido na gravação: uma faixa CHAPADA de rgb(23,24,28) ocupando os
+   ~58px de baixo, com o home indicator dentro dela. Ou seja: é a safe
+   area, e o fundo do app não estava chegando lá.
+
+   A causa não é a safe area em si — é a COR. O elemento raiz herdava
+   #0b0c0e de uma folha antiga (mw-final-sync) marcada !important, e a
+   canvas do navegador (tudo que sobra fora da caixa da página: safe
+   area, overscroll) pinta com o fundo do elemento raiz. Então o app
+   era azul-marinho e a sobra era grafite — daí a "borda meio preta".
+
+   Aqui a canvas volta a ser a cor da marca. Só a COR: os gradientes
+   decorativos continuam de quem os define, porque background-color é
+   longhand e não apaga background-image. Sendo a última regra do
+   documento e !important, ela vence as anteriores nesse componente. */
+html{background-color:#020617!important}
+html:has(body.light){background-color:#edf5ff!important}
+
+/* Cinto e suspensório: o preloader passa alguns pixels além da
+   viewport, para o caso de o cálculo da safe area ficar 1px curto em
+   algum aparelho. Não muda nada visualmente — a cor é a mesma. */
+#mwBootLoader{inset:-2px 0!important}
+</style>
 </body>
 </html>
