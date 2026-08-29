@@ -2772,6 +2772,68 @@ body.light #app .calendar-card .calendar-nav button:hover{
 /* Não é "esconder o preloader". A luz se dissipa (o halo cresce e
    apaga), a composição recua um pouco e some, e a tela de baixo
    aparece ao mesmo tempo — as duas coisas se cruzam. */
+/* ============================================================
+   O TOQUE QUE DESTRAVA O SOM
+   ============================================================
+   O iOS proíbe áudio audível sem um toque DENTRO da página, e abrir o
+   app pelo ícone não conta — é gesto do sistema. Não existe truque:
+   ou há um toque antes do som, ou não há som.
+
+   Então a abertura ganha um primeiro tempo: fundo azul da marca (o
+   mesmo de sempre, para não existir clarão em instante nenhum), a
+   animação CONGELADA no quadro zero, e um convite discreto. O toque é
+   o gesto que libera o áudio — e, no mesmo quadro, solta a animação.
+
+   Congelar com animation-play-state (e não com display/opacity) é o
+   que garante sincronia: a linha do tempo inteira fica parada em 0 e
+   parte do começo exato quando a classe sai. Nada é recalculado, nada
+   pula. */
+#mwBootLoader.mw-aguarda-toque .mwb-palco,
+#mwBootLoader.mw-aguarda-toque .mwb-palco *,
+#mwBootLoader.mw-aguarda-toque .mwb-espera,
+#mwBootLoader.mw-aguarda-toque .mwb-espera *{
+  animation-play-state:paused!important;
+}
+/* Congelado E invisível: o quadro zero do traçado ainda mostra um
+   fiapo do M, e ver isso parado antes da hora entrega o truque. */
+#mwBootLoader.mw-aguarda-toque .mwb-palco,
+#mwBootLoader.mw-aguarda-toque .mwb-espera{opacity:0}
+
+.mwb-toque{
+  position:absolute;inset:0;z-index:3;
+  display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+  border:0;background:transparent;color:#cfe6ff;
+  font:inherit;font-size:14px;letter-spacing:.02em;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+#mwBootLoader.mw-aguarda-toque .mwb-toque{display:flex}
+.mwb-toque-anel{
+  width:64px;height:64px;border-radius:50%;
+  border:1.5px solid rgba(125,211,252,.45);
+  position:relative;
+}
+/* Um pulso lento: presença sem barulho visual. */
+.mwb-toque-anel::after{
+  content:"";position:absolute;inset:-1.5px;border-radius:50%;
+  border:1.5px solid rgba(125,211,252,.5);
+  animation:mwbToquePulso 2.4s cubic-bezier(.24,.62,.3,1) infinite;
+}
+@keyframes mwbToquePulso{
+  0%{transform:scale(1);opacity:.55}
+  70%{transform:scale(1.45);opacity:0}
+  100%{transform:scale(1.45);opacity:0}
+}
+.mwb-toque-texto{opacity:.82;animation:mwbToqueRespira 3s ease-in-out infinite}
+@keyframes mwbToqueRespira{0%,100%{opacity:.62}50%{opacity:.95}}
+/* Sai antes de a animação começar, sem deixar buraco no meio. */
+#mwBootLoader.mw-toque-feito .mwb-toque{
+  animation:mwbToqueSai .26s cubic-bezier(.4,0,.2,1) both;pointer-events:none;
+}
+@keyframes mwbToqueSai{to{opacity:0;transform:scale(1.06)}}
+@media (prefers-reduced-motion: reduce){
+  .mwb-toque-anel::after,.mwb-toque-texto{animation:none!important}
+}
+
 #mwBootLoader.mw-boot-out{
   animation:mwbFundoSai .52s cubic-bezier(.4,0,.2,1) both;
   pointer-events:none;
@@ -2842,6 +2904,7 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
 }
 </style>
 <div id="mwBootLoader" aria-hidden="true">
+  <button type="button" id="mwBootToque" class="mwb-toque" aria-label="Toque para iniciar"><span class="mwb-toque-anel" aria-hidden="true"></span><span class="mwb-toque-texto">Toque para iniciar</span></button>
   <div class="mwb-palco">
     <span class="mwb-halo"></span>
     <svg class="mwb-glifo" viewBox="0 0 64 44" fill="none">
@@ -2989,6 +3052,62 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
      estrutural (ver o comentário em .mwb-palco). Uma medida tirada uma
      vez, antes de a fonte do sistema estar resolvida, é justamente o
      que colocava o glifo 58px fora do centro no iPhone. */
+
+  /* ============================================================
+     PORTÃO DE TOQUE — o gesto que o iOS exige
+     ============================================================
+     Roda AQUI, colado no markup, e não numa folha lá no fim: a classe
+     que congela a animação precisa estar no elemento antes do primeiro
+     quadro pintado, senão dá para ver a abertura começar e parar.
+
+     Só existe quando o som está ligado. Com o som desligado o gesto não
+     serve para nada, e cobrar um toque à toa contraria o "abre e entra
+     direto" que é a regra do app.
+
+     Uma vez por carregamento: depois do toque a classe some e não
+     volta. Recarregar a página é outra abertura — e no iOS o áudio
+     também volta a ficar travado, então o toque é pedido de novo. */
+  (function(){
+    var loader = document.getElementById('mwBootLoader');
+    var botao = document.getElementById('mwBootToque');
+    if (!loader || !botao) return;
+
+    var somLigado = true;
+    try { somLigado = localStorage.getItem('mwSomAbertura') !== '0'; } catch (e) {}
+    if (!somLigado) return;                 // sem som, sem portão
+
+    loader.classList.add('mw-aguarda-toque');
+
+    var jaFoi = false;
+    function iniciar(){
+      if (jaFoi) return;
+      jaFoi = true;
+
+      /* 1) O ÁUDIO PRIMEIRO, e ainda dentro da pilha do gesto. Criar o
+            AudioContext aqui é o que o iOS aceita; criar depois de um
+            setTimeout ou de um rAF já sai do gesto e volta a ser
+            recusado. */
+      try { window.mwSomTocar && window.mwSomTocar(); } catch (e) {}
+
+      /* 2) O cronômetro do preloader passa a contar de agora. */
+      try { window.mwBootRecomeca && window.mwBootRecomeca(); } catch (e) {}
+
+      /* 3) A animação parte no MESMO quadro em que o som começa: as
+            duas classes trocam juntas, numa só mudança de estilo. O
+            convite sai por cima, em 260ms, sem segurar nada. */
+      loader.classList.add('mw-toque-feito');
+      loader.classList.remove('mw-aguarda-toque');
+
+      botao.removeEventListener('pointerdown', iniciar);
+      botao.removeEventListener('click', iniciar);
+    }
+
+    /* pointerdown, não click: dispara no encostar do dedo, sem os
+       ~100ms que o iOS às vezes segura até decidir que não é um duplo
+       toque — e esse atraso apareceria como som fora de sincronia. */
+    botao.addEventListener('pointerdown', iniciar);
+    botao.addEventListener('click', iniciar);      // teclado/acessibilidade
+  })();
 
   var liberar;
   window.mwBootPronto = new Promise(function(res){ liberar = res; });
@@ -4207,6 +4326,11 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
   }
   if (loader) {
     var mwBootStart = performance.now();
+    /* Se a abertura espera um toque, o cronômetro do preloader só pode
+       começar a contar DEPOIS dele. Sem isto, alguém que demorasse dez
+       segundos para tocar veria a animação ser cortada no primeiro
+       quadro, porque o piso e o teto já teriam vencido. */
+    window.mwBootRecomeca = function(){ mwBootStart = performance.now(); };
     var mwAppReady = false;
     /* "Pronto" = o documento terminou de carregar E o próximo quadro já
        foi desenhado (dois rAF garantem que o primeiro layout real já
@@ -4220,6 +4344,17 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
     else window.addEventListener('load', markReady, { once: true });
 
     (function mwBootTick(now){
+      /* Enquanto a abertura espera o toque, o relógio do preloader não
+         anda: empurrar o início a cada quadro é o que faz o tempo
+         decorrido ficar em zero. Sem isto, quem demorasse a tocar via o
+         piso e o teto vencerem com a animação ainda congelada — o
+         preloader saía sem nunca ter animado. Medido: 5,5s parado e o
+         loader já tinha ido embora. */
+      if (loader.classList.contains('mw-aguarda-toque')) {
+        mwBootStart = now;
+        requestAnimationFrame(mwBootTick);
+        return;
+      }
       var elapsed = now - mwBootStart;
       /* O fio reflete o progresso real quando o app já está pronto, e
          avança de forma contida enquanto espera — nunca finge 100%. */
@@ -17718,21 +17853,17 @@ body.light #app .mw-reference-profile.mw-estado-ativo .mw-profile-main{
     }
   }
 
-  /* Toca junto com o primeiro traço (o atraso de 0,4s do M). Se o
-     navegador recusar, não acontece nada — nem erro, nem atraso. */
+  /* Quem dispara o som na abertura é o portão de toque, não um
+     temporizador: o áudio precisa nascer DENTRO do gesto para o iOS
+     liberar, e no mesmo quadro em que a animação parte. Aqui só fica a
+     função. */
   window.mwSomTocar = function(){ try { tocar(); } catch (e) {} };
-  function tentar(){ window.mwSomTocar(); }
-  if (document.getElementById('mwBootLoader')) {
-    setTimeout(tentar, 380);
-  }
 
-  /* Um toque em qualquer lugar destrava o áudio para as próximas
-     aberturas, sem tocar nada agora. */
-  var destravar = function(){
-    try { var c = new Ctx(); c.resume().then(function(){ c.close(); }).catch(function(){}); } catch (e) {}
-    document.removeEventListener('pointerdown', destravar);
-  };
-  document.addEventListener('pointerdown', destravar, { once: true, passive: true });
+  /* O destravador genérico que existia aqui saiu: quem destrava agora é
+     o portão de toque da abertura, dentro do próprio gesto. Mantê-lo
+     criava um SEGUNDO AudioContext no mesmo toque — sem efeito audível,
+     mas é recurso de áudio aberto à toa, e no iOS abrir contexto
+     sobrando mexe no áudio de quem está ouvindo outra coisa. */
 })();
 </script>
 <style id="mw-modo-claro-inteligente">
