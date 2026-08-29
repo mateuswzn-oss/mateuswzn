@@ -18713,6 +18713,7 @@ document.addEventListener('click', function(e){
 
   var CHAVE_UID   = 'mwNuvemUid';
   var CHAVE_VER   = 'mwNuvemVersao';
+  var CONFIRMA_PENDENTE = 'mwConfirmaEmail';
   var USERS_KEY   = 'mateusWorkspaceUsersV2';
   var DADOS_KEY   = 'mateusWorkspaceV4';
 
@@ -18798,6 +18799,12 @@ document.addEventListener('click', function(e){
     function vincula(res){
       var uid = res && res.user && res.user.id;
       if (!uid) throw new Error('sessao-incompleta');
+      /* Mesma armadilha do cadastro: usuário sem sessão é conta criada e
+         não confirmada. Vincular aqui deixaria o app achando que
+         sincroniza, e nada gravaria. */
+      if (res.session === null || res.session === undefined) {
+        if (!res.access_token) throw new Error('email-nao-confirmado');
+      }
       try { localStorage.setItem(CHAVE_UID, uid); } catch (e) {}
 
       return window.mwNuvem.lerDados(uid).then(function(linha){
@@ -18850,6 +18857,11 @@ document.addEventListener('click', function(e){
             });
         });
       }
+
+      /* "Email not confirmed" não é senha errada: é conta criada esperando
+         o clique no link. Dizer "senha incorreta" aqui mandaria a pessoa
+         procurar no lugar errado. */
+      if (/not confirmed|Email not/i.test(msg)) throw new Error('email-nao-confirmado');
 
       /* O nome existe lá, mas a senha não bate: não é esta conta, ou a
          senha foi trocada em outro aparelho. Criar por cima seria pior. */
@@ -18963,7 +18975,15 @@ document.addEventListener('click', function(e){
       /* Credencial recusada pelo servidor não encerra o assunto: a conta
          pode existir só neste aparelho, criada antes desta mudança. Vale
          tentar localmente antes de dizer que está errado. */
-      if (/Invalid login|conta-nao-encontrada|not confirmed|Email not/i.test(msg)) { tentaLocal(); return; }
+      /* E-mail não confirmado tem cura conhecida, e ela não é "tente de
+         novo": é abrir o link. Falar isso na hora evita a pessoa achar
+         que errou a senha. */
+      if (/not confirmed|Email not/i.test(msg)) {
+        devolveBotao();
+        dizStatus('Falta confirmar seu e-mail. Abra o link que enviamos e entre de novo.', true);
+        return;
+      }
+      if (/Invalid login|conta-nao-encontrada/i.test(msg)) { tentaLocal(); return; }
 
       /* Qualquer outra falha é rede, prazo ou servidor fora — reserva. */
       tentaLocal();
@@ -19013,8 +19033,17 @@ document.addEventListener('click', function(e){
       if (livre === null) { segue(); return null; }
 
       return window.mwNuvem.cadastrar(usuario, email, senha, usuario).then(function(dados){
+        /* Com "Confirm email" ligado no Supabase, o cadastro devolve o
+           usuário mas NÃO devolve sessão: a conta existe e ainda não pode
+           entrar. Guardar o uid aqui seria mentir para o resto do app —
+           a sincronização tentaria gravar sem sessão, o RLS recusaria em
+           silêncio, e o cartão de ativação não apareceria porque acharia
+           que já está tudo ligado. Sem sessão, sem uid: o aparelho segue
+           local até a confirmação, e aí o login normal liga tudo. */
         var uid = dados && dados.user && dados.user.id;
-        if (uid) { try { localStorage.setItem(CHAVE_UID, uid); } catch (er) {} }
+        var temSessao = !!(dados && dados.session);
+        if (uid && temSessao) { try { localStorage.setItem(CHAVE_UID, uid); } catch (er) {} }
+        if (!temSessao) { try { localStorage.setItem(CONFIRMA_PENDENTE, email); } catch (er) {} }
         segue();
       });
     }).catch(function(erro){
@@ -19253,6 +19282,7 @@ html body.light #mwAtivaNuvem input{background:#fff!important;color:#0b1830!impo
         botao.disabled = false;
         var msg = String((erro && erro.message) || erro || '');
         if (msg === 'senha-local')            return diz('Senha incorreta.', 'erro');
+        if (/email-nao-confirmado/.test(msg)) return diz('Falta confirmar seu e-mail. Abra o link que enviamos para ' + (conta.email || 'seu e-mail') + ' e tente de novo.', 'erro');
         if (/nome-tomado/.test(msg))          return diz('O nome "' + conta.username + '" já é de outra conta no servidor. Fale comigo antes de mudar.', 'erro');
         if (/senha-diferente/.test(msg))      return diz('Já existe uma conta com este e-mail no servidor, com outra senha.', 'erro');
         diz('Não deu para conectar agora. Tente de novo mais tarde.', 'erro');
