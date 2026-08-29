@@ -16418,6 +16418,74 @@ body.mw-entrando #app .main > * .stat{
   if (visivel) entrar();
 })();
 </script>
+<script id="mw-login-painel-inerte">
+/* ============================================================
+   O PAINEL ESCONDIDO NÃO PODE CONTINUAR ATIVO
+   ============================================================
+   A tela de login tem os DOIS formulários no DOM ao mesmo tempo —
+   Entrar e Criar conta — lado a lado numa faixa que desliza. Só um
+   aparece, mas o outro continuava:
+
+     - na ordem de tabulação. Medido: no painel Entrar, o Tab depois do
+       botão ENTRAR levava para `newUsername`, um campo invisível. A
+       pessoa continua digitando achando que está no formulário certo.
+     - na árvore de acessibilidade, então um leitor de tela anunciava
+       dois formulários de autenticação, com dois campos "Senha".
+     - visível para o preenchimento automático do navegador, que podia
+       escolher o par de campos errado.
+
+   `inert` resolve os três de uma vez: tira da tabulação, tira da
+   árvore de acessibilidade e bloqueia ponteiro. É atributo, não CSS,
+   então precisa de script — mas o ESTADO continua vindo de um lugar
+   só: a classe `is-signup` que o próprio deslize já usa. Aqui só se
+   traduz esse fato, nunca se decide nada.
+
+   Marcar na hora (e não ao fim do deslize) é de propósito: `inert` não
+   mexe em pintura, então o painel que sai continua visível deslizando
+   normalmente — só deixa de ser alcançável, que é o que queremos desde
+   o primeiro frame. */
+(function(){
+  var cena = document.getElementById('authScene');
+  if (!cena) return;
+  var paineis = cena.querySelectorAll('.mwv2-auth-pane');
+  if (paineis.length < 2) return;
+
+  var entrar = paineis[0], criar = paineis[1];
+  var suportaInert = 'inert' in HTMLElement.prototype;
+
+  function trancar(el, tranca){
+    if (suportaInert) { el.inert = tranca; }
+    /* Safari antigo do iOS não tem `inert`. Sem isto o bug continuaria
+       exatamente igual justamente no aparelho que mais usa o app. */
+    else {
+      el.setAttribute('aria-hidden', tranca ? 'true' : 'false');
+      el.querySelectorAll('input,button,select,textarea,a[href]').forEach(function(f){
+        if (tranca) {
+          if (!f.hasAttribute('data-tabindex-antigo'))
+            f.setAttribute('data-tabindex-antigo', f.getAttribute('tabindex') || '');
+          f.setAttribute('tabindex', '-1');
+        } else {
+          var antigo = f.getAttribute('data-tabindex-antigo');
+          if (antigo === null) return;
+          if (antigo) f.setAttribute('tabindex', antigo); else f.removeAttribute('tabindex');
+          f.removeAttribute('data-tabindex-antigo');
+        }
+      });
+    }
+  }
+
+  function sincronizar(){
+    var noCriar = cena.classList.contains('is-signup');
+    trancar(criar, !noCriar);
+    trancar(entrar, noCriar);
+  }
+
+  new MutationObserver(sincronizar).observe(cena, {
+    attributes: true, attributeFilter: ['class']
+  });
+  sincronizar();
+})();
+</script>
 <style id="mw-perfil-estado-real">
 /* O Perfil ativo na barra lateral usa exatamente o mesmo tratamento dos
    outros itens — não um estilo próprio. Se ele fosse "parecido mas
