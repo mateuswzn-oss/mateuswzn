@@ -17826,6 +17826,68 @@ html body #app #clearAll:focus-visible{
   html body #app .save-btn:hover,html body #app .save-btn:active{transform:none!important}
 }
 </style>
+<style id="mw-telas-folha">
+/* ============================================================
+   TELAS-FOLHA: A BARRA SAI, O VOLTAR MANDA
+   ============================================================
+   Nem toda tela é uma aba. A barra de baixo representa quatro lugares
+   — Início, Faculdade, Arquivos e Perfil — e nesses quatro ela é útil:
+   dá pra pular direto de um para o outro, e ela mostra onde você está.
+
+   Configurações, Suporte e Painel Admin são outra coisa: você entra,
+   faz o que foi fazer, e volta. Nelas a barra não consegue nem mostrar
+   onde você está (nenhum dos quatro slots corresponde), então ela vira
+   um enfeite que come 69px da tela e passa por cima do conteúdo
+   enquanto se rola. É o mesmo motivo por que Instagram e X escondem a
+   barra ao entrar em Configurações.
+
+   Aqui a barra sai nessas três, e o voltar assume — com tamanho de
+   botão de verdade (44px, o mínimo de alvo de toque da Apple), não os
+   40px de antes. */
+html body.mw-in-app.mw-tela-folha #mwBottomNav,
+html body.mw-in-app.mw-tela-folha #mwBottomNav.mwbn{display:none!important}
+
+/* Sem a barra, o respiro que existia por causa dela sobra no fim da
+   página. Some com ele para o conteúdo não terminar num vazio. */
+html body.mw-in-app.mw-tela-folha #app .main{padding-bottom:24px!important}
+
+@media(max-width:860px){
+  html body.mw-in-app #app #mwBackBtn{
+    width:44px!important;height:44px!important;min-width:44px!important;
+    border:1px solid rgba(99,170,255,.22)!important;
+    box-shadow:0 4px 14px rgba(2,6,23,.28)!important;
+  }
+  html body.light.mw-in-app #app #mwBackBtn{
+    border-color:rgba(37,99,235,.20)!important;
+    box-shadow:0 4px 14px rgba(30,64,175,.10)!important;
+  }
+  /* Numa tela-folha ele é a saída principal, então ganha peso. */
+  html body.mw-in-app.mw-tela-folha #app #mwBackBtn{
+    background:linear-gradient(145deg,rgba(56,189,248,.28),rgba(37,99,235,.22))!important;
+    border-color:rgba(99,170,255,.34)!important;
+  }
+}
+</style>
+<script id="mw-telas-folha-js">
+/* Marca no <body> quando a tela atual é uma folha. Um lugar só decide,
+   e o CSS acima é consequência — mesma escolha do resto do projeto:
+   estado derivado do que já existe (qual .view está ativa), não uma
+   segunda verdade que possa divergir. */
+(function(){
+  var app = document.getElementById('app');
+  if (!app || !window.MutationObserver) return;
+  var FOLHAS = ['view-settings', 'view-support', 'view-admin'];
+
+  function marcar(){
+    var v = app.querySelector('.view.active');
+    document.body.classList.toggle('mw-tela-folha', !!v && FOLHAS.indexOf(v.id) !== -1);
+  }
+  new MutationObserver(marcar).observe(app, {
+    subtree: true, attributes: true, attributeFilter: ['class']
+  });
+  marcar();
+})();
+</script>
 <style id="mw-acabamento-formulario">
 /* ============================================================
    O AMARELO DO PREENCHIMENTO AUTOMÁTICO
