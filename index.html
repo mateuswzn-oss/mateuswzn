@@ -16410,5 +16410,105 @@ body.mw-entrando #app .main > * .stat{
   if (visivel) entrar();
 })();
 </script>
+<style id="mw-secao-sem-ancoragem">
+/* Sem isto, trocar de seção dispara a ancoragem de rolagem do Chrome:
+   a seção nova tem outra altura, o navegador tenta manter o elemento
+   ancorado no lugar e empurra a rolagem sozinho. Medido num 390x844:
+   sair de Atividades em 68px e entrar em Início pulava para 2741px
+   antes de qualquer código nosso rodar. As views são telas inteiras
+   que se substituem, não conteúdo que cresce em volta do leitor, então
+   ancorar não faz sentido aqui. */
+#app .main, #app .view{overflow-anchor:none}
+</style>
+<script id="mw-secao-comeca-no-topo">
+/* ============================================================
+   P3 — TROCA DE SEÇÃO COMEÇA NO TOPO
+   ============================================================
+   `showView()` só troca a classe `.active` entre as `.view`; a rolagem
+   nunca era zerada. Então sair do fim de "Faculdade" e entrar em
+   "Arquivos" abria a seção nova já rolada no mesmo ponto da anterior.
+   Medido antes da correção, num iPhone de 390x844: sair de Atividades
+   rolado 68px e entrar em Início caía em 2741px.
+
+   Por que um MutationObserver e não um wrapper: `showView` e `setView`
+   vivem dentro de closures, não existem em `window`, então não há o
+   que embrulhar. E há mais de um caminho que ativa uma seção (nav da
+   sidebar, bottom nav, botão de voltar, atalhos). O estado final é
+   sempre o mesmo — uma `.view` ganha `.active` — então observar isso
+   pega todos os caminhos de uma vez, agora e depois.
+
+   Por que zerar os dois contêineres: quem rola muda com a largura.
+   Medido: no desktop rola o `main.main` (overflow-y:auto) e o
+   documento não; no mobile rola o documento e o `main` fica visible.
+   Zerar um contêiner que não rola é no-op, então não há razão para
+   adivinhar qual é — zera os dois.
+
+   O reset é instantâneo de propósito: o callback do observer roda como
+   microtask, antes da pintura, então a seção nova já nasce no topo. Uma
+   rolagem animada faria exatamente o que o pedido proíbe — mostrar a
+   página velha deslizando por segundos. Ver a nota no `aoTopo` sobre
+   por que isso exige `scrollTo` e não `scrollTop`. */
+(function(){
+  var app = document.getElementById('app');
+  if (!app || !window.MutationObserver) return;
+
+  /* `behavior:'auto'` explícito, e não `scrollTop = 0`: o documento tem
+     `scroll-behavior:smooth` declarado em cinco folhas (e o `.main`
+     também). Atribuir scrollTop respeita esse CSS, então o reset virava
+     uma rolagem ANIMADA — medido: 2,5s descendo a página inteira, ainda
+     em 112px quando a seção já devia estar no topo. `scrollTo` com
+     behavior explícito ignora o CSS e pousa no mesmo frame. */
+  var raiz = document.documentElement;
+
+  function aoTopo(){
+    var main = app.querySelector('.main');
+
+    /* Trava o `scroll-behavior` em auto no elemento, por cima do CSS.
+       `behavior:'auto'` no argumento deveria bastar, mas o que desliza
+       aqui não é a nossa chamada — é a correção de ancoragem que o
+       navegador aplica DEPOIS, quando a seção nova muda a altura do
+       documento; essa correção herda o `smooth` do CSS. Com o inline
+       em auto, ela também deixa de animar. */
+    var salvo = raiz.style.scrollBehavior;
+    var salvoMain = main ? main.style.scrollBehavior : null;
+    raiz.style.scrollBehavior = 'auto';
+    if (main) main.style.scrollBehavior = 'auto';
+
+    if (main) main.scrollTop = 0;
+    var doc = document.scrollingElement || raiz;
+    if (doc) doc.scrollTop = 0;
+
+    /* Devolve o smooth só depois do frame, pra não roubar a rolagem
+       suave que o app usa no uso normal. */
+    requestAnimationFrame(function(){
+      raiz.style.scrollBehavior = salvo || '';
+      if (main) main.style.scrollBehavior = salvoMain || '';
+    });
+  }
+
+  var atual = app.querySelector('.view.active');
+
+  new MutationObserver(function(mutacoes){
+    for (var i = 0; i < mutacoes.length; i++) {
+      var el = mutacoes[i].target;
+      if (!el.classList || !el.classList.contains('view')) continue;
+      /* Só quando a seção ATIVA muda. Outras folhas mexem em classes
+         das views por outros motivos; sem esta guarda a página saltaria
+         para o topo no meio da leitura. */
+      if (el.classList.contains('active') && el !== atual) {
+        atual = el;
+        aoTopo();
+        /* Segunda passada no frame seguinte: se a seção nova ainda
+           estava montando conteúdo, a altura muda depois do reset e o
+           navegador pode reancorar a rolagem. */
+        requestAnimationFrame(aoTopo);
+        return;
+      }
+    }
+  }).observe(app, {
+    subtree: true, attributes: true, attributeFilter: ['class']
+  });
+})();
+</script>
 </body>
 </html>
