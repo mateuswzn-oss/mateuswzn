@@ -1,0 +1,55 @@
+<!-- Mateus Workspace — Confirm signup
+     Cole em Authentication → Emails → Templates → Confirm signup
+     Assunto: Confirme sua conta — Mateus Workspace -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+       style="background:#eef3fb;margin:0;padding:32px 12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+  <tr><td align="center">
+
+    <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"
+           style="width:600px;max-width:100%;background:#ffffff;border-radius:18px;overflow:hidden;border:1px solid #dbe5f5;">
+
+      <!-- Faixa da marca -->
+      <tr><td style="background:#0a1730;background-image:linear-gradient(135deg,#0a1730 0%,#122b56 100%);padding:30px 34px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+          <td style="width:46px;height:46px;background:#2563eb;background-image:linear-gradient(135deg,#2563eb,#38bdf8);border-radius:12px;text-align:center;vertical-align:middle;color:#ffffff;font-size:17px;font-weight:700;letter-spacing:.5px;">MW</td>
+          <td style="padding-left:14px;vertical-align:middle;color:#ffffff;font-size:17px;font-weight:600;letter-spacing:-.2px;">Mateus&nbsp;Workspace</td>
+        </tr></table>
+      </td></tr>
+
+      <!-- Conteúdo -->
+      <tr><td style="padding:36px 34px 30px;">
+        <h1 style="margin:0 0 12px;font-size:22px;line-height:1.3;color:#0b1830;font-weight:650;letter-spacing:-.3px;">Confirme sua conta</h1>
+        <p style="margin:0 0 22px;font-size:15px;line-height:1.6;color:#41618f;">
+          Falta um passo para sua conta ficar pronta. Ao confirmar, ela passa a funcionar
+          no navegador e no aplicativo, com as mesmas disciplinas, projetos e anotações.
+        </p>
+
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+          <td style="background:#2563eb;background-image:linear-gradient(135deg,#2563eb,#38bdf8);border-radius:12px;">
+            <a href="{{ .ConfirmationURL }}"
+               style="display:inline-block;padding:14px 30px;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;letter-spacing:.1px;">
+              Confirmar minha conta
+            </a>
+          </td>
+        </tr></table>
+
+        <p style="margin:24px 0 0;font-size:12.5px;line-height:1.6;color:#7d92b5;">
+          Se o botão não abrir, copie e cole este endereço no navegador:<br>
+          <a href="{{ .ConfirmationURL }}" style="color:#2563eb;word-break:break-all;">{{ .ConfirmationURL }}</a>
+        </p>
+      </td></tr>
+
+      <!-- Rodapé -->
+      <tr><td style="padding:20px 34px 28px;border-top:1px solid #eaf0fa;">
+        <p style="margin:0;font-size:12px;line-height:1.6;color:#8fa3c2;">
+          Você recebeu este e-mail porque alguém criou uma conta no Mateus Workspace com este endereço.
+          Se não foi você, pode ignorar — sem a confirmação, nada é ativado.
+        </p>
+      </td></tr>
+
+    </table>
+
+    <p style="margin:18px 0 0;font-size:11.5px;color:#94a7c4;">Mateus Workspace · organização acadêmica</p>
+
+  </td></tr>
+</table>
