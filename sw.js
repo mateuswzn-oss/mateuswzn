@@ -1,6 +1,11 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
-const CACHE_NAME = 'mw-shell-v4';
+/* v5: o app instalado no iPhone estava servindo uma cópia antiga do
+   index.html do cache e, com ela, código anterior às correções de conta e
+   sessão. Trocar o nome do cache é o que faz o service worker descartar o
+   que guardou e buscar tudo de novo — o `activate` abaixo apaga todo cache
+   cujo nome não seja este. */
+const CACHE_NAME = 'mw-shell-v5';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
