@@ -18561,6 +18561,7 @@ document.addEventListener('click', function(e){
 
   var CFG = window.MW_SUPABASE || {};
   var cliente = null;
+  var emRecuperacao = false;
 
   /* O cliente pode não existir: sem rede na primeira visita o arquivo do
      vendor não chega, e num navegador antigo o createClient pode estourar.
@@ -18568,7 +18569,17 @@ document.addEventListener('click', function(e){
   try {
     if (window.supabase && window.supabase.createClient && CFG.url && CFG.chave) {
       cliente = window.supabase.createClient(CFG.url, CFG.chave, {
-        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
+        /* detectSessionInUrl LIGADO: é ele que lê o token que vem no
+           endereço quando a pessoa clica no link de redefinir senha.
+           Desligado, o link abriria o app como se nada tivesse
+           acontecido. */
+        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+      });
+      cliente.auth.onAuthStateChange(function(evento){
+        if (evento === 'PASSWORD_RECOVERY') {
+          emRecuperacao = true;
+          try { window.dispatchEvent(new CustomEvent('mw-recuperacao')); } catch (e) {}
+        }
       });
     }
   } catch (e) { cliente = null; }
@@ -18651,6 +18662,31 @@ document.addEventListener('click', function(e){
       if (!cliente) return Promise.resolve();
       return cliente.auth.signOut().catch(function(){});
     },
+
+    /* Pede o e-mail de redefinição. O redirectTo precisa estar na lista de
+       endereços permitidos do projeto; fora dela o Supabase manda para o
+       Site URL, então vale conferir os dois no painel. */
+    pedirRecuperacao: function(email, destino){
+      if (!cliente) return Promise.reject(new Error('offline'));
+      return comPrazo(cliente.auth.resetPasswordForEmail(
+        String(email || '').trim().toLowerCase(),
+        destino ? { redirectTo: destino } : undefined
+      ), 12000).then(function(r){
+        if (r.error) throw r.error;
+        return true;
+      });
+    },
+
+    emRecuperacao: function(){
+      if (emRecuperacao) return true;
+      /* Rede de segurança: se o evento passou antes deste módulo existir,
+         o próprio endereço ainda denuncia o que aconteceu. */
+      try {
+        var h = String(window.location.hash || '');
+        return h.indexOf('type=recovery') !== -1;
+      } catch (e) { return false; }
+    },
+
 
     sessao: function(){
       if (!cliente) return Promise.resolve(null);
@@ -19323,6 +19359,291 @@ html body.light #mwAtivaNuvem input{background:#fff!important;color:#0b1830!impo
   } else {
     setTimeout(vigia, 1500);
   }
+})();
+</script>
+
+<style id="mw-recupera-css">
+html body #mwRecupera{
+  position:fixed;inset:0;z-index:9700;display:none;
+  align-items:center;justify-content:center;padding:22px;
+  background:rgba(2,6,23,.72);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  opacity:0;transition:opacity .3s ease;
+}
+html body #mwRecupera.mw-aberto{display:flex;opacity:1}
+html body #mwRecupera .mw-rec-caixa{
+  width:min(420px,100%);padding:30px 28px 24px;border-radius:24px;
+  background:linear-gradient(160deg,rgba(16,34,68,.98),rgba(8,18,38,.99));
+  border:1px solid rgba(99,170,255,.2);
+  box-shadow:0 30px 80px rgba(2,6,23,.62);
+  transform:translateY(14px) scale(.97);
+  transition:transform .42s cubic-bezier(.22,.72,.26,1);
+}
+html body #mwRecupera.mw-aberto .mw-rec-caixa{transform:none}
+html body #mwRecupera h3{margin:0 0 8px;font-size:19px;font-weight:650;color:#f2f7ff;letter-spacing:-.02em}
+html body #mwRecupera p{margin:0 0 18px;font-size:13px;line-height:1.55;color:#93a8c9}
+html body #mwRecupera p b{color:#cfe2ff;font-weight:600;word-break:break-word}
+html body #mwRecupera input{
+  width:100%;height:46px;padding:0 14px;margin:0 0 10px;border-radius:13px;box-sizing:border-box;
+  background:#0a1730!important;border:1px solid rgba(99,170,255,.22)!important;
+  color:#f2f7ff!important;font-size:15px;outline:none;   /* 15px+ para o iOS não dar zoom */
+}
+html body #mwRecupera input:focus{border-color:rgba(56,189,248,.55)!important}
+html body #mwRecupera .mw-rec-ok{
+  width:100%;height:46px;margin-top:6px;border:0;border-radius:13px;cursor:pointer;
+  background:linear-gradient(135deg,#2563eb,#38bdf8)!important;color:#fff!important;
+  font-size:14px;font-weight:650;letter-spacing:.01em;
+}
+html body #mwRecupera .mw-rec-ok:disabled{opacity:.5}
+html body #mwRecupera .mw-rec-sair{
+  width:100%;margin-top:10px;padding:8px;border:0!important;background:none!important;cursor:pointer;
+  color:#63799c!important;font-size:12.5px;text-decoration:underline;text-underline-offset:2px;
+}
+html body #mwRecupera .mw-rec-recado{margin:12px 0 0;font-size:12.5px;line-height:1.5}
+html body #mwRecupera .mw-rec-recado.erro{color:#fca5a5}
+
+/* O visto do "enviado": desenhado, não imagem — a mesma técnica do cartão
+   de conta trazida, para não depender de arquivo externo. */
+html body #mwRecupera .mw-rec-visto{
+  width:64px;height:64px;margin:0 auto 18px;border-radius:50%;
+  background:linear-gradient(135deg,#2563eb,#38bdf8);
+  display:grid;place-items:center;
+  animation:mwRecVisto .6s cubic-bezier(.22,.72,.26,1) both;
+}
+html body #mwRecupera .mw-rec-visto i{
+  width:30px;height:30px;background:#fff;
+  -webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>') center/contain no-repeat;
+          mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>') center/contain no-repeat;
+}
+@keyframes mwRecVisto{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+html body #mwRecupera .mw-rec-centro{text-align:center}
+html body.light #mwRecupera .mw-rec-caixa{background:linear-gradient(160deg,#fff,#f4f9ff);border-color:rgba(20,50,100,.14)}
+html body.light #mwRecupera h3{color:#0b1830}
+html body.light #mwRecupera p{color:#41618f}
+html body.light #mwRecupera p b{color:#0b1830}
+html body.light #mwRecupera input{background:#fff!important;color:#0b1830!important;border-color:rgba(20,50,100,.18)!important}
+@media (prefers-reduced-motion:reduce){
+  html body #mwRecupera,html body #mwRecupera .mw-rec-caixa,html body #mwRecupera .mw-rec-visto{transition:none;animation:none}
+}
+</style>
+<script id="mw-recupera-js">
+(function(){
+  'use strict';
+  /* ----------------------------------------------------------------
+     Recuperação de senha de verdade
+     ----------------------------------------------------------------
+     A tela antiga sorteava um código de quatro dígitos com Math.random()
+     DENTRO do navegador, escrevia "digite o código recebido no e-mail" e
+     não enviava e-mail nenhum. Ninguém conseguia passar dali. E se
+     conseguisse, a senha nova era gravada só no aparelho — o servidor
+     ficaria com a antiga e o login quebraria.
+
+     Era fachada de quando não havia servidor. Agora há, e o fluxo é o
+     real: pede o link, o Supabase envia, a pessoa clica, volta aqui com
+     uma sessão de recuperação e escolhe a senha nova. */
+
+  function q(s){ return document.querySelector(s); }
+  function temNuvem(){ return !!(window.mwNuvem && window.mwNuvem.ligado()); }
+
+  var caixa = null, estadoAtual = '';
+
+  function monta(){
+    if (caixa) return;
+    caixa = document.createElement('div');
+    caixa.id = 'mwRecupera';
+    caixa.setAttribute('role','dialog');
+    caixa.setAttribute('aria-modal','true');
+    caixa.innerHTML = '<div class="mw-rec-caixa"></div>';
+    document.body.appendChild(caixa);
+    caixa.addEventListener('click', function(e){
+      if (e.target === caixa) fechar();
+    });
+  }
+
+  function abrir(estado, dados){
+    monta();
+    estadoAtual = estado;
+    var dentro = caixa.querySelector('.mw-rec-caixa');
+    dados = dados || {};
+
+    if (estado === 'pedir') {
+      dentro.innerHTML =
+        '<h3>Recuperar senha</h3>' +
+        '<p>Digite o e-mail da sua conta. Enviamos um link para você escolher uma senha nova.</p>' +
+        '<input type="email" inputmode="email" autocomplete="email" placeholder="seu@email.com" aria-label="E-mail da conta">' +
+        '<button type="button" class="mw-rec-ok">Enviar link</button>' +
+        '<p class="mw-rec-recado" hidden></p>' +
+        '<button type="button" class="mw-rec-sair">Cancelar</button>';
+      var campo = dentro.querySelector('input');
+      campo.value = dados.email || '';
+      dentro.querySelector('.mw-rec-ok').addEventListener('click', enviar);
+      campo.addEventListener('keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); enviar(); } });
+      dentro.querySelector('.mw-rec-sair').addEventListener('click', fechar);
+      setTimeout(function(){ campo.focus(); }, 260);
+
+    } else if (estado === 'enviado') {
+      dentro.innerHTML =
+        '<div class="mw-rec-centro">' +
+          '<div class="mw-rec-visto"><i></i></div>' +
+          '<h3>Link enviado</h3>' +
+          '<p>Enviamos para <b>' + escapa(dados.email) + '</b>. Abra seu e-mail e toque em ' +
+          '<b>Escolher nova senha</b>.<br><br>O link vale por uma hora. Se não chegar em alguns minutos, ' +
+          'veja no spam.</p>' +
+        '</div>' +
+        '<button type="button" class="mw-rec-ok">Entendi</button>';
+      dentro.querySelector('.mw-rec-ok').addEventListener('click', fechar);
+
+    } else if (estado === 'nova') {
+      dentro.innerHTML =
+        '<h3>Escolha a senha nova</h3>' +
+        '<p>Ela passa a valer no navegador e no aplicativo, na mesma hora.</p>' +
+        '<input type="password" autocomplete="new-password" placeholder="Nova senha" aria-label="Nova senha">' +
+        '<input type="password" autocomplete="new-password" placeholder="Repita a senha" aria-label="Repita a senha">' +
+        '<button type="button" class="mw-rec-ok">Salvar senha</button>' +
+        '<p class="mw-rec-recado" hidden></p>';
+      var campos = dentro.querySelectorAll('input');
+      dentro.querySelector('.mw-rec-ok').addEventListener('click', salvar);
+      campos[1].addEventListener('keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); salvar(); } });
+      setTimeout(function(){ campos[0].focus(); }, 260);
+    }
+
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){ caixa.classList.add('mw-aberto'); });
+    });
+  }
+
+  function escapa(t){
+    return String(t == null ? '' : t).replace(/[&<>"']/g, function(c){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+    });
+  }
+
+  function fechar(){
+    if (!caixa) return;
+    caixa.classList.remove('mw-aberto');
+    setTimeout(function(){ if (caixa) caixa.style.display = ''; }, 320);
+  }
+
+  function diz(texto, erro){
+    var r = caixa.querySelector('.mw-rec-recado');
+    if (!r) return;
+    r.textContent = texto || '';
+    r.hidden = !texto;
+    r.className = 'mw-rec-recado' + (erro ? ' erro' : '');
+  }
+
+  function enviar(){
+    var campo = caixa.querySelector('input');
+    var botao = caixa.querySelector('.mw-rec-ok');
+    var email = String(campo.value || '').trim().toLowerCase();
+    if (!email || email.indexOf('@') === -1) { diz('Digite um e-mail válido.', true); campo.focus(); return; }
+    if (!temNuvem()) { diz('Recuperar senha precisa de internet. Conecte e tente de novo.', true); return; }
+
+    botao.disabled = true;
+    diz('Enviando...');
+
+    /* O endereço de volta é esta mesma página. Sem o pathname, o link
+       cairia na raiz do domínio — que no GitHub Pages não é o app. */
+    var destino = window.location.origin + window.location.pathname;
+
+    window.mwNuvem.pedirRecuperacao(email, destino).then(function(){
+      abrir('enviado', { email: email });
+    }).catch(function(e){
+      botao.disabled = false;
+      var m = String((e && e.message) || e || '');
+      if (/rate|too many|segundos|seconds/i.test(m))
+        return diz('Muitos pedidos seguidos. Espere um minuto e tente de novo.', true);
+      /* Conta inexistente não é dita: confirmar que um e-mail tem conta
+         entrega informação para quem está tentando adivinhar. O Supabase
+         responde igual nos dois casos, e a tela acompanha. */
+      diz('Não foi possível enviar agora. Tente de novo em instantes.', true);
+    });
+  }
+
+  function salvar(){
+    var campos = caixa.querySelectorAll('input');
+    var botao = caixa.querySelector('.mw-rec-ok');
+    var a = campos[0].value || '', b = campos[1].value || '';
+    if (a.length < 6)  { diz('A senha precisa ter pelo menos 6 caracteres.', true); campos[0].focus(); return; }
+    if (a !== b)       { diz('As duas senhas não são iguais.', true); campos[1].focus(); return; }
+
+    botao.disabled = true;
+    diz('Salvando...');
+
+    window.mwNuvem.atualizaAuth({ password: a }).then(function(usuario){
+      /* Atualiza também a cópia local, senão o app continuaria aceitando a
+         senha velha quando estivesse sem internet. */
+      var email = (usuario && usuario.email) || '';
+      try {
+        var users = JSON.parse(localStorage.getItem('mateusWorkspaceUsersV2') || '{}') || {};
+        var chave = email && users[email] ? email : (localStorage.getItem('mateusActiveUserV2') || '');
+        if (users[chave] && window.mwSenha) {
+          return window.mwSenha.grava(users[chave], a).then(function(){
+            localStorage.setItem('mateusWorkspaceUsersV2', JSON.stringify(users));
+          });
+        }
+      } catch (e) {}
+    }).then(function(){
+      limpaEndereco();
+      abrir('enviado', { email: '' });
+      var dentro = caixa.querySelector('.mw-rec-caixa');
+      dentro.querySelector('h3').textContent = 'Senha alterada';
+      dentro.querySelector('p').innerHTML = 'Pronto. Já pode entrar com a senha nova, aqui e no aplicativo.';
+    }).catch(function(e){
+      botao.disabled = false;
+      var m = String((e && e.message) || e || '');
+      if (/expired|invalid|session/i.test(m))
+        return diz('Este link expirou. Peça outro na tela de entrada.', true);
+      if (/should be different|same as/i.test(m))
+        return diz('A senha nova precisa ser diferente da anterior.', true);
+      diz('Não foi possível salvar. Tente de novo.', true);
+    });
+  }
+
+  function limpaEndereco(){
+    try {
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState(null, '', window.location.pathname + window.location.search);
+      }
+    } catch (e) {}
+  }
+
+  /* ----------------------------------------------------------------
+     Entradas
+     ---------------------------------------------------------------- */
+
+  /* "Esqueci minha senha" — a tela antiga continua no HTML e tem dois
+     handlers próprios, um deles em captura. Em vez de disputar ordem de
+     registro, este fecha o que eles abrirem e abre o certo: funciona
+     independentemente de quem correr primeiro. */
+  document.addEventListener('click', function(e){
+    var alvo = e.target && e.target.closest &&
+               e.target.closest('#forgotPasswordLink, .ref-forgot button, [data-forgot]');
+    if (!alvo) return;
+    var velha = q('#otpOverlay');
+    if (velha) { velha.classList.add('hidden'); velha.setAttribute('aria-hidden','true'); }
+    var digitado = (q('#username') && q('#username').value || '').trim().toLowerCase();
+    var lembrado = (localStorage.getItem('mwLastEmail') || '').trim().toLowerCase();
+    abrir('pedir', { email: digitado.indexOf('@') !== -1 ? digitado : lembrado });
+  }, true);
+
+  /* Volta do link do e-mail. Pode chegar antes ou depois deste bloco
+     existir, então escuta o evento E confere o estado ao iniciar. */
+  function tentaAbrirNova(){
+    if (!temNuvem() || !window.mwNuvem.emRecuperacao()) return false;
+    if (estadoAtual === 'nova') return true;
+    abrir('nova');
+    return true;
+  }
+  window.addEventListener('mw-recuperacao', function(){ setTimeout(tentaAbrirNova, 400); });
+
+  (function espera(tentativas){
+    if (tentaAbrirNova()) return;
+    if (tentativas <= 0) return;
+    setTimeout(function(){ espera(tentativas - 1); }, 600);
+  })(12);
+
+  window.mwRecuperaAbrir = function(){ abrir('pedir', {}); };
 })();
 </script>
 
