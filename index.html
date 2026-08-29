@@ -3603,11 +3603,13 @@ body.light .mw-faceid-gate-card p{color:#526988}
       <div class="settings-group" id="mwFaceIdGroup" hidden><h4>Segurança</h4><p>Use o Face ID deste iPhone/iPad para entrar no Workspace sem digitar nada.</p><div class="mw-faceid-row"><span class="mw-faceid-row-label">Entrar com Face ID</span><button type="button" class="mw-faceid-switch" id="mwFaceIdToggle" role="switch" aria-checked="false" aria-label="Entrar com Face ID"><i></i></button></div><p class="form-error" id="mwFaceIdStatus" hidden></p></div>
       <div class="settings-group" id="mwPinGroup"><h4>Código de acesso</h4><p>Um código de 6 dígitos para destravar o Workspace ao reabrir. Funciona em qualquer aparelho, com ou sem Face ID.</p><div class="mw-pin-row"><span class="mw-pin-estado" id="mwPinEstado">Nenhum código definido.</span><div class="mw-pin-acoes"><button type="button" class="small-btn" id="mwPinDefinir">Definir código</button><button type="button" class="small-btn mw-pin-remover" id="mwPinRemover" hidden>Remover</button></div></div><p class="form-error" id="mwPinStatus" hidden></p></div>
       <div class="settings-group"><h4>Aplicativo</h4><p id="mwSettingsInstallDesc">Adicione o Mateus Workspace à tela de início para abrir como um app.</p><div class="profile-actions"><button class="small-btn" id="mwSettingsInstallBtn">Instalar aplicativo</button></div></div>
-      <div class="settings-group" id="mwTransfereGrupo"><h4>Levar a conta para o app</h4><p>No iPhone, o app da tela de início guarda os dados <b>separado</b> do Safari — é assim que o iOS funciona, e nenhum ajuste no site muda isso. A conta criada num não existe no outro. Copie o código aqui e cole no outro para levar a conta junto.</p>
-        <div class="mw-transfere-acoes"><button type="button" class="small-btn" id="mwTransfereCopiar">Copiar código da conta</button><button type="button" class="small-btn" id="mwTransfereColar">Colar código aqui</button></div>
+      <div class="settings-group" id="mwTransfereGrupo"><h4>Usar a mesma conta no app</h4>
+        <p id="mwTransfereOnde" class="mw-transfere-onde"></p>
+        <ol class="mw-transfere-passos"><li id="mwPasso1"><b>No Safari:</b> toque em <b>Copiar código</b>.</li><li id="mwPasso2"><b>No app da tela de início:</b> abra Configurações e toque em <b>Colar código</b>.</li><li>Entre com o <b>mesmo usuário e senha</b> de sempre.</li></ol>
+        <div class="mw-transfere-acoes"><button type="button" class="save-btn" id="mwTransfereCopiar">Copiar código</button><button type="button" class="save-btn" id="mwTransfereColar">Colar código</button></div>
         <textarea id="mwTransfereCodigo" rows="3" readonly hidden aria-label="Código da conta"></textarea>
         <p class="form-error" id="mwTransfereStatus" hidden></p>
-        <p class="mw-transfere-aviso">O código carrega seus dados do Workspace. Não é a sua senha — quem receber ainda precisa dela para entrar — mas trate como coisa sua.</p></div>
+        <details class="mw-transfere-porque"><summary>Por que preciso fazer isso?</summary><p>No iPhone, o app da tela de início guarda os dados <b>separado</b> do Safari. É assim que o iOS funciona e nenhum ajuste no site muda isso: a conta criada num não existe no outro. O código leva a conta de um lado para o outro. Ele não carrega sua senha — quem receber ainda precisa dela para entrar — mas leva seus dados do Workspace, então trate como coisa sua.</p></details></div>
         <div class="settings-group"><h4>Backup</h4><p>Seus dados ficam salvos só neste navegador. Exporte um arquivo de backup pra não perder nada ao trocar de aparelho ou limpar os dados do navegador.</p><div class="profile-actions"><button class="small-btn" id="exportBackup">Exportar backup</button><button class="small-btn" id="importBackupBtn">Importar backup</button><input type="file" id="importBackupFile" accept="application/json" hidden></div><div class="form-error" id="importBackupError"></div></div>
       <div class="settings-group"><h4>Dados</h4><p>Remove disciplinas, atividades, projetos e anotações salvos neste navegador.</p><button class="small-btn danger mw-clear-btn" id="clearAll">Apagar todos os dados</button></div>
     </section></section>
@@ -16895,7 +16897,35 @@ body.light .mw-confirma-card{background:#fff;color:#0b1830}
 })();
 </script>
 <style id="mw-transfere-style">
-.mw-transfere-acoes{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
+.mw-transfere-onde{
+  margin:10px 0 0;padding:9px 12px;border-radius:11px;font-size:13px;
+  background:rgba(56,189,248,.10);border:1px solid rgba(99,170,255,.22);color:var(--text);
+}
+body.light .mw-transfere-onde{background:rgba(37,99,235,.08);border-color:rgba(37,99,235,.18)}
+.mw-transfere-passos{margin:12px 0 0;padding-left:20px;font-size:13px;color:var(--muted);line-height:1.75}
+.mw-transfere-passos li b{color:var(--text)}
+/* O passo que NÃO é deste lado fica apagado, para não competir com o
+   que a pessoa precisa fazer agora. */
+.mw-transfere-passos li.mw-passo-longe{opacity:.45}
+.mw-transfere-acoes{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+/* Só um botão manda de cada vez. O outro continua ali, apagado, para
+   quem estiver fazendo o caminho inverso — mas não disputa a atenção. */
+/* Especificidade alta de propósito: `.save-btn` recebe cor de folhas
+   antigas marcadas !important e com seletor mais específico, então uma
+   regra curta aqui perdia — os dois botões continuavam idênticos, que é
+   exatamente o que confundiu. */
+html body #app .mw-transfere-acoes button.mw-secundario,
+html body #app .mw-transfere-acoes .save-btn.mw-secundario{
+  background:transparent!important;
+  background-image:none!important;
+  border:1px solid var(--line)!important;
+  color:var(--muted)!important;
+  box-shadow:none!important;
+  font-weight:500!important;
+}
+.mw-transfere-porque{margin-top:14px;font-size:12px;color:var(--muted2)}
+.mw-transfere-porque summary{cursor:pointer;color:var(--blue2)}
+.mw-transfere-porque p{margin:8px 0 0;line-height:1.65}
 #mwTransfereCodigo{
   width:100%;margin-top:12px;padding:11px 13px;border-radius:12px;
   background:var(--panel2);border:1px solid var(--line);color:var(--text);
@@ -16939,6 +16969,25 @@ body.light .mw-confirma-card{background:#fff;color:#0b1830}
     status.classList.toggle('mw-ok', !!bom);
   }
 
+  /* Saber em qual dos dois lados a pessoa está é o que faltava. Sem
+     isso os dois botões pareciam iguais, e colar no MESMO lugar de onde
+     se copiou parecia uma opção legítima — foi o que aconteceu. Agora a
+     tela diz onde você está e destaca só o passo que é daqui. */
+  var noApp = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
+              || window.navigator.standalone === true;
+  var onde = document.getElementById('mwTransfereOnde');
+  var passo1 = document.getElementById('mwPasso1');
+  var passo2 = document.getElementById('mwPasso2');
+
+  if (onde) onde.textContent = noApp
+    ? 'Você está no app da tela de início. Aqui o passo é COLAR o código que você copiou no navegador.'
+    : 'Você está no navegador. Aqui o passo é COPIAR o código, para depois colar no app.';
+  if (passo1) passo1.classList.toggle('mw-passo-longe', noApp);
+  if (passo2) passo2.classList.toggle('mw-passo-longe', !noApp);
+  /* O botão que não é deste lado vira secundário em vez de sumir: quem
+     estiver levando a conta na direção contrária ainda precisa dele. */
+  (noApp ? btnCopiar : btnColar).classList.add('mw-secundario');
+
   /* btoa quebra em qualquer caractere fora do Latin-1 — e nome de
      exibição com acento é o caso comum, não a exceção. Passar por
      encodeURIComponent primeiro mantém o código ASCII. */
@@ -16961,7 +17010,9 @@ body.light .mw-confirma-card{background:#fff;color:#0b1830}
 
     if (caixa) { caixa.hidden = false; caixa.value = codigo; caixa.select(); }
     var pronto = function(){
-      aviso('Código copiado. Abra o app e toque em "Colar código aqui".', true);
+      aviso(noApp
+        ? 'Código copiado. Agora abra o site no navegador, vá em Configurações e toque em "Colar código".'
+        : 'Código copiado. Agora abra o app pela tela de início, vá em Configurações e toque em "Colar código".', true);
       if (typeof toast === 'function') toast('Código copiado');
     };
     /* navigator.clipboard exige contexto seguro e às vezes é recusado
@@ -17002,8 +17053,14 @@ body.light .mw-confirma-card{background:#fff;color:#0b1830}
       if (pacote.dados) localStorage.setItem('mateusWorkspaceV4', JSON.stringify(pacote.dados));
     } catch (e) { aviso('Não foi possível salvar a conta aqui.', false); return; }
 
-    aviso((jaTinha ? 'Conta atualizada' : 'Conta trazida') + ': ' + conta.username +
-          '. Saia e entre com a mesma senha de sempre.', true);
+    /* Colar do lado de onde o código saiu não é erro, mas também não
+       adianta nada — e a mensagem antiga dizia "Conta atualizada", o
+       que parecia sucesso. Melhor dizer o que de fato aconteceu. */
+    if (jaTinha && !noApp) {
+      aviso('Essa conta já era desta tela — colar aqui não muda nada. O código precisa ser colado no APP da tela de início.', false);
+      return;
+    }
+    aviso('Pronto: a conta ' + conta.username + ' agora existe aqui. Entre com a mesma senha de sempre.', true);
     if (typeof toast === 'function') toast('Conta trazida para este aparelho');
   });
 })();
