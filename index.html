@@ -2862,7 +2862,7 @@ body.light #app .calendar-card .calendar-nav button:hover{
   position:absolute;left:50%;bottom:13%;transform:translateX(-50%);
   width:120px;height:2px;border-radius:99px;
   background:rgba(148,163,184,.14);overflow:hidden;
-  opacity:0;animation:mwbEsperaEntra .5s ease 3.8s both;
+  opacity:0;animation:mwbEsperaEntra .5s ease 4.3s both;
 }
 @keyframes mwbEsperaEntra{to{opacity:1}}
 .mwb-espera i{
@@ -4266,8 +4266,13 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
   /* A entrada agora termina em ~2780ms (o nome assenta) e respira mais
      um instante antes de sair — foi o pedido de "um pouquinho mais
      lento e demorar um tempinho a mais antes do login". */
-  var MW_BOOT_MIN = 3450;
-  var MW_BOOT_MAX = 4400;
+  /* A referência constrói a marca em ~1,4s e depois fica IMÓVEL por
+     cerca de 2s antes de sair. É a quietude que soa cinematográfica —
+     não a construção lenta. A nossa construção termina por volta de
+     2,9s (o nome assenta), então o piso passa a dar ~1,1s de marca
+     parada antes da saída, em vez dos ~550ms de antes. */
+  var MW_BOOT_MIN = 4000;
+  var MW_BOOT_MAX = 4900;
   var MW_BOOT_SAIDA = 520;   // igual à duração das animações de saída
   var mwBootDone = false;
 
@@ -17797,56 +17802,75 @@ body.light #app .mw-reference-profile.mw-estado-ativo .mw-profile-main{
     mestre.gain.value = 0.22;          // discreto: é abertura, não alarme
     mestre.connect(ctx.destination);
 
-    /* 1) o sopro — ruído rosa-ish por um passa-baixa que abre */
-    var dur = 1.5;
-    var buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * dur), ctx.sampleRate);
+    /* ============================================================
+       ENVELOPE MEDIDO NA REFERÊNCIA
+       ============================================================
+       Extraí o áudio do vídeo e medi o envelope a cada 50ms. O que ele
+       faz, e que o nosso NÃO fazia:
+
+         0.00s  pico imediato (0.74 do máximo) — nasce alto, não sobe
+         0.30s  acento (0.92)
+         0.60s  acento (0.82)
+         1.00s  acento (0.83)  — o wordmark materializando
+         1.85s  praticamente silêncio (0.04)
+
+       O antigo era o inverso: subia durante 0,9s e só então batia. Por
+       isso soava como "um efeito chegando" em vez de "a marca
+       acontecendo". Agora o corpo nasce no ataque e decai; os acentos
+       marcam os mesmos três momentos. */
+    var FIM = 1.85;
+
+    /* corpo: ruído por um passa-baixa que ABRE (brilho crescendo)
+       enquanto o volume DECAI — é o que dá o "ar" saindo */
+    var buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * FIM), ctx.sampleRate);
     var d = buf.getChannelData(0);
     var ultimo = 0;
     for (var i = 0; i < d.length; i++) {
       var branco = Math.random() * 2 - 1;
-      ultimo = (ultimo + 0.02 * branco) / 1.02;   // suaviza para não sibilar
+      ultimo = (ultimo + 0.02 * branco) / 1.02;
       d[i] = ultimo * 3.2;
     }
     var ruido = ctx.createBufferSource(); ruido.buffer = buf;
     var filtro = ctx.createBiquadFilter(); filtro.type = 'lowpass';
-    filtro.frequency.setValueAtTime(300, t0);
-    filtro.frequency.exponentialRampToValueAtTime(5000, t0 + 1.15);
-    filtro.Q.value = 0.9;
-    var gSopro = ctx.createGain();
-    gSopro.gain.setValueAtTime(0.0001, t0);
-    gSopro.gain.exponentialRampToValueAtTime(0.5, t0 + 0.9);
-    gSopro.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.5);
-    ruido.connect(filtro); filtro.connect(gSopro); gSopro.connect(mestre);
-    ruido.start(t0); ruido.stop(t0 + dur);
+    filtro.frequency.setValueAtTime(900, t0);
+    filtro.frequency.exponentialRampToValueAtTime(6200, t0 + 0.85);
+    filtro.frequency.exponentialRampToValueAtTime(1400, t0 + FIM);
+    filtro.Q.value = 0.8;
+    var gCorpo = ctx.createGain();
+    gCorpo.gain.setValueAtTime(0.0001, t0);
+    gCorpo.gain.exponentialRampToValueAtTime(0.62, t0 + 0.03);   // ataque imediato
+    gCorpo.gain.exponentialRampToValueAtTime(0.30, t0 + 0.9);
+    gCorpo.gain.exponentialRampToValueAtTime(0.0001, t0 + FIM);
+    ruido.connect(filtro); filtro.connect(gCorpo); gCorpo.connect(mestre);
+    ruido.start(t0); ruido.stop(t0 + FIM);
 
-    /* 2) a batida, quando o nome assenta */
-    var tb = t0 + 1.12;
+    /* grave de fundação, junto do ataque */
     var grave = ctx.createOscillator(); grave.type = 'sine';
-    grave.frequency.setValueAtTime(150, tb);
-    grave.frequency.exponentialRampToValueAtTime(48, tb + 0.5);
+    grave.frequency.setValueAtTime(120, t0);
+    grave.frequency.exponentialRampToValueAtTime(44, t0 + 0.7);
     var gGrave = ctx.createGain();
-    gGrave.gain.setValueAtTime(0.0001, tb);
-    gGrave.gain.exponentialRampToValueAtTime(0.85, tb + 0.02);
-    gGrave.gain.exponentialRampToValueAtTime(0.0001, tb + 0.75);
+    gGrave.gain.setValueAtTime(0.0001, t0);
+    gGrave.gain.exponentialRampToValueAtTime(0.9, t0 + 0.02);
+    gGrave.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.0);
     grave.connect(gGrave); gGrave.connect(mestre);
-    grave.start(tb); grave.stop(tb + 0.8);
+    grave.start(t0); grave.stop(t0 + 1.05);
 
-    /* o brilho por cima: duas quintas, curtas */
-    [1244.5, 1864.7].forEach(function(hz, k){
-      var o = ctx.createOscillator(); o.type = 'triangle';
-      o.frequency.value = hz;
-      var g = ctx.createGain();
-      var ti = tb + k * 0.045;
-      g.gain.setValueAtTime(0.0001, ti);
-      g.gain.exponentialRampToValueAtTime(0.13, ti + 0.03);
-      g.gain.exponentialRampToValueAtTime(0.0001, ti + 0.55);
-      o.connect(g); g.connect(mestre);
-      o.start(ti); o.stop(ti + 0.6);
-    });
+    /* os três acentos, nos instantes medidos: 0.30 / 0.60 / 1.00 */
+    [[0.30, 933.3, 0.16], [0.60, 1244.5, 0.14], [1.00, 1864.7, 0.17]]
+      .forEach(function(a){
+        var ti = t0 + a[0];
+        var o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.value = a[1];
+        var g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, ti);
+        g.gain.exponentialRampToValueAtTime(a[2], ti + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, ti + 0.5);
+        o.connect(g); g.connect(mestre);
+        o.start(ti); o.stop(ti + 0.55);
+      });
 
     /* Fecha o contexto sozinho: deixar aberto segura áudio do sistema
        (e no iOS pode abaixar a música de quem estiver ouvindo). */
-    setTimeout(function(){ try { ctx.close(); } catch (e) {} }, 2600);
+    setTimeout(function(){ try { ctx.close(); } catch (e) {} }, 2300);
 
     if (ctx.state === 'suspended') {
       ctx.resume().catch(function(){});
