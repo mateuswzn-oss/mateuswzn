@@ -2799,14 +2799,51 @@ body.light #app .calendar-card .calendar-nav button:hover{
 #mwBootLoader.mw-aguarda-toque .mwb-palco,
 #mwBootLoader.mw-aguarda-toque .mwb-espera{opacity:0}
 
+/* ============================================================
+   O CONVITE NÃO PODE ESCORREGAR
+   ============================================================
+   Medido na gravação do iPhone: o convite nascia 100px ACIMA do centro
+   e escorregava para baixo até assentar, uns 400ms depois. A causa é a
+   caixa do próprio preloader: no iOS a altura de um elemento fixo com
+   `inset:0` só se estabiliza depois que o sistema resolve a viewport e
+   as safe areas, e um filho centrado por flex acompanha essa mudança.
+
+   Duas medidas, e as duas juntas:
+
+   1. Centrar contra o CENTRO, não contra a caixa: top/left 50% mais
+      translate(-50%,-50%). Se a altura mudar, o ponto continua sendo o
+      meio — nada escorrega.
+
+   2. Aparecer DEPOIS de a viewport assentar, e aparecer entrando: um
+      atraso curto e uma entrada própria. O que sobrar de acomodação
+      acontece enquanto o convite ainda está invisível, e o que se vê é
+      uma entrada de propósito, não um tranco. */
 .mwb-toque{
-  position:absolute;inset:0;z-index:3;
+  position:fixed;left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  z-index:3;
   display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+  padding:40px 48px;
   border:0;background:transparent;color:#cfe6ff;
   font:inherit;font-size:14px;letter-spacing:.02em;cursor:pointer;
   -webkit-tap-highlight-color:transparent;
 }
-#mwBootLoader.mw-aguarda-toque .mwb-toque{display:flex}
+/* A área de toque continua sendo a tela inteira: o convite é pequeno,
+   mas ninguém deve precisar mirar nele. */
+#mwBootLoader.mw-aguarda-toque::after{
+  content:"";position:fixed;inset:0;z-index:2;
+}
+#mwBootLoader.mw-aguarda-toque .mwb-toque{
+  display:flex;
+  animation:mwbToqueEntra .82s cubic-bezier(.22,.72,.26,1) .34s both;
+}
+/* A entrada: o anel abre de dentro, o texto sobe atrás. Sem nada
+   translúcido antes do tempo — o `both` segura o quadro 0 durante o
+   atraso, então a tela fica só azul até a hora. */
+@keyframes mwbToqueEntra{
+  from{opacity:0;transform:translate(-50%,-50%) scale(.86)}
+  to{opacity:1;transform:translate(-50%,-50%) scale(1)}
+}
 .mwb-toque-anel{
   width:64px;height:64px;border-radius:50%;
   border:1.5px solid rgba(125,211,252,.45);
@@ -2823,13 +2860,22 @@ body.light #app .calendar-card .calendar-nav button:hover{
   70%{transform:scale(1.45);opacity:0}
   100%{transform:scale(1.45);opacity:0}
 }
-.mwb-toque-texto{opacity:.82;animation:mwbToqueRespira 3s ease-in-out infinite}
+.mwb-toque-texto{opacity:.82;white-space:nowrap;animation:mwbToqueRespira 3s ease-in-out infinite 1.1s}
+/* O anel só começa a pulsar depois de a entrada terminar: pulsar
+   durante a entrada eram dois movimentos brigando. */
+#mwBootLoader.mw-aguarda-toque .mwb-toque-anel::after{animation-delay:1.1s}
 @keyframes mwbToqueRespira{0%,100%{opacity:.62}50%{opacity:.95}}
 /* Sai antes de a animação começar, sem deixar buraco no meio. */
+/* A saída mantém o translate(-50%,-50%): sem ele o convite saltaria
+   para o canto no instante de sumir, porque transform substitui, não
+   acumula. */
 #mwBootLoader.mw-toque-feito .mwb-toque{
-  animation:mwbToqueSai .26s cubic-bezier(.4,0,.2,1) both;pointer-events:none;
+  animation:mwbToqueSai .3s cubic-bezier(.4,0,.2,1) both;pointer-events:none;
 }
-@keyframes mwbToqueSai{to{opacity:0;transform:scale(1.06)}}
+@keyframes mwbToqueSai{
+  from{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  to{opacity:0;transform:translate(-50%,-50%) scale(1.12)}
+}
 @media (prefers-reduced-motion: reduce){
   .mwb-toque-anel::after,.mwb-toque-texto{animation:none!important}
 }
@@ -3748,7 +3794,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
       <div class="settings-group"><h4>Aplicativo</h4><p id="mwSettingsInstallDesc">Adicione o Mateus Workspace à tela de início para abrir como um app.</p><div class="profile-actions"><button class="small-btn" id="mwSettingsInstallBtn">Instalar aplicativo</button></div></div>
       <div class="settings-group" id="mwTransfereGrupo"><h4>Usar a mesma conta no app</h4>
         <p id="mwTransfereOnde" class="mw-transfere-onde"></p>
-        <ol class="mw-transfere-passos"><li id="mwPasso1"><b>No Safari:</b> toque em <b>Copiar código</b>.</li><li id="mwPasso2"><b>No app da tela de início:</b> abra Configurações e toque em <b>Colar código</b>.</li><li>Entre com o <b>mesmo usuário e senha</b> de sempre.</li></ol>
+        <ol class="mw-transfere-passos"><li id="mwPasso1"><b>No Safari:</b> toque em <b>Copiar código</b>.</li><li id="mwPasso2"><b>No app da tela de início:</b> abra Configurações e toque em <b>Colar código</b>.</li><li>Entre com o <b>mesmo usuário e senha</b> de sempre.</li></ol><p class="mw-transfere-nota">O código é uma <b>cópia do momento</b>, não uma sincronização. Mudou a foto ou criou uma disciplina depois de transferir? Copie de novo e cole do outro lado.</p>
         <div class="mw-transfere-acoes"><button type="button" class="save-btn" id="mwTransfereCopiar">Copiar código</button><button type="button" class="save-btn" id="mwTransfereColar">Colar código</button></div>
         <textarea id="mwTransfereCodigo" rows="3" readonly hidden aria-label="Código da conta"></textarea>
         <p class="form-error" id="mwTransfereStatus" hidden></p>
@@ -17112,6 +17158,14 @@ html body #app .mw-transfere-acoes .save-btn.mw-secundario{
   box-shadow:none!important;
   font-weight:500!important;
 }
+.mw-transfere-nota{
+  margin:12px 0 0;padding:10px 12px;border-radius:11px;
+  font-size:12.5px;line-height:1.55;color:var(--muted);
+  background:rgba(255,255,255,.04);border:1px solid var(--line);
+}
+.mw-transfere-nota b{color:var(--text)}
+body.light .mw-transfere-nota{background:rgba(15,23,42,.04);color:#4d6486}
+body.light .mw-transfere-nota b{color:#0b1830}
 .mw-transfere-porque{margin-top:14px;font-size:12px;color:var(--muted2)}
 .mw-transfere-porque summary{cursor:pointer;color:var(--blue2)}
 .mw-transfere-porque p{margin:8px 0 0;line-height:1.65}
@@ -17194,7 +17248,7 @@ html body #app .mw-transfere-acoes .save-btn.mw-secundario{
     try { dados = JSON.parse(localStorage.getItem('mateusWorkspaceV4') || '{}') || {}; } catch (e) {}
     var codigo;
     try {
-      codigo = paraCodigo({ mwConta: 1, conta: conta, dados: dados });
+      codigo = paraCodigo({ mwConta: 1, conta: conta, dados: dados, quando: Date.now() });
     } catch (e) { aviso('Não foi possível gerar o código.', false); return; }
 
     if (caixa) { caixa.hidden = false; caixa.value = codigo; caixa.select(); }
@@ -17252,7 +17306,31 @@ html body #app .mw-transfere-acoes .save-btn.mw-secundario{
       dizer('Essa conta já era desta tela — colar aqui não muda nada. O código precisa ser colado no APP da tela de início.', false);
       return;
     }
-    dizer('Pronto: a conta ' + conta.username + ' agora existe aqui. Entre com a mesma senha de sempre.', true);
+    /* Dizer o que veio dentro, e de quando. O código é uma CÓPIA DO
+       MOMENTO, não uma sincronização — quem transferiu ontem e mudou a
+       foto hoje precisa saber que essa foto não está no pacote. Sem
+       isso a pessoa cola, não vê a foto do outro lado e conclui que o
+       app está quebrado. Aconteceu três vezes. */
+    var d = pacote.dados || {};
+    var partes = [];
+    if (d.profile && d.profile.photo) partes.push('com foto');
+    else partes.push('SEM foto');
+    var conta_ = [['disciplina', (d.subjects || []).length],
+                  ['projeto', (d.projects || []).length],
+                  ['atividade', (d.activities || []).length],
+                  ['anotação', (d.notes || []).length]];
+    conta_.forEach(function(c){
+      if (c[1]) partes.push(c[1] + ' ' + c[0] + (c[1] > 1 ? (c[0] === 'anotação' ? 'ões' : 's') : ''));
+    });
+    var idade = '';
+    if (pacote.quando) {
+      var min = Math.round((Date.now() - pacote.quando) / 60000);
+      idade = min < 1 ? ' · copiado agora'
+            : min < 60 ? ' · copiado há ' + min + ' min'
+            : ' · copiado há ' + Math.round(min / 60) + 'h';
+    }
+    dizer('Pronto: ' + conta.username + ' — ' + partes.join(', ') + idade +
+          '. Entre com a mesma senha de sempre.', true);
     if (typeof toast === 'function') toast('Conta trazida para este aparelho');
   };
 
@@ -17794,12 +17872,23 @@ body.light #app .mw-reference-profile.mw-estado-ativo .mw-profile-main{
   if (!Ctx) return;
 
   function tocar(){
-    if (!ligado()) return;
+    if (!ligado()) return 'desligado';
     var ctx;
     try { ctx = new Ctx(); } catch (e) { return; }
+
+    /* resume() ANTES de agendar, não depois. Um contexto criado dentro
+       do gesto às vezes nasce 'suspended'; agendar num contexto parado e
+       só então retomar deixa o começo do som para trás, e o que se ouve
+       é o meio do envelope — ou nada, se o ataque inteiro couber no
+       trecho perdido. Retomar primeiro alinha t0 com o áudio real. */
+    if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) {} }
+
     var t0 = ctx.currentTime + 0.02;
     var mestre = ctx.createGain();
-    mestre.gain.value = 0.22;          // discreto: é abertura, não alarme
+    /* 0.22 era discreto demais: com o corpo em 0.62 o efetivo ficava em
+       0.14, e no alto-falante do telefone isso é quase nada. É abertura
+       de marca, precisa ser ouvida. */
+    mestre.gain.value = 0.55;
     mestre.connect(ctx.destination);
 
     /* ============================================================
@@ -17881,7 +17970,12 @@ body.light #app .mw-reference-profile.mw-estado-ativo .mw-profile-main{
      temporizador: o áudio precisa nascer DENTRO do gesto para o iOS
      liberar, e no mesmo quadro em que a animação parte. Aqui só fica a
      função. */
-  window.mwSomTocar = function(){ try { tocar(); } catch (e) {} };
+  /* Devolve o estado real do contexto, para o ajuste em Configurações
+     poder dizer "tocou" ou "o navegador recusou" em vez de deixar a
+     pessoa achando que o som está quebrado. */
+  window.mwSomTocar = function(){
+    try { return tocar() || 'ok'; } catch (e) { return 'erro'; }
+  };
 
   /* O destravador genérico que existia aqui saiu: quem destrava agora é
      o portão de toque da abertura, dentro do próprio gesto. Mantê-lo
