@@ -2855,12 +2855,18 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
    senha em si vaze (e ela costuma ser reaproveitada em outros
    serviços), que é o dano real. Segurança de verdade só com backend. */
 (function(){
-  var MW_MARCA_RESET = 'mwContasZeradas-2026-08';
+  /* A marca muda a cada limpeza pedida. Trocar o sufixo é o que faz a
+     rotina rodar de novo numa base já limpa antes — sem isso, quem já
+     tinha a marca antiga nunca mais seria zerado. Esta é a segunda:
+     a primeira leva de contas foi criada com o bug que só gravava a
+     conta no fim da animação, então havia contas pela metade. */
+  var MW_MARCA_RESET = 'mwContasZeradas-2026-08-c';
   try {
     if (localStorage.getItem(MW_MARCA_RESET) !== '1') {
       ['mateusWorkspaceUsersV2','mateusActiveUserV2','mateusWorkspaceV4',
        'mwSession','mwLastEmail','mwDemoSession',
-       'mwFaceIdEnabled','mwFaceIdCredentialId'].forEach(function(k){
+       'mwFaceIdEnabled','mwFaceIdCredentialId',
+       'mwPinSal','mwPinHash','mwPinErros'].forEach(function(k){
         try { localStorage.removeItem(k); } catch (e) {}
       });
       localStorage.setItem(MW_MARCA_RESET, '1');
@@ -3108,6 +3114,18 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
 }
 </style>
 
+<div id="mwConfirmaSegredo" class="hidden" role="dialog" aria-modal="true" aria-labelledby="mwConfirmaTitulo">
+  <div class="mw-confirma-card">
+    <h3 id="mwConfirmaTitulo">Confirme que é você</h3>
+    <p id="mwConfirmaTexto">Digite sua senha ou o código de acesso para continuar.</p>
+    <input id="mwConfirmaCampo" type="password" autocomplete="current-password" placeholder="Senha ou código">
+    <p class="form-error" id="mwConfirmaErro" hidden></p>
+    <div class="mw-confirma-acoes">
+      <button type="button" class="small-btn" id="mwConfirmaCancelar">Cancelar</button>
+      <button type="button" class="save-btn" id="mwConfirmaOk">Confirmar</button>
+    </div>
+  </div>
+</div>
 <div id="mwPinGate" class="hidden" role="dialog" aria-modal="true" aria-label="Digite seu código de acesso">
   <div class="mw-pin-card">
     <div class="mw-pin-icone" aria-hidden="true"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10.5" rx="3"/><path d="M8 10.5V7.2a4 4 0 0 1 8 0v3.3"/></svg></div>
@@ -3558,7 +3576,12 @@ body.light .mw-faceid-gate-card p{color:#526988}
       </section>
     </section>
     <section class="view" id="view-settings"><section class="card section"><div class="section-head"><h3>Configurações</h3><span>Perfil, preferências e sessão</span></div>
-      <div class="settings-group"><h4>Dados do perfil</h4><p>Edite as informações usadas na interface. Elas ficam salvas localmente.</p><div class="profile-form"><div class="form-field"><label>Nome</label><input id="profileName" type="text" placeholder="Mateus"></div><div class="form-field"><label>E-mail</label><input id="profileEmail" type="email" placeholder="seu@email.com"></div><div class="form-field full profile-photo-field">
+      <div class="settings-group" id="mwContaGrupo"><h4>Conta</h4><p>Nome de usuário, e-mail e senha. Mudar qualquer um deles pede sua senha ou o código de acesso, porque são as três coisas com que se entra na conta.</p>
+        <div class="mw-conta-linha"><div class="mw-conta-campo"><label>Nome de usuário</label><input id="mwContaUsuario" type="text" readonly autocomplete="off"></div><button type="button" class="small-btn" id="mwContaTrocarUsuario">Alterar</button></div>
+        <div class="mw-conta-linha"><div class="mw-conta-campo"><label>E-mail</label><input id="mwContaEmail" type="email" readonly autocomplete="off"></div><button type="button" class="small-btn" id="mwContaTrocarEmail">Alterar</button></div>
+        <div class="mw-conta-linha"><div class="mw-conta-campo"><label>Senha</label><input id="mwContaSenha" type="password" value="••••••••" readonly autocomplete="off"></div><button type="button" class="small-btn" id="mwContaTrocarSenha">Alterar</button></div>
+        <p class="form-error" id="mwContaStatus" hidden></p></div>
+        <div class="settings-group"><h4>Dados do perfil</h4><p>Como você aparece no Workspace. O nome de exibição pode ser trocado a qualquer momento, sem senha.</p><div class="profile-form"><div class="form-field"><label>Nome de exibição</label><input id="profileName" type="text" placeholder="Mateus"></div><div class="form-field"><label>E-mail</label><input id="profileEmail" type="email" readonly placeholder="seu@email.com" title="O e-mail da conta muda no grupo Conta, acima."></div><div class="form-field full profile-photo-field">
 <label>Foto de perfil</label>
 <div class="profile-photo-card" id="profilePhotoCard">
   <div class="profile-avatar-preview" id="profileAvatarPreview"><span id="profileAvatarInitials">MW</span></div>
@@ -5551,10 +5574,19 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
     if(!pass){if(err)err.textContent='Digite uma senha.';return}
 
     let users={};try{users=JSON.parse(localStorage.getItem('mateusWorkspaceUsersV2')||'{}')||{}}catch{}
-    if(Object.values(users).some(x=>(x?.username||'').toLowerCase()===username.toLowerCase())){
+    /* Unicidade pela MESMA regra que a troca em Configurações usa
+       (window.mwConta). Ter uma cópia da checagem aqui foi o que
+       permitiu que os dois lados divergissem: aqui só se comparava
+       `username`, enquanto o e-mail podia colidir com o `username` de
+       outra conta sem ninguém notar. Uma função só, os dois caminhos. */
+    const usuarioLivre = window.mwConta
+      ? window.mwConta.usuarioLivre(username)
+      : !Object.values(users).some(x=>(x?.username||'').toLowerCase()===username.toLowerCase());
+    if(!usuarioLivre){
       if(err)err.textContent='Esse nome de usuário já está em uso. Escolha outro.';return;
     }
-    if(users[email]){if(err)err.textContent='Este e-mail já possui uma conta.';return}
+    const emailLivre = window.mwConta ? window.mwConta.emailLivre(email) : !users[email];
+    if(!emailLivre){if(err)err.textContent='Este e-mail já possui uma conta.';return}
 
     clean.dataset.mwFinalBusy='1';
     btn.disabled=true;
@@ -16649,6 +16681,310 @@ body.mw-entrando #app .main > * .stat{
     attributes: true, attributeFilter: ['class']
   });
   sincronizar();
+})();
+</script>
+<style id="mw-conta-style">
+.mw-conta-linha{display:flex;align-items:flex-end;gap:10px;margin-top:12px}
+.mw-conta-campo{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.mw-conta-campo label{font-size:12px;color:var(--muted)}
+.mw-conta-campo input{
+  width:100%;padding:11px 13px;border-radius:12px;
+  background:var(--panel2);border:1px solid var(--line);color:var(--text);
+  font:inherit;font-size:14px;
+}
+/* Bloqueado tem que PARECER bloqueado, senão a pessoa digita e se
+   pergunta por que nada acontece. */
+.mw-conta-campo input[readonly]{opacity:.72;cursor:default}
+.mw-conta-linha .small-btn{flex:none;white-space:nowrap;padding:11px 14px}
+#mwContaStatus{margin-top:10px}
+#mwContaStatus.mw-ok{color:var(--blue2)}
+
+/* Diálogo de conferência */
+#mwConfirmaSegredo{
+  position:fixed;inset:0;z-index:10000;display:none;
+  align-items:center;justify-content:center;padding:22px;
+  background:rgba(2,6,23,.72);backdrop-filter:blur(6px);
+}
+#mwConfirmaSegredo:not(.hidden){display:flex}
+.mw-confirma-card{
+  width:min(360px,100%);padding:24px 22px 18px;border-radius:20px;
+  background:var(--panel2);border:1px solid var(--line);color:var(--text);
+  box-shadow:0 30px 80px rgba(2,6,23,.5);
+}
+body.light .mw-confirma-card{background:#fff;color:#0b1830}
+.mw-confirma-card h3{margin:0 0 6px;font-size:17px}
+.mw-confirma-card p{margin:0 0 14px;font-size:13px;color:var(--muted)}
+.mw-confirma-card input{
+  width:100%;padding:12px 13px;border-radius:12px;margin-bottom:6px;
+  background:var(--panel);border:1px solid var(--line);color:var(--text);font:inherit;
+}
+.mw-confirma-acoes{display:flex;gap:9px;justify-content:flex-end;margin-top:12px}
+</style>
+<script id="mw-conta-js">
+/* ============================================================
+   A CONTA — um lugar só para ler e mudar identidade
+   ============================================================
+   Antes existiam duas noções de "quem é você", e elas divergiam:
+
+     - a CONTA (`mateusWorkspaceUsersV2[email]`): username, email,
+       sal + hash da senha. É o que o login consulta.
+     - o PERFIL (`data.profile`): name, email, photo. É o que a
+       interface mostra.
+
+   O e-mail vivia nos dois. Editar o campo "E-mail" em Configurações
+   mudava só o do perfil, e o login continuava exigindo o antigo — sem
+   nenhum aviso. Aqui a conta passa a ser a fonte de verdade da
+   IDENTIDADE (usuário, e-mail, senha) e o perfil fica só com o que é
+   aparência (nome de exibição e foto).
+
+   Regra de quem pode mudar o quê:
+     - nome de EXIBIÇÃO: livre, a qualquer momento. Não identifica
+       ninguém, é só como você aparece na tela.
+     - nome de USUÁRIO, e-mail e senha: exigem provar que é você,
+       digitando a senha ou o código de acesso. São as três coisas com
+       que se entra na conta; deixá-las abertas significaria que quem
+       pegasse o aparelho destrancado poderia se trancar dentro dela.
+
+   Lembrando o que isto NÃO é: os dados seguem em localStorage, sem
+   servidor. A unicidade vale dentro deste navegador, não entre
+   pessoas diferentes — não há um cadastro central para consultar. */
+(function(){
+  var CHAVE_USUARIOS = 'mateusWorkspaceUsersV2';
+  var CHAVE_ATIVO = 'mateusActiveUserV2';
+
+  function todas(){
+    try { return JSON.parse(localStorage.getItem(CHAVE_USUARIOS) || '{}') || {}; }
+    catch (e) { return {}; }
+  }
+  function gravarTodas(u){
+    try { localStorage.setItem(CHAVE_USUARIOS, JSON.stringify(u)); return true; }
+    catch (e) { return false; }
+  }
+  function emailAtivo(){
+    try { return (localStorage.getItem(CHAVE_ATIVO) || '').toLowerCase(); }
+    catch (e) { return ''; }
+  }
+  function atual(){ var u = todas(); return u[emailAtivo()] || null; }
+
+  var norm = function(v){ return String(v || '').trim().toLowerCase(); };
+
+  /* `exceto` é o e-mail da própria conta: sem ele, trocar o usuário
+     para o MESMO valor que já é seu seria recusado como "em uso". */
+  function usuarioLivre(nome, exceto){
+    var alvo = norm(nome), u = todas(), livre = true;
+    Object.keys(u).forEach(function(k){
+      if (norm(k) === norm(exceto)) return;
+      if (norm(u[k] && u[k].username) === alvo) livre = false;
+    });
+    return livre;
+  }
+  function emailLivre(email, exceto){
+    var alvo = norm(email), u = todas(), livre = true;
+    Object.keys(u).forEach(function(k){
+      if (norm(k) === norm(exceto)) return;
+      if (norm(k) === alvo || norm(u[k] && u[k].email) === alvo) livre = false;
+    });
+    return livre;
+  }
+
+  var USUARIO_OK = /^[A-Za-z0-9._-]{3,20}$/;
+  var EMAIL_OK = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  /* Aceita a senha da conta OU o código de acesso. Os dois provam a
+     mesma coisa — que quem está ali é o dono — então exigir
+     especificamente a senha só atrapalharia quem definiu um código
+     justamente para não digitar a senha toda hora. */
+  function verificar(segredo){
+    var conta = atual();
+    if (!conta || !segredo) return Promise.resolve(false);
+    var porSenha = window.mwSenha
+      ? window.mwSenha.confere(conta, segredo)
+      : Promise.resolve(conta.password === segredo);
+    return Promise.resolve(porSenha).then(function(ok){
+      if (ok) return true;
+      if (!window.mwPin || !window.mwPin.temPin()) return false;
+      return window.mwPin.confere(segredo);
+    }).catch(function(){ return false; });
+  }
+
+  function trocarUsuario(novo){
+    var conta = atual();
+    if (!conta) return Promise.resolve({ ok: false, erro: 'Nenhuma conta ativa.' });
+    novo = String(novo || '').trim();
+    if (!USUARIO_OK.test(novo))
+      return Promise.resolve({ ok: false, erro: 'Use de 3 a 20 caracteres: letras, números, ponto, hífen ou sublinhado.' });
+    if (!usuarioLivre(novo, conta.email))
+      return Promise.resolve({ ok: false, erro: 'Esse nome de usuário já está em uso. Escolha outro.' });
+    var u = todas();
+    u[emailAtivo()].username = novo;
+    gravarTodas(u);
+    return Promise.resolve({ ok: true });
+  }
+
+  /* Trocar o e-mail move a conta de CHAVE dentro do mapa, porque o mapa
+     é indexado por e-mail. Fazer isso pela metade (gravar a nova chave
+     sem apagar a velha) deixaria duas contas e o login entraria na
+     errada, então as duas escritas andam juntas. */
+  function trocarEmail(novo){
+    var conta = atual();
+    if (!conta) return Promise.resolve({ ok: false, erro: 'Nenhuma conta ativa.' });
+    novo = String(novo || '').trim().toLowerCase();
+    if (!EMAIL_OK.test(novo))
+      return Promise.resolve({ ok: false, erro: 'Digite um e-mail válido.' });
+    if (!emailLivre(novo, conta.email))
+      return Promise.resolve({ ok: false, erro: 'Esse e-mail já está em uso por outra conta.' });
+    var u = todas(), antigo = emailAtivo();
+    var mudada = u[antigo];
+    if (!mudada) return Promise.resolve({ ok: false, erro: 'Nenhuma conta ativa.' });
+    mudada.email = novo;
+    delete u[antigo];
+    u[novo] = mudada;
+    gravarTodas(u);
+    try {
+      localStorage.setItem(CHAVE_ATIVO, novo);
+      localStorage.setItem('mwLastEmail', novo);
+    } catch (e) {}
+    return Promise.resolve({ ok: true });
+  }
+
+  function trocarSenha(nova){
+    var conta = atual();
+    if (!conta) return Promise.resolve({ ok: false, erro: 'Nenhuma conta ativa.' });
+    nova = String(nova || '');
+    if (nova.length < 6)
+      return Promise.resolve({ ok: false, erro: 'A senha precisa ter pelo menos 6 caracteres.' });
+    if (!window.mwSenha)
+      return Promise.resolve({ ok: false, erro: 'Não foi possível salvar a senha neste contexto.' });
+    var u = todas(), chave = emailAtivo();
+    return window.mwSenha.grava(u[chave], nova).then(function(){
+      gravarTodas(u);
+      return { ok: true };
+    }).catch(function(){
+      return { ok: false, erro: 'Não foi possível salvar a senha. Tente de novo.' };
+    });
+  }
+
+  window.mwConta = {
+    todas: todas, atual: atual, emailAtivo: emailAtivo,
+    usuarioLivre: usuarioLivre, emailLivre: emailLivre,
+    verificar: verificar,
+    trocarUsuario: trocarUsuario, trocarEmail: trocarEmail, trocarSenha: trocarSenha,
+    REGRA_USUARIO: USUARIO_OK, REGRA_EMAIL: EMAIL_OK,
+  };
+})();
+</script>
+<script id="mw-conta-ui-js">
+/* Liga o grupo "Conta" à API. Nada de regra aqui: validação,
+   unicidade e gravação vivem no `window.mwConta`; esta camada só
+   pergunta e mostra. */
+(function(){
+  var campoUsuario = document.getElementById('mwContaUsuario');
+  var campoEmail = document.getElementById('mwContaEmail');
+  var status = document.getElementById('mwContaStatus');
+  var dialogo = document.getElementById('mwConfirmaSegredo');
+  if (!campoUsuario || !dialogo) return;
+
+  function aviso(msg, bom){
+    if (!status) return;
+    status.textContent = msg || '';
+    status.hidden = !msg;
+    status.classList.toggle('mw-ok', !!bom);
+  }
+
+  function pintar(){
+    var conta = window.mwConta && window.mwConta.atual();
+    campoUsuario.value = (conta && conta.username) || '';
+    if (campoEmail) campoEmail.value = (conta && conta.email) || '';
+    /* O e-mail do perfil espelha o da conta — ele é só leitura agora,
+       mas continua sendo o que a interface mostra em outros lugares. */
+    var perfilEmail = document.getElementById('profileEmail');
+    if (perfilEmail && conta) perfilEmail.value = conta.email || '';
+  }
+
+  /* Uma promessa que resolve com true só depois de a pessoa provar
+     quem é. Fica num lugar só porque as três trocas pedem a MESMA
+     prova — se cada botão tivesse a sua, uma delas acabaria ficando
+     para trás numa mudança futura. */
+  function confirmar(texto){
+    return new Promise(function(resolve){
+      var campo = document.getElementById('mwConfirmaCampo');
+      var erro = document.getElementById('mwConfirmaErro');
+      var ok = document.getElementById('mwConfirmaOk');
+      var cancelar = document.getElementById('mwConfirmaCancelar');
+      var textoEl = document.getElementById('mwConfirmaTexto');
+      if (textoEl && texto) textoEl.textContent = texto;
+      campo.value = ''; erro.hidden = true; erro.textContent = '';
+      dialogo.classList.remove('hidden');
+      setTimeout(function(){ campo.focus(); }, 40);
+
+      function fechar(resultado){
+        dialogo.classList.add('hidden');
+        ok.removeEventListener('click', tentar);
+        cancelar.removeEventListener('click', desistir);
+        campo.removeEventListener('keydown', porEnter);
+        resolve(resultado);
+      }
+      function tentar(){
+        window.mwConta.verificar(campo.value).then(function(certo){
+          if (certo) { fechar(true); return; }
+          erro.textContent = 'Senha ou código incorreto.';
+          erro.hidden = false;
+          campo.value = ''; campo.focus();
+        });
+      }
+      function desistir(){ fechar(false); }
+      function porEnter(e){ if (e.key === 'Enter') { e.preventDefault(); tentar(); } }
+
+      ok.addEventListener('click', tentar);
+      cancelar.addEventListener('click', desistir);
+      campo.addEventListener('keydown', porEnter);
+    });
+  }
+
+  function trocar(rotulo, texto, pedir, aplicar){
+    return function(){
+      aviso('');
+      confirmar(texto).then(function(provou){
+        if (!provou) return;
+        var valor = prompt(pedir);
+        if (valor === null) return;
+        aplicar(valor).then(function(r){
+          if (!r.ok) { aviso(r.erro, false); return; }
+          pintar();
+          aviso(rotulo + ' atualizado.', true);
+          if (typeof toast === 'function') toast(rotulo + ' atualizado');
+        });
+      });
+    };
+  }
+
+  document.getElementById('mwContaTrocarUsuario')?.addEventListener('click',
+    trocar('Nome de usuário',
+      'Para trocar o nome de usuário, confirme que é você.',
+      'Novo nome de usuário (3 a 20 caracteres):',
+      function(v){ return window.mwConta.trocarUsuario(v); }));
+
+  document.getElementById('mwContaTrocarEmail')?.addEventListener('click',
+    trocar('E-mail',
+      'Para trocar o e-mail, confirme que é você.',
+      'Novo e-mail:',
+      function(v){ return window.mwConta.trocarEmail(v); }));
+
+  document.getElementById('mwContaTrocarSenha')?.addEventListener('click',
+    trocar('Senha',
+      'Para trocar a senha, confirme a senha atual ou o código de acesso.',
+      'Nova senha (mínimo 6 caracteres):',
+      function(v){ return window.mwConta.trocarSenha(v); }));
+
+  /* Repinta ao abrir Configurações: a conta pode ter mudado noutro
+     lugar (login diferente, troca de e-mail) desde a última vez. */
+  var app = document.getElementById('app');
+  if (app && window.MutationObserver) {
+    new MutationObserver(function(){
+      if (document.querySelector('#view-settings.active')) pintar();
+    }).observe(app, { subtree: true, attributes: true, attributeFilter: ['class'] });
+  }
+  pintar();
 })();
 </script>
 <script id="mw-pin-js">
