@@ -5560,6 +5560,49 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
     btn.disabled=true;
     btn.classList.add('mw-animating');
 
+    /* ============================================================
+       A CONTA É GRAVADA AQUI, ANTES DA ANIMAÇÃO
+       ============================================================
+       Antes, tudo isto vivia lá embaixo, dentro do setTimeout que roda
+       DEPOIS da animação do carrinho. Medido: a conta só chegava ao
+       localStorage 4.372ms após o clique — e a animação é movida por
+       requestAnimationFrame, que o iOS CONGELA quando a página vai pro
+       segundo plano. Bloquear a tela, trocar de app ou receber uma
+       notificação nesses 4,3s parava a animação e a conta nunca era
+       gravada. A pessoa via a tela de sucesso, e depois "Conta não
+       encontrada" no login. Foi exatamente o que aconteceu.
+
+       A animação é decoração; ela não pode segurar dado nenhum. Agora o
+       clique grava e só então enfeita.
+
+       A ORDEM aqui também importa: a conta primeiro, a sessão por
+       último. Antes o `mwSession` era escrito 59ms ANTES da conta, e
+       nessa janela existia uma sessão apontando para uma conta que
+       ainda não existia. */
+    const data={subjects:[],projects:[],activities:[],notes:[],profile:{name:username,email,photo:''},theme:'dark'};
+    const nova={name:username,username,email,data};
+    const contaGravada=Promise.resolve(
+        window.mwSenha?window.mwSenha.grava(nova,pass):(nova.password=pass)
+      ).then(function(){
+        users[email]=nova;
+        localStorage.setItem('mateusWorkspaceUsersV2',JSON.stringify(users));
+        localStorage.setItem('mwLastEmail',email);
+        localStorage.setItem('mateusActiveUserV2',email);
+        localStorage.setItem('mateusWorkspaceV4',JSON.stringify(data));
+        localStorage.setItem('mwSession','1');   // sessão por último
+        return true;
+      }).catch(function(erro){
+        /* Falhar calado aqui seria o pior dos mundos: a animação segue,
+           a tela diz "pronto" e a conta não existe. Melhor parar e
+           dizer, para a pessoa poder tentar de novo. */
+        if(err)err.textContent='Não foi possível salvar a conta. Tente novamente.';
+        console.error('Criar conta:',erro);
+        clean.dataset.mwFinalBusy='0';
+        btn.disabled=false;
+        btn.classList.remove('mw-animating');
+        return false;
+      });
+
     const car=btn.querySelector('#mwWhiteCar');
     const startPos=-70;
     const endPos=btn.getBoundingClientRect().width+14;
@@ -5594,18 +5637,12 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
         btn.classList.add('mw-success');
 
         setTimeout(()=>{
-          const data={subjects:[],projects:[],activities:[],notes:[],profile:{name:username,email,photo:''},theme:'dark'};
-          /* A senha vira sal + hash SHA-256. Nada de texto puro no
-             localStorage — ver o comentário do bloco mwSenha lá em cima. */
-          const nova={name:username,username,email,data};
-          Promise.resolve(window.mwSenha?window.mwSenha.grava(nova,pass):(nova.password=pass)).then(function(){
-            users[email]=nova;
-            localStorage.setItem('mateusWorkspaceUsersV2',JSON.stringify(users));
-          });
-          localStorage.setItem('mwLastEmail',email);
-          localStorage.setItem('mateusActiveUserV2',email);
-          localStorage.setItem('mateusWorkspaceV4',JSON.stringify(data));
-          localStorage.setItem('mwSession','1');
+          /* Daqui pra baixo é só revelação: a conta já está salva desde
+             o clique. Se a gravação tiver falhado, `contaGravada`
+             resolve false e não se entra em lugar nenhum — o erro já
+             está na tela. */
+          contaGravada.then(function(deuCerto){
+          if(!deuCerto) return;
 
           q('#loginScreen')?.classList.add('hidden');
           const app=q('#app');
@@ -5626,6 +5663,7 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
           btn.classList.remove('mw-success');
           if(car)car.style.left='';
           clean.reset();
+          });
         },2000);
       }
     }
