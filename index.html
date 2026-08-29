@@ -18447,5 +18447,486 @@ document.addEventListener('click', function(e){
   botao.setAttribute('aria-pressed', escondida ? 'true' : 'false');
 }, true);
 </script>
+
+<!-- ============================================================
+     CONTA NA NUVEM (Supabase)
+     ============================================================
+     Até aqui a conta vivia só no localStorage do aparelho. Isso tem um
+     limite que nenhum código resolve: no iOS, o app instalado na tela de
+     início tem um armazenamento SEPARADO do Safari. Criar a conta num não
+     fazia ela existir no outro — foi a queixa que se repetiu três vezes
+     ("o login só fica salvo no site e não no app", "coloquei a foto no app
+     e no navegador não apareceu").
+
+     Com a conta no servidor, o mesmo login vale nos dois, os dados descem
+     junto e limpar o navegador deixa de significar perder tudo.
+
+     A chave abaixo é pública de propósito: ela foi feita para ficar no
+     código do site. Quem decide o que cada requisição enxerga são as
+     políticas de Row Level Security instaladas por supabase/schema.sql, e
+     quem as aplica é o banco. A senha não passa por aqui em momento algum
+     — quem guarda é o serviço de autenticação, com bcrypt.
+     ============================================================ -->
+<script>window.MW_SUPABASE={url:'https://xuklhbhnibhxfjjxtgso.supabase.co',chave:'sb_publishable_DShBOIkf4gyu1yqMBfvlrA_KbB5Nx8D'};</script>
+<script src="./vendor/supabase.js"></script>
+<script id="mw-nuvem-js">
+(function(){
+  'use strict';
+
+  var CFG = window.MW_SUPABASE || {};
+  var cliente = null;
+
+  /* O cliente pode não existir: sem rede na primeira visita o arquivo do
+     vendor não chega, e num navegador antigo o createClient pode estourar.
+     Nenhum desses casos pode derrubar o app — todos caem no login local. */
+  try {
+    if (window.supabase && window.supabase.createClient && CFG.url && CFG.chave) {
+      cliente = window.supabase.createClient(CFG.url, CFG.chave, {
+        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
+      });
+    }
+  } catch (e) { cliente = null; }
+
+  /* Toda chamada de rede ganha prazo. Sem isso, um servidor que aceita a
+     conexão e não responde deixa o botão ENTRAR girando para sempre —
+     pior que um erro, porque não dá para reagir. Com prazo, a falha vira
+     um caminho: cai no login local. */
+  function comPrazo(promessa, ms) {
+    return Promise.race([
+      promessa,
+      new Promise(function(_, rejeita){
+        setTimeout(function(){ rejeita(new Error('tempo esgotado')); }, ms || 9000);
+      })
+    ]);
+  }
+
+  function limpaUsuario(u){ return String(u || '').trim().toLowerCase(); }
+
+  var mwNuvem = {
+
+    ligado: function(){ return !!cliente; },
+
+    /* --------------------------------------------------------------
+       Cadastro
+       --------------------------------------------------------------
+       Duas checagens antes de criar: nome de usuário livre e e-mail
+       livre. A do nome de usuário roda no servidor porque é a única que
+       enxerga as contas dos outros aparelhos — era exatamente o que
+       faltava para a regra de unicidade valer de verdade.
+
+       Se duas pessoas pedirem o mesmo nome no mesmo instante, a checagem
+       passa nas duas e quem barra é o índice único do banco, dentro da
+       transação. A conta simplesmente não é criada. */
+    usuarioLivre: function(nome){
+      if (!cliente) return Promise.resolve(null);      // null = não deu para saber
+      return comPrazo(cliente.rpc('username_livre', { nome: limpaUsuario(nome) }), 7000)
+        .then(function(r){ return r.error ? null : !!r.data; })
+        .catch(function(){ return null; });
+    },
+
+    cadastrar: function(usuario, email, senha, nomeExibicao){
+      if (!cliente) return Promise.reject(new Error('offline'));
+      return comPrazo(cliente.auth.signUp({
+        email: String(email || '').trim().toLowerCase(),
+        password: senha,
+        options: { data: { username: limpaUsuario(usuario), nome: nomeExibicao || usuario } }
+      }), 12000).then(function(r){
+        if (r.error) throw r.error;
+        return r.data;
+      });
+    },
+
+    /* --------------------------------------------------------------
+       Entrar
+       --------------------------------------------------------------
+       O app entra por nome de usuário, o serviço de autenticação entra
+       por e-mail. A ponte é a função email_por_username no banco. Quando
+       o campo já tem "@", pula a ponte e vai direto. */
+    entrar: function(usuarioOuEmail, senha){
+      if (!cliente) return Promise.reject(new Error('offline'));
+      var texto = String(usuarioOuEmail || '').trim();
+      var achaEmail = texto.indexOf('@') !== -1
+        ? Promise.resolve(texto.toLowerCase())
+        : comPrazo(cliente.rpc('email_por_username', { nome: limpaUsuario(texto) }), 7000)
+            .then(function(r){
+              if (r.error || !r.data) throw new Error('conta-nao-encontrada');
+              return r.data;
+            });
+
+      return achaEmail.then(function(email){
+        return comPrazo(cliente.auth.signInWithPassword({ email: email, password: senha }), 12000);
+      }).then(function(r){
+        if (r.error) throw r.error;
+        return r.data;
+      });
+    },
+
+    sair: function(){
+      if (!cliente) return Promise.resolve();
+      return cliente.auth.signOut().catch(function(){});
+    },
+
+    sessao: function(){
+      if (!cliente) return Promise.resolve(null);
+      return comPrazo(cliente.auth.getSession(), 7000)
+        .then(function(r){ return (r.data && r.data.session) || null; })
+        .catch(function(){ return null; });
+    },
+
+    /* --------------------------------------------------------------
+       Perfil e dados
+       -------------------------------------------------------------- */
+    lerPerfil: function(uid){
+      if (!cliente) return Promise.resolve(null);
+      return comPrazo(cliente.from('perfis').select('username,nome,foto').eq('id', uid).maybeSingle(), 9000)
+        .then(function(r){ return r.error ? null : r.data; })
+        .catch(function(){ return null; });
+    },
+
+    gravarPerfil: function(uid, campos){
+      if (!cliente) return Promise.resolve(false);
+      return comPrazo(cliente.from('perfis').update(campos).eq('id', uid), 12000)
+        .then(function(r){ return !r.error; })
+        .catch(function(){ return false; });
+    },
+
+    lerDados: function(uid){
+      if (!cliente) return Promise.resolve(null);
+      return comPrazo(cliente.from('dados').select('conteudo,versao').eq('id', uid).maybeSingle(), 9000)
+        .then(function(r){ return r.error ? null : r.data; })
+        .catch(function(){ return null; });
+    },
+
+    gravarDados: function(uid, conteudo, versao){
+      if (!cliente) return Promise.resolve(false);
+      return comPrazo(cliente.from('dados')
+        .update({ conteudo: conteudo, versao: (versao || 1) + 1 })
+        .eq('id', uid), 12000)
+        .then(function(r){ return !r.error; })
+        .catch(function(){ return false; });
+    }
+  };
+
+  window.mwNuvem = mwNuvem;
+})();
+</script>
+<script id="mw-nuvem-liga-js">
+(function(){
+  'use strict';
+
+  var CHAVE_UID   = 'mwNuvemUid';
+  var CHAVE_VER   = 'mwNuvemVersao';
+  var USERS_KEY   = 'mateusWorkspaceUsersV2';
+  var DADOS_KEY   = 'mateusWorkspaceV4';
+
+  function q(s){ return document.querySelector(s); }
+  function leJson(chave, padrao){
+    try { return JSON.parse(localStorage.getItem(chave) || '') || padrao; } catch (e) { return padrao; }
+  }
+  function temNuvem(){ return !!(window.mwNuvem && window.mwNuvem.ligado()); }
+  function vazio(d){
+    if (!d) return true;
+    return !['subjects','projects','activities','notes'].some(function(k){
+      return Array.isArray(d[k]) && d[k].length;
+    });
+  }
+
+  /* ----------------------------------------------------------------
+     Cópia local da conta
+     ----------------------------------------------------------------
+     Mesmo com a conta no servidor, ela continua sendo gravada aqui. Não
+     é redundância: é o que faz o app abrir sem internet. O servidor é a
+     verdade; o localStorage é a cópia de trabalho. */
+  function guardaLocal(email, usuario, senha, dados){
+    var users = leJson(USERS_KEY, {});
+    var conta = users[email] || {};
+    conta.name = conta.name || usuario;
+    conta.username = usuario;
+    conta.email = email;
+    conta.data = dados;
+    return Promise.resolve(
+      window.mwSenha ? window.mwSenha.grava(conta, senha) : (conta.password = senha)
+    ).then(function(){
+      users[email] = conta;
+      try {
+        localStorage.setItem(USERS_KEY, JSON.stringify(users));
+        localStorage.setItem(DADOS_KEY, JSON.stringify(dados));
+        localStorage.setItem('mateusActiveUserV2', email);
+        localStorage.setItem('mwLastEmail', email);
+        localStorage.setItem('mwSession', '1');   // a sessão por último, sempre
+      } catch (e) {}
+      return conta;
+    });
+  }
+
+  function abreApp(nomeSaudacao){
+    var tela = q('#loginScreen'); if (tela) tela.classList.add('hidden');
+    var app = q('#app');
+    if (app) { app.classList.remove('hidden'); app.style.display = ''; }
+    var h = q('.hello h2');
+    if (h && nomeSaudacao) h.textContent = 'Olá, ' + nomeSaudacao + '! 👋';
+    try { window.mwSyncAvatars && window.mwSyncAvatars(); } catch (e) {}
+    window.scrollTo(0, 0);
+  }
+
+  function dizStatus(texto, erro){
+    var s = q('#status'); if (!s) return;
+    s.textContent = texto || '';
+    s.classList.toggle('error', !!erro);
+  }
+
+  /* ----------------------------------------------------------------
+     Levar para o servidor uma conta que nasceu só neste aparelho
+     ----------------------------------------------------------------
+     Roda depois de uma entrada local bem-sucedida, em silêncio. Se der
+     certo, a próxima entrada — aqui ou em qualquer outro aparelho — já
+     vem pelo servidor, com os dados junto. Se não der, nada muda e o app
+     segue local; tentamos de novo na entrada seguinte. */
+  function migraContaLocal(digitado, senha){
+    if (!temNuvem()) return;
+    if (localStorage.getItem('mwSession') !== '1') return;    // a entrada local falhou
+    if (localStorage.getItem(CHAVE_UID)) return;              // já tem par no servidor
+
+    var users = leJson(USERS_KEY, {});
+    var email = (localStorage.getItem('mateusActiveUserV2') || '').toLowerCase();
+    var conta = users[email];
+    if (!conta || !conta.username || !email || email.indexOf('@') === -1) return;
+
+    window.mwNuvem.usuarioLivre(conta.username).then(function(livre){
+      /* null = não deu para perguntar; false = o nome é de outra pessoa.
+         Nos dois casos, não inventa conta nenhuma. */
+      if (livre !== true) return;
+      return window.mwNuvem.cadastrar(conta.username, email, senha, conta.name || conta.username)
+        .then(function(res){
+          var uid = res && res.user && res.user.id;
+          if (!uid) return;
+          try {
+            localStorage.setItem(CHAVE_UID, uid);
+            localStorage.setItem(CHAVE_VER, '1');
+          } catch (e) {}
+          var dados = leJson(DADOS_KEY, null);
+          if (dados) window.mwNuvem.gravarDados(uid, dados, 1);
+          var perfil = (dados && dados.profile) || {};
+          window.mwNuvem.gravarPerfil(uid, { nome: perfil.name || conta.name || '', foto: perfil.photo || '' });
+        });
+    }).catch(function(){ /* silêncio: é melhoria oportunista, não obrigação */ });
+  }
+
+  /* ================================================================
+     ENTRAR
+     ================================================================
+     Ordem deliberada: servidor primeiro, aparelho depois.
+
+     O caminho local não sai de cena — ele vira a reserva. Se o servidor
+     não responder (sem rede, avião, Supabase fora do ar), o clique cai
+     no fluxo antigo e a pessoa entra com o que já está no aparelho. Um
+     app de estudos que só abre com internet seria pior do que o de
+     antes. */
+  document.addEventListener('click', function(e){
+    var botao = e.target && e.target.closest && e.target.closest('#loginButton');
+    if (!botao) return;
+    if (botao.dataset.mwNuvemPassa === '1') { botao.dataset.mwNuvemPassa = ''; return; }
+    if (!temNuvem()) return;                       // sem cliente: fluxo antigo, intacto
+
+    var texto = (q('#username') && q('#username').value || '').trim();
+    var senha = (q('#password') && q('#password').value) || '';
+    if (!texto || !senha) { dizStatus('Preencha e-mail ou usuário e senha.', true); e.preventDefault(); e.stopPropagation(); return; }
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    var rotulo = botao.innerHTML;
+    botao.disabled = true;
+    botao.innerHTML = '<span class="mw-button-spinner"></span>ENTRANDO...';
+    dizStatus('');
+
+    function devolveBotao(){ botao.disabled = false; botao.innerHTML = rotulo; }
+
+    /* Cair para o fluxo local: marca a passagem e reclica. O handler
+       antigo continua ali, inteiro, e assume a partir daqui. */
+    function tentaLocal(){
+      devolveBotao();
+      botao.dataset.mwNuvemPassa = '1';
+      botao.click();
+      /* Se a entrada local deu certo e a conta ainda não existe no
+         servidor, esta é a hora de levá-la para lá: a senha acabou de
+         ser provada e os dados estão à mão. Sem isso, quem já tinha
+         conta antes desta mudança ficaria preso no aparelho para
+         sempre, que é exatamente o problema que estamos resolvendo. */
+      setTimeout(function(){ migraContaLocal(texto, senha); }, 1200);
+    }
+
+    window.mwNuvem.entrar(texto, senha).then(function(sessao){
+      var uid = sessao && sessao.user && sessao.user.id;
+      var email = (sessao && sessao.user && sessao.user.email) || '';
+      if (!uid) throw new Error('sessao-incompleta');
+      try { localStorage.setItem(CHAVE_UID, uid); } catch (er) {}
+
+      return Promise.all([window.mwNuvem.lerPerfil(uid), window.mwNuvem.lerDados(uid)])
+        .then(function(r){
+          var perfil = r[0] || {};
+          var linha  = r[1] || {};
+          var doServidor = linha.conteudo || null;
+          var localAtual = leJson(DADOS_KEY, null);
+
+          /* Quem vence: o servidor, quando tem conteúdo. Se ele está
+             vazio e o aparelho tem coisa, é a primeira entrada de uma
+             conta que nasceu offline — os dados sobem em vez de sumir. */
+          var dados;
+          if (!vazio(doServidor)) {
+            dados = doServidor;
+          } else if (!vazio(localAtual)) {
+            dados = localAtual;
+            window.mwNuvem.gravarDados(uid, dados, linha.versao || 1);
+          } else {
+            dados = doServidor || localAtual || { subjects:[], projects:[], activities:[], notes:[], profile:{}, theme:'dark' };
+          }
+
+          dados.profile = dados.profile || {};
+          if (perfil.nome) dados.profile.name = dados.profile.name || perfil.nome;
+          if (perfil.foto) dados.profile.photo = perfil.foto;
+          dados.profile.email = email;
+
+          try { localStorage.setItem(CHAVE_VER, String(linha.versao || 1)); } catch (er) {}
+          return guardaLocal(email, perfil.username || texto, senha, dados).then(function(conta){
+            devolveBotao();
+            dizStatus('');
+            abreApp(dados.profile.name || conta.username || '');
+          });
+        });
+    }).catch(function(erro){
+      var msg = String((erro && erro.message) || erro || '');
+
+      /* Credencial recusada pelo servidor não encerra o assunto: a conta
+         pode existir só neste aparelho, criada antes desta mudança. Vale
+         tentar localmente antes de dizer que está errado. */
+      if (/Invalid login|conta-nao-encontrada|not confirmed|Email not/i.test(msg)) { tentaLocal(); return; }
+
+      /* Qualquer outra falha é rede, prazo ou servidor fora — reserva. */
+      tentaLocal();
+    });
+  }, true);
+
+  /* ================================================================
+     CRIAR CONTA
+     ================================================================
+     A conta nasce no servidor ANTES da animação do carrinho. Mesmo
+     motivo de antes: a animação é movida por requestAnimationFrame, que
+     o iOS congela quando a tela apaga. Nada que precise existir pode
+     depender dela.
+
+     Se o servidor recusar (nome tomado, e-mail já cadastrado), o fluxo
+     para aqui e a mensagem aparece — a animação nem começa. */
+  document.addEventListener('submit', function(e){
+    var form = e.target;
+    if (!form || form.id !== 'inlineCreateForm') return;
+    if (form.dataset.mwNuvemPassa === '1') { form.dataset.mwNuvemPassa = ''; return; }
+    if (!temNuvem()) return;
+
+    var usuario = (q('#newUsername') && q('#newUsername').value || '').trim();
+    var email   = (q('#newEmail') && q('#newEmail').value || '').trim().toLowerCase();
+    var senha   = (q('#newPass') && q('#newPass').value) || '';
+    var err     = q('#inlineCreateError');
+
+    if (!/^[A-Za-z0-9._-]{3,20}$/.test(usuario) || !email || email.indexOf('@') === -1 || !senha) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    if (err) err.textContent = 'Verificando...';
+
+    function segue(){
+      if (err) err.textContent = '';
+      form.dataset.mwNuvemPassa = '1';
+      form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    }
+
+    window.mwNuvem.usuarioLivre(usuario).then(function(livre){
+      if (livre === false) {
+        if (err) err.textContent = 'Esse nome de usuário já está em uso. Escolha outro.';
+        return null;
+      }
+      /* livre === null: não deu para perguntar ao servidor. Segue o
+         cadastro local; a conta sobe na primeira entrada com rede. */
+      if (livre === null) { segue(); return null; }
+
+      return window.mwNuvem.cadastrar(usuario, email, senha, usuario).then(function(dados){
+        var uid = dados && dados.user && dados.user.id;
+        if (uid) { try { localStorage.setItem(CHAVE_UID, uid); } catch (er) {} }
+        segue();
+      });
+    }).catch(function(erro){
+      var msg = String((erro && erro.message) || erro || '');
+      if (/already registered|already been registered|User already/i.test(msg)) {
+        if (err) err.textContent = 'Este e-mail já possui uma conta.';
+        return;
+      }
+      if (/Password should be|at least 6/i.test(msg)) {
+        if (err) err.textContent = 'A senha precisa ter pelo menos 6 caracteres.';
+        return;
+      }
+      /* Rede, prazo ou servidor fora: cria localmente e sobe depois. */
+      segue();
+    });
+  }, true);
+
+  /* ================================================================
+     MANTER SINCRONIZADO ENQUANTO SE USA O APP
+     ================================================================
+     O app grava em mateusWorkspaceV4 de 142 lugares diferentes. Em vez
+     de caçar cada um — e esquecer de algum —, o ponto único é a própria
+     escrita: envolver o setItem pega todos por construção, inclusive os
+     que ainda serão escritos.
+
+     A regra de conflito é "a última gravação vence". Para uma pessoa em
+     dois aparelhos isso acerta quase sempre, porque só empurra depois de
+     uma alteração real. O caso que ela erra é aparelho velho offline que
+     volta e sobrescreve o novo; resolver isso direito pede uma fusão
+     campo a campo, que vale a pena quando o app tiver mais dono. */
+  var relogio = null;
+
+  function agendaEnvio(){
+    if (!temNuvem()) return;
+    clearTimeout(relogio);
+    relogio = setTimeout(enviaAgora, 2500);
+  }
+
+  function enviaAgora(){
+    var uid = localStorage.getItem(CHAVE_UID);
+    if (!uid || !temNuvem()) return;
+    if (localStorage.getItem('mwSession') !== '1') return;
+
+    var dados = leJson(DADOS_KEY, null);
+    if (!dados) return;
+    var versao = parseInt(localStorage.getItem(CHAVE_VER) || '1', 10) || 1;
+
+    window.mwNuvem.gravarDados(uid, dados, versao).then(function(ok){
+      if (ok) { try { localStorage.setItem(CHAVE_VER, String(versao + 1)); } catch (e) {} }
+    });
+
+    var perfil = dados.profile || {};
+    window.mwNuvem.gravarPerfil(uid, { nome: perfil.name || '', foto: perfil.photo || '' });
+  }
+
+  try {
+    var original = localStorage.setItem.bind(localStorage);
+    localStorage.setItem = function(chave, valor){
+      original(chave, valor);
+      if (chave === DADOS_KEY) agendaEnvio();
+    };
+  } catch (e) {}
+
+  /* Sair do app também encerra a sessão do servidor, senão o próximo
+     login neste aparelho reentraria sozinho na conta anterior. */
+  document.addEventListener('click', function(e){
+    var alvo = e.target && e.target.closest && e.target.closest('#logoutBtn,[data-action="logout"],.mw-sair');
+    if (!alvo) return;
+    try { localStorage.removeItem(CHAVE_UID); localStorage.removeItem(CHAVE_VER); } catch (er) {}
+    if (temNuvem()) window.mwNuvem.sair();
+  }, true);
+
+  window.mwNuvemEnviaAgora = enviaAgora;
+})();
+</script>
+
 </body>
 </html>
