@@ -11,7 +11,7 @@
    sessão. Trocar o nome do cache é o que faz o service worker descartar o
    que guardou e buscar tudo de novo — o `activate` abaixo apaga todo cache
    cujo nome não seja este. */
-const CACHE_NAME = 'mw-shell-v7';
+const CACHE_NAME = 'mw-shell-v8';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

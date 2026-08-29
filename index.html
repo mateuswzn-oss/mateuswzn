@@ -15632,6 +15632,12 @@ html body #app .mw-reference-sidebar .mw-reference-profile .mw-profile-main{
   const app=document.getElementById('app');
   if(!app) return;
   const defaults={subjects:[],projects:[],activities:[],notes:[],profile:{name:'Mateus',email:'',photo:''},theme:'dark'};
+  /* Exposta porque a sincronização com o servidor também precisa dela.
+     A "data" em memória é global e é regravada no localStorage quando a
+     página fecha; se dados baixados do servidor entrarem no storage sem
+     essa recarga, a cópia velha em memória os sobrescreve depois. Até
+     agora só a transição de entrar no app disparava isso, e a ativação da
+     nuvem acontece com o app já aberto. */
   function reloadWorkspaceData(){
     try{
       window.data={...defaults,...JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}')};
@@ -15648,6 +15654,7 @@ html body #app .mw-reference-sidebar .mw-reference-profile .mw-profile-main{
   new MutationObserver(()=>{
     const isHidden=app.classList.contains('hidden');
     if(wasHidden&&!isHidden) reloadWorkspaceData();
+  window.mwRecarregaDados = reloadWorkspaceData;
     wasHidden=isHidden;
   }).observe(app,{attributes:true,attributeFilter:['class']});
 })();
@@ -18676,40 +18683,104 @@ document.addEventListener('click', function(e){
   }
 
   /* ----------------------------------------------------------------
-     Levar para o servidor uma conta que nasceu só neste aparelho
+     Ligar uma conta local ao servidor
      ----------------------------------------------------------------
-     Roda depois de uma entrada local bem-sucedida, em silêncio. Se der
-     certo, a próxima entrada — aqui ou em qualquer outro aparelho — já
-     vem pelo servidor, com os dados junto. Se não der, nada muda e o app
-     segue local; tentamos de novo na entrada seguinte. */
+     Dois caminhos chegam aqui, e é de propósito que seja uma função só:
+
+       1. Entrada pela reserva local — roda em silêncio logo depois.
+       2. O cartão "Ativar sincronização" — para quem já estava logado e
+          por isso nunca passa pela tela de login. Sem esse segundo
+          caminho, a conta de quem deixou a sessão aberta ficava presa no
+          aparelho para sempre; medido, eram zero chamadas ao servidor.
+
+     Tenta ENTRAR antes de CRIAR: se a conta já subiu de outro aparelho,
+     criar de novo daria "e-mail já cadastrado" e travaria tudo. Entrando,
+     este aparelho só se vincula à que já existe.
+
+     Devolve uma promessa com erro nomeado, porque o cartão precisa
+     dizer à pessoa o que houve; o caminho silencioso ignora. */
+  function ligaNuvem(conta, senha){
+    if (!temNuvem()) return Promise.reject(new Error('offline'));
+    var email = String(conta.email || '').toLowerCase();
+    var usuario = conta.username;
+    if (!email || !usuario) return Promise.reject(new Error('conta-incompleta'));
+
+    function vincula(res){
+      var uid = res && res.user && res.user.id;
+      if (!uid) throw new Error('sessao-incompleta');
+      try { localStorage.setItem(CHAVE_UID, uid); } catch (e) {}
+
+      return window.mwNuvem.lerDados(uid).then(function(linha){
+        linha = linha || {};
+        var versao = linha.versao || 1;
+        var doServidor = linha.conteudo || null;
+        var aqui = leJson(DADOS_KEY, null);
+        try { localStorage.setItem(CHAVE_VER, String(versao)); } catch (e) {}
+
+        /* Servidor com conteúdo vence — foi sincronizado de algum lugar.
+           Servidor vazio e aparelho cheio: é a primeira subida. */
+        if (!vazio(doServidor)) {
+          /* Veio do servidor: gravar sem reagendar o envio, senão o app
+             devolve na hora o que acabou de receber. */
+          vindoDoServidor = true;
+          try { localStorage.setItem(DADOS_KEY, JSON.stringify(doServidor)); } catch (e) {}
+          vindoDoServidor = false;
+          /* E recarregar a memória, senão a "data" antiga sobrescreve
+             isto quando a página fechar. */
+          try { window.mwRecarregaDados && window.mwRecarregaDados(); } catch (e) {}
+          try { window.mwSyncAvatars && window.mwSyncAvatars(); } catch (e) {}
+          return true;
+        }
+        if (!vazio(aqui)) {
+          var perfil = aqui.profile || {};
+          return window.mwNuvem.gravarDados(uid, aqui, versao)
+            .then(function(){
+              return window.mwNuvem.gravarPerfil(uid, { nome: perfil.name || conta.name || '', foto: perfil.photo || '' });
+            })
+            .then(function(){ return true; });
+        }
+        return true;
+      });
+    }
+
+    return window.mwNuvem.entrar(usuario, senha).then(vincula).catch(function(erro){
+      var msg = String((erro && erro.message) || erro || '');
+
+      /* O nome não existe lá: é hora de criar. */
+      if (/conta-nao-encontrada/i.test(msg)) {
+        return window.mwNuvem.usuarioLivre(usuario).then(function(livre){
+          if (livre === false) throw new Error('nome-tomado');
+          if (livre === null)  throw new Error('offline');
+          return window.mwNuvem.cadastrar(usuario, email, senha, conta.name || usuario)
+            .then(vincula)
+            .catch(function(e2){
+              var m2 = String((e2 && e2.message) || e2 || '');
+              if (/already registered|already been registered|User already/i.test(m2)) throw new Error('senha-diferente');
+              throw e2;
+            });
+        });
+      }
+
+      /* O nome existe lá, mas a senha não bate: não é esta conta, ou a
+         senha foi trocada em outro aparelho. Criar por cima seria pior. */
+      if (/Invalid login/i.test(msg)) throw new Error('senha-diferente');
+      throw erro;
+    });
+  }
+
+  /* O cartão de ativação mora em outro bloco e precisa desta função. */
+  window.mwLigaNuvem = ligaNuvem;
+
   function migraContaLocal(digitado, senha){
     if (!temNuvem()) return;
     if (localStorage.getItem('mwSession') !== '1') return;    // a entrada local falhou
     if (localStorage.getItem(CHAVE_UID)) return;              // já tem par no servidor
-
     var users = leJson(USERS_KEY, {});
     var email = (localStorage.getItem('mateusActiveUserV2') || '').toLowerCase();
     var conta = users[email];
     if (!conta || !conta.username || !email || email.indexOf('@') === -1) return;
-
-    window.mwNuvem.usuarioLivre(conta.username).then(function(livre){
-      /* null = não deu para perguntar; false = o nome é de outra pessoa.
-         Nos dois casos, não inventa conta nenhuma. */
-      if (livre !== true) return;
-      return window.mwNuvem.cadastrar(conta.username, email, senha, conta.name || conta.username)
-        .then(function(res){
-          var uid = res && res.user && res.user.id;
-          if (!uid) return;
-          try {
-            localStorage.setItem(CHAVE_UID, uid);
-            localStorage.setItem(CHAVE_VER, '1');
-          } catch (e) {}
-          var dados = leJson(DADOS_KEY, null);
-          if (dados) window.mwNuvem.gravarDados(uid, dados, 1);
-          var perfil = (dados && dados.profile) || {};
-          window.mwNuvem.gravarPerfil(uid, { nome: perfil.name || conta.name || '', foto: perfil.photo || '' });
-        });
-    }).catch(function(){ /* silêncio: é melhoria oportunista, não obrigação */ });
+    conta.email = email;
+    ligaNuvem(conta, senha).catch(function(){ /* oportunista: o cartão insiste depois */ });
   }
 
   /* ================================================================
@@ -18788,7 +18859,9 @@ document.addEventListener('click', function(e){
           dados.profile.email = email;
 
           try { localStorage.setItem(CHAVE_VER, String(linha.versao || 1)); } catch (er) {}
+          vindoDoServidor = !vazio(doServidor);
           return guardaLocal(email, perfil.username || texto, senha, dados).then(function(conta){
+            vindoDoServidor = false;
             devolveBotao();
             dizStatus('');
             abreApp(dados.profile.name || conta.username || '');
@@ -18883,9 +18956,10 @@ document.addEventListener('click', function(e){
      volta e sobrescreve o novo; resolver isso direito pede uma fusão
      campo a campo, que vale a pena quando o app tiver mais dono. */
   var relogio = null;
+  var vindoDoServidor = false;   // não devolver ao servidor o que veio dele
 
   function agendaEnvio(){
-    if (!temNuvem()) return;
+    if (!temNuvem() || vindoDoServidor) return;
     clearTimeout(relogio);
     relogio = setTimeout(enviaAgora, 2500);
   }
@@ -18925,6 +18999,199 @@ document.addEventListener('click', function(e){
   }, true);
 
   window.mwNuvemEnviaAgora = enviaAgora;
+})();
+</script>
+
+<style id="mw-ativa-nuvem-css">
+html body #mwAtivaNuvem{
+  position:fixed;left:50%;transform:translateX(-50%) translateY(140%);
+  bottom:calc(env(safe-area-inset-bottom,0px) + 96px);
+  width:min(440px,calc(100vw - 32px));z-index:9500;
+  padding:18px 18px 16px;border-radius:20px;
+  background:linear-gradient(160deg,rgba(16,34,68,.97),rgba(8,18,38,.98));
+  border:1px solid rgba(99,170,255,.22);
+  box-shadow:0 24px 60px rgba(2,6,23,.6),0 0 0 1px rgba(255,255,255,.04) inset;
+  backdrop-filter:blur(18px) saturate(1.3);-webkit-backdrop-filter:blur(18px) saturate(1.3);
+  opacity:0;pointer-events:none;
+  transition:transform .52s cubic-bezier(.22,.72,.26,1),opacity .38s ease;
+}
+html body #mwAtivaNuvem.mw-visivel{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto}
+html body #mwAtivaNuvem h4{margin:0 0 6px;font-size:15px;font-weight:650;color:#f2f7ff;letter-spacing:-.01em}
+html body #mwAtivaNuvem p{margin:0 0 13px;font-size:12.5px;line-height:1.5;color:#93a8c9}
+html body #mwAtivaNuvem .mw-ativa-linha{display:flex;gap:8px;align-items:stretch}
+html body #mwAtivaNuvem input{
+  flex:1 1 auto;min-width:0;height:42px;padding:0 13px;border-radius:12px;
+  background:#0a1730!important;border:1px solid rgba(99,170,255,.22)!important;
+  color:#f2f7ff!important;font-size:15px;outline:none;   /* 15px+ evita o zoom do iOS */
+}
+html body #mwAtivaNuvem input:focus{border-color:rgba(56,189,248,.5)!important}
+html body #mwAtivaNuvem button.mw-ativa-ok{
+  flex:0 0 auto;height:42px;padding:0 18px;border-radius:12px;border:0;cursor:pointer;
+  background:linear-gradient(135deg,#2563eb,#38bdf8)!important;color:#fff!important;
+  font-size:13px;font-weight:650;letter-spacing:.01em;
+}
+html body #mwAtivaNuvem button.mw-ativa-ok:disabled{opacity:.5}
+html body #mwAtivaNuvem .mw-ativa-depois{
+  margin-top:10px;background:none!important;border:0!important;padding:4px;cursor:pointer;
+  color:#63799c!important;font-size:12px;text-decoration:underline;text-underline-offset:2px;
+}
+html body #mwAtivaNuvem .mw-ativa-recado{margin:10px 0 0;font-size:12px;line-height:1.45}
+html body #mwAtivaNuvem .mw-ativa-recado.erro{color:#fca5a5}
+html body #mwAtivaNuvem .mw-ativa-recado.bom{color:#6ee7b7}
+html body.light #mwAtivaNuvem{
+  background:linear-gradient(160deg,#fff,#f4f9ff);border-color:rgba(20,50,100,.14);
+}
+html body.light #mwAtivaNuvem h4{color:#0b1830}
+html body.light #mwAtivaNuvem p{color:#41618f}
+html body.light #mwAtivaNuvem input{background:#fff!important;color:#0b1830!important;border-color:rgba(20,50,100,.18)!important}
+@media(max-width:860px){
+  html body #mwAtivaNuvem{bottom:calc(env(safe-area-inset-bottom,0px) + 104px)}
+  html body.mw-tela-folha #mwAtivaNuvem{bottom:calc(env(safe-area-inset-bottom,0px) + 24px)}
+}
+@media (prefers-reduced-motion:reduce){
+  html body #mwAtivaNuvem{transition:opacity .2s ease}
+}
+</style>
+<script id="mw-ativa-nuvem-js">
+(function(){
+  'use strict';
+  /* ----------------------------------------------------------------
+     Ativar a sincronização de quem JÁ ESTÁ LOGADO
+     ----------------------------------------------------------------
+     A migração automática só dispara em quem passa pela tela de login.
+     Quem já estava dentro — o caso mais comum, porque a sessão fica
+     aberta — nunca passava por lá, e a conta ficava presa no aparelho
+     para sempre. Medido: zero chamadas ao servidor nesse caminho.
+
+     Consertar isso pede a senha, e senha não fica guardada em lugar
+     nenhum (só o hash). Então em vez de adivinhar, o app pede — uma
+     vez, num cartão que dá para dispensar. */
+
+  var CHAVE_UID = 'mwNuvemUid';
+  var ADIADO    = 'mwAtivaAdiado';
+
+  function q(s){ return document.querySelector(s); }
+  function temNuvem(){ return !!(window.mwNuvem && window.mwNuvem.ligado()); }
+
+  function contaAtiva(){
+    try {
+      var users = JSON.parse(localStorage.getItem('mateusWorkspaceUsersV2') || '{}') || {};
+      var email = (localStorage.getItem('mateusActiveUserV2') || '').toLowerCase();
+      var conta = users[email];
+      if (!conta || !conta.username || !email || email.indexOf('@') === -1) return null;
+      conta.email = email;
+      return conta;
+    } catch (e) { return null; }
+  }
+
+  function precisa(){
+    if (!temNuvem()) return false;
+    if (localStorage.getItem('mwSession') !== '1') return false;
+    if (localStorage.getItem(CHAVE_UID)) return false;
+    try { if (sessionStorage.getItem(ADIADO) === '1') return false; } catch (e) {}
+    return !!contaAtiva();
+  }
+
+  var cartao = null;
+
+  function monta(){
+    if (cartao) return cartao;
+    cartao = document.createElement('div');
+    cartao.id = 'mwAtivaNuvem';
+    cartao.setAttribute('role','dialog');
+    cartao.setAttribute('aria-label','Ativar sincronização da conta');
+    cartao.innerHTML =
+      '<h4>Ativar sincronização</h4>' +
+      '<p>Sua conta ainda existe só neste aparelho. Digite sua senha para levá-la ' +
+      'para a nuvem — aí ela funciona no navegador e no app, com os mesmos dados.</p>' +
+      '<div class="mw-ativa-linha">' +
+        '<input type="password" autocomplete="current-password" placeholder="Sua senha" aria-label="Sua senha">' +
+        '<button type="button" class="mw-ativa-ok">Ativar</button>' +
+      '</div>' +
+      '<p class="mw-ativa-recado" hidden></p>' +
+      '<button type="button" class="mw-ativa-depois">Agora não</button>';
+    document.body.appendChild(cartao);
+    return cartao;
+  }
+
+  function diz(texto, tipo){
+    var r = cartao.querySelector('.mw-ativa-recado');
+    r.textContent = texto || '';
+    r.hidden = !texto;
+    r.className = 'mw-ativa-recado' + (tipo ? ' ' + tipo : '');
+  }
+
+  function esconde(){
+    if (!cartao) return;
+    cartao.classList.remove('mw-visivel');
+  }
+
+  function ativa(){
+    var conta = contaAtiva();
+    var campo = cartao.querySelector('input');
+    var botao = cartao.querySelector('.mw-ativa-ok');
+    var senha = campo.value || '';
+    if (!conta || !senha) { diz('Digite sua senha.', 'erro'); return; }
+
+    botao.disabled = true;
+    diz('Verificando...');
+
+    /* Confere contra o hash local ANTES de falar com o servidor: erro de
+       digitação vira mensagem imediata em vez de viagem de rede. */
+    Promise.resolve(window.mwSenha ? window.mwSenha.confere(conta, senha) : (conta.password === senha))
+      .then(function(certa){
+        if (!certa) { throw new Error('senha-local'); }
+        return window.mwLigaNuvem(conta, senha);
+      })
+      .then(function(){
+        campo.value = '';
+        diz('Pronto. Sua conta agora vale no navegador e no app.', 'bom');
+        setTimeout(esconde, 2600);
+      })
+      .catch(function(erro){
+        botao.disabled = false;
+        var msg = String((erro && erro.message) || erro || '');
+        if (msg === 'senha-local')            return diz('Senha incorreta.', 'erro');
+        if (/nome-tomado/.test(msg))          return diz('O nome "' + conta.username + '" já é de outra conta no servidor. Fale comigo antes de mudar.', 'erro');
+        if (/senha-diferente/.test(msg))      return diz('Já existe uma conta com este e-mail no servidor, com outra senha.', 'erro');
+        diz('Não deu para conectar agora. Tente de novo mais tarde.', 'erro');
+      });
+  }
+
+  function mostra(){
+    monta();
+    cartao.querySelector('.mw-ativa-ok').addEventListener('click', ativa);
+    cartao.querySelector('input').addEventListener('keydown', function(e){
+      if (e.key === 'Enter') { e.preventDefault(); ativa(); }
+    });
+    cartao.querySelector('.mw-ativa-depois').addEventListener('click', function(){
+      /* sessionStorage, não localStorage: some quando o app fecha, então
+         volta a perguntar na próxima abertura. Insistente o bastante
+         para resolver, esquecível o bastante para não irritar. */
+      try { sessionStorage.setItem(ADIADO, '1'); } catch (e) {}
+      esconde();
+    });
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){ cartao.classList.add('mw-visivel'); });
+    });
+  }
+
+  /* Espera o app estar realmente aberto: durante a animação de abertura
+     o cartão apareceria sobre o carregamento. */
+  function vigia(){
+    if (!precisa()) return;
+    var app = q('#app');
+    var loader = q('#mwBootLoader');
+    var pronto = app && !app.classList.contains('hidden') && (!loader || loader.offsetParent === null);
+    if (pronto) { mostra(); return; }
+    setTimeout(vigia, 700);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function(){ setTimeout(vigia, 1500); });
+  } else {
+    setTimeout(vigia, 1500);
+  }
 })();
 </script>
 
