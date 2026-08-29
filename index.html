@@ -15968,6 +15968,14 @@ html body #mwBottomNav:has(> button.mw-avatar-active) > button.active .mwnav-lab
   const place = () => {
     const active = activeSlot();
     if (!active) { lens.classList.remove('mw-lens-ready'); return; }
+    /* Sem caixa de layout não há medida — e medir zero não devolve zero,
+       devolve LIXO: com a gaveta aberta a barra fica display:none, todos
+       os rects zeram, o centro calculado vira 0 e a lente era grampeada
+       no x=3, ou seja, em cima do PRIMEIRO slot. Medido: com o Perfil
+       ativo, a lente ia parar no Início. Sair sem escrever preserva a
+       última posição boa; o ResizeObserver logo abaixo remede assim que
+       a barra volta a existir. */
+    if (!nav.offsetWidth || !active.offsetWidth) return;
     /* MEDIDA DE LAYOUT, NÃO DE TELA.
 
        A barra inteira recebe um transform:scale() durante o scroll, e
@@ -16408,6 +16416,109 @@ body.mw-entrando #app .main > * .stat{
   }).observe(app, { attributes: true, attributeFilter: ['class'] });
 
   if (visivel) entrar();
+})();
+</script>
+<style id="mw-perfil-estado-real">
+/* O Perfil ativo na barra lateral usa exatamente o mesmo tratamento dos
+   outros itens — não um estilo próprio. Se ele fosse "parecido mas
+   diferente", voltaria a parecer um enfeite em vez de o lugar onde a
+   pessoa está. */
+#app .mw-reference-profile.mw-estado-ativo .mw-profile-main{
+  color:#fff!important;
+  background:linear-gradient(100deg,rgba(102,224,255,.14),rgba(124,92,255,.16))!important;
+  border-color:rgba(102,224,255,.15)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 8px 22px rgba(20,45,120,.12)!important;
+}
+#app .mw-reference-profile.mw-estado-ativo .mw-profile-main *{color:inherit!important}
+body.light #app .mw-reference-profile.mw-estado-ativo .mw-profile-main{
+  color:#0b1830!important;
+  background:linear-gradient(100deg,rgba(37,99,235,.13),rgba(124,92,255,.10))!important;
+  border-color:rgba(37,99,235,.18)!important;
+}
+</style>
+<script id="mw-perfil-estado-real-js">
+/* ============================================================
+   P4 — PERFIL COMO ESTADO DE NAVEGAÇÃO REAL
+   ============================================================
+   Três defeitos medidos, todos do mesmo buraco: não existia uma
+   resposta única para "onde eu estou".
+
+   1. Desktop, indo para o Perfil: a view vira `view-settings`
+      (conteúdo certo), mas NENHUM item da lateral fica aceso —
+      `showView('settings')` procura `#nav [data-view="settings"]`, e
+      esse botão não existe. A pessoa está no Perfil e a lateral não
+      diz nada.
+
+   2. Mobile, tocando em Perfil: a barra de baixo marca `profile`
+      certinho, mas a gaveta que abre continua mostrando a seção
+      ANTERIOR acesa (medido: "Faculdade"). O Perfil abre a própria
+      gaveta e não se marca nela.
+
+   3. `navState` (a máquina de estado da barra de baixo) nunca seguia a
+      navegação pela lateral do desktop — ficou em `home` o tempo todo.
+      Ou seja, a "fonte única" só valia numa das duas telas.
+
+   Aqui a pergunta passa a ter UM lugar. `ondeEstou()` deriva o estado
+   dos fatos que já existem — qual view está ativa e se a gaveta de
+   perfil está aberta — em vez de guardar uma cópia paralela que possa
+   divergir. Estado derivado não dessincroniza: não há o que esquecer
+   de atualizar.
+
+   O Perfil é o mesmo estado nas duas telas, com superfícies
+   diferentes: no desktop é a view de configurações, no mobile é a
+   gaveta. Por isso os dois casos respondem 'perfil'. */
+(function(){
+  var app = document.getElementById('app');
+  if (!app) return;
+
+  var linhaPerfil = document.getElementById('mwSidebarProfile');
+  var botaoPerfil = document.getElementById('mwSidebarProfileBtn');
+
+  function ondeEstou(){
+    /* Mobile: a gaveta ABERTA por um toque no Perfil é o estado
+       perfil. A gaveta aberta pelo menu do topo não é — ali a pessoa
+       só abriu o menu, continua na seção em que estava. É o que
+       `mwNavState()` distingue, e por isso ele é consultado em vez de
+       olhar só a classe da gaveta. */
+    var gaveta = app.classList.contains('mw-mobile-open');
+    if (gaveta && window.mwNavState && window.mwNavState() === 'profile') return 'perfil';
+
+    var view = app.querySelector('.view.active');
+    var id = view ? view.id.replace('view-', '') : null;
+    /* Desktop: o Perfil É a view de configurações — o mesmo estado,
+       outra superfície. */
+    if (id === 'settings') return 'perfil';
+    return id;
+  }
+
+  function pintar(){
+    var estado = ondeEstou();
+    var noPerfil = estado === 'perfil';
+
+    if (linhaPerfil) linhaPerfil.classList.toggle('mw-estado-ativo', noPerfil);
+    if (botaoPerfil) botaoPerfil.setAttribute('aria-current', noPerfil ? 'page' : 'false');
+
+    /* Um ativo só, e a marca é DERIVADA do estado — não "tirada" numa
+       hora e "reposta" noutra. A primeira versão disto só removia a
+       classe ao entrar no Perfil, apostando que o showView a reporia na
+       saída. Não repõe: fechar a gaveta não troca de view nenhuma, a
+       seção continua a mesma, então o showView nem roda — e a lateral
+       ficava sem NADA aceso. Escrevendo os dois lados aqui, o caso não
+       existe: qualquer que seja a saída, a marca é recalculada. */
+    app.querySelectorAll('#nav button').forEach(function(b){
+      var ativo = !noPerfil && b.dataset.view === estado;
+      b.classList.toggle('active', ativo);
+      b.setAttribute('aria-current', ativo ? 'page' : 'false');
+    });
+  }
+
+  /* Um observador só, sobre o #app: cobre a troca de view (classe
+     .active nas .view), a gaveta abrindo e fechando (classe no #app) e
+     qualquer folha futura que mexa nessas classes. */
+  new MutationObserver(pintar).observe(app, {
+    subtree: true, attributes: true, attributeFilter: ['class']
+  });
+  pintar();
 })();
 </script>
 <style id="mw-secao-sem-ancoragem">
