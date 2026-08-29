@@ -3000,7 +3000,7 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
      tinha a marca antiga nunca mais seria zerado. Esta é a segunda:
      a primeira leva de contas foi criada com o bug que só gravava a
      conta no fim da animação, então havia contas pela metade. */
-  var MW_MARCA_RESET = 'mwContasZeradas-2026-08-c';
+  var MW_MARCA_RESET = 'mwZerarTudo-2026-08-e';
   /* A ORDEM aqui é de segurança, não de estilo: grava a marca PRIMEIRO e
      confere que ela ficou; só então apaga. Antes era o contrário — apagava
      e depois tentava marcar. Se essa última escrita falhasse (armazenamento
@@ -3009,16 +3009,21 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
      seria exatamente "o login não fica salvo". Uma limpeza que não
      consegue ser registrada é uma limpeza que se repete para sempre;
      melhor não fazer nenhuma. */
+  /* A lista de chaves saiu de cena. Ela nasceu incompleta e ficou pior a
+     cada funcionalidade nova — o PIN, o Face ID e depois as chaves da
+     nuvem tiveram que ser lembrados um a um, e a sessão do Supabase
+     (sb-…-auth-token) sobreviveria a qualquer lista que eu escrevesse
+     hoje. Apagar tudo menos a própria marca é a única versão que não
+     envelhece: um reset que deixa resto não é um reset. */
   try {
     if (localStorage.getItem(MW_MARCA_RESET) !== '1') {
       localStorage.setItem(MW_MARCA_RESET, '1');
       if (localStorage.getItem(MW_MARCA_RESET) === '1') {
-        ['mateusWorkspaceUsersV2','mateusActiveUserV2','mateusWorkspaceV4',
-         'mwSession','mwLastEmail','mwDemoSession',
-         'mwFaceIdEnabled','mwFaceIdCredentialId',
-         'mwPinSal','mwPinHash','mwPinErros'].forEach(function(k){
+        Object.keys(localStorage).forEach(function(k){
+          if (k === MW_MARCA_RESET) return;
           try { localStorage.removeItem(k); } catch (e) {}
         });
+        try { sessionStorage.clear(); } catch (e) {}
       }
     }
   } catch (e) {}
@@ -17072,6 +17077,24 @@ body.light .mw-confirma-card{background:#fff;color:#0b1830}
     }).catch(function(){ return false; });
   }
 
+  /* ----------------------------------------------------------------
+     Identidade: servidor primeiro, aparelho depois
+     ----------------------------------------------------------------
+     A ordem não é estilo. Se o aparelho mudasse primeiro e o servidor
+     recusasse, os dois ficariam com nomes diferentes e o login por nome
+     de usuário pararia de funcionar — sem nada na tela explicando por
+     quê. Mudando no servidor primeiro, a recusa vira mensagem e o
+     aparelho continua igual, coerente.
+
+     Sem conta na nuvem (uid ausente) ou sem rede, segue local: é o mesmo
+     contrato do resto do app. */
+  function comNuvem(fn){
+    var uid = null;
+    try { uid = localStorage.getItem('mwNuvemUid'); } catch (e) {}
+    if (!uid || !window.mwNuvem || !window.mwNuvem.ligado()) return Promise.resolve(null);
+    return fn(uid);
+  }
+
   function trocarUsuario(novo){
     var conta = atual();
     if (!conta) return Promise.resolve({ ok: false, erro: 'Nenhuma conta ativa.' });
@@ -17080,10 +17103,29 @@ body.light .mw-confirma-card{background:#fff;color:#0b1830}
       return Promise.resolve({ ok: false, erro: 'Use de 3 a 20 caracteres: letras, números, ponto, hífen ou sublinhado.' });
     if (!usuarioLivre(novo, conta.email))
       return Promise.resolve({ ok: false, erro: 'Esse nome de usuário já está em uso. Escolha outro.' });
-    var u = todas();
-    u[emailAtivo()].username = novo;
-    gravarTodas(u);
-    return Promise.resolve({ ok: true });
+
+    return comNuvem(function(uid){
+      /* O servidor guarda tudo em minúsculo, e é ele que decide se o nome
+         está livre entre todos os aparelhos — a checagem local só enxerga
+         este aqui. */
+      return window.mwNuvem.usuarioLivre(novo).then(function(livre){
+        if (livre === false) throw new Error('tomado');
+        if (livre === null)  throw new Error('sem-rede');
+        return window.mwNuvem.gravarPerfil(uid, { username: novo.toLowerCase() });
+      }).then(function(ok){
+        if (ok === false) throw new Error('falhou');
+      });
+    }).then(function(){
+      var u = todas();
+      u[emailAtivo()].username = novo;
+      gravarTodas(u);
+      return { ok: true };
+    }).catch(function(e){
+      var m = String((e && e.message) || e || '');
+      if (m === 'tomado')   return { ok: false, erro: 'Esse nome de usuário já está em uso. Escolha outro.' };
+      if (m === 'sem-rede') return { ok: false, erro: 'Sem conexão para confirmar o nome. Tente de novo com internet.' };
+      return { ok: false, erro: 'Não foi possível trocar o nome de usuário agora.' };
+    });
   }
 
   /* Trocar o e-mail move a conta de CHAVE dentro do mapa, porque o mapa
@@ -17098,18 +17140,42 @@ body.light .mw-confirma-card{background:#fff;color:#0b1830}
       return Promise.resolve({ ok: false, erro: 'Digite um e-mail válido.' });
     if (!emailLivre(novo, conta.email))
       return Promise.resolve({ ok: false, erro: 'Esse e-mail já está em uso por outra conta.' });
-    var u = todas(), antigo = emailAtivo();
-    var mudada = u[antigo];
-    if (!mudada) return Promise.resolve({ ok: false, erro: 'Nenhuma conta ativa.' });
-    mudada.email = novo;
-    delete u[antigo];
-    u[novo] = mudada;
-    gravarTodas(u);
-    try {
-      localStorage.setItem(CHAVE_ATIVO, novo);
-      localStorage.setItem('mwLastEmail', novo);
-    } catch (e) {}
-    return Promise.resolve({ ok: true });
+    var antigo = emailAtivo();
+    if (!todas()[antigo]) return Promise.resolve({ ok: false, erro: 'Nenhuma conta ativa.' });
+
+    function aplicaLocal(){
+      var u = todas();
+      var mudada = u[antigo];
+      if (!mudada) return { ok: false, erro: 'Nenhuma conta ativa.' };
+      mudada.email = novo;
+      delete u[antigo];
+      u[novo] = mudada;
+      gravarTodas(u);
+      try {
+        localStorage.setItem(CHAVE_ATIVO, novo);
+        localStorage.setItem('mwLastEmail', novo);
+      } catch (e) {}
+      return { ok: true };
+    }
+
+    return comNuvem(function(){
+      return window.mwNuvem.atualizaAuth({ email: novo });
+    }).then(function(usuario){
+      /* Sem nuvem, aplica direto. Com nuvem, o Supabase pode exigir
+         confirmação por e-mail: nesse caso ele guarda o novo em
+         `new_email` e mantém o antigo ativo. Trocar no aparelho aí
+         quebraria o login, então a troca fica pendente e a pessoa é
+         avisada — em vez de descobrir sozinha na próxima entrada. */
+      if (!usuario) return aplicaLocal();
+      var ativo = String(usuario.email || '').toLowerCase();
+      if (ativo === novo) return aplicaLocal();
+      return { ok: false, erro: 'Confirme a troca pelo link enviado para ' + novo + '. Até lá, continue entrando com o e-mail atual.' };
+    }).catch(function(e){
+      var m = String((e && e.message) || e || '');
+      if (/already registered|already been registered|User already/i.test(m))
+        return { ok: false, erro: 'Esse e-mail já está em uso por outra conta.' };
+      return { ok: false, erro: 'Não foi possível trocar o e-mail agora.' };
+    });
   }
 
   function trocarSenha(nova){
@@ -17120,11 +17186,24 @@ body.light .mw-confirma-card{background:#fff;color:#0b1830}
       return Promise.resolve({ ok: false, erro: 'A senha precisa ter pelo menos 6 caracteres.' });
     if (!window.mwSenha)
       return Promise.resolve({ ok: false, erro: 'Não foi possível salvar a senha neste contexto.' });
-    var u = todas(), chave = emailAtivo();
-    return window.mwSenha.grava(u[chave], nova).then(function(){
-      gravarTodas(u);
-      return { ok: true };
-    }).catch(function(){
+    var chave = emailAtivo();
+    /* O servidor primeiro, pelo mesmo motivo do nome: se ele recusar e o
+       aparelho já tiver mudado, a pessoa fica com uma senha que funciona
+       offline e falha online. */
+    return comNuvem(function(){
+      return window.mwNuvem.atualizaAuth({ password: nova });
+    }).then(function(){
+      var u = todas();
+      return window.mwSenha.grava(u[chave], nova).then(function(){
+        gravarTodas(u);
+        return { ok: true };
+      });
+    }).catch(function(e){
+      var m = String((e && e.message) || e || '');
+      if (/Password should be|at least 6|weak/i.test(m))
+        return { ok: false, erro: 'Escolha uma senha mais forte (mínimo 6 caracteres).' };
+      if (/same as the old|should be different/i.test(m))
+        return { ok: false, erro: 'A senha nova precisa ser diferente da atual.' };
       return { ok: false, erro: 'Não foi possível salvar a senha. Tente de novo.' };
     });
   }
@@ -18590,6 +18669,17 @@ document.addEventListener('click', function(e){
         .catch(function(){ return null; });
     },
 
+    /* Trocar e-mail ou senha é assunto do serviço de autenticação, não das
+       tabelas: é lá que a senha mora. Exige sessão aberta — sem ela, o
+       updateUser não tem em quem mexer. */
+    atualizaAuth: function(campos){
+      if (!cliente) return Promise.reject(new Error('offline'));
+      return comPrazo(cliente.auth.updateUser(campos), 12000).then(function(r){
+        if (r.error) throw r.error;
+        return (r.data && r.data.user) || null;
+      });
+    },
+
     gravarPerfil: function(uid, campos){
       if (!cliente) return Promise.resolve(false);
       return comPrazo(cliente.from('perfis').update(campos).eq('id', uid), 12000)
@@ -18981,11 +19071,22 @@ document.addEventListener('click', function(e){
     window.mwNuvem.gravarPerfil(uid, { nome: perfil.name || '', foto: perfil.photo || '' });
   }
 
+  /* O gancho vai no PROTÓTIPO, não no objeto localStorage.
+     Mexer na instância não funciona: Storage é um objeto exótico que
+     transforma qualquer atribuição de propriedade num item de
+     armazenamento. `localStorage.setItem = fn` grava literalmente uma
+     chave chamada "setItem" — que aparece em Object.keys junto com as
+     de verdade, e que a rotina de limpeza recria a cada abertura porque
+     este bloco roda depois dela. Nem defineProperty escapa disso.
+     O protótipo é objeto comum e aceita a troca sem virar dado.
+
+     Pega o sessionStorage junto, e tudo bem: só reage à chave dos dados
+     do workspace, que nunca é escrita lá. */
   try {
-    var original = localStorage.setItem.bind(localStorage);
-    localStorage.setItem = function(chave, valor){
-      original(chave, valor);
-      if (chave === DADOS_KEY) agendaEnvio();
+    var original = Storage.prototype.setItem;
+    Storage.prototype.setItem = function(chave, valor){
+      original.call(this, chave, valor);
+      if (this === window.localStorage && chave === DADOS_KEY) agendaEnvio();
     };
   } catch (e) {}
 

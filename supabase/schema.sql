@@ -29,10 +29,12 @@ create table if not exists public.perfis (
   criado_em     timestamptz not null default now(),
   atualizado_em timestamptz not null default now(),
 
-  -- Mesma regra que o app já aplica no cadastro: 3 a 20 caracteres, minúsculo,
-  -- letras, números, ponto e underline. Guardar sempre minúsculo é o que faz
-  -- o `unique` acima recusar "Mateus" quando "mateus" já existe.
-  constraint perfis_username_formato check (username ~ '^[a-z0-9_.]{3,20}$')
+  -- Mesma regra que o app aplica no cadastro: 3 a 20 caracteres, minúsculo,
+  -- letras, números, ponto, underline e hífen. Guardar sempre minúsculo é o
+  -- que faz o `unique` acima recusar "Mateus" quando "mateus" já existe.
+  -- O hífen entrou depois: sem ele, um nome como "mateus-wzn" passava na
+  -- validação da tela e era recusado aqui, e o erro aparecia no lugar errado.
+  constraint perfis_username_formato check (username ~ '^[a-z0-9_.-]{3,20}$')
 );
 
 -- ---------------------------------------------------------------------------
