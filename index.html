@@ -524,11 +524,13 @@ body.light #academicCalendarPanel .calendar-day{background:#f1efe9!important;bor
 </script>
 <style id="mw-final-polish">
 :root{--mw-bg:#171a1f;--mw-surface:#20242a;--mw-surface-2:#252a31;--mw-border:rgba(255,255,255,.10);--mw-text:#f4f6f8;--mw-muted:#a8afb8;--mw-accent:#dfe5eb}
-body{background:var(--mw-bg)!important;color:var(--mw-text)!important}
-body:not(.light),#app{background:#171a1f!important}
+body{color:var(--mw-text)!important}
+/* fundo removido: quem pinta body/#app é a folha de gradientes da
+   marca (ver mw-paleta-canonica). Esta regra vencia por especificidade
+   e deixava o app grafite sobre uma canvas azul-marinho. */
 body.light{--mw-bg:#f1f2f3;--mw-surface:#ffffff;--mw-surface-2:#f7f8f9;--mw-border:rgba(20,25,30,.12);--mw-text:#20242a;--mw-muted:#66707b;background:#f1f2f3!important;color:#20242a!important}
 /* Login: solid, lightweight background and coherent surfaces */
-#loginScreen.reference-login{background:#171a1f!important;animation:none!important}
+#loginScreen.reference-login{animation:none!important}
 #loginScreen.reference-login::before,#loginScreen.reference-login::after{display:none!important}
 #loginScreen.reference-login .auth-card{background:#20242a!important;border-color:rgba(255,255,255,.10)!important;box-shadow:none !important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 #loginScreen.reference-login .auth-card::before{display:none!important}
@@ -1217,7 +1219,7 @@ body > .mw-stray-newline { display:none !important; }
 #app .sidebar::before{
   content:"";position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(circle at 18% 0%,rgba(102,224,255,.09),transparent 31%),
-             radial-gradient(circle at 100% 58%,rgba(114,38,255,.07),transparent 38%);
+             radial-gradient(circle at 100% 58%,rgba(124,92,255,.07),transparent 38%);
 }
 #app .sidebar .side-brand,
 #app .sidebar .nav-title,
@@ -1228,7 +1230,7 @@ body > .mw-stray-newline { display:none !important; }
   border-radius:13px !important;
   background:linear-gradient(135deg,#66e0ff,#4513bc 58%,#2507ab) !important;
   border:1px solid rgba(255,255,255,.20) !important;
-  box-shadow:0 8px 24px rgba(37,7,171,.25),inset 0 1px 0 rgba(255,255,255,.30) !important;
+  box-shadow:0 8px 24px rgba(2,17,58,.25),inset 0 1px 0 rgba(255,255,255,.30) !important;
 }
 #app .sidebar .side-brand strong{
   font-size:13px !important;
@@ -1257,7 +1259,7 @@ body > .mw-stray-newline { display:none !important; }
   box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 5px 18px rgba(0,0,0,.10) !important;
 }
 #app .sidebar .nav button.active{
-  background:linear-gradient(100deg,rgba(102,224,255,.13),rgba(114,38,255,.15)) !important;
+  background:linear-gradient(100deg,rgba(102,224,255,.13),rgba(124,92,255,.15)) !important;
   border-color:rgba(102,224,255,.14) !important;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 7px 22px rgba(45,20,150,.10) !important;
 }
@@ -1270,7 +1272,7 @@ body > .mw-stray-newline { display:none !important; }
   background:rgba(255,255,255,.07) !important;
 }
 #app .sidebar .nav button.active .nav-icon{
-  background:linear-gradient(135deg,rgba(102,224,255,.17),rgba(114,38,255,.19)) !important;
+  background:linear-gradient(135deg,rgba(102,224,255,.17),rgba(124,92,255,.19)) !important;
 }
 #app .sidebar .side-bottom{
   border-top-color:rgba(255,255,255,.06) !important;
@@ -1294,14 +1296,14 @@ body > .mw-stray-newline { display:none !important; }
 #app .mw-sidebar-polished::before{
   content:"";position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(circle at 12% 0%,rgba(102,224,255,.10),transparent 30%),
-             radial-gradient(circle at 100% 58%,rgba(114,38,255,.08),transparent 38%);
+             radial-gradient(circle at 100% 58%,rgba(124,92,255,.08),transparent 38%);
 }
 #app .mw-sidebar-brand{position:relative;z-index:2;padding:5px 8px 18px!important}
 #app .mw-sidebar-brand .mini-logo{
   width:44px!important;height:44px!important;border-radius:14px!important;
-  background:linear-gradient(135deg,#66E0FF 0%,#4513BC 55%,#2507AB 100%)!important;
+  background:linear-gradient(135deg,#66e0ff 0%,#3b82f6 55%,#1d4ed8 100%)!important;
   border:1px solid rgba(255,255,255,.22)!important;
-  box-shadow:0 9px 26px rgba(37,7,171,.28),inset 0 1px 0 rgba(255,255,255,.32)!important;
+  box-shadow:0 9px 26px rgba(2,17,58,.28),inset 0 1px 0 rgba(255,255,255,.32)!important;
 }
 #app .mw-logo-mark span{font-size:12px!important;font-weight:900!important;letter-spacing:.05em!important;color:#fff!important}
 #app .mw-brand-copy strong{font-size:15px!important;letter-spacing:.12em!important;color:#f8fbff!important}
@@ -1330,7 +1332,7 @@ body > .mw-stray-newline { display:none !important; }
 }
 #app .mw-sidebar-polished .nav button.active{
   color:#fff!important;
-  background:linear-gradient(100deg,rgba(102,224,255,.14),rgba(114,38,255,.16))!important;
+  background:linear-gradient(100deg,rgba(102,224,255,.14),rgba(124,92,255,.16))!important;
   border-color:rgba(102,224,255,.15)!important;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 8px 22px rgba(45,20,150,.10)!important;
 }
@@ -1343,7 +1345,7 @@ body > .mw-stray-newline { display:none !important; }
   transition:transform .22s cubic-bezier(.22,.8,.24,1),background .22s ease,border-color .22s ease!important;
 }
 #app .mw-sidebar-polished .nav button:hover .nav-icon{transform:scale(1.05)!important;background:rgba(255,255,255,.075)!important}
-#app .mw-sidebar-polished .nav button.active .nav-icon{background:linear-gradient(135deg,rgba(102,224,255,.18),rgba(114,38,255,.20))!important;border-color:rgba(102,224,255,.18)!important}
+#app .mw-sidebar-polished .nav button.active .nav-icon{background:linear-gradient(135deg,rgba(102,224,255,.18),rgba(124,92,255,.20))!important;border-color:rgba(102,224,255,.18)!important}
 
 #app .mw-sidebar-profile{
   position:relative;z-index:2;margin:14px 3px 8px!important;
@@ -1358,7 +1360,7 @@ body > .mw-stray-newline { display:none !important; }
 }
 #app .mw-profile-avatar{
   width:34px!important;height:34px!important;min-width:34px!important;border-radius:11px!important;
-  display:grid!important;place-items:center!important;background:linear-gradient(135deg,#66E0FF,#4513BC 55%,#2507AB)!important;
+  display:grid!important;place-items:center!important;background:linear-gradient(135deg,#66e0ff,#3b82f6 55%,#1d4ed8)!important;
   color:#fff!important;font-size:9px!important;font-weight:900!important;
 }
 #app .mw-profile-copy{min-width:0!important;display:flex!important;flex-direction:column!important;gap:2px!important}
@@ -1387,7 +1389,7 @@ body > .mw-stray-newline { display:none !important; }
 #app .mw-dark-copy small{font-size:8px!important;color:rgba(210,222,234,.44)!important}
 #app .mw-switch{
   margin-left:auto!important;width:34px!important;height:19px!important;border-radius:99px!important;
-  background:linear-gradient(100deg,#2507AB,#4513BC)!important;border:1px solid rgba(255,255,255,.16)!important;
+  background:linear-gradient(100deg,#1d4ed8,#3b82f6)!important;border:1px solid rgba(255,255,255,.16)!important;
   padding:2px!important;display:flex!important;align-items:center!important;justify-content:flex-end!important;
 }
 #app .mw-switch i{width:13px!important;height:13px!important;border-radius:50%!important;background:#fff!important;box-shadow:0 2px 5px rgba(0,0,0,.28)!important;transition:transform .2s ease!important}
@@ -1418,13 +1420,13 @@ body.light #app .mw-switch{background:rgba(30,38,50,.20)!important;justify-conte
 #app .search-wrap input{background:transparent!important;border:0!important}
 #app .mateus-ai-btn{
   height:42px!important;padding:0 15px!important;border-radius:13px!important;
-  background:linear-gradient(135deg,rgba(102,224,255,.10),rgba(69,19,188,.16))!important;
+  background:linear-gradient(135deg,rgba(102,224,255,.10),rgba(37,99,235,.16))!important;
   border:1px solid rgba(102,224,255,.16)!important;
   backdrop-filter:blur(14px)!important;-webkit-backdrop-filter:blur(14px)!important;
   color:#f5f8ff!important;
   transition:transform .18s ease,background .18s ease,border-color .18s ease!important;
 }
-#app .mateus-ai-btn:hover{transform:translateY(-1px)!important;background:linear-gradient(135deg,rgba(102,224,255,.15),rgba(69,19,188,.22))!important;border-color:rgba(102,224,255,.24)!important}
+#app .mateus-ai-btn:hover{transform:translateY(-1px)!important;background:linear-gradient(135deg,rgba(102,224,255,.15),rgba(37,99,235,.22))!important;border-color:rgba(102,224,255,.24)!important}
 #app #notificationBtn{
   background:rgba(255,255,255,.045)!important;border-color:rgba(255,255,255,.09)!important;
   backdrop-filter:blur(14px)!important;-webkit-backdrop-filter:blur(14px)!important;
@@ -1448,7 +1450,7 @@ body.light #app .mw-sidebar-polished{
 }
 body.light #app .mw-sidebar-polished .nav button{color:rgba(35,45,58,.70)!important}
 body.light #app .mw-sidebar-polished .nav button:hover{background:rgba(30,40,55,.05)!important;color:#20242a!important}
-body.light #app .mw-sidebar-polished .nav button.active{color:#20242a!important;background:linear-gradient(100deg,rgba(102,224,255,.14),rgba(114,38,255,.10))!important}
+body.light #app .mw-sidebar-polished .nav button.active{color:#20242a!important;background:linear-gradient(100deg,rgba(102,224,255,.14),rgba(124,92,255,.10))!important}
 body.light #app .mw-sidebar-polished .nav-icon{background:rgba(30,40,55,.035)!important;border-color:rgba(30,40,55,.08)!important}
 @media(max-width:820px){
   /* rail 76px desativado — mobile usa gaveta */
@@ -1525,7 +1527,7 @@ body.light #app .mw-sidebar-polished .nav-icon{background:rgba(30,40,55,.035)!im
   bottom:7px!important;
   width:3px!important;
   border-radius:999px!important;
-  background:linear-gradient(180deg,#66E0FF,#7C4DFF)!important;
+  background:linear-gradient(180deg,#66e0ff,#7C4DFF)!important;
   transform:scaleY(0)!important;
   transform-origin:center!important;
   opacity:0!important;
@@ -1575,7 +1577,7 @@ body.light #app .mw-sidebar-polished .nav-icon{background:rgba(30,40,55,.035)!im
 }
 body.light #app .mw-sidebar-profile{border-top-color:rgba(25,35,48,.10)!important}
 #app .mw-sidebar-profile .mw-profile-avatar{
-  box-shadow:0 5px 14px rgba(37,7,171,.16)!important;
+  box-shadow:0 5px 14px rgba(2,17,58,.16)!important;
 }
 </style>
 
@@ -2886,6 +2888,20 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
       }
       var dados = new TextEncoder().encode(sal + ':' + senha);
       return crypto.subtle.digest('SHA-256', dados).then(hex).catch(function(){ return null; });
+    },
+    /* Grava a senha na conta. É o ÚNICO lugar que escreve senha: quem
+       define ou troca senha (criar conta, redefinir por código) chama
+       aqui, senão a conta fica com `sal`+`hash` antigos e um `password`
+       novo — e o `confere` abaixo, que prefere o hash, recusaria a
+       senha nova para sempre. Devolve a própria conta, já pronta para
+       ser salva. */
+    grava: function(conta, senha){
+      var sal = window.mwSenha.novoSal();
+      return window.mwSenha.hash(senha, sal).then(function(h){
+        if (h) { conta.sal = sal; conta.hash = h; delete conta.password; }
+        else   { conta.password = senha; delete conta.sal; delete conta.hash; }
+        return conta;
+      });
     },
     /* Confere a senha contra a conta, aceitando os dois formatos: o novo
        (sal + hash) e o antigo (texto puro), para nenhuma conta existente
@@ -4216,13 +4232,13 @@ window.toast = toast;
   const userInput=q('#username'),passInput=q('#password'),loginBtn=q('#loginButton');
   function refreshLogin(){if(!userInput||!passInput||!loginBtn)return;loginBtn.disabled=false}
   userInput?.addEventListener('input',refreshLogin);passInput?.addEventListener('input',refreshLogin);
-  function authenticate(rawValue, passValue){const raw=String(rawValue||'').trim(),pass=String(passValue||''),u=users();if(!raw||!pass)return false;const key=raw.includes('@')?raw.toLowerCase():Object.keys(u).find(k=>u[k].username?.toLowerCase()===raw.toLowerCase());if(!key){notify('Conta não encontrada. Verifique os dados ou crie uma conta.',true);return false}if(u[key].password!==pass){notify('Senha incorreta. Tente novamente.',true);return false}hydrateSession(key,u[key].data||defaultData(u[key].name||u[key].username||'Mateus',u[key].email||key));notify('');enterApp();return true}
+  function authenticate(rawValue, passValue){const raw=String(rawValue||'').trim(),pass=String(passValue||''),u=users();if(!raw||!pass)return false;const key=raw.includes('@')?raw.toLowerCase():Object.keys(u).find(k=>u[k].username?.toLowerCase()===raw.toLowerCase());if(!key){notify('Conta não encontrada. Verifique os dados ou crie uma conta.',true);return false}Promise.resolve(window.mwSenha?window.mwSenha.confere(u[key],pass):(u[key].password===pass)).then(function(ok){if(!ok){notify('Senha incorreta. Tente novamente.',true);return}hydrateSession(key,u[key].data||defaultData(u[key].name||u[key].username||'Mateus',u[key].email||key));notify('');enterApp();});return true}
   if(loginBtn){const clean=loginBtn.cloneNode(true);loginBtn.replaceWith(clean);const btn=q('#loginButton');btn.addEventListener('click',()=>{if(btn.disabled)return;authenticate(userInput.value,passInput.value)});}
 
   /* Account creation */
   const create=q('#createAccountLink');
   function authModal(title,html){let m=q('#accountModal');if(!m){m=document.createElement('div');m.id='accountModal';m.className='modal';document.body.appendChild(m)}m.innerHTML=`<div class="modal-box auth-modal-card"><div class="modal-head"><h3>${title}</h3><button class="close" data-close>×</button></div>${html}</div>`;m.classList.remove('hidden');m.querySelector('[data-close]').onclick=()=>m.classList.add('hidden');return m}
-  create?.addEventListener('click',()=>{const m=authModal('Criar sua conta',`<form id="createForm"><div class="form-field"><label>Nome completo</label><input id="newName" required placeholder="Ex.: Mateus Silva"></div><div class="form-field"><label>Nome de usuário</label><input id="newUsername" required pattern="[A-Za-z0-9._\-]{3,20}" placeholder="Ex.: mateus.dev"><small class="field-hint">3–20 caracteres: letras, números, ponto, hífen ou sublinhado.</small></div><div class="form-field"><label>E-mail</label><input id="newEmail" type="email" required placeholder="voce@exemplo.com"></div><div class="form-field"><label>Senha</label><input id="newPass" type="password" required placeholder="Escolha uma senha segura"></div><div class="form-field"><label>Confirmar senha</label><input id="newPass2" type="password" required placeholder="Digite a senha novamente"></div><div class="form-error" id="createError"></div><div class="profile-actions"><button class="save-btn" type="submit">Criar conta</button></div><p style="color:var(--muted);font-size:12px">Sua conta e seus dados ficam separados por usuário neste navegador.</p></form>`);m.querySelector('#createForm').onsubmit=e=>{e.preventDefault();const u=users(),name=m.querySelector('#newName').value.trim(),username=m.querySelector('#newUsername').value.trim(),email=m.querySelector('#newEmail').value.trim().toLowerCase(),p=m.querySelector('#newPass').value,p2=m.querySelector('#newPass2').value,err=m.querySelector('#createError');const usernames=Object.values(u).map(x=>(x.username||'').toLowerCase());if(!/^[A-Za-z0-9._-]{3,20}$/.test(username)){err.textContent='Nome de usuário inválido. Use 3–20 caracteres.';return}if(usernames.includes(username.toLowerCase())){err.textContent='Esse nome de usuário já está em uso. Escolha outro.';return}if(u[email]){err.textContent='Este e-mail já possui uma conta.';return}if(p!==p2){err.textContent='As senhas não coincidem.';return}if(!p){err.textContent='Digite uma senha.';return}u[email]={name,username,email,password:p,data:defaultData(name,email)};saveUsers(u);m.classList.add('hidden');userInput.value=email;passInput.value='';refreshLogin();notify('Conta criada com sucesso. Agora você pode entrar.');};});
+  create?.addEventListener('click',()=>{const m=authModal('Criar sua conta',`<form id="createForm"><div class="form-field"><label>Nome completo</label><input id="newName" required placeholder="Ex.: Mateus Silva"></div><div class="form-field"><label>Nome de usuário</label><input id="newUsername" required pattern="[A-Za-z0-9._\-]{3,20}" placeholder="Ex.: mateus.dev"><small class="field-hint">3–20 caracteres: letras, números, ponto, hífen ou sublinhado.</small></div><div class="form-field"><label>E-mail</label><input id="newEmail" type="email" required placeholder="voce@exemplo.com"></div><div class="form-field"><label>Senha</label><input id="newPass" type="password" required placeholder="Escolha uma senha segura"></div><div class="form-field"><label>Confirmar senha</label><input id="newPass2" type="password" required placeholder="Digite a senha novamente"></div><div class="form-error" id="createError"></div><div class="profile-actions"><button class="save-btn" type="submit">Criar conta</button></div><p style="color:var(--muted);font-size:12px">Sua conta e seus dados ficam separados por usuário neste navegador.</p></form>`);m.querySelector('#createForm').onsubmit=e=>{e.preventDefault();const u=users(),name=m.querySelector('#newName').value.trim(),username=m.querySelector('#newUsername').value.trim(),email=m.querySelector('#newEmail').value.trim().toLowerCase(),p=m.querySelector('#newPass').value,p2=m.querySelector('#newPass2').value,err=m.querySelector('#createError');const usernames=Object.values(u).map(x=>(x.username||'').toLowerCase());if(!/^[A-Za-z0-9._-]{3,20}$/.test(username)){err.textContent='Nome de usuário inválido. Use 3–20 caracteres.';return}if(usernames.includes(username.toLowerCase())){err.textContent='Esse nome de usuário já está em uso. Escolha outro.';return}if(u[email]){err.textContent='Este e-mail já possui uma conta.';return}if(p!==p2){err.textContent='As senhas não coincidem.';return}if(!p){err.textContent='Digite uma senha.';return}const nova={name,username,email,data:defaultData(name,email)};Promise.resolve(window.mwSenha?window.mwSenha.grava(nova,p):(nova.password=p)).then(function(){u[email]=nova;saveUsers(u);m.classList.add('hidden');userInput.value=email;passInput.value='';refreshLogin();notify('Conta criada com sucesso. Agora você pode entrar.');});};});
 
   /* legacy recovery modal disabled; login-only OTP controller handles recovery */
 
@@ -4383,8 +4399,11 @@ window.toast = toast;
     if(!pendingOtp.verified||otpConfirm.disabled)return;
     const users=readUsers();
     if(!users[pendingOtp.email]){otpError.textContent='Conta não encontrada.';return;}
-    const newPass=otpNewPass.value;users[pendingOtp.email].password=newPass;writeUsers(users);localStorage.setItem('mwLastEmail',pendingOtp.email);
-    const email=pendingOtp.email;closeOtp();userInput.value=email;passInput.value=newPass;refreshLogin();authenticate(email,newPass);
+    const newPass=otpNewPass.value;const conta=users[pendingOtp.email];const email=pendingOtp.email;
+    Promise.resolve(window.mwSenha?window.mwSenha.grava(conta,newPass):(conta.password=newPass)).then(function(){
+      writeUsers(users);localStorage.setItem('mwLastEmail',email);
+      closeOtp();userInput.value=email;passInput.value=newPass;refreshLogin();authenticate(email,newPass);
+    });
   });
 
 
@@ -5495,11 +5514,9 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
           const data={subjects:[],projects:[],activities:[],notes:[],profile:{name:username,email,photo:''},theme:'dark'};
           /* A senha vira sal + hash SHA-256. Nada de texto puro no
              localStorage — ver o comentário do bloco mwSenha lá em cima. */
-          const sal=window.mwSenha?window.mwSenha.novoSal():'';
-          Promise.resolve(window.mwSenha?window.mwSenha.hash(pass,sal):null).then(function(h){
-            users[email]=h
-              ? {name:username,username,email,sal:sal,hash:h,data}
-              : {name:username,username,email,password:pass,data};
+          const nova={name:username,username,email,data};
+          Promise.resolve(window.mwSenha?window.mwSenha.grava(nova,pass):(nova.password=pass)).then(function(){
+            users[email]=nova;
             localStorage.setItem('mateusWorkspaceUsersV2',JSON.stringify(users));
           });
           localStorage.setItem('mwLastEmail',email);
@@ -5616,23 +5633,23 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
 /* MATEUS WORKSPACE — COLOR PALETTE ONLY
    No layout, spacing, typography, icons, DOM structure, scripts or animations changed. */
 :root{
-  --mw-cyan:#66E0FF;
-  --mw-blue:#2507AB;
-  --mw-violet:#4513BC;
+  --mw-cyan:#66e0ff;
+  --mw-blue:#1d4ed8;
+  --mw-violet:#3b82f6;
   --mw-blue-soft:#6699FF;
-  --mw-bg:#070916;
-  --mw-panel:#0C1024;
-  --mw-panel-2:#111735;
-  --mw-border:#26305A;
-  --mw-text:#F7F9FF;
-  --mw-muted:#AEB9D6;
+  --mw-bg:#020617;
+  --mw-panel:#0a1730;
+  --mw-panel-2:#102244;
+  --mw-border:#22406e;
+  --mw-text:#f2f7ff;
+  --mw-muted:#9db2d4;
 }
 
 html,body{
   background:
-    radial-gradient(circle at 82% 18%,rgba(102,224,255,.12),transparent 28%),
-    radial-gradient(circle at 18% 88%,rgba(69,19,188,.18),transparent 34%),
-    linear-gradient(135deg,#070916 0%,#0C1024 42%,#2507AB 82%,#4513BC 100%) !important;
+    radial-gradient(circle at 82% 18%,rgba(56,189,248,.10),transparent 30%),
+    radial-gradient(circle at 18% 88%,rgba(37,99,235,.14),transparent 36%),
+    linear-gradient(160deg,#020617 0%,#071329 46%,#0b1f42 78%,#102a56 100%) !important;
   color:var(--mw-text) !important;
 }
 
@@ -5640,21 +5657,21 @@ html,body{
 #loginScreen,
 #loginScreen.reference-login{
   background:
-    radial-gradient(circle at 82% 18%,rgba(102,224,255,.12),transparent 28%),
-    linear-gradient(135deg,#070916 0%,#0C1024 48%,#2507AB 100%) !important;
+    radial-gradient(circle at 82% 18%,rgba(56,189,248,.11),transparent 30%),
+    linear-gradient(160deg,#020617 0%,#071329 50%,#0e2650 100%) !important;
   color:var(--mw-text) !important;
 }
 
 #loginScreen.reference-login .auth-card,
 #loginScreen.reference-login .auth-switch-panel{
-  background:rgba(12,16,36,.94) !important;
+  background:rgba(10,23,48,.94) !important;
   border-color:var(--mw-border) !important;
   color:var(--mw-text) !important;
 }
 
 #loginScreen.reference-login .ref-field{
-  background:#111735 !important;
-  border-color:#26305A !important;
+  background:#102244 !important;
+  border-color:#22406e !important;
 }
 #loginScreen.reference-login .ref-field:focus-within{
   border-color:var(--mw-cyan) !important;
@@ -5669,26 +5686,26 @@ html,body{
 }
 
 #loginScreen.reference-login .ref-primary{
-  background:linear-gradient(135deg,#66E0FF 0%,#3376FA 48%,#2507AB 100%) !important;
+  background:linear-gradient(135deg,#66e0ff 0%,#3b82f6 48%,#1d4ed8 100%) !important;
   border-color:transparent !important;
-  color:#070916 !important;
+  color:#020617 !important;
 }
 #loginScreen.reference-login .ref-primary:hover:not(:disabled){
-  background:linear-gradient(135deg,#99F0FF 0%,#6699FF 48%,#4513BC 100%) !important;
-  color:#070916 !important;
+  background:linear-gradient(135deg,#99F0FF 0%,#6699FF 48%,#3b82f6 100%) !important;
+  color:#020617 !important;
 }
 
 #loginScreen.reference-login .ref-secondary,
 #loginScreen.reference-login .switch-btn,
 #loginScreen.reference-login .social-icon{
-  background:#111735 !important;
-  border-color:#26305A !important;
+  background:#102244 !important;
+  border-color:#22406e !important;
   color:var(--mw-text) !important;
 }
 #loginScreen.reference-login .ref-secondary:hover,
 #loginScreen.reference-login .switch-btn:hover,
 #loginScreen.reference-login .social-icon:hover{
-  background:linear-gradient(135deg,#2507AB,#4513BC) !important;
+  background:linear-gradient(135deg,#1d4ed8,#3b82f6) !important;
   border-color:#6699FF !important;
   color:#fff !important;
 }
@@ -5705,21 +5722,21 @@ html,body{
   color:var(--mw-muted) !important;
 }
 #loginScreen.reference-login a{
-  color:#66E0FF !important;
+  color:#66e0ff !important;
 }
 
 /* Workspace */
 #app{
   background:
-    radial-gradient(circle at 88% 16%,rgba(102,224,255,.08),transparent 24%),
-    radial-gradient(circle at 12% 90%,rgba(69,19,188,.14),transparent 32%),
-    linear-gradient(135deg,#070916 0%,#0C1024 52%,#2507AB 100%) !important;
+    radial-gradient(circle at 88% 16%,rgba(56,189,248,.07),transparent 26%),
+    radial-gradient(circle at 12% 90%,rgba(37,99,235,.11),transparent 34%),
+    linear-gradient(160deg,#020617 0%,#071329 52%,#0c2148 100%) !important;
   color:var(--mw-text) !important;
 }
 
 #app .sidebar,
 #app .topbar{
-  background:rgba(12,16,36,.96) !important;
+  background:rgba(10,23,48,.96) !important;
   border-color:var(--mw-border) !important;
   color:var(--mw-text) !important;
 }
@@ -5735,27 +5752,27 @@ html,body{
 #app .project,
 #app .list-item,
 #app .course{
-  background:rgba(12,16,36,.90) !important;
+  background:rgba(10,23,48,.90) !important;
   border-color:var(--mw-border) !important;
   color:var(--mw-text) !important;
 }
 
 #app .nav button.active{
-  background:linear-gradient(135deg,#66E0FF 0%,#3376FA 48%,#2507AB 100%) !important;
+  background:linear-gradient(135deg,#66e0ff 0%,#3b82f6 48%,#1d4ed8 100%) !important;
   border-color:transparent !important;
-  color:#070916 !important;
+  color:#020617 !important;
 }
 #app .nav button:hover:not(.active){
-  background:rgba(37,7,171,.28) !important;
-  color:#66E0FF !important;
+  background:rgba(37,99,235,.22) !important;
+  color:#66e0ff !important;
 }
 
 #app input,
 #app textarea,
 #app select,
 #app .search-wrap input{
-  background:#111735 !important;
-  border-color:#26305A !important;
+  background:#102244 !important;
+  border-color:#22406e !important;
   color:var(--mw-text) !important;
 }
 #app input::placeholder,
@@ -5767,7 +5784,7 @@ html,body{
 #app textarea:focus,
 #app select:focus,
 #app .search-wrap input:focus{
-  border-color:#66E0FF !important;
+  border-color:#66e0ff !important;
 }
 
 body.light #app input,
@@ -5791,7 +5808,7 @@ body.light #app .search-wrap input:focus{
 
 #app a,
 #app .link{
-  color:#66E0FF !important;
+  color:#66e0ff !important;
 }
 #app a:hover,
 #app .link:hover{
@@ -5830,17 +5847,17 @@ body.light #app .search-wrap input:focus{
 #app .save-btn,
 #app .theme-btn,
 #app .modal-submit{
-  background:linear-gradient(135deg,#66E0FF 0%,#3376FA 48%,#2507AB 100%) !important;
+  background:linear-gradient(135deg,#66e0ff 0%,#3b82f6 48%,#1d4ed8 100%) !important;
   border-color:transparent !important;
-  color:#070916 !important;
+  color:#020617 !important;
 }
 #app .add-btn:hover,
 #app .small-btn:hover,
 #app .save-btn:hover,
 #app .theme-btn:hover,
 #app .modal-submit:hover{
-  background:linear-gradient(135deg,#99F0FF 0%,#6699FF 48%,#4513BC 100%) !important;
-  color:#070916 !important;
+  background:linear-gradient(135deg,#99F0FF 0%,#6699FF 48%,#3b82f6 100%) !important;
+  color:#020617 !important;
 }
 </style>
 
@@ -15520,7 +15537,7 @@ html body #app .topbar.topbar{
   background-color:transparent!important;
   background-image:
     radial-gradient(120% 150% at 10% -12%,rgba(255,255,255,.10),transparent 55%),
-    radial-gradient(150% 170% at 105% 112%,rgba(69,19,188,.16),transparent 62%),
+    radial-gradient(150% 170% at 105% 112%,rgba(37,99,235,.16),transparent 62%),
     linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.008) 45%,rgba(255,255,255,.02)),
     linear-gradient(160deg,rgba(9,10,22,.56),rgba(4,5,12,.64))!important;
   backdrop-filter:blur(26px) saturate(180%) brightness(1.05)!important;
@@ -15609,7 +15626,7 @@ html body #app .mw-admin-table th{text-align:left;padding:8px 10px;color:var(--m
 html body #app .mw-admin-table td{padding:9px 10px;border-bottom:1px solid var(--mw-border)}
 html body #app .mw-admin-table tr:last-child td{border-bottom:0}
 html body #app .mw-admin-role-badge{padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700}
-html body #app .mw-admin-role-badge.admin{background:rgba(114,38,255,.18);color:#c4b5fd}
+html body #app .mw-admin-role-badge.admin{background:rgba(124,92,255,.18);color:#c4b5fd}
 html body #app .mw-admin-role-badge.user{background:rgba(255,255,255,.07);color:var(--mw-muted)}
 html body #app .mw-admin-online-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px}
 html body #app .mw-admin-online-dot.on{background:#34d399}
@@ -16244,6 +16261,137 @@ html body.light #mwDemoBadge{color:#92400e;background:rgba(217,119,6,.12);border
 }
 </style>
 
+<style id="mw-paleta-canonica">
+/* ============================================================
+   PALETA ÚNICA — uma cor de marca, não três
+   ============================================================
+   O documento acumulou três peles sobrepostas, todas com !important:
+
+     1. `:root` original, azul-marinho  (#020617 / #071329, azul #2563eb)
+     2. `mw-final-sync`, grafite        (#0b0c0e, "azul" virou cinza #aeb4bc)
+     3. `mw-smart-gradient-palette`, roxo (#070916 -> #2507AB / #4513BC)
+
+   Como cada uma redeclara os mesmos tokens, o que sobrava na tela era
+   uma mistura: a canvas azul-marinho, o `body` grafite (#171a1f — que
+   ganhava por especificidade, `body:not(.light)` vence `html,body`),
+   os cartões roxos e o acento azul apagado para cinza. Daí a sensação
+   de paleta desregulada.
+
+   Aqui existe uma decisão só: a identidade é a do preloader e do
+   ícone — azul-marinho profundo com acento ciano/azul. Os gradientes
+   roxos foram reafinados na própria folha que os define; esta folha
+   fecha o assunto reancorando TODOS os tokens legados no mesmo
+   conjunto, para que qualquer regra antiga que ainda use `--bg`,
+   `--panel`, `--mw-surface` ou `--mw-solid` caia na mesma família.
+
+   Só cor. Nenhuma medida, fonte, sombra estrutural ou animação. */
+
+html:root{
+  /* superfícies */
+  --bg:#020617;          --bg2:#071329;
+  --panel:rgba(11,23,48,.66);  --panel2:rgba(8,18,38,.82);
+  --line:rgba(99,170,255,.16);
+  /* acento — o azul volta a ser azul */
+  --blue:#2563eb;        --blue2:#38bdf8;   --violet:#7c5cff;
+  --text:#f2f7ff;        --muted:#93a8c9;   --muted2:#63799c;
+  --danger:#fb7185;
+  --shadow:0 30px 90px rgba(2,6,23,.55);
+  /* aliases das peles antigas, reancorados no mesmo conjunto */
+  --mw-bg:#020617;       --mw-surface:#0a1730;   --mw-surface-2:#102244;
+  --mw-solid:#0a1730;    --mw-solid-2:#102244;   --mw-soft:#0d1c3a;
+  --mw-border:#22406e;   --mw-text:#f2f7ff;      --mw-muted:#9db2d4;
+  --mw-accent:#38bdf8;
+}
+
+html body.light{
+  --bg:#eef4ff;          --bg2:#e4edff;
+  --panel:rgba(255,255,255,.72);  --panel2:rgba(255,255,255,.88);
+  --line:rgba(37,99,235,.16);
+  --blue:#2563eb;        --blue2:#0ea5e9;   --violet:#6d4dff;
+  --text:#0b1830;        --muted:#4d6486;   --muted2:#6b80a0;
+  --shadow:0 24px 70px rgba(15,40,90,.14);
+  --mw-bg:#eef4ff;       --mw-surface:#ffffff;   --mw-surface-2:#f5f9ff;
+  --mw-solid:#ffffff;    --mw-solid-2:#f5f9ff;   --mw-soft:#eaf1ff;
+  --mw-border:rgba(20,45,90,.13);  --mw-text:#0b1830;  --mw-muted:#4d6486;
+  --mw-accent:#2563eb;
+}
+
+/* O `body` grafite. `body:not(.light)` (0,1,1) vencia `html,body`
+   (0,0,1) da folha de gradientes, então o fundo decorativo nunca
+   chegava a pintar. A regra grafite saiu; aqui fica só a cor de base,
+   por baixo do gradiente, para o caso de ele não carregar. */
+html body:not(.light){background-color:#020617!important}
+
+/* --- claro ---------------------------------------------------------
+   O modo claro tinha o mesmo problema, em três famílias: bege
+   (#ecebe7 / #eeeae2), cinza neutro (#f1f2f3) e azul-gelo (#edf8ff).
+   O `body` ficava cinza, a canvas azul-gelo e o `#app` azul-gelo — a
+   borda cinza aparecia em volta e no overscroll. Uma família só, a
+   mesma do escuro rebatida para a luz. */
+html body.light{
+  background:
+    radial-gradient(circle at 82% 16%,rgba(56,189,248,.13),transparent 30%),
+    radial-gradient(circle at 16% 88%,rgba(37,99,235,.10),transparent 36%),
+    linear-gradient(160deg,#f4f9ff 0%,#eaf2ff 52%,#e2ecff 100%)!important;
+  color:#0b1830!important;
+}
+html body.light #app{
+  background:
+    radial-gradient(circle at 88% 14%,rgba(56,189,248,.10),transparent 26%),
+    linear-gradient(160deg,#f6faff 0%,#edf4ff 54%,#e5eeff 100%)!important;
+  color:#0b1830!important;
+}
+
+/* As superfícies do app (cartões, menus, campos) foram escritas sem
+   escopo de tema: `#app .card{color:var(--mw-text)!important}` valia
+   também no claro. O fundo do cartão era corrigido depois por uma
+   folha clara, mas a COR DO TEXTO não — então no modo claro o texto
+   ficava branco sobre cartão branco. Aqui as superfícies claras ganham
+   texto escuro, com especificidade suficiente para vencer aqueles
+   !important. */
+html body.light #app .card,
+html body.light #app .liquid-card,
+html body.light #app .settings-group,
+html body.light #app .modal-box,
+html body.light #app .notification-menu,
+html body.light #app .lecture-card,
+html body.light #app .section-card,
+html body.light #app .activity-card,
+html body.light #app .project,
+html body.light #app .list-item,
+html body.light #app .course,
+html body.light #app .stat{
+  color:#0b1830!important;
+  border-color:rgba(20,50,100,.14)!important;
+}
+html body.light #app input,
+html body.light #app textarea,
+html body.light #app select,
+html body.light #app .search-wrap input{
+  background:rgba(255,255,255,.86)!important;
+  border-color:rgba(20,50,100,.16)!important;
+  color:#0b1830!important;
+}
+html body.light #app input::placeholder,
+html body.light #app textarea::placeholder,
+html body.light #app .search-wrap input::placeholder{color:#6b80a0!important}
+html body.light #app input:focus,
+html body.light #app textarea:focus,
+html body.light #app select:focus,
+html body.light #app .search-wrap input:focus{
+  border-color:#2563eb!important;
+  box-shadow:0 0 0 3px rgba(37,99,235,.13)!important;
+}
+html body.light #app a,
+html body.light #app .link{color:#1d4ed8!important}
+html body.light #app .nav button:hover:not(.active){
+  background:rgba(37,99,235,.10)!important;color:#123a86!important;
+}
+
+/* Trilhos e cantos que ficaram com o cinza da pele antiga. */
+html body:not(.light) ::selection{background:rgba(56,189,248,.28)}
+html body.light ::selection{background:rgba(37,99,235,.20)}
+</style>
 <style id="mw-canvas-safe-area">
 /* ============================================================
    A COR DA CANVAS — a faixa cinza no rodapé do app instalado
@@ -16263,7 +16411,7 @@ html body.light #mwDemoBadge{color:#92400e;background:rgba(217,119,6,.12);border
    longhand e não apaga background-image. Sendo a última regra do
    documento e !important, ela vence as anteriores nesse componente. */
 html{background-color:#020617!important}
-html:has(body.light){background-color:#edf5ff!important}
+html:has(body.light){background-color:#f4f9ff!important}
 
 /* Cinto e suspensório: o preloader passa alguns pixels além da
    viewport, para o caso de o cálculo da safe area ficar 1px curto em
