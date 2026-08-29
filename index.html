@@ -4048,8 +4048,33 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
       if (campo.value.length > 6) campo.value = campo.value.slice(0, 6);
       tentar();
     });
+    /* "Esqueci o código" NÃO derruba mais a sessão. Antes ele apagava o
+       código e o `mwSession` e jogava para o login — quem tocasse sem
+       querer era deslogado do aparelho. A senha da conta prova a mesma
+       coisa que o código, então ela destrava aqui mesmo: o código sai
+       (você esqueceu), a sessão fica. Só depois de errar a senha é que
+       resta o login completo. */
     esqueci && esqueci.addEventListener('click', function(){
-      cairParaLogin('Entre com sua senha para continuar.');
+      var senha = prompt('Digite a senha da sua conta para destravar:');
+      if (senha === null) return;
+      var conta = null;
+      try {
+        var u = JSON.parse(localStorage.getItem('mateusWorkspaceUsersV2') || '{}');
+        conta = u[(localStorage.getItem('mateusActiveUserV2') || '').toLowerCase()];
+      } catch (e) {}
+      var confere = (window.mwSenha && conta)
+        ? window.mwSenha.confere(conta, senha)
+        : Promise.resolve(false);
+      Promise.resolve(confere).then(function(certo){
+        if (!certo) { dizer('Senha incorreta. Tente de novo ou entre com sua conta.'); return; }
+        try {
+          localStorage.removeItem(PIN_SAL); localStorage.removeItem(PIN_HASH);
+          localStorage.removeItem(PIN_ERROS);
+        } catch (e) {}
+        portaoPin.classList.add('hidden');
+        revealApp();
+        if (typeof toast === 'function') toast('Código removido. Defina outro em Configurações.');
+      }).catch(function(){ dizer('Não foi possível conferir a senha.'); });
     });
     /* O card inteiro devolve o foco ao campo: no celular, tocar em
        qualquer lugar da tela traz o teclado de volta. */
@@ -17710,6 +17735,100 @@ body.light #app .mw-reference-profile.mw-estado-ativo .mw-profile-main{
   document.addEventListener('pointerdown', destravar, { once: true, passive: true });
 })();
 </script>
+<style id="mw-modo-claro-inteligente">
+/* ============================================================
+   MODO CLARO: OS IRMÃOS TÊM QUE SE PARECER
+   ============================================================
+   Medido: no modo claro o sino virava branco com ícone escuro
+   (rgb(255,255,255) / rgb(11,24,48)) enquanto a LUPA continuava
+   exatamente como no escuro — fundo transparente e ciano #7fd4ff.
+   Duas peças lado a lado, mesmo papel, tratamentos diferentes: por
+   isso a lupa parecia suja sobre o fundo claro.
+
+   Aqui os três botões da barra superior — lupa, sino e a Nyc AI —
+   passam a compartilhar o mesmo material no claro. No escuro nada
+   muda: as regras abaixo são todas escopadas em body.light. */
+html body.light #app .topbar .icon-btn,
+html body.light #app #searchWrap .search-icon,
+html body.light #app #searchWrap .search-icon.icon-btn,
+html body.light #app #notificationBtn{
+  background:#fff!important;
+  background-image:none!important;
+  color:#0b1830!important;
+  border:1px solid rgba(15,40,80,.14)!important;
+  box-shadow:0 2px 8px rgba(15,40,80,.06)!important;
+}
+html body.light #app .topbar .icon-btn:hover,
+html body.light #app #searchWrap .search-icon:hover,
+html body.light #app #notificationBtn:hover{
+  background:#f5f9ff!important;
+  border-color:rgba(37,99,235,.26)!important;
+  color:#0b1830!important;
+}
+/* O traço do ícone segue a cor do botão, senão o SVG fica com a cor
+   antiga cravada por dentro. */
+html body.light #app .topbar .icon-btn svg,
+html body.light #app #searchWrap .search-icon svg,
+html body.light #app #notificationBtn svg{
+  color:currentColor!important;stroke:currentColor!important;
+}
+html body.light #app #searchWrap.search-wrap{
+  background:#fff!important;
+  border:1px solid rgba(15,40,80,.14)!important;
+  box-shadow:0 2px 8px rgba(15,40,80,.06)!important;
+}
+html body.light #app #searchWrap input{color:#0b1830!important;background:transparent!important}
+html body.light #app #searchWrap input::placeholder{color:#6b80a0!important}
+
+/* --- os botões no claro ---------------------------------------
+   O gradiente principal é o mesmo dos dois temas (é o acento da
+   marca), mas no claro ele precisa de texto branco e sombra mais
+   discreta: sobre fundo claro, a sombra pesada do escuro vira uma
+   mancha. */
+html body.light #app .save-btn,
+html body.light #app .add-btn,
+html body.light #app .modal-submit,
+html body.light #app .college-save,
+html body.light #app #saveProfile{
+  color:#fff!important;
+  box-shadow:0 5px 16px rgba(37,99,235,.22)!important;
+}
+html body.light #app .save-btn:hover:not(:disabled),
+html body.light #app .add-btn:hover:not(:disabled),
+html body.light #app #saveProfile:hover:not(:disabled){
+  box-shadow:0 9px 22px rgba(37,99,235,.28)!important;
+}
+html body.light #app .small-btn,
+html body.light #app .modal-cancel{
+  background:#fff!important;
+  color:#16345c!important;
+  border:1px solid rgba(15,40,80,.14)!important;
+  box-shadow:0 2px 8px rgba(15,40,80,.05)!important;
+}
+html body.light #app .small-btn:hover:not(:disabled),
+html body.light #app .modal-cancel:hover{
+  background:#f2f8ff!important;border-color:rgba(37,99,235,.28)!important;
+}
+html body.light #app #clearAll,
+html body.light #app .mw-pin-remover,
+html body.light #app .danger-btn{
+  background:#fff5f6!important;color:#c81e3c!important;
+  border:1px solid rgba(200,30,60,.24)!important;
+  box-shadow:0 2px 8px rgba(200,30,60,.06)!important;
+}
+html body.light #app #clearAll:hover,
+html body.light #app .danger-btn:hover{background:#ffe9ec!important}
+
+/* Texto secundário no claro estava claro demais sobre branco. */
+html body.light #app .settings-group p,
+html body.light #app .mw-pin-estado,
+html body.light #app .mw-transfere-passos{color:#4d6486!important}
+html body.light #app .mw-transfere-onde{
+  background:rgba(37,99,235,.07)!important;
+  border-color:rgba(37,99,235,.18)!important;
+  color:#0b1830!important;
+}
+</style>
 <style id="mw-botoes-unificados">
 /* ============================================================
    UM SÓ TRATAMENTO PARA OS BOTÕES
@@ -17937,13 +18056,61 @@ body.light .mwv2-input-wrap > button.toggle:hover{background:rgba(15,23,42,.06)}
 .mw-forgot-transfere{margin-top:4px}
 #mwTrazerConta{color:var(--muted)!important}
 #mwTrazerConta:hover{color:var(--blue2)!important}
-/* A confirmação precisa ser vista sem rolar e sem sumir sozinha: é o
-   único sinal de que a transferência deu certo. */
+
+/* ============================================================
+   NADA DENTRO DO PAINEL PODE SER ESPREMIDO
+   ============================================================
+   O painel de login é uma coluna flex. Itens de flex encolhem por
+   padrão (flex-shrink:1), então quando a caixa de confirmação entrou,
+   o conteúdo passou da altura disponível e o navegador espremeu o
+   primeiro item elástico que achou: o botão ENTRAR foi de 52px para
+   ZERO de altura. O botão não sumiu por engano de CSS meu no botão —
+   sumiu porque ninguém tinha dito que ele não pode encolher.
+
+   A regra certa é geral, não pontual: nenhum filho do painel encolhe;
+   se não couber, o painel rola. */
+html body .mwv2-auth-pane{overflow-y:auto}
+html body .mwv2-auth-pane > *{flex-shrink:0}
+
+/* A confirmação: um cartão com o visto sendo desenhado, não um
+   parágrafo de aviso. É o único sinal de que a transferência deu
+   certo, então merece parecer uma conclusão. */
 #mwTrazerAviso{
-  margin-top:10px;padding:11px 13px;border-radius:12px;font-size:13px;line-height:1.5;
-  background:rgba(56,189,248,.12);border:1px solid rgba(99,170,255,.28);color:var(--text);
+  display:flex;align-items:flex-start;gap:10px;
+  margin-top:12px;padding:12px 14px;border-radius:14px;
+  font-size:13px;line-height:1.5;color:var(--text);
+  background:linear-gradient(135deg,rgba(56,189,248,.16),rgba(37,99,235,.10));
+  border:1px solid rgba(99,170,255,.3);
+  animation:mwTrazerEntra .42s cubic-bezier(.22,.72,.26,1) both;
 }
-#mwTrazerAviso.mw-ruim{background:rgba(251,113,133,.12);border-color:rgba(251,113,133,.32)}
+@keyframes mwTrazerEntra{
+  from{opacity:0;transform:translateY(8px) scale(.98)}
+  to{opacity:1;transform:none}
+}
+#mwTrazerAviso::before{
+  content:"";flex:none;width:20px;height:20px;margin-top:1px;border-radius:50%;
+  background:#38bdf8;
+  /* o visto, desenhado por máscara: sem SVG extra no documento */
+  -webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="black" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>') center/15px 15px no-repeat;
+  mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="black" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>') center/15px 15px no-repeat;
+  animation:mwVistoEntra .5s cubic-bezier(.34,1.4,.5,1) .12s both;
+}
+@keyframes mwVistoEntra{
+  from{transform:scale(.2);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+#mwTrazerAviso.mw-ruim{
+  background:linear-gradient(135deg,rgba(251,113,133,.16),rgba(251,113,133,.08));
+  border-color:rgba(251,113,133,.34);
+}
+#mwTrazerAviso.mw-ruim::before{
+  background:#fb7185;
+  -webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="black" stroke-width="2.6" stroke-linecap="round"/></svg>') center/14px 14px no-repeat;
+  mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="black" stroke-width="2.6" stroke-linecap="round"/></svg>') center/14px 14px no-repeat;
+}
+@media (prefers-reduced-motion: reduce){
+  #mwTrazerAviso,#mwTrazerAviso::before{animation:none!important}
+}
 </style>
 <script id="mw-trazer-login-js">
 /* Trazer a conta a partir da TELA DE LOGIN. Sem isto era preciso criar
