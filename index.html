@@ -3289,7 +3289,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
           <label for="password">Senha</label>
           <div class="mwv2-input-wrap"><input id="password" type="password" autocomplete="current-password" placeholder="Senha"><button class="toggle" id="togglePassword" type="button">◌</button></div>
 
-          <div class="mwv2-forgot"><button type="button" id="forgotPasswordLink">Esqueci minha senha</button></div>
+          <div class="mwv2-forgot"><button type="button" id="forgotPasswordLink">Esqueci minha senha</button></div><div class="mwv2-forgot mw-forgot-transfere"><button type="button" id="mwTrazerConta">Já tenho conta em outro lugar</button></div>
 
           <button class="ref-primary" id="loginButton" type="button">ENTRAR</button>
           <div class="status" id="status"></div>
@@ -3624,7 +3624,8 @@ body.light .mw-faceid-gate-card p{color:#526988}
       <div class="settings-group hidden" id="legacyThemeGroup"><h4>Preferências</h4><div class="theme-row"><button class="theme-btn" id="darkModeBtn">Modo Escuro</button><button class="theme-btn" id="lightModeBtn">Modo Claro</button></div></div>
       <div class="settings-group"><h4>Sessão</h4><p>Sua conta fica guardada neste navegador. Ao sair, será preciso entrar de novo com seu usuário e senha.</p><div class="profile-actions"><button class="small-btn mw-logout-btn" id="logout">Sair</button></div></div>
       <div class="settings-group" id="mwFaceIdGroup" hidden><h4>Segurança</h4><p>Use o Face ID deste iPhone/iPad para entrar no Workspace sem digitar nada.</p><div class="mw-faceid-row"><span class="mw-faceid-row-label">Entrar com Face ID</span><button type="button" class="mw-faceid-switch" id="mwFaceIdToggle" role="switch" aria-checked="false" aria-label="Entrar com Face ID"><i></i></button></div><p class="form-error" id="mwFaceIdStatus" hidden></p></div>
-      <div class="settings-group" id="mwPinGroup"><h4>Código de acesso</h4><p>Um código de 6 dígitos para destravar o Workspace ao reabrir. Funciona em qualquer aparelho, com ou sem Face ID.</p><div class="mw-pin-row"><span class="mw-pin-estado" id="mwPinEstado">Nenhum código definido.</span><div class="mw-pin-acoes"><button type="button" class="small-btn" id="mwPinDefinir">Definir código</button><button type="button" class="small-btn mw-pin-remover" id="mwPinRemover" hidden>Remover</button></div></div><p class="form-error" id="mwPinStatus" hidden></p></div>
+      <div class="settings-group" id="mwSomGrupo"><h4>Som de abertura</h4><p>Um sopro curto e uma batida quando a marca se forma. O navegador só deixa tocar depois de você ter tocado na tela alguma vez — no iPhone, a primeira abertura costuma sair muda.</p><div class="mw-pin-row"><span class="mw-pin-estado" id="mwSomEstado">Ligado.</span><div class="mw-pin-acoes"><button type="button" class="small-btn" id="mwSomOuvir">Ouvir</button><button type="button" class="small-btn" id="mwSomAlternar">Desligar</button></div></div></div>
+        <div class="settings-group" id="mwPinGroup"><h4>Código de acesso</h4><p>Um código de 6 dígitos para destravar o Workspace ao reabrir. Funciona em qualquer aparelho, com ou sem Face ID.</p><div class="mw-pin-row"><span class="mw-pin-estado" id="mwPinEstado">Nenhum código definido.</span><div class="mw-pin-acoes"><button type="button" class="small-btn" id="mwPinDefinir">Definir código</button><button type="button" class="small-btn mw-pin-remover" id="mwPinRemover" hidden>Remover</button></div></div><p class="form-error" id="mwPinStatus" hidden></p></div>
       <div class="settings-group"><h4>Aplicativo</h4><p id="mwSettingsInstallDesc">Adicione o Mateus Workspace à tela de início para abrir como um app.</p><div class="profile-actions"><button class="small-btn" id="mwSettingsInstallBtn">Instalar aplicativo</button></div></div>
       <div class="settings-group" id="mwTransfereGrupo"><h4>Usar a mesma conta no app</h4>
         <p id="mwTransfereOnde" class="mw-transfere-onde"></p>
@@ -17050,13 +17051,16 @@ html body #app .mw-transfere-acoes .save-btn.mw-secundario{
     }
   });
 
-  btnColar.addEventListener('click', function(){
-    var txt = prompt('Cole aqui o código copiado do outro lado:');
-    if (txt === null) return;
+  /* Exposto porque a tela de LOGIN também precisa colar: antes só dava
+     para chegar aqui depois de entrar, ou seja, era preciso criar uma
+     conta no app só para poder trazer a conta que já existia — o que é
+     exatamente o contrário do objetivo. Uma função, dois lugares. */
+  window.mwTrazerConta = function(txt, mostrar){
+    var dizer = mostrar || aviso;
     var pacote;
-    try { pacote = doCodigo(txt); } catch (e) { aviso('Esse código não é válido.', false); return; }
+    try { pacote = doCodigo(txt); } catch (e) { dizer('Esse código não é válido.', false); return; }
     if (!pacote || pacote.mwConta !== 1 || !pacote.conta || !pacote.conta.email) {
-      aviso('Esse código não é de uma conta do Workspace.', false); return;
+      dizer('Esse código não é de uma conta do Workspace.', false); return;
     }
     var conta = pacote.conta;
     var email = String(conta.email).toLowerCase();
@@ -17064,7 +17068,7 @@ html body #app .mw-transfere-acoes .save-btn.mw-secundario{
     /* A unicidade vale aqui também: importar por cima de outra conta com
        o mesmo usuário deixaria duas iguais e o login pegaria a errada. */
     if (window.mwConta && !window.mwConta.usuarioLivre(conta.username, email)) {
-      aviso('Já existe uma conta com esse nome de usuário aqui. Troque o nome de usuário no outro lado antes de transferir.', false);
+      dizer('Já existe uma conta com esse nome de usuário aqui. Troque o nome de usuário no outro lado antes de transferir.', false);
       return;
     }
     var todas = {};
@@ -17074,17 +17078,23 @@ html body #app .mw-transfere-acoes .save-btn.mw-secundario{
     try {
       localStorage.setItem('mateusWorkspaceUsersV2', JSON.stringify(todas));
       if (pacote.dados) localStorage.setItem('mateusWorkspaceV4', JSON.stringify(pacote.dados));
-    } catch (e) { aviso('Não foi possível salvar a conta aqui.', false); return; }
+    } catch (e) { dizer('Não foi possível salvar a conta aqui.', false); return; }
 
     /* Colar do lado de onde o código saiu não é erro, mas também não
        adianta nada — e a mensagem antiga dizia "Conta atualizada", o
        que parecia sucesso. Melhor dizer o que de fato aconteceu. */
     if (jaTinha && !noApp) {
-      aviso('Essa conta já era desta tela — colar aqui não muda nada. O código precisa ser colado no APP da tela de início.', false);
+      dizer('Essa conta já era desta tela — colar aqui não muda nada. O código precisa ser colado no APP da tela de início.', false);
       return;
     }
-    aviso('Pronto: a conta ' + conta.username + ' agora existe aqui. Entre com a mesma senha de sempre.', true);
+    dizer('Pronto: a conta ' + conta.username + ' agora existe aqui. Entre com a mesma senha de sempre.', true);
     if (typeof toast === 'function') toast('Conta trazida para este aparelho');
+  };
+
+  btnColar.addEventListener('click', function(){
+    var txt = prompt('Cole aqui o código copiado do outro lado:');
+    if (txt === null) return;
+    window.mwTrazerConta(txt);
   });
 })();
 </script>
@@ -17586,6 +17596,236 @@ body.light #app .mw-reference-profile.mw-estado-ativo .mw-profile-main{
   });
 })();
 </script>
+<script id="mw-som-abertura">
+/* ============================================================
+   O SOM DA ABERTURA
+   ============================================================
+   Sintetizado em Web Audio, sem arquivo: o projeto é um HTML só, e um
+   .mp3 seria mais um pedido de rede na abertura — justamente o momento
+   que a gente passou o tempo todo tentando desafogar.
+
+   São dois gestos, do jeito que abertura de marca costuma soar:
+     1. um sopro que sobe enquanto os traços são desenhados — ruído
+        passando por um filtro que abre de 300Hz a 5kHz;
+     2. uma batida grave com um brilho por cima quando o nome assenta.
+
+   AVISO IMPORTANTE, e é limitação do navegador, não do código: sem um
+   toque prévio da pessoa, o navegador BLOQUEIA áudio audível. No iOS a
+   regra é rígida — na primeira abertura o som quase certamente não sai.
+   Por isso nada aqui depende do som ter tocado: se for bloqueado, a
+   promessa é engolida e a animação segue igual. E fica um ouvinte de
+   um toque só, para a próxima abertura já poder soar. */
+(function(){
+  var CHAVE = 'mwSomAbertura';        // '0' desliga
+  function ligado(){
+    try { return localStorage.getItem(CHAVE) !== '0'; } catch (e) { return true; }
+  }
+  window.mwSomLigado = ligado;
+  window.mwSomDefinir = function(v){
+    try { localStorage.setItem(CHAVE, v ? '1' : '0'); } catch (e) {}
+  };
+
+  var Ctx = window.AudioContext || window.webkitAudioContext;
+  if (!Ctx) return;
+
+  function tocar(){
+    if (!ligado()) return;
+    var ctx;
+    try { ctx = new Ctx(); } catch (e) { return; }
+    var t0 = ctx.currentTime + 0.02;
+    var mestre = ctx.createGain();
+    mestre.gain.value = 0.22;          // discreto: é abertura, não alarme
+    mestre.connect(ctx.destination);
+
+    /* 1) o sopro — ruído rosa-ish por um passa-baixa que abre */
+    var dur = 1.5;
+    var buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * dur), ctx.sampleRate);
+    var d = buf.getChannelData(0);
+    var ultimo = 0;
+    for (var i = 0; i < d.length; i++) {
+      var branco = Math.random() * 2 - 1;
+      ultimo = (ultimo + 0.02 * branco) / 1.02;   // suaviza para não sibilar
+      d[i] = ultimo * 3.2;
+    }
+    var ruido = ctx.createBufferSource(); ruido.buffer = buf;
+    var filtro = ctx.createBiquadFilter(); filtro.type = 'lowpass';
+    filtro.frequency.setValueAtTime(300, t0);
+    filtro.frequency.exponentialRampToValueAtTime(5000, t0 + 1.15);
+    filtro.Q.value = 0.9;
+    var gSopro = ctx.createGain();
+    gSopro.gain.setValueAtTime(0.0001, t0);
+    gSopro.gain.exponentialRampToValueAtTime(0.5, t0 + 0.9);
+    gSopro.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.5);
+    ruido.connect(filtro); filtro.connect(gSopro); gSopro.connect(mestre);
+    ruido.start(t0); ruido.stop(t0 + dur);
+
+    /* 2) a batida, quando o nome assenta */
+    var tb = t0 + 1.12;
+    var grave = ctx.createOscillator(); grave.type = 'sine';
+    grave.frequency.setValueAtTime(150, tb);
+    grave.frequency.exponentialRampToValueAtTime(48, tb + 0.5);
+    var gGrave = ctx.createGain();
+    gGrave.gain.setValueAtTime(0.0001, tb);
+    gGrave.gain.exponentialRampToValueAtTime(0.85, tb + 0.02);
+    gGrave.gain.exponentialRampToValueAtTime(0.0001, tb + 0.75);
+    grave.connect(gGrave); gGrave.connect(mestre);
+    grave.start(tb); grave.stop(tb + 0.8);
+
+    /* o brilho por cima: duas quintas, curtas */
+    [1244.5, 1864.7].forEach(function(hz, k){
+      var o = ctx.createOscillator(); o.type = 'triangle';
+      o.frequency.value = hz;
+      var g = ctx.createGain();
+      var ti = tb + k * 0.045;
+      g.gain.setValueAtTime(0.0001, ti);
+      g.gain.exponentialRampToValueAtTime(0.13, ti + 0.03);
+      g.gain.exponentialRampToValueAtTime(0.0001, ti + 0.55);
+      o.connect(g); g.connect(mestre);
+      o.start(ti); o.stop(ti + 0.6);
+    });
+
+    /* Fecha o contexto sozinho: deixar aberto segura áudio do sistema
+       (e no iOS pode abaixar a música de quem estiver ouvindo). */
+    setTimeout(function(){ try { ctx.close(); } catch (e) {} }, 2600);
+
+    if (ctx.state === 'suspended') {
+      ctx.resume().catch(function(){});
+    }
+  }
+
+  /* Toca junto com o primeiro traço (o atraso de 0,4s do M). Se o
+     navegador recusar, não acontece nada — nem erro, nem atraso. */
+  window.mwSomTocar = function(){ try { tocar(); } catch (e) {} };
+  function tentar(){ window.mwSomTocar(); }
+  if (document.getElementById('mwBootLoader')) {
+    setTimeout(tentar, 380);
+  }
+
+  /* Um toque em qualquer lugar destrava o áudio para as próximas
+     aberturas, sem tocar nada agora. */
+  var destravar = function(){
+    try { var c = new Ctx(); c.resume().then(function(){ c.close(); }).catch(function(){}); } catch (e) {}
+    document.removeEventListener('pointerdown', destravar);
+  };
+  document.addEventListener('pointerdown', destravar, { once: true, passive: true });
+})();
+</script>
+<style id="mw-botoes-unificados">
+/* ============================================================
+   UM SÓ TRATAMENTO PARA OS BOTÕES
+   ============================================================
+   Os botões do site foram ganhando estilo folha a folha, cada rodada
+   com o seu: uns azuis chapados, uns com gradiente, uns quadrados, uns
+   com sombra pesada. Aqui eles passam a compartilhar a mesma forma, o
+   mesmo raio, a mesma resposta ao toque e o mesmo azul da marca.
+
+   Três papéis, e só três:
+     PRINCIPAL  — a ação da tela (salvar, criar, entrar)
+     SECUNDÁRIO — alternativas e ações de apoio
+     PERIGO     — o que apaga
+
+   Especificidade alta de propósito: quase todas as folhas antigas
+   marcam !important, então uma regra curta não venceria. */
+
+html body #app .save-btn,
+html body #app .add-btn,
+html body #app .modal-submit,
+html body #app .college-save,
+html body #app #saveProfile,
+html body #app #saveCollege{
+  background:linear-gradient(135deg,#38bdf8 0%,#2563eb 62%,#1d4ed8 100%)!important;
+  color:#02122e!important;
+  border:0!important;
+  border-radius:13px!important;
+  padding:11px 18px!important;
+  font-weight:700!important;
+  letter-spacing:.01em!important;
+  box-shadow:0 6px 18px rgba(37,99,235,.28)!important;
+  transition:transform .16s cubic-bezier(.22,.8,.24,1),box-shadow .16s ease,filter .16s ease!important;
+}
+html body #app .save-btn:hover:not(:disabled),
+html body #app .add-btn:hover:not(:disabled),
+html body #app .modal-submit:hover:not(:disabled),
+html body #app .college-save:hover:not(:disabled),
+html body #app #saveProfile:hover:not(:disabled){
+  transform:translateY(-1px)!important;
+  box-shadow:0 10px 26px rgba(37,99,235,.36)!important;
+  filter:saturate(1.06)!important;
+}
+/* O toque tem que responder no dedo, não só no mouse. */
+html body #app .save-btn:active:not(:disabled),
+html body #app .add-btn:active:not(:disabled),
+html body #app .modal-submit:active:not(:disabled),
+html body #app .college-save:active:not(:disabled),
+html body #app #saveProfile:active:not(:disabled){
+  transform:translateY(0) scale(.975)!important;
+  box-shadow:0 4px 12px rgba(37,99,235,.24)!important;
+}
+html body #app .save-btn:disabled,
+html body #app .add-btn:disabled,
+html body #app .modal-submit:disabled{
+  opacity:.5!important;box-shadow:none!important;transform:none!important;cursor:not-allowed!important;
+}
+
+/* Secundário: mesma forma, sem peso. Vidro, não bloco azul. */
+html body #app .small-btn,
+html body #app .modal-cancel,
+html body #app .mw-dev-actions button{
+  background:rgba(255,255,255,.055)!important;
+  color:var(--text)!important;
+  border:1px solid var(--line)!important;
+  border-radius:13px!important;
+  padding:10px 16px!important;
+  font-weight:600!important;
+  box-shadow:none!important;
+  transition:transform .16s cubic-bezier(.22,.8,.24,1),background .16s ease,border-color .16s ease!important;
+}
+html body #app .small-btn:hover:not(:disabled),
+html body #app .modal-cancel:hover{
+  background:rgba(56,189,248,.12)!important;
+  border-color:rgba(99,170,255,.34)!important;
+}
+html body #app .small-btn:active:not(:disabled){transform:scale(.975)!important}
+body.light html body #app .small-btn,
+body.light #app .small-btn,
+body.light #app .modal-cancel{
+  background:rgba(15,23,42,.045)!important;color:#0b1830!important;
+  border-color:rgba(20,50,100,.16)!important;
+}
+
+/* Perigo: o vermelho da marca, e só onde apaga de verdade. */
+html body #app #clearAll,
+html body #app .mw-pin-remover,
+html body #app .danger-btn,
+html body #app .mw-photo-tools button.remove{
+  background:rgba(251,113,133,.12)!important;
+  color:#fb7185!important;
+  border:1px solid rgba(251,113,133,.32)!important;
+  border-radius:13px!important;
+  padding:10px 16px!important;
+  font-weight:600!important;
+  box-shadow:none!important;
+  transition:transform .16s cubic-bezier(.22,.8,.24,1),background .16s ease!important;
+}
+html body #app #clearAll:hover,
+html body #app .danger-btn:hover{background:rgba(251,113,133,.2)!important}
+html body #app #clearAll:active{transform:scale(.975)!important}
+
+/* Foco visível de teclado em todos eles, que várias folhas antigas
+   tinham apagado com outline:none. */
+html body #app .save-btn:focus-visible,
+html body #app .small-btn:focus-visible,
+html body #app .add-btn:focus-visible,
+html body #app #clearAll:focus-visible{
+  outline:2px solid var(--blue2)!important;outline-offset:2px!important;
+}
+
+@media (prefers-reduced-motion: reduce){
+  html body #app .save-btn,html body #app .small-btn,
+  html body #app .add-btn,html body #app #clearAll{transition:none!important}
+  html body #app .save-btn:hover,html body #app .save-btn:active{transform:none!important}
+}
+</style>
 <style id="mw-acabamento-formulario">
 /* ============================================================
    O AMARELO DO PREENCHIMENTO AUTOMÁTICO
@@ -17631,6 +17871,83 @@ html body .mwv2-input-wrap > button.toggle:active{transform:translateY(-50%) sca
 body.light html body .mwv2-input-wrap > button.toggle:hover,
 body.light .mwv2-input-wrap > button.toggle:hover{background:rgba(15,23,42,.06)}
 </style>
+<style id="mw-trazer-login-style">
+.mw-forgot-transfere{margin-top:4px}
+#mwTrazerConta{color:var(--muted)!important}
+#mwTrazerConta:hover{color:var(--blue2)!important}
+/* A confirmação precisa ser vista sem rolar e sem sumir sozinha: é o
+   único sinal de que a transferência deu certo. */
+#mwTrazerAviso{
+  margin-top:10px;padding:11px 13px;border-radius:12px;font-size:13px;line-height:1.5;
+  background:rgba(56,189,248,.12);border:1px solid rgba(99,170,255,.28);color:var(--text);
+}
+#mwTrazerAviso.mw-ruim{background:rgba(251,113,133,.12);border-color:rgba(251,113,133,.32)}
+</style>
+<script id="mw-trazer-login-js">
+/* Trazer a conta a partir da TELA DE LOGIN. Sem isto era preciso criar
+   uma conta no app só para chegar em Configurações e poder colar o
+   código — ou seja, criar uma conta para não precisar criar uma conta. */
+(function(){
+  var link = document.getElementById('mwTrazerConta');
+  if (!link) return;
+  var caixa = null;
+
+  function mostrar(msg, bom){
+    if (!caixa) {
+      caixa = document.createElement('p');
+      caixa.id = 'mwTrazerAviso';
+      link.closest('.mwv2-forgot').insertAdjacentElement('afterend', caixa);
+    }
+    caixa.textContent = msg;
+    caixa.classList.toggle('mw-ruim', !bom);
+  }
+
+  link.addEventListener('click', function(){
+    var txt = prompt('Cole o código que você copiou no outro lado:');
+    if (txt === null) return;
+    if (!window.mwTrazerConta) { mostrar('Recarregue a página e tente de novo.', false); return; }
+    window.mwTrazerConta(txt, function(msg, bom){
+      mostrar(msg, bom);
+      if (!bom) return;
+      /* Preenche o usuário para a pessoa não ter que lembrar qual era —
+         ela acabou de trazer a conta, o nome está ali no pacote. */
+      try {
+        var u = JSON.parse(localStorage.getItem('mateusWorkspaceUsersV2') || '{}');
+        var ultima = Object.values(u).pop();
+        var campo = document.getElementById('username');
+        if (campo && ultima && ultima.username) { campo.value = ultima.username; campo.dispatchEvent(new Event('input', {bubbles:true})); }
+        document.getElementById('password')?.focus();
+      } catch (e) {}
+    });
+  });
+})();
+</script>
+<script id="mw-som-ui-js">
+/* Liga o ajuste de som. "Ouvir" existe porque, sem ele, a única forma
+   de conferir seria reabrir o app — e é justamente na abertura que o
+   navegador costuma bloquear. Aqui o clique JÁ é o gesto que destrava,
+   então o som sempre sai. */
+(function(){
+  var estado = document.getElementById('mwSomEstado');
+  var alternar = document.getElementById('mwSomAlternar');
+  var ouvir = document.getElementById('mwSomOuvir');
+  if (!alternar) return;
+  function pintar(){
+    var on = !window.mwSomLigado || window.mwSomLigado();
+    if (estado) estado.textContent = on ? 'Ligado.' : 'Desligado.';
+    alternar.textContent = on ? 'Desligar' : 'Ligar';
+    if (ouvir) ouvir.disabled = !on;
+  }
+  alternar.addEventListener('click', function(){
+    var on = !window.mwSomLigado || window.mwSomLigado();
+    window.mwSomDefinir && window.mwSomDefinir(!on);
+    pintar();
+    if (typeof toast === 'function') toast(on ? 'Som de abertura desligado' : 'Som de abertura ligado');
+  });
+  ouvir && ouvir.addEventListener('click', function(){ window.mwSomTocar && window.mwSomTocar(); });
+  pintar();
+})();
+</script>
 <script id="mw-acabamento-formulario-js">
 /* O botão de ver a senha estava morto nos DOIS formulários. Os
    handlers eram ligados direto no elemento (`onclick` num, addEventListener
