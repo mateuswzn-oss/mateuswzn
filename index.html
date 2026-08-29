@@ -55,7 +55,7 @@ body.light{--bg:#edf5ff;--bg2:#e5efff;--panel:rgba(255,255,255,.68);--panel2:rgb
 #loginScreen{min-height:100vh;display:grid;place-items:center;padding:28px;position:relative;overflow:hidden;background:#020617}#loginVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;filter:brightness(.34) saturate(1.08);transform:scale(1.02);pointer-events:none}#loginScreen:after{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(90deg,rgba(2,6,23,.72),rgba(2,12,28,.42) 48%,rgba(2,6,23,.72)),radial-gradient(circle at 50% 50%,transparent 20%,rgba(2,6,23,.35) 100%);pointer-events:none}#loginScreen:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 25% 50%,rgba(37,99,235,.16),transparent 30%);pointer-events:none}.login-shell{width:min(1240px,100%);display:grid;grid-template-columns:minmax(0,1fr) 470px;gap:60px;align-items:center;position:relative;z-index:1}
 .lamp-area{height:650px;display:grid;place-items:center;position:relative}.lamp{width:500px;height:610px;position:relative;filter:drop-shadow(0 30px 55px rgba(0,0,0,.5))}.lamp-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}.lamp-glow{position:absolute;left:55px;top:282px;width:390px;height:225px;background:radial-gradient(ellipse at 50% 30%,rgba(80,197,255,.76),rgba(37,99,235,.32) 38%,transparent 73%);filter:blur(25px);opacity:1;transition:opacity .5s ease}.lamp-floor-glow{position:absolute;left:105px;bottom:62px;width:300px;height:70px;border-radius:50%;background:radial-gradient(ellipse,rgba(37,99,235,.45),transparent 70%);filter:blur(20px);opacity:1;transition:opacity .5s}.lamp.off .lamp-glow,.lamp.off .lamp-floor-glow{opacity:0}.shade{transition:filter .5s,opacity .5s}.lamp.off .shade{filter:drop-shadow(0 18px 28px rgba(0,0,0,.65));opacity:.84}.lamp-caption{position:absolute;left:50%;bottom:4px;transform:translateX(-50%);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#718bb0;white-space:nowrap}.cord-hit{cursor:grab;touch-action:none}.cord-hit.dragging{cursor:grabbing}.cord-hit:hover #cordBall{filter:drop-shadow(0 0 12px rgba(56,189,248,.85))}
 /* GLASS LOGIN */
-.login-card{position:relative;overflow:hidden;padding:38px;border-radius:30px;background:linear-gradient(145deg,rgba(12,43,82,.62),rgba(3,16,35,.72));border:1px solid rgba(125,194,255,.32);box-shadow:none !important;backdrop-filter:blur(34px) saturate(150%);-webkit-backdrop-filter:blur(34px) saturate(150%)}.login-card:before{content:"";position:absolute;inset:0;background:linear-gradient(125deg,rgba(255,255,255,.11),transparent 24%,rgba(56,189,248,.07) 56%,transparent 78%);pointer-events:none}.login-card:after{content:"";position:absolute;right:-80px;top:-100px;width:230px;height:230px;border-radius:50%;background:rgba(56,189,248,.13);filter:blur(42px);pointer-events:none}.brand{display:flex;gap:15px;align-items:center;position:relative;z-index:1}.brand-logo{width:60px;height:60px;border-radius:18px;display:grid;place-items:center;font-weight:900;background:linear-gradient(145deg,#3b82f6,#1d4ed8);box-shadow:none !important;}.brand h1{margin:0;font-size:28px;letter-spacing:-.03em}.brand h1 span{color:#4db7ff}.subtitle{margin:8px 0 27px;color:#91a9ca;font-size:14px}.field{margin:17px 0}.field label{display:block;margin-bottom:8px;color:#91b0d5;font-size:12px}.input-wrap{height:56px;display:flex;align-items:center;gap:10px;padding:0 14px;border:1px solid rgba(104,171,245,.27);border-radius:14px;background:rgba(0,9,24,.42);transition:.2s}.input-wrap:focus-within{border-color:#3b9cff;box-shadow:none !important;}.input-wrap svg{width:20px;color:#6fb7ff}.input-wrap input{width:100%;border:0;outline:0;background:transparent;color:var(--text);font-size:14px}.input-wrap input::placeholder{color:#60789a}.toggle{border:0;background:transparent;color:#70b8ff;font-size:16px;padding:5px}.primary,.ms-button{width:100%;height:56px;border-radius:14px;font-weight:750;transition:.22s}.primary{margin-top:8px;border:0;color:#fff;background:linear-gradient(135deg,#3b9cff,#2563eb);box-shadow:none !important;}.primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:none !important;}.primary:disabled{opacity:.42}.divider{display:flex;align-items:center;gap:12px;color:#607a9e;font-size:11px;margin:18px 0}.divider:before,.divider:after{content:"";height:1px;flex:1;background:rgba(116,157,207,.18)}.ms-button{border:1px solid #d5dbe5;background:#fff;color:#202936;display:flex;align-items:center;justify-content:center;gap:12px}.ms-button:hover{background:#f5f7fa;box-shadow:none !important;transform:translateY(-1px)}.ms-button.loading{opacity:.75}.ms-logo{display:grid;grid-template-columns:1fr 1fr;gap:2px;width:18px;height:18px}.ms-logo i:nth-child(1){background:#f25022}.ms-logo i:nth-child(2){background:#7fba00}.ms-logo i:nth-child(3){background:#00a4ef}.ms-logo i:nth-child(4){background:#ffb900}.demo-link{display:block;margin:10px auto 0;border:0;background:transparent;color:#6faee8;font-size:11px;text-decoration:underline;text-underline-offset:3px}.demo-link:hover{color:#b9ddff}.status{min-height:18px;margin-top:11px;text-align:center;color:#66c0ff;font-size:11px}.status.error{color:#fb7185}.foot,.creator{text-align:center;color:#667f9f;font-size:11px}.foot{margin-top:21px}.creator{margin-top:14px}.login-footer{text-align:center;margin-top:14px;color:#7d9abd;font-size:11px;line-height:1.45}.login-footer .credit{display:block}.login-footer .instagram-link{display:grid;place-items:center;width:30px;height:30px;margin:8px auto 0;border-radius:9px;color:#b9dcff;background:rgba(37,99,235,.10);border:1px solid rgba(104,171,245,.20);transition:transform .2s ease,background .2s ease,border-color .2s ease}.login-footer .instagram-link:hover{transform:translateY(-2px);background:rgba(37,99,235,.18);border-color:rgba(104,171,245,.38)}.login-footer svg{width:16px;height:16px}
+.login-card{position:relative;overflow:hidden;padding:38px;border-radius:30px;background:linear-gradient(145deg,rgba(12,43,82,.62),rgba(3,16,35,.72));border:1px solid rgba(125,194,255,.32);box-shadow:none !important;backdrop-filter:blur(34px) saturate(150%);-webkit-backdrop-filter:blur(34px) saturate(150%)}.login-card:before{content:"";position:absolute;inset:0;background:linear-gradient(125deg,rgba(255,255,255,.11),transparent 24%,rgba(56,189,248,.07) 56%,transparent 78%);pointer-events:none}.login-card:after{content:"";position:absolute;right:-80px;top:-100px;width:230px;height:230px;border-radius:50%;background:rgba(56,189,248,.13);filter:blur(42px);pointer-events:none}.brand{display:flex;gap:15px;align-items:center;position:relative;z-index:1}.brand-logo{width:60px;height:60px;border-radius:18px;display:grid;place-items:center;font-weight:900;background:linear-gradient(145deg,#3b82f6,#1d4ed8);box-shadow:none !important;}.brand h1{margin:0;font-size:28px;letter-spacing:-.03em}.brand h1 span{color:#4db7ff}.subtitle{margin:8px 0 27px;color:#91a9ca;font-size:14px}.field{margin:17px 0}.field label{display:block;margin-bottom:8px;color:#91b0d5;font-size:12px}.input-wrap{height:56px;display:flex;align-items:center;gap:10px;padding:0 14px;border:1px solid rgba(104,171,245,.27);border-radius:14px;background:rgba(0,9,24,.42);transition:.2s}.input-wrap:focus-within{border-color:#3b9cff;box-shadow:none !important;}.input-wrap svg{width:20px;color:#6fb7ff}.input-wrap input{width:100%;border:0;outline:0;background:transparent;color:var(--text);font-size:14px}.input-wrap input::placeholder{color:#60789a}.toggle{border:0;background:transparent;color:#70b8ff;font-size:16px;padding:5px}.primary,.ms-button{width:100%;height:56px;border-radius:14px;font-weight:750;transition:.22s}.primary{margin-top:8px;border:0;color:#fff;background:linear-gradient(135deg,#3b9cff,#2563eb);box-shadow:none !important;}.primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:none !important;}.primary:disabled{opacity:.42}.divider{display:flex;align-items:center;gap:12px;color:#607a9e;font-size:11px;margin:18px 0}.divider:before,.divider:after{content:"";height:1px;flex:1;background:rgba(116,157,207,.18)}.ms-button{border:1px solid #d5dbe5;background:#fff;color:#202936;display:flex;align-items:center;justify-content:center;gap:12px}.ms-button:hover{background:#f5f7fa;box-shadow:none !important;transform:translateY(-1px)}.ms-button.loading{opacity:.75}.ms-logo{display:grid;grid-template-columns:1fr 1fr;gap:2px;width:18px;height:18px}.ms-logo i:nth-child(1){background:#f25022}.ms-logo i:nth-child(2){background:#7fba00}.ms-logo i:nth-child(3){background:#00a4ef}.ms-logo i:nth-child(4){background:#ffb900}.status{min-height:18px;margin-top:11px;text-align:center;color:#66c0ff;font-size:11px}.status.error{color:#fb7185}.foot,.creator{text-align:center;color:#667f9f;font-size:11px}.foot{margin-top:21px}.creator{margin-top:14px}.login-footer{text-align:center;margin-top:14px;color:#7d9abd;font-size:11px;line-height:1.45}.login-footer .credit{display:block}.login-footer .instagram-link{display:grid;place-items:center;width:30px;height:30px;margin:8px auto 0;border-radius:9px;color:#b9dcff;background:rgba(37,99,235,.10);border:1px solid rgba(104,171,245,.20);transition:transform .2s ease,background .2s ease,border-color .2s ease}.login-footer .instagram-link:hover{transform:translateY(-2px);background:rgba(37,99,235,.18);border-color:rgba(104,171,245,.38)}.login-footer svg{width:16px;height:16px}
 /* REFERENCE LOGIN — inspired by the supplied video, without changing the rest of the app */
 .reference-login{min-height:100vh;padding:32px;display:grid;place-items:center;background:#f2f1e8;color:#20252b;overflow:hidden;position:relative}
 .auth-scene{width:min(1180px,100%);display:grid;place-items:center;position:relative;z-index:1}
@@ -293,10 +293,10 @@ body.light{--bg:#edf5ff;--bg2:#e5efff;--panel:rgba(255,255,255,.68);--panel2:rgb
 .otp-methods{display:grid;gap:10px;margin:22px 0 14px}.otp-method{width:100%;display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:16px;border:1px solid rgba(190,225,255,.18);background:rgba(255,255,255,.045);color:#eff8ff;text-align:left;transition:transform .18s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease}.otp-method:hover{transform:translateY(-1px);border-color:rgba(87,181,255,.45);background:rgba(56,189,248,.08);box-shadow:none !important;}.otp-method-icon{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:rgba(56,189,248,.10);color:#8fd2ff;font-size:18px;flex:0 0 auto}.otp-method strong{display:block;font-size:12px}.otp-method small{display:block;margin-top:4px;color:rgba(203,224,248,.52);font-size:10px}.otp-recipient{min-height:18px;color:rgba(198,220,245,.46);font-size:10px}.otp-methods + .otp-recipient{margin-bottom:4px}.otp-panel .hidden{display:none!important}.otp-confirm-ready{box-shadow:none !important;}
 
 </style>
-<style id="login-polish-overrides">.auth-form-side{transition:transform .42s cubic-bezier(.16,1,.3,1),opacity .18s linear;will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden}.auth-switch-panel{transition:transform .42s cubic-bezier(.16,1,.3,1);will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden}.switch-content{transition:opacity .22s linear,transform .42s cubic-bezier(.16,1,.3,1);backface-visibility:hidden;-webkit-backface-visibility:hidden}.login-footer{display:flex;flex-direction:column;align-items:center;gap:0;margin-top:13px}.login-footer .credit{margin:0}.login-footer .instagram-link{width:32px;height:32px;margin:7px auto 2px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.10);box-shadow:none !important;transition:transform .16s ease,background .16s ease,box-shadow .16s ease}.login-footer .instagram-link:hover{transform:translateY(-1px) scale(1.04);background:rgba(255,255,255,.07);box-shadow:none !important;}.login-footer .instagram-link svg{width:19px;height:19px;display:block}.login-footer .demo-link{margin:3px auto 0;padding:3px 7px;border:0;background:transparent;color:#6faee8;font:inherit;font-size:11px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}.login-footer .demo-link:hover{color:#b9ddff}</style>
+<style id="login-polish-overrides">.auth-form-side{transition:transform .42s cubic-bezier(.16,1,.3,1),opacity .18s linear;will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden}.auth-switch-panel{transition:transform .42s cubic-bezier(.16,1,.3,1);will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden}.switch-content{transition:opacity .22s linear,transform .42s cubic-bezier(.16,1,.3,1);backface-visibility:hidden;-webkit-backface-visibility:hidden}.login-footer{display:flex;flex-direction:column;align-items:center;gap:0;margin-top:13px}.login-footer .credit{margin:0}.login-footer .instagram-link{width:32px;height:32px;margin:7px auto 2px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.10);box-shadow:none !important;transition:transform .16s ease,background .16s ease,box-shadow .16s ease}.login-footer .instagram-link:hover{transform:translateY(-1px) scale(1.04);background:rgba(255,255,255,.07);box-shadow:none !important;}.login-footer .instagram-link svg{width:19px;height:19px;display:block}</style>
 <style id="creator-card-polish">
 .login-footer{display:flex;flex-direction:column;align-items:center;gap:9px;margin-top:13px}
-.login-footer .demo-link{order:0;margin:0;padding:2px 7px;color:#78b9ef;font-size:11px;line-height:1.4;text-decoration:underline;text-underline-offset:3px}
+
 .login-footer .creator-card{order:1;width:min(100%,255px);box-sizing:border-box;display:flex;align-items:center;gap:10px;padding:9px 11px;text-decoration:none;text-align:left;border-radius:15px;background:linear-gradient(135deg,rgba(255,255,255,.055),rgba(255,255,255,.018));border:1px solid rgba(126,176,231,.16);box-shadow:none !important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease;cursor:pointer}
 .login-footer .creator-card:hover{transform:translateY(-2px);border-color:rgba(221,42,123,.35);background:linear-gradient(135deg,rgba(221,42,123,.08),rgba(81,91,212,.06));box-shadow:none !important;}
 .login-footer .creator-avatar{width:32px;height:32px;flex:0 0 32px;display:grid;place-items:center;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
@@ -3035,8 +3035,6 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
 .mwv2-forgot{text-align:right;margin:0 0 14px}
 .mwv2-forgot button{border:0;background:none;color:var(--muted2);font-size:10.5px;cursor:pointer}
 .mwv2-forgot button:hover{color:var(--blue2);text-decoration:underline}
-.mwv2-demo-btn{display:block;width:100%;margin-top:10px;border:1px solid rgba(104,171,245,.3);background:rgba(56,189,248,.07);color:#bcdfff;border-radius:100px;height:40px;font-size:11px;letter-spacing:.03em;transition:.2s;box-shadow:none}
-.mwv2-demo-btn:hover{background:rgba(56,189,248,.14);border-color:rgba(104,171,245,.5)}
 #status.status{min-height:16px;margin:2px 0 6px;text-align:left;font-size:11px}
 
 /* Entrar e Criar conta com o MESMO desenho: pílula compacta, sem sombra */
@@ -3232,7 +3230,6 @@ body.light .mw-faceid-gate-card p{color:#526988}
           <div class="mwv2-forgot"><button type="button" id="forgotPasswordLink">Esqueci minha senha</button></div>
 
           <button class="ref-primary" id="loginButton" type="button">ENTRAR</button>
-          <button type="button" id="demoLogin" class="mwv2-demo-btn">Entrar em modo demonstração</button>
           <div class="status" id="status"></div>
         </div>
 
@@ -3558,7 +3555,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
 </div>
 </div></div><div class="profile-actions"><button class="save-btn" id="saveProfile">Salvar perfil</button></div></div>
       <div class="settings-group hidden" id="legacyThemeGroup"><h4>Preferências</h4><div class="theme-row"><button class="theme-btn" id="darkModeBtn">Modo Escuro</button><button class="theme-btn" id="lightModeBtn">Modo Claro</button></div></div>
-      <div class="settings-group"><h4>Sessão</h4><p>Este projeto usa uma sessão demonstrativa local.</p><div class="profile-actions"><button class="small-btn mw-logout-btn" id="logout">Sair</button></div></div>
+      <div class="settings-group"><h4>Sessão</h4><p>Sua conta fica guardada neste navegador. Ao sair, será preciso entrar de novo com seu usuário e senha.</p><div class="profile-actions"><button class="small-btn mw-logout-btn" id="logout">Sair</button></div></div>
       <div class="settings-group" id="mwFaceIdGroup" hidden><h4>Segurança</h4><p>Use o Face ID deste iPhone/iPad para entrar no Workspace sem digitar nada.</p><div class="mw-faceid-row"><span class="mw-faceid-row-label">Entrar com Face ID</span><button type="button" class="mw-faceid-switch" id="mwFaceIdToggle" role="switch" aria-checked="false" aria-label="Entrar com Face ID"><i></i></button></div><p class="form-error" id="mwFaceIdStatus" hidden></p></div>
       <div class="settings-group"><h4>Aplicativo</h4><p id="mwSettingsInstallDesc">Adicione o Mateus Workspace à tela de início para abrir como um app.</p><div class="profile-actions"><button class="small-btn" id="mwSettingsInstallBtn">Instalar aplicativo</button></div></div>
       <div class="settings-group"><h4>Backup</h4><p>Seus dados ficam salvos só neste navegador. Exporte um arquivo de backup pra não perder nada ao trocar de aparelho ou limpar os dados do navegador.</p><div class="profile-actions"><button class="small-btn" id="exportBackup">Exportar backup</button><button class="small-btn" id="importBackupBtn">Importar backup</button><input type="file" id="importBackupFile" accept="application/json" hidden></div><div class="form-error" id="importBackupError"></div></div>
@@ -4283,52 +4280,11 @@ window.toast = toast;
   }
   refreshLogin();
 
-  /* MODO DEMONSTRAÇÃO — restaurado exatamente como existia antes do
-     commit 2aa88d5, que o havia removido.
-
-     O que ele é: uma sessão LOCAL de demonstração. Grava um e-mail
-     demo em localStorage e revela o app. Não autentica nada, não fala
-     com backend, não cria usuário real e não toca em senha.
-
-     O que ele NÃO é: um caminho de autenticação. A separação entre
-     demonstração e login real é mantida por uma marca própria
-     (mwDemoSession), usada só pra sinalizar visualmente o estado — ela
-     nunca concede permissão nem substitui verificação de credencial. */
-  const MW_DEMO_EMAIL='demo@mateus.workspace';
-  const demoBtn=q('#demoLogin');
-  if(demoBtn){
-    const cleanDemo=demoBtn.cloneNode(true);
-    demoBtn.replaceWith(cleanDemo);
-    cleanDemo.addEventListener('click',e=>{
-      e.preventDefault();
-      e.stopPropagation();
-      if(cleanDemo.dataset.busy==='1') return;
-      cleanDemo.dataset.busy='1';
-      try{
-        localStorage.setItem('mwSession','1');
-        localStorage.setItem('mateusActiveUserV2',MW_DEMO_EMAIL);
-        localStorage.setItem('mwLastEmail',MW_DEMO_EMAIL);
-        localStorage.setItem('mwDemoSession','1');
-        const screen=q('#loginScreen');
-        const app=q('#app');
-        if(screen) screen.classList.add('hidden');
-        if(app){app.classList.remove('hidden');app.style.display='';}
-        const h=q('.hello h2');
-        if(h) h.textContent='Olá, Mateus!';
-        notify('');
-        window.mwSyncDemoBadge?.();
-      }catch(err){
-        notify('Não foi possível abrir o modo demonstração. Tente novamente.',true);
-        console.error('Modo demonstração:',err);
-      }finally{
-        cleanDemo.dataset.busy='0';
-      }
-    },{once:false});
-  }
-  /* Entrar de verdade (ou sair) encerra a marca de demonstração, pra que
-     uma sessão real nunca herde o rótulo de demo. */
-  q('#loginButton')?.addEventListener('click',()=>{ try{ localStorage.removeItem('mwDemoSession'); }catch{} });
-  q('#logout')?.addEventListener('click',()=>{ try{ localStorage.removeItem('mwDemoSession'); }catch{} });
+  /* O modo demonstração foi retirado a pedido: ele abria o app sem
+     conta nenhuma, o que contradiz o fluxo de sessão real (criar conta,
+     ficar logado, sair e digitar a senha de volta). A chave
+     `mwDemoSession` continua na lista de limpeza lá em cima, para
+     apagar a marca de quem já tinha usado o modo antes. */
 
   q('#togglePassword')?.addEventListener('click',()=>{const show=passInput.type==='password';passInput.type=show?'text':'password';q('#togglePassword').textContent=show?'◉':'◌'});
 
@@ -16158,56 +16114,6 @@ html.mw-kb-open,html.mw-kb-open body{overscroll-behavior-y:auto!important}
 })();
 </script>
 
-<style id="mw-demo-mode">
-/* Regras de layout do botão de demonstração que existiam antes da
-   remoção (commit 2aa88d5), restauradas na íntegra. */
-@media(max-width:860px){
-  #loginScreen.reference-login #demoLogin{display:block!important;width:100%!important;text-align:center!important;font-size:14px!important;padding:12px!important;min-height:44px!important}
-}
-#loginScreen #demoLogin{position:relative;z-index:6}
-
-/* Separação explícita entre DEMONSTRAÇÃO e sessão real. O modo demo
-   sempre foi apenas uma sessão local — ele não autentica, não fala com
-   backend e não cria usuário. Antes isso não aparecia em lugar nenhum
-   depois de entrar. Agora uma faixa discreta marca o estado, pra que
-   protótipo nunca seja confundido com funcionalidade real. */
-html body #mwDemoBadge{
-  position:fixed;left:50%;transform:translateX(-50%);
-  top:calc(6px + env(safe-area-inset-top,0px));
-  z-index:120;pointer-events:none;
-  display:none;align-items:center;gap:6px;
-  padding:4px 11px;border-radius:999px;
-  font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
-  color:#fbbf24;background:rgba(245,158,11,.14);
-  border:1px solid rgba(245,158,11,.34);
-  backdrop-filter:blur(14px) saturate(160%);
-  -webkit-backdrop-filter:blur(14px) saturate(160%);
-}
-html body.mw-demo-session #mwDemoBadge{display:flex}
-html body.light #mwDemoBadge{color:#92400e;background:rgba(217,119,6,.12);border-color:rgba(217,119,6,.30)}
-</style>
-<script id="mw-demo-mode-js">
-(() => {
-  /* Sinaliza a sessão de demonstração. Só leitura de uma marca local e
-     uma classe no body — não altera autenticação, permissão nem dado. */
-  const badge = document.createElement('div');
-  badge.id = 'mwDemoBadge';
-  badge.setAttribute('aria-live', 'polite');
-  badge.textContent = 'Modo demonstração';
-  document.body.appendChild(badge);
-
-  const sync = () => {
-    let demo = false;
-    try { demo = localStorage.getItem('mwDemoSession') === '1'; } catch {}
-    const inApp = !document.getElementById('app')?.classList.contains('hidden');
-    document.body.classList.toggle('mw-demo-session', demo && inApp);
-  };
-  window.mwSyncDemoBadge = sync;
-  sync();
-  const app = document.getElementById('app');
-  if (app) new MutationObserver(sync).observe(app, { attributes: true, attributeFilter: ['class'] });
-})();
-</script>
 
 <style id="mw-login-fixed-viewport">
 /* ============================================================
