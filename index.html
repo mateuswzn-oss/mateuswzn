@@ -3108,6 +3108,17 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
 }
 </style>
 
+<div id="mwPinGate" class="hidden" role="dialog" aria-modal="true" aria-label="Digite seu código de acesso">
+  <div class="mw-pin-card">
+    <div class="mw-pin-icone" aria-hidden="true"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10.5" rx="3"/><path d="M8 10.5V7.2a4 4 0 0 1 8 0v3.3"/></svg></div>
+    <h2 id="mwPinTitulo">Código de acesso</h2>
+    <p id="mwPinLegenda">Digite seus 6 dígitos para continuar.</p>
+    <div class="mw-pin-pontos" id="mwPinPontos" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <input id="mwPinCampo" class="mw-pin-campo" type="password" inputmode="numeric" autocomplete="one-time-code" maxlength="6" aria-labelledby="mwPinTitulo" aria-describedby="mwPinLegenda">
+    <p class="form-error" id="mwPinErro" hidden></p>
+    <button type="button" class="small-btn" id="mwPinEsqueci">Esqueci o código</button>
+  </div>
+</div>
 <div id="mwFaceIdGate" class="hidden" role="dialog" aria-modal="true" aria-label="Desbloquear com Face ID">
   <div class="mw-faceid-gate-card">
     <div class="mw-faceid-gate-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2"/><path d="M16 4h2a2 2 0 0 1 2 2v2"/><path d="M4 16v2a2 2 0 0 0 2 2h2"/><path d="M16 20h2a2 2 0 0 0 2-2v-2"/><path d="M8 10v1.5a4 4 0 0 0 8 0V10"/><path d="M9.5 9.2V9a2.5 2.5 0 0 1 5 0v.2"/><path d="M12 15.5V17"/></svg></div>
@@ -3557,6 +3568,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
       <div class="settings-group hidden" id="legacyThemeGroup"><h4>Preferências</h4><div class="theme-row"><button class="theme-btn" id="darkModeBtn">Modo Escuro</button><button class="theme-btn" id="lightModeBtn">Modo Claro</button></div></div>
       <div class="settings-group"><h4>Sessão</h4><p>Sua conta fica guardada neste navegador. Ao sair, será preciso entrar de novo com seu usuário e senha.</p><div class="profile-actions"><button class="small-btn mw-logout-btn" id="logout">Sair</button></div></div>
       <div class="settings-group" id="mwFaceIdGroup" hidden><h4>Segurança</h4><p>Use o Face ID deste iPhone/iPad para entrar no Workspace sem digitar nada.</p><div class="mw-faceid-row"><span class="mw-faceid-row-label">Entrar com Face ID</span><button type="button" class="mw-faceid-switch" id="mwFaceIdToggle" role="switch" aria-checked="false" aria-label="Entrar com Face ID"><i></i></button></div><p class="form-error" id="mwFaceIdStatus" hidden></p></div>
+      <div class="settings-group" id="mwPinGroup"><h4>Código de acesso</h4><p>Um código de 6 dígitos para destravar o Workspace ao reabrir. Funciona em qualquer aparelho, com ou sem Face ID.</p><div class="mw-pin-row"><span class="mw-pin-estado" id="mwPinEstado">Nenhum código definido.</span><div class="mw-pin-acoes"><button type="button" class="small-btn" id="mwPinDefinir">Definir código</button><button type="button" class="small-btn mw-pin-remover" id="mwPinRemover" hidden>Remover</button></div></div><p class="form-error" id="mwPinStatus" hidden></p></div>
       <div class="settings-group"><h4>Aplicativo</h4><p id="mwSettingsInstallDesc">Adicione o Mateus Workspace à tela de início para abrir como um app.</p><div class="profile-actions"><button class="small-btn" id="mwSettingsInstallBtn">Instalar aplicativo</button></div></div>
       <div class="settings-group"><h4>Backup</h4><p>Seus dados ficam salvos só neste navegador. Exporte um arquivo de backup pra não perder nada ao trocar de aparelho ou limpar os dados do navegador.</p><div class="profile-actions"><button class="small-btn" id="exportBackup">Exportar backup</button><button class="small-btn" id="importBackupBtn">Importar backup</button><input type="file" id="importBackupFile" accept="application/json" hidden></div><div class="form-error" id="importBackupError"></div></div>
       <div class="settings-group"><h4>Dados</h4><p>Remove disciplinas, atividades, projetos e anotações salvos neste navegador.</p><button class="small-btn danger mw-clear-btn" id="clearAll">Apagar todos os dados</button></div>
@@ -3881,6 +3893,112 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
     return attempt;
   }
 
+  /* ---------- portão do código de acesso ----------
+     Vive AQUI, e não junto do resto do código de PIN lá no fim do
+     documento, por uma razão de ordem: quem decide o que fazer com a
+     sessão é este script, que é lido bem antes. Se dependesse de
+     `window.mwPin`, no instante da decisão o objeto ainda não
+     existiria e o portão nunca apareceria. A comparação usa
+     `window.mwSenha`, que é declarado acima deste ponto. */
+  var PIN_SAL = 'mwPinSal', PIN_HASH = 'mwPinHash', PIN_ERROS = 'mwPinErros';
+  var PIN_MAX = 5;
+  function pinGuardado(){
+    try { return !!(localStorage.getItem(PIN_SAL) && localStorage.getItem(PIN_HASH)); }
+    catch (e) { return false; }
+  }
+
+  function runPinGate(){
+    var portaoPin = document.getElementById('mwPinGate');
+    if (!portaoPin) return function(){};
+    var campo = document.getElementById('mwPinCampo');
+    var pontos = document.getElementById('mwPinPontos');
+    var erro = document.getElementById('mwPinErro');
+    var esqueci = document.getElementById('mwPinEsqueci');
+    var ocupado = false;
+
+    var pintarPontos = function(n){
+      if (!pontos) return;
+      [].forEach.call(pontos.children, function(p, i){ p.classList.toggle('cheio', i < n); });
+    };
+    var dizer = function(msg){ if (erro) { erro.textContent = msg || ''; erro.hidden = !msg; } };
+
+    var errosAte = function(){
+      var n = 0;
+      try { n = parseInt(localStorage.getItem(PIN_ERROS) || '0', 10) || 0; } catch (e) {}
+      return n;
+    };
+
+    /* Cair para o login completo é o fim de linha do código: apaga o
+       PIN e a sessão. Serve tanto para "esqueci" quanto para o corte
+       por tentativas — nos dois casos a pessoa prova quem é pela senha,
+       que é o segredo forte. */
+    var cairParaLogin = function(msg){
+      try {
+        localStorage.removeItem(PIN_SAL); localStorage.removeItem(PIN_HASH);
+        localStorage.removeItem(PIN_ERROS); localStorage.removeItem('mwSession');
+      } catch (e) {}
+      portaoPin.classList.add('hidden');
+      revealLogin();
+      if (msg && typeof toast === 'function') toast(msg);
+    };
+
+    var tentar = function(){
+      var valor = (campo && campo.value || '').replace(/[^0-9]/g, '');
+      pintarPontos(valor.length);
+      if (valor.length < 6 || ocupado) return;
+      ocupado = true;
+      var comparar = window.mwSenha
+        ? window.mwSenha.hash(valor, localStorage.getItem(PIN_SAL)).then(function(h){
+            return !!h && h === localStorage.getItem(PIN_HASH);
+          })
+        : Promise.resolve(false);
+
+      comparar.then(function(certo){
+        ocupado = false;
+        if (certo) {
+          try { localStorage.removeItem(PIN_ERROS); } catch (e) {}
+          portaoPin.classList.add('hidden');
+          revealApp();
+          return;
+        }
+        var n = errosAte() + 1;
+        try { localStorage.setItem(PIN_ERROS, String(n)); } catch (e) {}
+        if (campo) campo.value = '';
+        pintarPontos(0);
+        if (pontos) {
+          pontos.classList.remove('erro');
+          void pontos.offsetWidth;          // reinicia a animação
+          pontos.classList.add('erro');
+        }
+        if (n >= PIN_MAX) {
+          cairParaLogin('Muitas tentativas. Entre com sua senha.');
+          return;
+        }
+        dizer('Código incorreto. Faltam ' + (PIN_MAX - n) + ' tentativa' + (PIN_MAX - n === 1 ? '' : 's') + '.');
+        campo && campo.focus();
+      }).catch(function(){ ocupado = false; dizer('Não foi possível conferir o código.'); });
+    };
+
+    campo && campo.addEventListener('input', function(){
+      dizer('');
+      if (campo.value.length > 6) campo.value = campo.value.slice(0, 6);
+      tentar();
+    });
+    esqueci && esqueci.addEventListener('click', function(){
+      cairParaLogin('Entre com sua senha para continuar.');
+    });
+    /* O card inteiro devolve o foco ao campo: no celular, tocar em
+       qualquer lugar da tela traz o teclado de volta. */
+    portaoPin.addEventListener('click', function(){ campo && campo.focus(); });
+
+    loginScreen.classList.add('hidden');
+    app.classList.add('hidden');
+    portaoPin.classList.remove('hidden');
+    pintarPontos(0);
+
+    return function(){ campo && campo.focus(); };
+  }
+
   try {
     if (localStorage.getItem('mwSession') === '1') {
       if (isEnabled() && isIOS && hasWebAuthn && gate) {
@@ -3891,6 +4009,15 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
            Face ID" continua disponível — o usuário nunca fica preso. */
         (window.mwBootPronto || Promise.resolve())
           .then(function(){ requestAnimationFrame(pedirBiometria); })
+          .catch(function(){});
+      } else if (pinGuardado()) {
+        /* Mesma ordem do Face ID: o portão fica montado por baixo do
+           preloader e só pede o foco (que abre o teclado) depois que a
+           animação sai de vez. Pedir antes faria o teclado do sistema
+           subir por cima da abertura. */
+        var pedirPin = runPinGate();
+        (window.mwBootPronto || Promise.resolve())
+          .then(function(){ requestAnimationFrame(pedirPin); })
           .catch(function(){});
       } else {
         loginScreen.classList.add('hidden');
@@ -16486,6 +16613,187 @@ body.mw-entrando #app .main > * .stat{
   sincronizar();
 })();
 </script>
+<script id="mw-pin-js">
+/* ============================================================
+   CÓDIGO DE ACESSO DE 6 DÍGITOS
+   ============================================================
+   Por que existe: o Face ID só funciona no iOS e passa pela folha
+   nativa de passkey. Quem está no Android, no navegador do
+   computador, ou simplesmente não quer a folha nativa, não tinha
+   NENHUMA forma de trancar o app — reabrir caía direto no Workspace.
+   Este é o cadeado que funciona em qualquer lugar.
+
+   O que ele NÃO é: uma camada de segurança de verdade. Os dados
+   continuam em localStorage, sem servidor; quem tem o aparelho
+   desbloqueado e um console chega neles de qualquer jeito. O código
+   protege contra alguém pegar o aparelho e abrir o app, não contra
+   alguém decidido. Está escrito aqui para não ser confundido com
+   proteção real mais adiante.
+
+   Guardado como sal + SHA-256 pelo MESMO `window.mwSenha` das senhas —
+   um esquema só. Seis dígitos são só um milhão de combinações, então
+   o hash sozinho não impediria força bruta offline; o que limita de
+   verdade é o corte em 5 tentativas abaixo, que derruba a sessão e
+   devolve a pessoa para o login completo. */
+(function(){
+  var CHAVE_SAL = 'mwPinSal', CHAVE_HASH = 'mwPinHash', CHAVE_ERROS = 'mwPinErros';
+  var MAX_ERROS = 5;
+
+  var ler = function(k){ try { return localStorage.getItem(k); } catch (e) { return null; } };
+  var gravar = function(k, v){ try { localStorage.setItem(k, v); } catch (e) {} };
+  var apagar = function(k){ try { localStorage.removeItem(k); } catch (e) {} };
+
+  function temPin(){ return !!(ler(CHAVE_SAL) && ler(CHAVE_HASH)); }
+
+  function definir(codigo){
+    if (!window.mwSenha) return Promise.resolve(false);
+    var sal = window.mwSenha.novoSal();
+    return window.mwSenha.hash(codigo, sal).then(function(h){
+      if (!h) return false;              // contexto inseguro: não finge que deu certo
+      gravar(CHAVE_SAL, sal); gravar(CHAVE_HASH, h); apagar(CHAVE_ERROS);
+      return true;
+    });
+  }
+
+  function confere(codigo){
+    if (!window.mwSenha || !temPin()) return Promise.resolve(false);
+    return window.mwSenha.hash(codigo, ler(CHAVE_SAL)).then(function(h){
+      return !!h && h === ler(CHAVE_HASH);
+    });
+  }
+
+  function remover(){ apagar(CHAVE_SAL); apagar(CHAVE_HASH); apagar(CHAVE_ERROS); }
+
+  window.mwPin = { temPin: temPin, definir: definir, confere: confere, remover: remover };
+
+  /* ---------- ajuste em Configurações ---------- */
+  var estado = document.getElementById('mwPinEstado');
+  var btnDefinir = document.getElementById('mwPinDefinir');
+  var btnRemover = document.getElementById('mwPinRemover');
+  var status = document.getElementById('mwPinStatus');
+
+  function aviso(msg, ruim){
+    if (!status) return;
+    status.textContent = msg || '';
+    status.hidden = !msg;
+    status.style.color = ruim ? '' : 'var(--blue2)';
+  }
+
+  function pintarAjuste(){
+    var tem = temPin();
+    if (estado) estado.textContent = tem
+      ? 'Código ativo. Ele será pedido ao reabrir o Workspace.'
+      : 'Nenhum código definido.';
+    if (btnDefinir) btnDefinir.textContent = tem ? 'Trocar código' : 'Definir código';
+    if (btnRemover) btnRemover.hidden = !tem;
+  }
+
+  function soDigitos(v){ return /^[0-9]{6}$/.test(v || ''); }
+
+  btnDefinir && btnDefinir.addEventListener('click', function(){
+    var a = prompt('Escolha um código de 6 dígitos:');
+    if (a === null) return;
+    if (!soDigitos(a)) { aviso('O código precisa ter exatamente 6 dígitos.', true); return; }
+    var b = prompt('Digite o código de novo para confirmar:');
+    if (b === null) return;
+    if (a !== b) { aviso('Os códigos não coincidem.', true); return; }
+    definir(a).then(function(ok){
+      if (!ok) { aviso('Não foi possível guardar o código com segurança neste contexto (precisa de https).', true); return; }
+      pintarAjuste();
+      aviso('Código definido. Ele será pedido na próxima vez que você abrir o Workspace.');
+      if (typeof toast === 'function') toast('Código de acesso definido');
+    });
+  });
+
+  btnRemover && btnRemover.addEventListener('click', function(){
+    if (!confirm('Remover o código de acesso? O Workspace passa a abrir direto.')) return;
+    remover(); pintarAjuste();
+    aviso('Código removido.');
+    if (typeof toast === 'function') toast('Código de acesso removido');
+  });
+
+  pintarAjuste();
+
+  /* Sair encerra a sessão — e o código, que é dela. Sem isto o código
+     do dono anterior continuaria trancando a conta seguinte. */
+  document.addEventListener('click', function(e){
+    var alvo = e.target && e.target.closest && e.target.closest('#logout, #mwSidebarLogout');
+    if (alvo) remover();
+  }, true);
+})();
+</script>
+<style id="mw-pin-style">
+/* A tela do código nasce com o MESMO fundo da animação de abertura.
+   É o que evita o lampejo quando a revelação cruza: o azul continua,
+   só o conteúdo troca — mesma decisão já tomada no portão do Face ID. */
+#mwPinGate{
+  position:fixed;inset:0;z-index:9998;
+  display:none;align-items:center;justify-content:center;padding:24px;
+  background:
+    radial-gradient(circle at 20% 20%,rgba(56,189,248,.10),transparent 45%),
+    linear-gradient(160deg,#020617,#071329 46%,#020617);
+}
+#mwPinGate:not(.hidden){display:flex}
+body.light #mwPinGate{
+  background:
+    radial-gradient(circle at 20% 20%,rgba(37,99,235,.10),transparent 45%),
+    linear-gradient(160deg,#f4f9ff,#eaf2ff);
+}
+.mw-pin-card{
+  width:min(340px,100%);padding:30px 26px 22px;border-radius:22px;text-align:center;
+  background:rgba(10,23,48,.86);border:1px solid rgba(99,170,255,.18);
+  box-shadow:0 30px 80px rgba(2,6,23,.55);color:#f2f7ff;
+}
+body.light .mw-pin-card{
+  background:rgba(255,255,255,.9);border-color:rgba(37,99,235,.16);color:#0b1830;
+  box-shadow:0 24px 60px rgba(30,64,175,.14);
+}
+.mw-pin-icone{
+  width:58px;height:58px;margin:0 auto 14px;display:grid;place-items:center;border-radius:18px;
+  background:linear-gradient(145deg,rgba(56,189,248,.18),rgba(37,99,235,.12));
+  border:1px solid rgba(99,170,255,.22);
+}
+.mw-pin-card h2{margin:0 0 6px;font-size:19px;letter-spacing:-.02em}
+.mw-pin-card p{margin:0 0 18px;font-size:13px;color:var(--muted)}
+
+/* Os pontos são a única resposta visual ao que se digita — o campo em
+   si fica invisível por cima deles, para o teclado numérico do sistema
+   aparecer normalmente sem mostrar os dígitos. */
+.mw-pin-pontos{display:flex;justify-content:center;gap:12px;margin-bottom:6px}
+.mw-pin-pontos i{
+  width:13px;height:13px;border-radius:50%;
+  border:1.5px solid rgba(99,170,255,.42);background:transparent;
+  transition:background .16s ease,transform .16s cubic-bezier(.22,.8,.24,1),border-color .16s ease;
+}
+.mw-pin-pontos i.cheio{background:#38bdf8;border-color:#38bdf8;transform:scale(1.12)}
+body.light .mw-pin-pontos i{border-color:rgba(37,99,235,.35)}
+body.light .mw-pin-pontos i.cheio{background:#2563eb;border-color:#2563eb}
+
+/* Invisível, mas presente e focável: é ele que recebe o teclado. Não
+   uso display:none nem visibility:hidden porque os dois tirariam o
+   elemento do foco, e sem foco não há teclado no celular. */
+.mw-pin-campo{
+  position:absolute;opacity:0;pointer-events:none;
+  width:1px;height:1px;border:0;padding:0;
+}
+.mw-pin-pontos.erro{animation:mwPinTremor .4s ease}
+@keyframes mwPinTremor{
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-7px)} 40%{transform:translateX(6px)}
+  60%{transform:translateX(-4px)} 80%{transform:translateX(3px)}
+}
+@media (prefers-reduced-motion: reduce){
+  .mw-pin-pontos.erro{animation:none}
+  .mw-pin-pontos i{transition:none}
+}
+#mwPinEsqueci{margin-top:14px}
+
+/* Ajuste em Configurações */
+.mw-pin-row{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:10px}
+.mw-pin-estado{font-size:13px;color:var(--muted)}
+.mw-pin-acoes{display:flex;gap:8px}
+.mw-pin-remover{color:#fb7185}
+</style>
 <style id="mw-perfil-estado-real">
 /* O Perfil ativo na barra lateral usa exatamente o mesmo tratamento dos
    outros itens — não um estilo próprio. Se ele fosse "parecido mas
