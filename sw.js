@@ -1,5 +1,8 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v7: o index.html passou a carregar o cliente do Supabase e a lógica de
+   conta na nuvem. Sem trocar o nome, o app instalado continuaria servindo
+   o index antigo do cache — sem login de servidor nenhum. */
 /* v6: entrou o cliente do Supabase em vendor/. Ele precisa estar no cache
    do shell, senão o app aberto sem rede não consegue nem decidir que está
    offline — ficaria esperando um script que nunca chega. */
@@ -8,7 +11,7 @@
    sessão. Trocar o nome do cache é o que faz o service worker descartar o
    que guardou e buscar tudo de novo — o `activate` abaixo apaga todo cache
    cujo nome não seja este. */
-const CACHE_NAME = 'mw-shell-v6';
+const CACHE_NAME = 'mw-shell-v7';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
