@@ -3794,7 +3794,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
       <div class="settings-group"><h4>Aplicativo</h4><p id="mwSettingsInstallDesc">Adicione o Mateus Workspace à tela de início para abrir como um app.</p><div class="profile-actions"><button class="small-btn" id="mwSettingsInstallBtn">Instalar aplicativo</button></div></div>
       <div class="settings-group" id="mwTransfereGrupo"><h4>Usar a mesma conta no app</h4>
         <p id="mwTransfereOnde" class="mw-transfere-onde"></p>
-        <ol class="mw-transfere-passos"><li id="mwPasso1"><b>No Safari:</b> toque em <b>Copiar código</b>.</li><li id="mwPasso2"><b>No app da tela de início:</b> abra Configurações e toque em <b>Colar código</b>.</li><li>Entre com o <b>mesmo usuário e senha</b> de sempre.</li></ol>
+        <ol class="mw-transfere-passos"><li id="mwPasso1"><b>No Safari:</b> toque em <b>Copiar código</b>.</li><li id="mwPasso2"><b>No app da tela de início:</b> abra Configurações e toque em <b>Colar código</b>.</li><li>Entre com o <b>mesmo usuário e senha</b> de sempre.</li></ol><p class="mw-transfere-nota">O código é uma <b>cópia do momento</b>, não uma sincronização. Mudou a foto ou criou uma disciplina depois de transferir? Copie de novo e cole do outro lado.</p>
         <div class="mw-transfere-acoes"><button type="button" class="save-btn" id="mwTransfereCopiar">Copiar código</button><button type="button" class="save-btn" id="mwTransfereColar">Colar código</button></div>
         <textarea id="mwTransfereCodigo" rows="3" readonly hidden aria-label="Código da conta"></textarea>
         <p class="form-error" id="mwTransfereStatus" hidden></p>
@@ -17158,6 +17158,14 @@ html body #app .mw-transfere-acoes .save-btn.mw-secundario{
   box-shadow:none!important;
   font-weight:500!important;
 }
+.mw-transfere-nota{
+  margin:12px 0 0;padding:10px 12px;border-radius:11px;
+  font-size:12.5px;line-height:1.55;color:var(--muted);
+  background:rgba(255,255,255,.04);border:1px solid var(--line);
+}
+.mw-transfere-nota b{color:var(--text)}
+body.light .mw-transfere-nota{background:rgba(15,23,42,.04);color:#4d6486}
+body.light .mw-transfere-nota b{color:#0b1830}
 .mw-transfere-porque{margin-top:14px;font-size:12px;color:var(--muted2)}
 .mw-transfere-porque summary{cursor:pointer;color:var(--blue2)}
 .mw-transfere-porque p{margin:8px 0 0;line-height:1.65}
@@ -17240,7 +17248,7 @@ html body #app .mw-transfere-acoes .save-btn.mw-secundario{
     try { dados = JSON.parse(localStorage.getItem('mateusWorkspaceV4') || '{}') || {}; } catch (e) {}
     var codigo;
     try {
-      codigo = paraCodigo({ mwConta: 1, conta: conta, dados: dados });
+      codigo = paraCodigo({ mwConta: 1, conta: conta, dados: dados, quando: Date.now() });
     } catch (e) { aviso('Não foi possível gerar o código.', false); return; }
 
     if (caixa) { caixa.hidden = false; caixa.value = codigo; caixa.select(); }
@@ -17298,7 +17306,31 @@ html body #app .mw-transfere-acoes .save-btn.mw-secundario{
       dizer('Essa conta já era desta tela — colar aqui não muda nada. O código precisa ser colado no APP da tela de início.', false);
       return;
     }
-    dizer('Pronto: a conta ' + conta.username + ' agora existe aqui. Entre com a mesma senha de sempre.', true);
+    /* Dizer o que veio dentro, e de quando. O código é uma CÓPIA DO
+       MOMENTO, não uma sincronização — quem transferiu ontem e mudou a
+       foto hoje precisa saber que essa foto não está no pacote. Sem
+       isso a pessoa cola, não vê a foto do outro lado e conclui que o
+       app está quebrado. Aconteceu três vezes. */
+    var d = pacote.dados || {};
+    var partes = [];
+    if (d.profile && d.profile.photo) partes.push('com foto');
+    else partes.push('SEM foto');
+    var conta_ = [['disciplina', (d.subjects || []).length],
+                  ['projeto', (d.projects || []).length],
+                  ['atividade', (d.activities || []).length],
+                  ['anotação', (d.notes || []).length]];
+    conta_.forEach(function(c){
+      if (c[1]) partes.push(c[1] + ' ' + c[0] + (c[1] > 1 ? (c[0] === 'anotação' ? 'ões' : 's') : ''));
+    });
+    var idade = '';
+    if (pacote.quando) {
+      var min = Math.round((Date.now() - pacote.quando) / 60000);
+      idade = min < 1 ? ' · copiado agora'
+            : min < 60 ? ' · copiado há ' + min + ' min'
+            : ' · copiado há ' + Math.round(min / 60) + 'h';
+    }
+    dizer('Pronto: ' + conta.username + ' — ' + partes.join(', ') + idade +
+          '. Entre com a mesma senha de sempre.', true);
     if (typeof toast === 'function') toast('Conta trazida para este aparelho');
   };
 
