@@ -1,11 +1,14 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v6: entrou o cliente do Supabase em vendor/. Ele precisa estar no cache
+   do shell, senão o app aberto sem rede não consegue nem decidir que está
+   offline — ficaria esperando um script que nunca chega. */
 /* v5: o app instalado no iPhone estava servindo uma cópia antiga do
    index.html do cache e, com ela, código anterior às correções de conta e
    sessão. Trocar o nome do cache é o que faz o service worker descartar o
    que guardou e buscar tudo de novo — o `activate` abaixo apaga todo cache
    cujo nome não seja este. */
-const CACHE_NAME = 'mw-shell-v5';
+const CACHE_NAME = 'mw-shell-v6';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
@@ -17,6 +20,7 @@ const SHELL_URLS = [
   './icon-192.png', './icon-512.png',
   './icon-192-maskable.png', './icon-512-maskable.png',
   './apple-touch-icon.png',
+  './vendor/supabase.js',
 ];
 
 self.addEventListener('install', (event) => {
