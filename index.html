@@ -3603,7 +3603,12 @@ body.light .mw-faceid-gate-card p{color:#526988}
       <div class="settings-group" id="mwFaceIdGroup" hidden><h4>Segurança</h4><p>Use o Face ID deste iPhone/iPad para entrar no Workspace sem digitar nada.</p><div class="mw-faceid-row"><span class="mw-faceid-row-label">Entrar com Face ID</span><button type="button" class="mw-faceid-switch" id="mwFaceIdToggle" role="switch" aria-checked="false" aria-label="Entrar com Face ID"><i></i></button></div><p class="form-error" id="mwFaceIdStatus" hidden></p></div>
       <div class="settings-group" id="mwPinGroup"><h4>Código de acesso</h4><p>Um código de 6 dígitos para destravar o Workspace ao reabrir. Funciona em qualquer aparelho, com ou sem Face ID.</p><div class="mw-pin-row"><span class="mw-pin-estado" id="mwPinEstado">Nenhum código definido.</span><div class="mw-pin-acoes"><button type="button" class="small-btn" id="mwPinDefinir">Definir código</button><button type="button" class="small-btn mw-pin-remover" id="mwPinRemover" hidden>Remover</button></div></div><p class="form-error" id="mwPinStatus" hidden></p></div>
       <div class="settings-group"><h4>Aplicativo</h4><p id="mwSettingsInstallDesc">Adicione o Mateus Workspace à tela de início para abrir como um app.</p><div class="profile-actions"><button class="small-btn" id="mwSettingsInstallBtn">Instalar aplicativo</button></div></div>
-      <div class="settings-group"><h4>Backup</h4><p>Seus dados ficam salvos só neste navegador. Exporte um arquivo de backup pra não perder nada ao trocar de aparelho ou limpar os dados do navegador.</p><div class="profile-actions"><button class="small-btn" id="exportBackup">Exportar backup</button><button class="small-btn" id="importBackupBtn">Importar backup</button><input type="file" id="importBackupFile" accept="application/json" hidden></div><div class="form-error" id="importBackupError"></div></div>
+      <div class="settings-group" id="mwTransfereGrupo"><h4>Levar a conta para o app</h4><p>No iPhone, o app da tela de início guarda os dados <b>separado</b> do Safari — é assim que o iOS funciona, e nenhum ajuste no site muda isso. A conta criada num não existe no outro. Copie o código aqui e cole no outro para levar a conta junto.</p>
+        <div class="mw-transfere-acoes"><button type="button" class="small-btn" id="mwTransfereCopiar">Copiar código da conta</button><button type="button" class="small-btn" id="mwTransfereColar">Colar código aqui</button></div>
+        <textarea id="mwTransfereCodigo" rows="3" readonly hidden aria-label="Código da conta"></textarea>
+        <p class="form-error" id="mwTransfereStatus" hidden></p>
+        <p class="mw-transfere-aviso">O código carrega seus dados do Workspace. Não é a sua senha — quem receber ainda precisa dela para entrar — mas trate como coisa sua.</p></div>
+        <div class="settings-group"><h4>Backup</h4><p>Seus dados ficam salvos só neste navegador. Exporte um arquivo de backup pra não perder nada ao trocar de aparelho ou limpar os dados do navegador.</p><div class="profile-actions"><button class="small-btn" id="exportBackup">Exportar backup</button><button class="small-btn" id="importBackupBtn">Importar backup</button><input type="file" id="importBackupFile" accept="application/json" hidden></div><div class="form-error" id="importBackupError"></div></div>
       <div class="settings-group"><h4>Dados</h4><p>Remove disciplinas, atividades, projetos e anotações salvos neste navegador.</p><button class="small-btn danger mw-clear-btn" id="clearAll">Apagar todos os dados</button></div>
     </section></section>
 
@@ -16887,6 +16892,120 @@ body.light .mw-confirma-card{background:#fff;color:#0b1830}
     trocarUsuario: trocarUsuario, trocarEmail: trocarEmail, trocarSenha: trocarSenha,
     REGRA_USUARIO: USUARIO_OK, REGRA_EMAIL: EMAIL_OK,
   };
+})();
+</script>
+<style id="mw-transfere-style">
+.mw-transfere-acoes{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
+#mwTransfereCodigo{
+  width:100%;margin-top:12px;padding:11px 13px;border-radius:12px;
+  background:var(--panel2);border:1px solid var(--line);color:var(--text);
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;
+  word-break:break-all;resize:vertical;
+}
+.mw-transfere-aviso{margin-top:10px;font-size:12px;color:var(--muted2)}
+#mwTransfereStatus.mw-ok{color:var(--blue2)}
+</style>
+<script id="mw-transfere-js">
+/* ============================================================
+   LEVAR A CONTA DE UM ARMAZENAMENTO PARA O OUTRO
+   ============================================================
+   No iOS, o app adicionado à tela de início roda num contêiner de
+   armazenamento PRÓPRIO, separado do Safari. Não é bug nosso e não há
+   ajuste no site que mude: uma conta criada no navegador simplesmente
+   não existe dentro do app, e vice-versa. Sem servidor, não há como
+   sincronizar sozinho — não existe onde guardar a conta fora do
+   aparelho.
+
+   Então o que dá para fazer é o caminho manual, e fazê-lo bem: um
+   código que se copia de um lado e se cola no outro. Copiar e colar
+   atravessa os dois contêineres porque a área de transferência é do
+   sistema, não da página.
+
+   O código leva o SAL e o HASH, nunca a senha. Quem receber o código
+   ainda precisa saber a senha para entrar — o código sozinho não abre
+   a conta. Ele leva os dados do Workspace junto, então continua sendo
+   coisa pessoal; o aviso na tela diz isso. */
+(function(){
+  var btnCopiar = document.getElementById('mwTransfereCopiar');
+  var btnColar = document.getElementById('mwTransfereColar');
+  var caixa = document.getElementById('mwTransfereCodigo');
+  var status = document.getElementById('mwTransfereStatus');
+  if (!btnCopiar || !btnColar) return;
+
+  function aviso(msg, bom){
+    if (!status) return;
+    status.textContent = msg || '';
+    status.hidden = !msg;
+    status.classList.toggle('mw-ok', !!bom);
+  }
+
+  /* btoa quebra em qualquer caractere fora do Latin-1 — e nome de
+     exibição com acento é o caso comum, não a exceção. Passar por
+     encodeURIComponent primeiro mantém o código ASCII. */
+  function paraCodigo(obj){
+    return btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
+  }
+  function doCodigo(txt){
+    return JSON.parse(decodeURIComponent(escape(atob(String(txt || '').trim()))));
+  }
+
+  btnCopiar.addEventListener('click', function(){
+    var conta = window.mwConta && window.mwConta.atual();
+    if (!conta) { aviso('Entre na conta antes de copiar o código.', false); return; }
+    var dados = {};
+    try { dados = JSON.parse(localStorage.getItem('mateusWorkspaceV4') || '{}') || {}; } catch (e) {}
+    var codigo;
+    try {
+      codigo = paraCodigo({ mwConta: 1, conta: conta, dados: dados });
+    } catch (e) { aviso('Não foi possível gerar o código.', false); return; }
+
+    if (caixa) { caixa.hidden = false; caixa.value = codigo; caixa.select(); }
+    var pronto = function(){
+      aviso('Código copiado. Abra o app e toque em "Colar código aqui".', true);
+      if (typeof toast === 'function') toast('Código copiado');
+    };
+    /* navigator.clipboard exige contexto seguro e às vezes é recusado
+       sem gesto reconhecido; o campo selecionado acima é o plano B,
+       que funciona em qualquer lugar com "copiar" do próprio sistema. */
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(codigo).then(pronto).catch(function(){
+        aviso('Selecione o código acima e copie manualmente.', true);
+      });
+    } else {
+      aviso('Selecione o código acima e copie manualmente.', true);
+    }
+  });
+
+  btnColar.addEventListener('click', function(){
+    var txt = prompt('Cole aqui o código copiado do outro lado:');
+    if (txt === null) return;
+    var pacote;
+    try { pacote = doCodigo(txt); } catch (e) { aviso('Esse código não é válido.', false); return; }
+    if (!pacote || pacote.mwConta !== 1 || !pacote.conta || !pacote.conta.email) {
+      aviso('Esse código não é de uma conta do Workspace.', false); return;
+    }
+    var conta = pacote.conta;
+    var email = String(conta.email).toLowerCase();
+
+    /* A unicidade vale aqui também: importar por cima de outra conta com
+       o mesmo usuário deixaria duas iguais e o login pegaria a errada. */
+    if (window.mwConta && !window.mwConta.usuarioLivre(conta.username, email)) {
+      aviso('Já existe uma conta com esse nome de usuário aqui. Troque o nome de usuário no outro lado antes de transferir.', false);
+      return;
+    }
+    var todas = {};
+    try { todas = JSON.parse(localStorage.getItem('mateusWorkspaceUsersV2') || '{}') || {}; } catch (e) {}
+    var jaTinha = !!todas[email];
+    todas[email] = conta;
+    try {
+      localStorage.setItem('mateusWorkspaceUsersV2', JSON.stringify(todas));
+      if (pacote.dados) localStorage.setItem('mateusWorkspaceV4', JSON.stringify(pacote.dados));
+    } catch (e) { aviso('Não foi possível salvar a conta aqui.', false); return; }
+
+    aviso((jaTinha ? 'Conta atualizada' : 'Conta trazida') + ': ' + conta.username +
+          '. Saia e entre com a mesma senha de sempre.', true);
+    if (typeof toast === 'function') toast('Conta trazida para este aparelho');
+  });
 })();
 </script>
 <script id="mw-conta-ui-js">
