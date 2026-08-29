@@ -2861,15 +2861,25 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
      a primeira leva de contas foi criada com o bug que só gravava a
      conta no fim da animação, então havia contas pela metade. */
   var MW_MARCA_RESET = 'mwContasZeradas-2026-08-c';
+  /* A ORDEM aqui é de segurança, não de estilo: grava a marca PRIMEIRO e
+     confere que ela ficou; só então apaga. Antes era o contrário — apagava
+     e depois tentava marcar. Se essa última escrita falhasse (armazenamento
+     cheio, modo restrito, cota), a marca nunca ficava e a limpeza rodava
+     DE NOVO a cada abertura, apagando conta e sessão toda vez. O sintoma
+     seria exatamente "o login não fica salvo". Uma limpeza que não
+     consegue ser registrada é uma limpeza que se repete para sempre;
+     melhor não fazer nenhuma. */
   try {
     if (localStorage.getItem(MW_MARCA_RESET) !== '1') {
-      ['mateusWorkspaceUsersV2','mateusActiveUserV2','mateusWorkspaceV4',
-       'mwSession','mwLastEmail','mwDemoSession',
-       'mwFaceIdEnabled','mwFaceIdCredentialId',
-       'mwPinSal','mwPinHash','mwPinErros'].forEach(function(k){
-        try { localStorage.removeItem(k); } catch (e) {}
-      });
       localStorage.setItem(MW_MARCA_RESET, '1');
+      if (localStorage.getItem(MW_MARCA_RESET) === '1') {
+        ['mateusWorkspaceUsersV2','mateusActiveUserV2','mateusWorkspaceV4',
+         'mwSession','mwLastEmail','mwDemoSession',
+         'mwFaceIdEnabled','mwFaceIdCredentialId',
+         'mwPinSal','mwPinHash','mwPinErros'].forEach(function(k){
+          try { localStorage.removeItem(k); } catch (e) {}
+        });
+      }
     }
   } catch (e) {}
 
@@ -4360,7 +4370,13 @@ window.toast = toast;
   const notify=(msg,error=false)=>{const el=q('#status');if(el){el.textContent=msg;el.classList.toggle('error',error)}};
   const defaultData=(name,email)=>({subjects:[],projects:[],activities:[],notes:[],profile:{name,email,photo:''},theme:'dark'});
   const hydrateSession=(email, data)=>{localStorage.setItem('mateusActiveUserV2',email);localStorage.setItem('mateusWorkspaceV4',JSON.stringify(data||defaultData('Mateus',email)));};
-  const enterApp=()=>{q('#loginScreen')?.classList.add('hidden');const app=q('#app');if(app){app.classList.remove('hidden');app.style.display=''};window.scrollTo(0,0)};
+  /* Esta era a única das três `enterApp` do documento que NÃO gravava
+     `mwSession`. Quem entrasse por ela — o caminho do `authenticate()`,
+     usado depois de redefinir a senha por código — entrava no app com a
+     sessão não salva, e na abertura seguinte o login era pedido de novo.
+     Entrar no app e ter sessão é a mesma coisa; separar as duas foi o
+     que deixou uma delas para trás. */
+  const enterApp=()=>{try{localStorage.setItem('mwSession','1')}catch(e){}q('#loginScreen')?.classList.add('hidden');const app=q('#app');if(app){app.classList.remove('hidden');app.style.display=''};window.scrollTo(0,0)};
 
   /* Search + notifications */
   const nb=q('#notificationBtn'),nm=q('#notificationMenu');
