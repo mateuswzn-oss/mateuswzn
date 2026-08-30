@@ -11,6 +11,11 @@
    sessão. Trocar o nome do cache é o que faz o service worker descartar o
    que guardou e buscar tudo de novo — o `activate` abaixo apaga todo cache
    cujo nome não seja este. */
+/* v14: reescreve a abertura (ícone e nome revelados por desfoque, sem
+   traçado nem trilha de grid abrindo — a causa da falta de
+   centralização) e trava overscroll-behavior nos dois eixos (só o
+   vertical estava travado; o app instalado ainda "arrastava" de lado
+   pelo bounce horizontal). */
 /* v13: leva ao app instalado tudo que ficou parado nos commits depois
    do v12 — o <form> de login (autopreenchimento correto), a
    Credential Management API, a recarga real após trocar a senha, e a
@@ -22,7 +27,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v13';
+const CACHE_NAME = 'mw-shell-v14';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
