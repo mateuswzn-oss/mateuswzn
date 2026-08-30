@@ -528,7 +528,11 @@ body{color:var(--mw-text)!important}
 /* fundo removido: quem pinta body/#app é a folha de gradientes da
    marca (ver mw-paleta-canonica). Esta regra vencia por especificidade
    e deixava o app grafite sobre uma canvas azul-marinho. */
-body.light{--mw-bg:#f1f2f3;--mw-surface:#ffffff;--mw-surface-2:#f7f8f9;--mw-border:rgba(20,25,30,.12);--mw-text:#20242a;--mw-muted:#66707b;background:#f1f2f3!important;color:#20242a!important}
+/* --mw-muted escurecido de #66707b para #616b76: o valor antigo tinha
+   contraste 4.49:1 contra o fundo claro (#f1f2f3) — abaixo do mínimo de
+   4.5:1 do WCAG AA para texto normal. #616b76 sobe para 4.84:1, com
+   diferença visual imperceptível. */
+body.light{--mw-bg:#f1f2f3;--mw-surface:#ffffff;--mw-surface-2:#f7f8f9;--mw-border:rgba(20,25,30,.12);--mw-text:#20242a;--mw-muted:#616b76;background:#f1f2f3!important;color:#20242a!important}
 /* Login: solid, lightweight background and coherent surfaces */
 #loginScreen.reference-login{animation:none!important}
 #loginScreen.reference-login::before,#loginScreen.reference-login::after{display:none!important}
@@ -2772,114 +2776,6 @@ body.light #app .calendar-card .calendar-nav button:hover{
 /* Não é "esconder o preloader". A luz se dissipa (o halo cresce e
    apaga), a composição recua um pouco e some, e a tela de baixo
    aparece ao mesmo tempo — as duas coisas se cruzam. */
-/* ============================================================
-   O TOQUE QUE DESTRAVA O SOM
-   ============================================================
-   O iOS proíbe áudio audível sem um toque DENTRO da página, e abrir o
-   app pelo ícone não conta — é gesto do sistema. Não existe truque:
-   ou há um toque antes do som, ou não há som.
-
-   Então a abertura ganha um primeiro tempo: fundo azul da marca (o
-   mesmo de sempre, para não existir clarão em instante nenhum), a
-   animação CONGELADA no quadro zero, e um convite discreto. O toque é
-   o gesto que libera o áudio — e, no mesmo quadro, solta a animação.
-
-   Congelar com animation-play-state (e não com display/opacity) é o
-   que garante sincronia: a linha do tempo inteira fica parada em 0 e
-   parte do começo exato quando a classe sai. Nada é recalculado, nada
-   pula. */
-#mwBootLoader.mw-aguarda-toque .mwb-palco,
-#mwBootLoader.mw-aguarda-toque .mwb-palco *,
-#mwBootLoader.mw-aguarda-toque .mwb-espera,
-#mwBootLoader.mw-aguarda-toque .mwb-espera *{
-  animation-play-state:paused!important;
-}
-/* Congelado E invisível: o quadro zero do traçado ainda mostra um
-   fiapo do M, e ver isso parado antes da hora entrega o truque. */
-#mwBootLoader.mw-aguarda-toque .mwb-palco,
-#mwBootLoader.mw-aguarda-toque .mwb-espera{opacity:0}
-
-/* ============================================================
-   O CONVITE NÃO PODE ESCORREGAR
-   ============================================================
-   Medido na gravação do iPhone: o convite nascia 100px ACIMA do centro
-   e escorregava para baixo até assentar, uns 400ms depois. A causa é a
-   caixa do próprio preloader: no iOS a altura de um elemento fixo com
-   `inset:0` só se estabiliza depois que o sistema resolve a viewport e
-   as safe areas, e um filho centrado por flex acompanha essa mudança.
-
-   Duas medidas, e as duas juntas:
-
-   1. Centrar contra o CENTRO, não contra a caixa: top/left 50% mais
-      translate(-50%,-50%). Se a altura mudar, o ponto continua sendo o
-      meio — nada escorrega.
-
-   2. Aparecer DEPOIS de a viewport assentar, e aparecer entrando: um
-      atraso curto e uma entrada própria. O que sobrar de acomodação
-      acontece enquanto o convite ainda está invisível, e o que se vê é
-      uma entrada de propósito, não um tranco. */
-.mwb-toque{
-  position:fixed;left:50%;top:50%;
-  transform:translate(-50%,-50%);
-  z-index:3;
-  display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;
-  padding:40px 48px;
-  border:0;background:transparent;color:#cfe6ff;
-  font:inherit;font-size:14px;letter-spacing:.02em;cursor:pointer;
-  -webkit-tap-highlight-color:transparent;
-}
-/* A área de toque continua sendo a tela inteira: o convite é pequeno,
-   mas ninguém deve precisar mirar nele. */
-#mwBootLoader.mw-aguarda-toque::after{
-  content:"";position:fixed;inset:0;z-index:2;
-}
-#mwBootLoader.mw-aguarda-toque .mwb-toque{
-  display:flex;
-  animation:mwbToqueEntra .82s cubic-bezier(.22,.72,.26,1) .34s both;
-}
-/* A entrada: o anel abre de dentro, o texto sobe atrás. Sem nada
-   translúcido antes do tempo — o `both` segura o quadro 0 durante o
-   atraso, então a tela fica só azul até a hora. */
-@keyframes mwbToqueEntra{
-  from{opacity:0;transform:translate(-50%,-50%) scale(.86)}
-  to{opacity:1;transform:translate(-50%,-50%) scale(1)}
-}
-.mwb-toque-anel{
-  width:64px;height:64px;border-radius:50%;
-  border:1.5px solid rgba(125,211,252,.45);
-  position:relative;
-}
-/* Um pulso lento: presença sem barulho visual. */
-.mwb-toque-anel::after{
-  content:"";position:absolute;inset:-1.5px;border-radius:50%;
-  border:1.5px solid rgba(125,211,252,.5);
-  animation:mwbToquePulso 2.4s cubic-bezier(.24,.62,.3,1) infinite;
-}
-@keyframes mwbToquePulso{
-  0%{transform:scale(1);opacity:.55}
-  70%{transform:scale(1.45);opacity:0}
-  100%{transform:scale(1.45);opacity:0}
-}
-.mwb-toque-texto{opacity:.82;white-space:nowrap;animation:mwbToqueRespira 3s ease-in-out infinite 1.1s}
-/* O anel só começa a pulsar depois de a entrada terminar: pulsar
-   durante a entrada eram dois movimentos brigando. */
-#mwBootLoader.mw-aguarda-toque .mwb-toque-anel::after{animation-delay:1.1s}
-@keyframes mwbToqueRespira{0%,100%{opacity:.62}50%{opacity:.95}}
-/* Sai antes de a animação começar, sem deixar buraco no meio. */
-/* A saída mantém o translate(-50%,-50%): sem ele o convite saltaria
-   para o canto no instante de sumir, porque transform substitui, não
-   acumula. */
-#mwBootLoader.mw-toque-feito .mwb-toque{
-  animation:mwbToqueSai .3s cubic-bezier(.4,0,.2,1) both;pointer-events:none;
-}
-@keyframes mwbToqueSai{
-  from{opacity:1;transform:translate(-50%,-50%) scale(1)}
-  to{opacity:0;transform:translate(-50%,-50%) scale(1.12)}
-}
-@media (prefers-reduced-motion: reduce){
-  .mwb-toque-anel::after,.mwb-toque-texto{animation:none!important}
-}
-
 #mwBootLoader.mw-boot-out{
   animation:mwbFundoSai .52s cubic-bezier(.4,0,.2,1) both;
   pointer-events:none;
@@ -2950,7 +2846,6 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
 }
 </style>
 <div id="mwBootLoader" aria-hidden="true">
-  <button type="button" id="mwBootToque" class="mwb-toque" aria-label="Toque para iniciar"><span class="mwb-toque-anel" aria-hidden="true"></span><span class="mwb-toque-texto">Toque para iniciar</span></button>
   <div class="mwb-palco">
     <span class="mwb-halo"></span>
     <svg class="mwb-glifo" viewBox="0 0 64 44" fill="none">
@@ -3103,62 +2998,6 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
      estrutural (ver o comentário em .mwb-palco). Uma medida tirada uma
      vez, antes de a fonte do sistema estar resolvida, é justamente o
      que colocava o glifo 58px fora do centro no iPhone. */
-
-  /* ============================================================
-     PORTÃO DE TOQUE — o gesto que o iOS exige
-     ============================================================
-     Roda AQUI, colado no markup, e não numa folha lá no fim: a classe
-     que congela a animação precisa estar no elemento antes do primeiro
-     quadro pintado, senão dá para ver a abertura começar e parar.
-
-     Só existe quando o som está ligado. Com o som desligado o gesto não
-     serve para nada, e cobrar um toque à toa contraria o "abre e entra
-     direto" que é a regra do app.
-
-     Uma vez por carregamento: depois do toque a classe some e não
-     volta. Recarregar a página é outra abertura — e no iOS o áudio
-     também volta a ficar travado, então o toque é pedido de novo. */
-  (function(){
-    var loader = document.getElementById('mwBootLoader');
-    var botao = document.getElementById('mwBootToque');
-    if (!loader || !botao) return;
-
-    var somLigado = true;
-    try { somLigado = localStorage.getItem('mwSomAbertura') !== '0'; } catch (e) {}
-    if (!somLigado) return;                 // sem som, sem portão
-
-    loader.classList.add('mw-aguarda-toque');
-
-    var jaFoi = false;
-    function iniciar(){
-      if (jaFoi) return;
-      jaFoi = true;
-
-      /* 1) O ÁUDIO PRIMEIRO, e ainda dentro da pilha do gesto. Criar o
-            AudioContext aqui é o que o iOS aceita; criar depois de um
-            setTimeout ou de um rAF já sai do gesto e volta a ser
-            recusado. */
-      try { window.mwSomTocar && window.mwSomTocar(); } catch (e) {}
-
-      /* 2) O cronômetro do preloader passa a contar de agora. */
-      try { window.mwBootRecomeca && window.mwBootRecomeca(); } catch (e) {}
-
-      /* 3) A animação parte no MESMO quadro em que o som começa: as
-            duas classes trocam juntas, numa só mudança de estilo. O
-            convite sai por cima, em 260ms, sem segurar nada. */
-      loader.classList.add('mw-toque-feito');
-      loader.classList.remove('mw-aguarda-toque');
-
-      botao.removeEventListener('pointerdown', iniciar);
-      botao.removeEventListener('click', iniciar);
-    }
-
-    /* pointerdown, não click: dispara no encostar do dedo, sem os
-       ~100ms que o iOS às vezes segura até decidir que não é um duplo
-       toque — e esse atraso apareceria como som fora de sincronia. */
-    botao.addEventListener('pointerdown', iniciar);
-    botao.addEventListener('click', iniciar);      // teclado/acessibilidade
-  })();
 
   var liberar;
   window.mwBootPronto = new Promise(function(res){ liberar = res; });
@@ -3450,7 +3289,13 @@ body.light .mw-faceid-gate-card p{color:#526988}
       <div class="mwv2-form-track">
 
         <!-- ENTRAR -->
-        <div class="mwv2-auth-pane">
+        <!-- Precisa ser um <form> de verdade (não só uma <div>): sem ele, o
+             Safari/iOS não tem como associar com confiança "este par de
+             campos é um login deste site" e às vezes preenche uma senha
+             salva de outra hora, para outra conta. O botão continua
+             type="button" (o clique já é tratado em JS); o listener de
+             submit abaixo só cobre o Enter no teclado, sem duplicar lógica. -->
+        <form id="mwLoginForm" class="mwv2-auth-pane" autocomplete="on">
           <p class="mwv2-switch-text">Não tem conta? <button type="button" data-switch="signup">Criar agora.</button></p>
 
           <label for="username">E-mail ou usuário</label>
@@ -3463,7 +3308,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
 
           <button class="ref-primary" id="loginButton" type="button">ENTRAR</button>
           <div class="status" id="status"></div>
-        </div>
+        </form>
 
         <!-- CRIAR CONTA -->
         <form id="inlineCreateForm" class="mwv2-auth-pane">
@@ -3794,7 +3639,6 @@ body.light .mw-faceid-gate-card p{color:#526988}
       <div class="settings-group hidden" id="legacyThemeGroup"><h4>Preferências</h4><div class="theme-row"><button class="theme-btn" id="darkModeBtn">Modo Escuro</button><button class="theme-btn" id="lightModeBtn">Modo Claro</button></div></div>
       <div class="settings-group"><h4>Sessão</h4><p>Sua conta fica guardada neste navegador. Ao sair, será preciso entrar de novo com seu usuário e senha.</p><div class="profile-actions"><button class="small-btn mw-logout-btn" id="logout">Sair</button></div></div>
       <div class="settings-group" id="mwFaceIdGroup" hidden><h4>Segurança</h4><p>Use o Face ID deste iPhone/iPad para entrar no Workspace sem digitar nada.</p><div class="mw-faceid-row"><span class="mw-faceid-row-label">Entrar com Face ID</span><button type="button" class="mw-faceid-switch" id="mwFaceIdToggle" role="switch" aria-checked="false" aria-label="Entrar com Face ID"><i></i></button></div><p class="form-error" id="mwFaceIdStatus" hidden></p></div>
-      <div class="settings-group" id="mwSomGrupo"><h4>Som de abertura</h4><p>Um sopro curto e uma batida quando a marca se forma. O navegador só deixa tocar depois de você ter tocado na tela alguma vez — no iPhone, a primeira abertura costuma sair muda.</p><div class="mw-pin-row"><span class="mw-pin-estado" id="mwSomEstado">Ligado.</span><div class="mw-pin-acoes"><button type="button" class="small-btn" id="mwSomOuvir">Ouvir</button><button type="button" class="small-btn" id="mwSomAlternar">Desligar</button></div></div></div>
         <div class="settings-group" id="mwPinGroup"><h4>Código de acesso</h4><p>Um código de 6 dígitos para destravar o Workspace ao reabrir. Funciona em qualquer aparelho, com ou sem Face ID.</p><div class="mw-pin-row"><span class="mw-pin-estado" id="mwPinEstado">Nenhum código definido.</span><div class="mw-pin-acoes"><button type="button" class="small-btn" id="mwPinDefinir">Definir código</button><button type="button" class="small-btn mw-pin-remover" id="mwPinRemover" hidden>Remover</button></div></div><p class="form-error" id="mwPinStatus" hidden></p></div>
       <div class="settings-group"><h4>Aplicativo</h4><p id="mwSettingsInstallDesc">Adicione o Mateus Workspace à tela de início para abrir como um app.</p><div class="profile-actions"><button class="small-btn" id="mwSettingsInstallBtn">Instalar aplicativo</button></div></div>
       <div class="settings-group" id="mwTransfereGrupo"><h4>Usar a mesma conta no app</h4>
@@ -17936,151 +17780,6 @@ body.light #app .mw-reference-profile.mw-estado-ativo .mw-profile-main{
   });
 })();
 </script>
-<script id="mw-som-abertura">
-/* ============================================================
-   O SOM DA ABERTURA
-   ============================================================
-   Sintetizado em Web Audio, sem arquivo: o projeto é um HTML só, e um
-   .mp3 seria mais um pedido de rede na abertura — justamente o momento
-   que a gente passou o tempo todo tentando desafogar.
-
-   São dois gestos, do jeito que abertura de marca costuma soar:
-     1. um sopro que sobe enquanto os traços são desenhados — ruído
-        passando por um filtro que abre de 300Hz a 5kHz;
-     2. uma batida grave com um brilho por cima quando o nome assenta.
-
-   AVISO IMPORTANTE, e é limitação do navegador, não do código: sem um
-   toque prévio da pessoa, o navegador BLOQUEIA áudio audível. No iOS a
-   regra é rígida — na primeira abertura o som quase certamente não sai.
-   Por isso nada aqui depende do som ter tocado: se for bloqueado, a
-   promessa é engolida e a animação segue igual. E fica um ouvinte de
-   um toque só, para a próxima abertura já poder soar. */
-(function(){
-  var CHAVE = 'mwSomAbertura';        // '0' desliga
-  function ligado(){
-    try { return localStorage.getItem(CHAVE) !== '0'; } catch (e) { return true; }
-  }
-  window.mwSomLigado = ligado;
-  window.mwSomDefinir = function(v){
-    try { localStorage.setItem(CHAVE, v ? '1' : '0'); } catch (e) {}
-  };
-
-  var Ctx = window.AudioContext || window.webkitAudioContext;
-  if (!Ctx) return;
-
-  function tocar(){
-    if (!ligado()) return 'desligado';
-    var ctx;
-    try { ctx = new Ctx(); } catch (e) { return; }
-
-    /* resume() ANTES de agendar, não depois. Um contexto criado dentro
-       do gesto às vezes nasce 'suspended'; agendar num contexto parado e
-       só então retomar deixa o começo do som para trás, e o que se ouve
-       é o meio do envelope — ou nada, se o ataque inteiro couber no
-       trecho perdido. Retomar primeiro alinha t0 com o áudio real. */
-    if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) {} }
-
-    var t0 = ctx.currentTime + 0.02;
-    var mestre = ctx.createGain();
-    /* 0.22 era discreto demais: com o corpo em 0.62 o efetivo ficava em
-       0.14, e no alto-falante do telefone isso é quase nada. É abertura
-       de marca, precisa ser ouvida. */
-    mestre.gain.value = 0.55;
-    mestre.connect(ctx.destination);
-
-    /* ============================================================
-       ENVELOPE MEDIDO NA REFERÊNCIA
-       ============================================================
-       Extraí o áudio do vídeo e medi o envelope a cada 50ms. O que ele
-       faz, e que o nosso NÃO fazia:
-
-         0.00s  pico imediato (0.74 do máximo) — nasce alto, não sobe
-         0.30s  acento (0.92)
-         0.60s  acento (0.82)
-         1.00s  acento (0.83)  — o wordmark materializando
-         1.85s  praticamente silêncio (0.04)
-
-       O antigo era o inverso: subia durante 0,9s e só então batia. Por
-       isso soava como "um efeito chegando" em vez de "a marca
-       acontecendo". Agora o corpo nasce no ataque e decai; os acentos
-       marcam os mesmos três momentos. */
-    var FIM = 1.85;
-
-    /* corpo: ruído por um passa-baixa que ABRE (brilho crescendo)
-       enquanto o volume DECAI — é o que dá o "ar" saindo */
-    var buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * FIM), ctx.sampleRate);
-    var d = buf.getChannelData(0);
-    var ultimo = 0;
-    for (var i = 0; i < d.length; i++) {
-      var branco = Math.random() * 2 - 1;
-      ultimo = (ultimo + 0.02 * branco) / 1.02;
-      d[i] = ultimo * 3.2;
-    }
-    var ruido = ctx.createBufferSource(); ruido.buffer = buf;
-    var filtro = ctx.createBiquadFilter(); filtro.type = 'lowpass';
-    filtro.frequency.setValueAtTime(900, t0);
-    filtro.frequency.exponentialRampToValueAtTime(6200, t0 + 0.85);
-    filtro.frequency.exponentialRampToValueAtTime(1400, t0 + FIM);
-    filtro.Q.value = 0.8;
-    var gCorpo = ctx.createGain();
-    gCorpo.gain.setValueAtTime(0.0001, t0);
-    gCorpo.gain.exponentialRampToValueAtTime(0.62, t0 + 0.03);   // ataque imediato
-    gCorpo.gain.exponentialRampToValueAtTime(0.30, t0 + 0.9);
-    gCorpo.gain.exponentialRampToValueAtTime(0.0001, t0 + FIM);
-    ruido.connect(filtro); filtro.connect(gCorpo); gCorpo.connect(mestre);
-    ruido.start(t0); ruido.stop(t0 + FIM);
-
-    /* grave de fundação, junto do ataque */
-    var grave = ctx.createOscillator(); grave.type = 'sine';
-    grave.frequency.setValueAtTime(120, t0);
-    grave.frequency.exponentialRampToValueAtTime(44, t0 + 0.7);
-    var gGrave = ctx.createGain();
-    gGrave.gain.setValueAtTime(0.0001, t0);
-    gGrave.gain.exponentialRampToValueAtTime(0.9, t0 + 0.02);
-    gGrave.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.0);
-    grave.connect(gGrave); gGrave.connect(mestre);
-    grave.start(t0); grave.stop(t0 + 1.05);
-
-    /* os três acentos, nos instantes medidos: 0.30 / 0.60 / 1.00 */
-    [[0.30, 933.3, 0.16], [0.60, 1244.5, 0.14], [1.00, 1864.7, 0.17]]
-      .forEach(function(a){
-        var ti = t0 + a[0];
-        var o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.value = a[1];
-        var g = ctx.createGain();
-        g.gain.setValueAtTime(0.0001, ti);
-        g.gain.exponentialRampToValueAtTime(a[2], ti + 0.02);
-        g.gain.exponentialRampToValueAtTime(0.0001, ti + 0.5);
-        o.connect(g); g.connect(mestre);
-        o.start(ti); o.stop(ti + 0.55);
-      });
-
-    /* Fecha o contexto sozinho: deixar aberto segura áudio do sistema
-       (e no iOS pode abaixar a música de quem estiver ouvindo). */
-    setTimeout(function(){ try { ctx.close(); } catch (e) {} }, 2300);
-
-    if (ctx.state === 'suspended') {
-      ctx.resume().catch(function(){});
-    }
-  }
-
-  /* Quem dispara o som na abertura é o portão de toque, não um
-     temporizador: o áudio precisa nascer DENTRO do gesto para o iOS
-     liberar, e no mesmo quadro em que a animação parte. Aqui só fica a
-     função. */
-  /* Devolve o estado real do contexto, para o ajuste em Configurações
-     poder dizer "tocou" ou "o navegador recusou" em vez de deixar a
-     pessoa achando que o som está quebrado. */
-  window.mwSomTocar = function(){
-    try { return tocar() || 'ok'; } catch (e) { return 'erro'; }
-  };
-
-  /* O destravador genérico que existia aqui saiu: quem destrava agora é
-     o portão de toque da abertura, dentro do próprio gesto. Mantê-lo
-     criava um SEGUNDO AudioContext no mesmo toque — sem efeito audível,
-     mas é recurso de áudio aberto à toa, e no iOS abrir contexto
-     sobrando mexe no áudio de quem está ouvindo outra coisa. */
-})();
-</script>
 <style id="mw-modo-claro-inteligente">
 /* ============================================================
    MODO CLARO: OS IRMÃOS TÊM QUE SE PARECER
@@ -18495,32 +18194,6 @@ html body .mwv2-auth-pane > *{flex-shrink:0}
       } catch (e) {}
     });
   });
-})();
-</script>
-<script id="mw-som-ui-js">
-/* Liga o ajuste de som. "Ouvir" existe porque, sem ele, a única forma
-   de conferir seria reabrir o app — e é justamente na abertura que o
-   navegador costuma bloquear. Aqui o clique JÁ é o gesto que destrava,
-   então o som sempre sai. */
-(function(){
-  var estado = document.getElementById('mwSomEstado');
-  var alternar = document.getElementById('mwSomAlternar');
-  var ouvir = document.getElementById('mwSomOuvir');
-  if (!alternar) return;
-  function pintar(){
-    var on = !window.mwSomLigado || window.mwSomLigado();
-    if (estado) estado.textContent = on ? 'Ligado.' : 'Desligado.';
-    alternar.textContent = on ? 'Desligar' : 'Ligar';
-    if (ouvir) ouvir.disabled = !on;
-  }
-  alternar.addEventListener('click', function(){
-    var on = !window.mwSomLigado || window.mwSomLigado();
-    window.mwSomDefinir && window.mwSomDefinir(!on);
-    pintar();
-    if (typeof toast === 'function') toast(on ? 'Som de abertura desligado' : 'Som de abertura ligado');
-  });
-  ouvir && ouvir.addEventListener('click', function(){ window.mwSomTocar && window.mwSomTocar(); });
-  pintar();
 })();
 </script>
 <script id="mw-acabamento-formulario-js">
@@ -19091,6 +18764,20 @@ document.addEventListener('click', function(e){
 
      Se o servidor recusar (nome tomado, e-mail já cadastrado), o fluxo
      para aqui e a mensagem aparece — a animação nem começa. */
+  /* O <form> de login existe só para o Safari/iOS reconhecer o par
+     usuário+senha como um login de verdade (autopreenchimento mais
+     confiável). O clique em #loginButton já cobre o fluxo inteiro;
+     isto aqui só evita que apertar Enter no campo de senha dispare o
+     envio nativo do formulário (que recarregaria a página) — e, de
+     brinde, faz o Enter funcionar como atalho para entrar. */
+  document.addEventListener('submit', function(e){
+    var form = e.target;
+    if (!form || form.id !== 'mwLoginForm') return;
+    e.preventDefault();
+    var botao = document.getElementById('loginButton');
+    if (botao) botao.click();
+  });
+
   document.addEventListener('submit', function(e){
     var form = e.target;
     if (!form || form.id !== 'inlineCreateForm') return;
