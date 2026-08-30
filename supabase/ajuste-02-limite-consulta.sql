@@ -56,15 +56,24 @@ $$;
 -- padrão do PostgREST. Sem IP identificável, cai numa chave genérica — pior
 -- que por IP, mas ainda limita o total de chamadas no período para todo
 -- mundo nessa situação, o que já corta um ataque em massa.
+--
+-- BLINDADA: se o cabeçalho não existir neste projeto, ou vier num formato
+-- que o cast para json não aceite, a função NUNCA pode estourar erro — ela
+-- é chamada de dentro do login, e um erro aqui derrubava o login inteiro
+-- por nome de usuário. Qualquer problema cai silenciosamente em 'sem-ip'.
 create or replace function public.chave_do_chamador()
 returns text
-language sql
+language plpgsql
 stable
 as $$
-  select coalesce(
+begin
+  return coalesce(
     nullif(split_part(current_setting('request.headers', true)::json->>'x-forwarded-for', ',', 1), ''),
     'sem-ip'
   );
+exception when others then
+  return 'sem-ip';
+end;
 $$;
 
 -- Está livre? — até 30 perguntas por minuto por aparelho. Isso é rodar o
