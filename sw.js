@@ -1,5 +1,13 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v17: reexaminados os quadros do próprio vídeo de referência que o
+   usuário mandou (extraídos com ffmpeg) — o efeito real no nome não é
+   nem desfoque nem traçado: é uma DECODIFICAÇÃO, com as letras certas
+   travando da esquerda pra direita enquanto o resto cicla por
+   caracteres aleatórios, e fagulhas piscando ao redor. É isso que
+   entra agora, via JS (mwBootNomeTxt), no lugar da cascata de letras
+   do v16. O símbolo (M/W) mantém o traçado do v16, que já ia na
+   direção certa. */
 /* v16: o v15 tirou o "efeito nas letras" que existia antes (o traçado
    das linhas do símbolo) trocando por um desfoque só resolvendo — e o
    pedido foi claro: quer o traçado de volta, só que melhor. Volta o
@@ -40,7 +48,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v16';
+const CACHE_NAME = 'mw-shell-v17';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
