@@ -4648,7 +4648,7 @@ window.toast = toast;
   /* Account creation */
   const create=q('#createAccountLink');
   function authModal(title,html){let m=q('#accountModal');if(!m){m=document.createElement('div');m.id='accountModal';m.className='modal';document.body.appendChild(m)}m.innerHTML=`<div class="modal-box auth-modal-card"><div class="modal-head"><h3>${title}</h3><button class="close" data-close>×</button></div>${html}</div>`;m.classList.remove('hidden');m.querySelector('[data-close]').onclick=()=>m.classList.add('hidden');return m}
-  create?.addEventListener('click',()=>{const m=authModal('Criar sua conta',`<form id="createForm"><div class="form-field"><label>Nome completo</label><input id="newName" required placeholder="Ex.: Mateus Silva"></div><div class="form-field"><label>Nome de usuário</label><input id="newUsername" required pattern="[A-Za-z0-9._\-]{3,20}" placeholder="Ex.: mateus.dev"><small class="field-hint">3–20 caracteres: letras, números, ponto, hífen ou sublinhado.</small></div><div class="form-field"><label>E-mail</label><input id="newEmail" type="email" required placeholder="voce@exemplo.com"></div><div class="form-field"><label>Senha</label><input id="newPass" type="password" required placeholder="Escolha uma senha segura"></div><div class="form-field"><label>Confirmar senha</label><input id="newPass2" type="password" required placeholder="Digite a senha novamente"></div><div class="form-error" id="createError"></div><div class="profile-actions"><button class="save-btn" type="submit">Criar conta</button></div><p style="color:var(--muted);font-size:12px">Sua conta e seus dados ficam separados por usuário neste navegador.</p></form>`);m.querySelector('#createForm').onsubmit=e=>{e.preventDefault();const u=users(),name=m.querySelector('#newName').value.trim(),username=m.querySelector('#newUsername').value.trim(),email=m.querySelector('#newEmail').value.trim().toLowerCase(),p=m.querySelector('#newPass').value,p2=m.querySelector('#newPass2').value,err=m.querySelector('#createError');const usernames=Object.values(u).map(x=>(x.username||'').toLowerCase());if(!/^[A-Za-z0-9._-]{3,20}$/.test(username)){err.textContent='Nome de usuário inválido. Use 3–20 caracteres.';return}if(usernames.includes(username.toLowerCase())){err.textContent='Esse nome de usuário já está em uso. Escolha outro.';return}if(u[email]){err.textContent='Este e-mail já possui uma conta.';return}if(p!==p2){err.textContent='As senhas não coincidem.';return}if(!p){err.textContent='Digite uma senha.';return}const nova={name,username,email,data:defaultData(name,email)};Promise.resolve(window.mwSenha?window.mwSenha.grava(nova,p):(nova.password=p)).then(function(){u[email]=nova;saveUsers(u);m.classList.add('hidden');userInput.value=email;passInput.value='';refreshLogin();notify('Conta criada com sucesso. Agora você pode entrar.');});};});
+  create?.addEventListener('click',()=>{const m=authModal('Criar sua conta',`<form id="createForm"><div class="form-field"><label>Nome completo</label><input id="newName" required placeholder="Ex.: Mateus Silva"></div><div class="form-field"><label>Nome de usuário</label><input id="newUsername" required pattern="[A-Za-z0-9._\-]{3,20}" placeholder="Ex.: mateus.dev"><small class="field-hint">3–20 caracteres: letras, números, ponto, hífen ou sublinhado.</small></div><div class="form-field"><label>E-mail</label><input id="newEmail" type="email" required placeholder="voce@exemplo.com"></div><div class="form-field"><label>Senha</label><input id="newPass" type="password" required placeholder="Escolha uma senha segura"></div><div class="form-field"><label>Confirmar senha</label><input id="newPass2" type="password" required placeholder="Digite a senha novamente"></div><div class="form-error" id="createError"></div><div class="profile-actions"><button class="save-btn" type="submit">Criar conta</button></div><p style="color:var(--muted);font-size:12px">Sua conta e seus dados ficam separados por usuário neste navegador.</p></form>`);m.querySelector('#createForm').onsubmit=e=>{e.preventDefault();const u=users(),name=m.querySelector('#newName').value.trim(),username=m.querySelector('#newUsername').value.trim(),email=m.querySelector('#newEmail').value.trim().toLowerCase(),p=m.querySelector('#newPass').value,p2=m.querySelector('#newPass2').value,err=m.querySelector('#createError');const usernames=Object.values(u).map(x=>(x.username||'').toLowerCase());if(!/^[A-Za-z0-9._-]{3,20}$/.test(username)){err.textContent='Nome de usuário inválido. Use 3–20 caracteres.';return}if(usernames.includes(username.toLowerCase())){err.textContent='Esse nome de usuário já está em uso. Escolha outro.';return}if(u[email]){err.textContent='Este e-mail já possui uma conta.';return}if(p!==p2){err.textContent='As senhas não coincidem.';return}if(!p||p.length<6){err.textContent='A senha precisa ter pelo menos 6 caracteres.';return}const nova={name,username,email,data:defaultData(name,email)};Promise.resolve(window.mwSenha?window.mwSenha.grava(nova,p):(nova.password=p)).then(function(){u[email]=nova;saveUsers(u);m.classList.add('hidden');userInput.value=email;passInput.value='';refreshLogin();notify('Conta criada com sucesso. Agora você pode entrar.');});};});
 
   /* legacy recovery modal disabled; login-only OTP controller handles recovery */
 
@@ -16796,8 +16796,19 @@ html:has(body.light){background-color:#f4f9ff!important}
 
 /* Cinto e suspensório: o preloader passa alguns pixels além da
    viewport, para o caso de o cálculo da safe area ficar 1px curto em
-   algum aparelho. Não muda nada visualmente — a cor é a mesma. */
-#mwBootLoader{inset:-2px 0!important}
+   algum aparelho. Não muda nada visualmente — a cor é a mesma.
+
+   -2px não bastava no app instalado: no boot do PWA em iOS, a barra de
+   status e a home indicator area podem levar mais de um ciclo para se
+   assentar, e o inset fixo por pixels ficava curto bem no primeiro
+   quadro — exatamente quando o preloader precisa cobrir tudo. Uma
+   margem maior, mais 100dvh/100dvw como chão (em vez de depender só do
+   inset:0 herdado), fecha essa folga em qualquer aparelho. */
+#mwBootLoader{
+  inset:-12px 0!important;
+  width:100dvw!important;height:100dvh!important;
+  min-width:100vw!important;min-height:100vh!important;
+}
 </style>
 <style id="mw-entrada-workspace">
 /* ============================================================
@@ -18922,6 +18933,38 @@ document.addEventListener('click', function(e){
   }
 
   /* ================================================================
+     FREIO CONTRA FORÇA BRUTA
+     ================================================================
+     O Supabase já limita tentativas no servidor, mas isso só reage
+     depois que o pedido chega lá — um script batendo local/senha em
+     sequência ainda gasta uma chamada de rede por tentativa. Este freio
+     conta senhas erradas comprovadas (não contas inexistentes, que é o
+     caminho normal de quem está criando conta pela primeira vez) e, a
+     partir da 5ª seguida, passa a exigir uma espera crescente antes da
+     próxima — 30s, 60s, 90s… até um teto de 5 minutos. Zera sozinho no
+     primeiro login certo. */
+  var mwFreioLogin = (function(){
+    var CH_N = 'mwLoginFalhas', CH_T = 'mwLoginBloqueioAte';
+    function falhou(){
+      var n = (parseInt(localStorage.getItem(CH_N), 10) || 0) + 1;
+      try { localStorage.setItem(CH_N, String(n)); } catch (e) {}
+      if (n >= 5) {
+        var espera = Math.min(30000 * (n - 4), 300000);
+        try { localStorage.setItem(CH_T, String(Date.now() + espera)); } catch (e) {}
+      }
+    }
+    function limpa(){
+      try { localStorage.removeItem(CH_N); localStorage.removeItem(CH_T); } catch (e) {}
+    }
+    function segundosRestantes(){
+      var ate = parseInt(localStorage.getItem(CH_T), 10) || 0;
+      var faltam = ate - Date.now();
+      return faltam > 0 ? Math.ceil(faltam / 1000) : 0;
+    }
+    return { falhou: falhou, limpa: limpa, segundosRestantes: segundosRestantes };
+  })();
+
+  /* ================================================================
      ENTRAR
      ================================================================
      Ordem deliberada: servidor primeiro, aparelho depois.
@@ -18936,6 +18979,13 @@ document.addEventListener('click', function(e){
     if (!botao) return;
     if (botao.dataset.mwNuvemPassa === '1') { botao.dataset.mwNuvemPassa = ''; return; }
     if (!temNuvem()) return;                       // sem cliente: fluxo antigo, intacto
+
+    var espera = mwFreioLogin.segundosRestantes();
+    if (espera > 0) {
+      dizStatus('Muitas tentativas erradas. Tente de novo em ' + espera + 's.', true);
+      e.preventDefault(); e.stopPropagation();
+      return;
+    }
 
     var texto = (q('#username') && q('#username').value || '').trim();
     var senha = (q('#password') && q('#password').value) || '';
@@ -19000,6 +19050,7 @@ document.addEventListener('click', function(e){
           vindoDoServidor = !vazio(doServidor);
           return guardaLocal(email, perfil.username || texto, senha, dados).then(function(conta){
             vindoDoServidor = false;
+            mwFreioLogin.limpa();
             devolveBotao();
             dizStatus('');
             abreApp(dados.profile.name || conta.username || '');
@@ -19019,7 +19070,11 @@ document.addEventListener('click', function(e){
         dizStatus('Falta confirmar seu e-mail. Abra o link que enviamos e entre de novo.', true);
         return;
       }
-      if (/Invalid login|conta-nao-encontrada/i.test(msg)) { tentaLocal(); return; }
+      /* Senha errada contra uma conta que existe: conta como tentativa
+         falha de verdade. Conta inexistente não conta — é o caminho
+         normal de quem está criando conta agora. */
+      if (/Invalid login/i.test(msg)) { mwFreioLogin.falhou(); tentaLocal(); return; }
+      if (/conta-nao-encontrada/i.test(msg)) { tentaLocal(); return; }
 
       /* Qualquer outra falha é rede, prazo ou servidor fora — reserva. */
       tentaLocal();

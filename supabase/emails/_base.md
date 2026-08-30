@@ -1,5 +1,16 @@
 # Modelos de e-mail do Mateus Workspace
 
+> ⚠️ **Editar modelo exige SMTP próprio.**
+> Com o serviço de e-mail embutido do Supabase, os campos de assunto e corpo
+> ficam em modo leitura e o painel avisa: *"Configure SMTP personalizado para
+> editar modelos"*. Não é limitação do celular nem do navegador — é regra do
+> plano. Ligue um serviço de envio em **Authentication → Emails → SMTP
+> Settings** antes de tentar colar qualquer coisa aqui.
+>
+> Ligar SMTP próprio resolve três coisas de uma vez: destrava os modelos, tira
+> o limite de poucos e-mails por hora do serviço embutido, e faz o e-mail sair
+> de um remetente seu em vez de `noreply@…supabase.io`.
+
 Cole cada arquivo no painel do Supabase, em
 **Authentication → Emails → Templates**, no modelo correspondente:
 
