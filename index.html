@@ -18638,6 +18638,35 @@ document.addEventListener('click', function(e){
   })();
 
   /* ================================================================
+     GUARDAR A SENHA CERTA NO GERENCIADOR DO NAVEGADOR
+     ================================================================
+     O app inteiro roda sem navegação de página (SPA): o clique de
+     "entrar" e o de "salvar senha nova" chamam e.preventDefault() e
+     seguem tudo via fetch. Isso é ótimo para a experiência, mas tira
+     do Safari/Chrome o sinal que eles usam para decidir "isto foi um
+     login bem-sucedido, ofereço salvar essa senha" — sem esse sinal,
+     o navegador tenta adivinhar, e é aí que aparecem senhas erradas
+     ou antigas sendo sugeridas.
+
+     A Credential Management API existe exatamente para isto: em vez
+     de o navegador adivinhar, o próprio app avisa "este par funcionou
+     agora mesmo" logo depois de confirmar um login, um cadastro ou
+     uma troca de senha. O navegador então oferece salvar ou ATUALIZAR
+     a senha guardada — resolvendo de vez o caso de várias senhas
+     antigas competindo pela mesma conta. Sem suporte (ou sem permissão
+     do usuário), a chamada simplesmente não faz nada; nunca deve
+     quebrar o fluxo por causa disso. */
+  function mwGuardaCredencial(identificador, senha){
+    try {
+      if (!window.PasswordCredential || !navigator.credentials || !navigator.credentials.store) return;
+      if (!identificador || !senha) return;
+      var cred = new PasswordCredential({ id: identificador, password: senha, name: identificador });
+      navigator.credentials.store(cred).catch(function(){});
+    } catch (e) {}
+  }
+  window.mwGuardaCredencial = mwGuardaCredencial;
+
+  /* ================================================================
      ENTRAR
      ================================================================
      Ordem deliberada: servidor primeiro, aparelho depois.
@@ -18724,6 +18753,7 @@ document.addEventListener('click', function(e){
           return guardaLocal(email, perfil.username || texto, senha, dados).then(function(conta){
             vindoDoServidor = false;
             mwFreioLogin.limpa();
+            mwGuardaCredencial(texto, senha);
             devolveBotao();
             dizStatus('');
             abreApp(dados.profile.name || conta.username || '');
@@ -18822,6 +18852,7 @@ document.addEventListener('click', function(e){
         var temSessao = !!(dados && dados.session);
         if (uid && temSessao) { try { localStorage.setItem(CHAVE_UID, uid); } catch (er) {} }
         if (!temSessao) { try { localStorage.setItem(CONFIRMA_PENDENTE, email); } catch (er) {} }
+        mwGuardaCredencial(usuario, senha);
         segue();
       });
     }).catch(function(erro){
@@ -19312,13 +19343,15 @@ html body.light #mwRecupera input{background:#fff!important;color:#0b1830!import
     botao.disabled = true;
     diz('Salvando...');
 
+    var emailConta = '', usernameConta = '';
     window.mwNuvem.atualizaAuth({ password: a }).then(function(usuario){
       /* Atualiza também a cópia local, senão o app continuaria aceitando a
          senha velha quando estivesse sem internet. */
-      var email = (usuario && usuario.email) || '';
+      emailConta = (usuario && usuario.email) || '';
       try {
         var users = JSON.parse(localStorage.getItem('mateusWorkspaceUsersV2') || '{}') || {};
-        var chave = email && users[email] ? email : (localStorage.getItem('mateusActiveUserV2') || '');
+        var chave = emailConta && users[emailConta] ? emailConta : (localStorage.getItem('mateusActiveUserV2') || '');
+        if (users[chave]) usernameConta = users[chave].username || '';
         if (users[chave] && window.mwSenha) {
           return window.mwSenha.grava(users[chave], a).then(function(){
             localStorage.setItem('mateusWorkspaceUsersV2', JSON.stringify(users));
@@ -19326,6 +19359,7 @@ html body.light #mwRecupera input{background:#fff!important;color:#0b1830!import
         }
       } catch (e) {}
     }).then(function(){
+      window.mwGuardaCredencial && window.mwGuardaCredencial(usernameConta || emailConta, a);
       limpaEndereco();
       abrir('enviado', { email: '' });
       var dentro = caixa.querySelector('.mw-rec-caixa');
