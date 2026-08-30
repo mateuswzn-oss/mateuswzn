@@ -1,5 +1,17 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v18: reescreve a abertura do zero, a pedido explícito — o M e o W
+   não podem só "aparecer prontos": precisam ser CONSTRUÍDOS por
+   energia/luz percorrendo o próprio contorno, com partículas
+   convergindo ao redor e um acabamento de vidro/cromo (um brilho
+   branco que passa pela letra uma vez) quando terminam de se formar.
+   Toda a abertura agora cabe em ~1,1s de construção + ~650ms de marca
+   parada (piso 1750ms/teto 2300ms, no lugar de 2600/3400) — o pedido
+   foi claro: 1-2 segundos no total, não os quase 3s de antes. As
+   partículas são canvas (script novo, mwBootParticulas) e reduzem de
+   quantidade sozinhas em aparelho com ponteiro grosso ou poucos
+   núcleos. Sem spinner, sem barra girando, sem três pontinhos — a
+   própria formação da logo é o indicador de carregamento. */
 /* v17: reexaminados os quadros do próprio vídeo de referência que o
    usuário mandou (extraídos com ffmpeg) — o efeito real no nome não é
    nem desfoque nem traçado: é uma DECODIFICAÇÃO, com as letras certas
@@ -48,7 +60,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v17';
+const CACHE_NAME = 'mw-shell-v18';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
