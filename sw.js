@@ -11,6 +11,12 @@
    sessão. Trocar o nome do cache é o que faz o service worker descartar o
    que guardou e buscar tudo de novo — o `activate` abaixo apaga todo cache
    cujo nome não seja este. */
+/* v15: a revelação por desfoque do v14 estava rápida e sutil demais —
+   passava despercebida e depois ficava ~2,9s parada, sem vida. Agora
+   dura mais (mais desfoque, mais tempo), o halo ganha uma respiração
+   contínua durante a espera, e o piso/teto do boot encurtou pra
+   segurar só ~1,5s de marca parada, batendo com a proporção da
+   referência. */
 /* v14: reescreve a abertura (ícone e nome revelados por desfoque, sem
    traçado nem trilha de grid abrindo — a causa da falta de
    centralização) e trava overscroll-behavior nos dois eixos (só o
@@ -27,7 +33,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v14';
+const CACHE_NAME = 'mw-shell-v15';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
