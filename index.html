@@ -18940,6 +18940,39 @@ document.addEventListener('click', function(e){
   window.mwNuvemEnviaAgora = enviaAgora;
 })();
 </script>
+<script id="mw-pos-troca-senha-js">
+/* Do outro lado do recarregamento forçado em salvar() (tela de
+   redefinir senha): limpa a URL, pré-preenche só o campo de usuário
+   (nunca a senha) e avisa que deu certo. */
+(function(){
+  if (window.location.search.indexOf('senha-trocada=') === -1) return;
+
+  try {
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+  } catch (e) {}
+
+  var identificador = '';
+  try {
+    identificador = sessionStorage.getItem('mwLoginPreenche') || '';
+    sessionStorage.removeItem('mwLoginPreenche');
+  } catch (e) {}
+
+  function preenche(){
+    var campoUsuario = document.getElementById('username');
+    var status = document.getElementById('status');
+    if (campoUsuario && identificador && !campoUsuario.value) campoUsuario.value = identificador;
+    if (status) status.textContent = 'Senha alterada. Entre com a senha nova.';
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', preenche, { once: true });
+  } else {
+    preenche();
+  }
+})();
+</script>
 
 <style id="mw-ativa-nuvem-css">
 html body #mwAtivaNuvem{
@@ -19360,11 +19393,33 @@ html body.light #mwRecupera input{background:#fff!important;color:#0b1830!import
       } catch (e) {}
     }).then(function(){
       window.mwGuardaCredencial && window.mwGuardaCredencial(usernameConta || emailConta, a);
-      limpaEndereco();
-      abrir('enviado', { email: '' });
-      var dentro = caixa.querySelector('.mw-rec-caixa');
-      dentro.querySelector('h3').textContent = 'Senha alterada';
-      dentro.querySelector('p').innerHTML = 'Pronto. Já pode entrar com a senha nova, aqui e no aplicativo.';
+
+      /* ============================================================
+         RECARREGAR DE VERDADE, NÃO SÓ TROCAR DE TELA
+         ============================================================
+         O app inteiro é uma página só: entrar, criar conta e trocar
+         senha são só painéis que aparecem e somem, sem NUNCA navegar
+         de verdade. Isso é ótimo pra velocidade, mas tem um efeito
+         colateral sério aqui — o Safari guarda, presa a essa mesma
+         carga de página, a última senha forte que ele sugeriu no
+         campo de "senha nova". Como a página nunca recarrega, essa
+         sugestão nunca é descartada, e ela vazava pro campo de senha
+         da tela de login mais tarde, na MESMA aba — foi exatamente o
+         que o usuário via: sempre um valor gerado, nunca o que ele
+         tinha digitado, e só sumia quando o preenchimento automático
+         inteiro era desligado.
+
+         Uma recarga de verdade (não um location.reload comum, que o
+         Safari por vezes trata como "voltar à mesma página" e reusa o
+         estado) troca a URL para a base do app com um parâmetro
+         descartável, forçando o Safari a tratar isso como uma visita
+         nova de verdade e esquecer a sugestão presa. Guardamos o
+         identificador em sessionStorage só para pré-preencher o campo
+         de usuário/e-mail depois — nunca a senha, que continua sendo
+         SEMPRE digitada ou vinda do gerenciador de senhas de verdade. */
+      try { sessionStorage.setItem('mwLoginPreenche', usernameConta || emailConta || ''); } catch (e) {}
+      var base = window.location.origin + window.location.pathname;
+      window.location.replace(base + '?senha-trocada=' + Date.now());
     }).catch(function(e){
       botao.disabled = false;
       var m = String((e && e.message) || e || '');
