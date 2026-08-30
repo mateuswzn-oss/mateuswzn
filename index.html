@@ -2669,41 +2669,64 @@ body.light #app .calendar-card .calendar-nav button:hover{
   50%{opacity:1;transform:scale(1.07)}
 }
 
-/* ---------- o símbolo: emerge pronto, sem percurso ---------- */
-/* Igual ao anel da Crunchyroll assentando no ícone final: nada aqui é
-   "desenhado" — o glifo inteiro (já com o gradiente) sai de um
-   desfoque fechado direto pra nitidez, crescendo no caminho. Mais
-   longo e com mais desfoque que a primeira versão — o suficiente pra
-   se ver a transição de verdade, não só um "pop". Só opacity/filter/
-   transform no elemento inteiro: mais barato que o traçado anterior
-   (que animava stroke-dashoffset por quadro) e mais fiel à
-   referência, que não tem percurso nenhum, só revelação. */
+/* ---------- o símbolo: as letras se DESENHAM, depois assentam ---------- */
+/* O pedido depois de ver o v15 rodando: o efeito nas letras sumiu — só
+   um desfoque resolvendo não lê como "animado". Volta o traçado (cada
+   path desenha a si mesmo, como uma caneta), só que melhor que a
+   versão original: o contêiner entra com uma pequena mola (overshoot
+   no scale) ANTES de as linhas começarem a se traçar, então há dois
+   movimentos distintos — "o ícone salta pro lugar" e depois "as letras
+   se desenham" — em vez de um só. `pathLength="1"` no SVG normaliza
+   o comprimento de cada path pra 1, então o dasharray/dashoffset não
+   depende de medir os pixels do traçado à mão. */
 .mwb-glifo{
   width:var(--mwb-simb);height:auto;aspect-ratio:172/118;overflow:visible;display:block;flex:none;
-  opacity:0;filter:blur(26px);transform:scale(.55);
-  animation:mwbGlifoEntra .7s cubic-bezier(.16,.84,.24,1) .34s both;
+  opacity:0;transform:scale(.8);
+  animation:mwbGlifoEntra .5s cubic-bezier(.34,1.56,.64,1) .14s both;
 }
 @keyframes mwbGlifoEntra{
-  0%{opacity:0;filter:blur(26px);transform:scale(.55)}
-  78%{filter:blur(0)}
-  100%{opacity:1;filter:blur(0);transform:scale(1)}
+  0%{opacity:0;transform:scale(.8)}
+  55%{opacity:1}
+  100%{opacity:1;transform:scale(1)}
 }
 .mwb-glifo path{
   fill:none;stroke-width:5.4;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:1 1;stroke-dashoffset:1;
+  animation:mwbTraco .55s cubic-bezier(.65,0,.35,1) forwards;
 }
+.mwb-glifo path:nth-of-type(1){animation-delay:.2s}
+.mwb-glifo path:nth-of-type(2){animation-delay:.34s}
+@keyframes mwbTraco{ to{stroke-dashoffset:0} }
 
-/* ---------- o nome: a mesma revelação, um instante depois ---------- */
+/* ---------- o nome: letra por letra, em cascata ---------- */
+/* Cada letra é sua própria caixa (opacity/transform só, nada de
+   filter) — sobe e assenta em sequência, começando quando a última
+   linha do símbolo termina de se traçar. A largura da caixa é a mesma
+   do primeiro ao último quadro (texto normal, sem grid abrindo), então
+   a centralização do palco continua intacta. */
 .mwb-nome{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,ui-sans-serif,system-ui,sans-serif;
-  font-size:clamp(22px,6.6vw,30px);font-weight:600;letter-spacing:-.01em;
+  font-size:clamp(22px,6.6vw,30px);font-weight:600;
   color:rgba(232,244,255,.94);white-space:nowrap;line-height:1;
-  opacity:0;filter:blur(22px);transform:scale(.9);
-  animation:mwbNomeEntra .68s cubic-bezier(.16,.84,.24,1) .66s both;
 }
-@keyframes mwbNomeEntra{
-  0%{opacity:0;filter:blur(22px);transform:scale(.9)}
-  75%{filter:blur(0)}
-  100%{opacity:1;filter:blur(0);transform:scale(1)}
+.mwb-letra{
+  display:inline-block;
+  opacity:0;transform:translateY(45%) scale(.7);
+  animation:mwbLetraEntra .42s cubic-bezier(.16,.84,.24,1) both;
+}
+.mwb-letra:nth-child(1){animation-delay:.82s}
+.mwb-letra:nth-child(2){animation-delay:.855s}
+.mwb-letra:nth-child(3){animation-delay:.89s}
+.mwb-letra:nth-child(4){animation-delay:.925s}
+.mwb-letra:nth-child(5){animation-delay:.96s}
+.mwb-letra:nth-child(6){animation-delay:.995s}
+.mwb-letra:nth-child(7){animation-delay:1.03s}
+.mwb-letra:nth-child(8){animation-delay:1.065s}
+.mwb-letra:nth-child(9){animation-delay:1.1s}
+@keyframes mwbLetraEntra{
+  0%{opacity:0;transform:translateY(45%) scale(.7)}
+  60%{opacity:1}
+  100%{opacity:1;transform:translateY(0) scale(1)}
 }
 
 /* ---------- SAÍDA: um desvanecer só, como a referência ---------- */
@@ -2748,7 +2771,7 @@ body.light #app .calendar-card .calendar-nav button:hover{
 
 /* Sem movimento: a marca já formada, parada. */
 @media(prefers-reduced-motion:reduce){
-  .mwb-halo,.mwb-glifo,.mwb-nome{animation:none!important;opacity:1!important;filter:none!important;transform:none!important}
+  .mwb-halo,.mwb-glifo,.mwb-glifo path,.mwb-nome,.mwb-letra{animation:none!important;opacity:1!important;filter:none!important;transform:none!important;stroke-dashoffset:0!important}
   .mwb-espera{animation:none!important;opacity:1!important}
   .mwb-espera i{transition:none!important}
   #mwBootLoader.mw-boot-out,
@@ -2784,10 +2807,10 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
           <stop stop-color="#a5b8ff"/><stop offset=".5" stop-color="#7c5cff"/><stop offset="1" stop-color="#38bdf8"/>
         </linearGradient>
       </defs>
-      <path stroke="url(#mwbGradM)" d="M6 34.5V11.5L17 26.5L28 11.5V34.5"/>
-      <path stroke="url(#mwbGradW)" d="M36 11.5V34.5L47 19.5L58 34.5V11.5"/>
+      <path pathLength="1" stroke="url(#mwbGradM)" d="M6 34.5V11.5L17 26.5L28 11.5V34.5"/>
+      <path pathLength="1" stroke="url(#mwbGradW)" d="M36 11.5V34.5L47 19.5L58 34.5V11.5"/>
     </svg>
-    <span class="mwb-nome">Workspace</span>
+    <span class="mwb-nome" aria-label="Workspace"><span class="mwb-letra">W</span><span class="mwb-letra">o</span><span class="mwb-letra">r</span><span class="mwb-letra">k</span><span class="mwb-letra">s</span><span class="mwb-letra">p</span><span class="mwb-letra">a</span><span class="mwb-letra">c</span><span class="mwb-letra">e</span></span>
   </div>
   <div class="mwb-espera"><i id="mwBootBarFill"></i></div>
 </div>

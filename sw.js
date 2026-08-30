@@ -1,5 +1,12 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v16: o v15 tirou o "efeito nas letras" que existia antes (o traçado
+   das linhas do símbolo) trocando por um desfoque só resolvendo — e o
+   pedido foi claro: quer o traçado de volta, só que melhor. Volta o
+   stroke-dashoffset desenhando cada linha do símbolo (com um pequeno
+   salto de escala no ícone antes de começar a desenhar), e o nome
+   "Workspace" ganha uma entrada letra por letra em cascata, no lugar
+   do bloco inteiro resolvendo de um desfoque. */
 /* v7: o index.html passou a carregar o cliente do Supabase e a lógica de
    conta na nuvem. Sem trocar o nome, o app instalado continuaria servindo
    o index antigo do cache — sem login de servidor nenhum. */
@@ -33,7 +40,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v15';
+const CACHE_NAME = 'mw-shell-v16';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
