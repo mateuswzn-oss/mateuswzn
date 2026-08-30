@@ -85,6 +85,12 @@ $$;
 -- usada na consulta é ambíguo em PL/pgSQL — o banco recusa a rodar
 -- ("column reference is ambiguous"). Foi exatamente isso que quebrou o
 -- login por usuário depois da versão anterior deste arquivo.
+--
+-- O drop antes do create é necessário porque o Postgres não deixa um
+-- CREATE OR REPLACE mudar o nome de um parâmetro existente (só o corpo).
+drop function if exists public.username_livre(text);
+drop function if exists public.email_por_username(text);
+
 create or replace function public.username_livre(p_nome text)
 returns boolean
 language plpgsql
