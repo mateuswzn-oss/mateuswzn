@@ -1,5 +1,17 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v20: o v19 (8 segmentos retos com gradiente "tubo") resolveu a
+   formação mas quebrou a identidade — virou fita/tubo colorido, e as
+   partículas de ambiente liam como um "arco" decorativo alheio à
+   logo. Volta a geometria ORIGINAL (o mesmo `d` de sempre, um path só
+   por letra, sem recortar em pedaços), com quatro camadas finas por
+   cima (borda escura pra definição, corpo com o gradiente da marca,
+   núcleo claro especular, e um rastro de luz que percorre o contorno
+   enquanto ele se traça). As faíscas agora nascem via
+   `getPointAtLength` no path real (não uma lista de segmentos escrita
+   à mão), poucas e só onde a luz está passando — sem canvas de
+   ambiente. Depois das duas letras completas, o mesmo reflexo de
+   superfície via máscara SVG. Sobe CACHE_NAME para mw-shell-v20. */
 /* v19: o v18 ainda lia como "a logo aparecendo" — o pedido foi claro:
    o efeito precisa acontecer NAS letras. Reescreve o M e o W como 8
    segmentos retos (4 por letra) que se traçam UM DE CADA VEZ, cada um
@@ -77,7 +89,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v19';
+const CACHE_NAME = 'mw-shell-v20';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
