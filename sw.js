@@ -1,14 +1,15 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
-/* v22: pedido explícito — descarta todas as reescritas experimentais
-   da abertura feitas depois desta (traçado único com energia,
-   decodificação do nome, segmentos com gradiente "tubo", geometria
-   original com faíscas) e restaura index.html/sw.js pro estado exato
-   do commit dc073cc ("Torna a revelação da abertura visível e remove
-   o hold sem vida", já mergeado em main) — a última versão da
-   abertura aprovada antes do pedido de reconstruir tudo do zero com
-   M+W como elemento central. Sobe o cache só pra garantir que quem já
-   tinha alguma das versões experimentais instaladas volte pra esta. */
+/* v23: pedido explícito — a restauração anterior (v22) ainda tinha ido
+   curta demais: voltou só até dc073cc (v15, "torna a revelação
+   visível"), que também é uma reescrita feita NESTA conversa a partir
+   do pedido original "cadê os efeitos?". O usuário esclareceu: quer o
+   estado de ANTES de qualquer pedido de mudança na tela de
+   carregamento nesta conversa — ou seja, antes até do v14. index.html
+   e sw.js voltam pro commit 789d80e ("Sobe o cache do service worker
+   para v13"), o parent exato do commit que iniciou a primeira
+   reescrita. É o ícone/nome com traçado SVG (stroke-dashoffset) e
+   trilha de grid abrindo, como era antes de todo este histórico. */
 /* v7: o index.html passou a carregar o cliente do Supabase e a lógica de
    conta na nuvem. Sem trocar o nome, o app instalado continuaria servindo
    o index antigo do cache — sem login de servidor nenhum. */
@@ -20,17 +21,6 @@
    sessão. Trocar o nome do cache é o que faz o service worker descartar o
    que guardou e buscar tudo de novo — o `activate` abaixo apaga todo cache
    cujo nome não seja este. */
-/* v15: a revelação por desfoque do v14 estava rápida e sutil demais —
-   passava despercebida e depois ficava ~2,9s parada, sem vida. Agora
-   dura mais (mais desfoque, mais tempo), o halo ganha uma respiração
-   contínua durante a espera, e o piso/teto do boot encurtou pra
-   segurar só ~1,5s de marca parada, batendo com a proporção da
-   referência. */
-/* v14: reescreve a abertura (ícone e nome revelados por desfoque, sem
-   traçado nem trilha de grid abrindo — a causa da falta de
-   centralização) e trava overscroll-behavior nos dois eixos (só o
-   vertical estava travado; o app instalado ainda "arrastava" de lado
-   pelo bounce horizontal). */
 /* v13: leva ao app instalado tudo que ficou parado nos commits depois
    do v12 — o <form> de login (autopreenchimento correto), a
    Credential Management API, a recarga real após trocar a senha, e a
@@ -42,7 +32,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v22';
+const CACHE_NAME = 'mw-shell-v23';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
