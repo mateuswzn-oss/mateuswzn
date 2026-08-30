@@ -11,7 +11,11 @@
    sessão. Trocar o nome do cache é o que faz o service worker descartar o
    que guardou e buscar tudo de novo — o `activate` abaixo apaga todo cache
    cujo nome não seja este. */
-const CACHE_NAME = 'mw-shell-v11';
+/* v12: reforço do preenchimento do preloader no app instalado (iOS) —
+   inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
+   tinha o app instalado continuaria vendo a borda sem preencher, porque
+   o service worker antigo seguiria servindo o index.html de antes. */
+const CACHE_NAME = 'mw-shell-v12';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
