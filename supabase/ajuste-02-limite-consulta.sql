@@ -79,7 +79,13 @@ $$;
 -- Está livre? — até 30 perguntas por minuto por aparelho. Isso é rodar o
 -- cadastro dezenas de vezes seguidas; o app só chama isto uma vez por envio
 -- do formulário.
-create or replace function public.username_livre(nome text)
+--
+-- O parâmetro chama-se p_nome (não "nome"): a tabela perfis TEM uma coluna
+-- chamada nome, e um parâmetro de função com o mesmo nome de uma coluna
+-- usada na consulta é ambíguo em PL/pgSQL — o banco recusa a rodar
+-- ("column reference is ambiguous"). Foi exatamente isso que quebrou o
+-- login por usuário depois da versão anterior deste arquivo.
+create or replace function public.username_livre(p_nome text)
 returns boolean
 language plpgsql
 security definer
@@ -88,15 +94,15 @@ as $$
 begin
   perform public.aplica_limite('username_livre:' || public.chave_do_chamador(), 30, 60);
   return not exists (
-    select 1 from public.perfis where username = lower(trim(nome))
+    select 1 from public.perfis where username = lower(trim(p_nome))
   );
 end;
 $$;
 
 -- Qual o e-mail deste username? — até 15 perguntas por minuto por aparelho.
 -- É esta a função que expõe e-mail por username; o limite aqui é o mais
--- importante dos dois.
-create or replace function public.email_por_username(nome text)
+-- importante dos dois. Mesmo cuidado com o nome do parâmetro (ver acima).
+create or replace function public.email_por_username(p_nome text)
 returns text
 language plpgsql
 security definer
@@ -108,7 +114,7 @@ begin
     select u.email
       from public.perfis p
       join auth.users u on u.id = p.id
-     where p.username = lower(trim(nome))
+     where p.username = lower(trim(p_nome))
      limit 1
   );
 end;
