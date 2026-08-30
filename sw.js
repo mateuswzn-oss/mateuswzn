@@ -1,61 +1,14 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
-/* v20: o v19 (8 segmentos retos com gradiente "tubo") resolveu a
-   formação mas quebrou a identidade — virou fita/tubo colorido, e as
-   partículas de ambiente liam como um "arco" decorativo alheio à
-   logo. Volta a geometria ORIGINAL (o mesmo `d` de sempre, um path só
-   por letra, sem recortar em pedaços), com quatro camadas finas por
-   cima (borda escura pra definição, corpo com o gradiente da marca,
-   núcleo claro especular, e um rastro de luz que percorre o contorno
-   enquanto ele se traça). As faíscas agora nascem via
-   `getPointAtLength` no path real (não uma lista de segmentos escrita
-   à mão), poucas e só onde a luz está passando — sem canvas de
-   ambiente. Depois das duas letras completas, o mesmo reflexo de
-   superfície via máscara SVG. Sobe CACHE_NAME para mw-shell-v20. */
-/* v19: o v18 ainda lia como "a logo aparecendo" — o pedido foi claro:
-   o efeito precisa acontecer NAS letras. Reescreve o M e o W como 8
-   segmentos retos (4 por letra) que se traçam UM DE CADA VEZ, cada um
-   com seu próprio gradiente "tubo" (claro no meio, escuro nas bordas —
-   volume de vidro/cromo, não uma linha chapada), uma cabeça de luz e
-   faíscas que seguem EXATAMENTE o traço (canvas novo, mwBootFagulhas).
-   Corrigido no processo um bug real: o gradiente "tubo" usava
-   objectBoundingBox, que quebra pra segmentos puramente verticais (a
-   caixa delimitadora de uma reta vertical tem largura zero) — as
-   pernas do M e do W simplesmente não apareciam. Depois dos 8
-   segmentos completos, um reflexo branco atravessa a SUPERFÍCIE
-   INTEIRA da logo via uma máscara SVG com o contorno real das letras
-   (não mais um traço ao longo da linha, uma luz cruzando a forma).
-   Duração total sobe de ~2,3s pra ~2,8s — o pedido deixou de ser
-   "caiba em 1-2s" e passou a ser "quero assistir a logo sendo
-   construída", e os 8 segmentos + reflexo final precisam de tempo pra
-   se ver de verdade. */
-/* v18: reescreve a abertura do zero, a pedido explícito — o M e o W
-   não podem só "aparecer prontos": precisam ser CONSTRUÍDOS por
-   energia/luz percorrendo o próprio contorno, com partículas
-   convergindo ao redor e um acabamento de vidro/cromo (um brilho
-   branco que passa pela letra uma vez) quando terminam de se formar.
-   Toda a abertura agora cabe em ~1,1s de construção + ~650ms de marca
-   parada (piso 1750ms/teto 2300ms, no lugar de 2600/3400) — o pedido
-   foi claro: 1-2 segundos no total, não os quase 3s de antes. As
-   partículas são canvas (script novo, mwBootParticulas) e reduzem de
-   quantidade sozinhas em aparelho com ponteiro grosso ou poucos
-   núcleos. Sem spinner, sem barra girando, sem três pontinhos — a
-   própria formação da logo é o indicador de carregamento. */
-/* v17: reexaminados os quadros do próprio vídeo de referência que o
-   usuário mandou (extraídos com ffmpeg) — o efeito real no nome não é
-   nem desfoque nem traçado: é uma DECODIFICAÇÃO, com as letras certas
-   travando da esquerda pra direita enquanto o resto cicla por
-   caracteres aleatórios, e fagulhas piscando ao redor. É isso que
-   entra agora, via JS (mwBootNomeTxt), no lugar da cascata de letras
-   do v16. O símbolo (M/W) mantém o traçado do v16, que já ia na
-   direção certa. */
-/* v16: o v15 tirou o "efeito nas letras" que existia antes (o traçado
-   das linhas do símbolo) trocando por um desfoque só resolvendo — e o
-   pedido foi claro: quer o traçado de volta, só que melhor. Volta o
-   stroke-dashoffset desenhando cada linha do símbolo (com um pequeno
-   salto de escala no ícone antes de começar a desenhar), e o nome
-   "Workspace" ganha uma entrada letra por letra em cascata, no lugar
-   do bloco inteiro resolvendo de um desfoque. */
+/* v21: pedido explícito — reverte TODAS as tentativas de reescrever a
+   abertura (v14 até v20: desfoque, traçado único, decodificação do
+   nome, segmentos com gradiente "tubo", geometria original com
+   faíscas) de volta pro estado exato de antes da primeira reescrita
+   (o commit 789d80e, "Sobe cache do service worker para v13"). O
+   ícone volta a ser desenhado por stroke-dashoffset com trilha de
+   grid, como era originalmente. Sobe o cache só pra garantir que quem
+   já tinha alguma das versões experimentais instaladas volte pra
+   esta. */
 /* v7: o index.html passou a carregar o cliente do Supabase e a lógica de
    conta na nuvem. Sem trocar o nome, o app instalado continuaria servindo
    o index antigo do cache — sem login de servidor nenhum. */
@@ -67,17 +20,6 @@
    sessão. Trocar o nome do cache é o que faz o service worker descartar o
    que guardou e buscar tudo de novo — o `activate` abaixo apaga todo cache
    cujo nome não seja este. */
-/* v15: a revelação por desfoque do v14 estava rápida e sutil demais —
-   passava despercebida e depois ficava ~2,9s parada, sem vida. Agora
-   dura mais (mais desfoque, mais tempo), o halo ganha uma respiração
-   contínua durante a espera, e o piso/teto do boot encurtou pra
-   segurar só ~1,5s de marca parada, batendo com a proporção da
-   referência. */
-/* v14: reescreve a abertura (ícone e nome revelados por desfoque, sem
-   traçado nem trilha de grid abrindo — a causa da falta de
-   centralização) e trava overscroll-behavior nos dois eixos (só o
-   vertical estava travado; o app instalado ainda "arrastava" de lado
-   pelo bounce horizontal). */
 /* v13: leva ao app instalado tudo que ficou parado nos commits depois
    do v12 — o <form> de login (autopreenchimento correto), a
    Credential Management API, a recarga real após trocar a senha, e a
@@ -89,7 +31,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v20';
+const CACHE_NAME = 'mw-shell-v21';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
