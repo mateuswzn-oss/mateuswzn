@@ -528,7 +528,11 @@ body{color:var(--mw-text)!important}
 /* fundo removido: quem pinta body/#app é a folha de gradientes da
    marca (ver mw-paleta-canonica). Esta regra vencia por especificidade
    e deixava o app grafite sobre uma canvas azul-marinho. */
-body.light{--mw-bg:#f1f2f3;--mw-surface:#ffffff;--mw-surface-2:#f7f8f9;--mw-border:rgba(20,25,30,.12);--mw-text:#20242a;--mw-muted:#66707b;background:#f1f2f3!important;color:#20242a!important}
+/* --mw-muted escurecido de #66707b para #616b76: o valor antigo tinha
+   contraste 4.49:1 contra o fundo claro (#f1f2f3) — abaixo do mínimo de
+   4.5:1 do WCAG AA para texto normal. #616b76 sobe para 4.84:1, com
+   diferença visual imperceptível. */
+body.light{--mw-bg:#f1f2f3;--mw-surface:#ffffff;--mw-surface-2:#f7f8f9;--mw-border:rgba(20,25,30,.12);--mw-text:#20242a;--mw-muted:#616b76;background:#f1f2f3!important;color:#20242a!important}
 /* Login: solid, lightweight background and coherent surfaces */
 #loginScreen.reference-login{animation:none!important}
 #loginScreen.reference-login::before,#loginScreen.reference-login::after{display:none!important}
