@@ -1,5 +1,22 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v19: o v18 ainda lia como "a logo aparecendo" — o pedido foi claro:
+   o efeito precisa acontecer NAS letras. Reescreve o M e o W como 8
+   segmentos retos (4 por letra) que se traçam UM DE CADA VEZ, cada um
+   com seu próprio gradiente "tubo" (claro no meio, escuro nas bordas —
+   volume de vidro/cromo, não uma linha chapada), uma cabeça de luz e
+   faíscas que seguem EXATAMENTE o traço (canvas novo, mwBootFagulhas).
+   Corrigido no processo um bug real: o gradiente "tubo" usava
+   objectBoundingBox, que quebra pra segmentos puramente verticais (a
+   caixa delimitadora de uma reta vertical tem largura zero) — as
+   pernas do M e do W simplesmente não apareciam. Depois dos 8
+   segmentos completos, um reflexo branco atravessa a SUPERFÍCIE
+   INTEIRA da logo via uma máscara SVG com o contorno real das letras
+   (não mais um traço ao longo da linha, uma luz cruzando a forma).
+   Duração total sobe de ~2,3s pra ~2,8s — o pedido deixou de ser
+   "caiba em 1-2s" e passou a ser "quero assistir a logo sendo
+   construída", e os 8 segmentos + reflexo final precisam de tempo pra
+   se ver de verdade. */
 /* v18: reescreve a abertura do zero, a pedido explícito — o M e o W
    não podem só "aparecer prontos": precisam ser CONSTRUÍDOS por
    energia/luz percorrendo o próprio contorno, com partículas
@@ -60,7 +77,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v18';
+const CACHE_NAME = 'mw-shell-v19';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

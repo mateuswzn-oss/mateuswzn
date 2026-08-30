@@ -2578,40 +2578,51 @@ body.light #app .calendar-card .calendar-nav button:hover{
 <body>
 <style id="mw-boot-loader-style">
 /* ============================================================
-   CARREGAMENTO — o M e o W CONSTRUÍDOS por energia, não colados prontos
+   CARREGAMENTO — geometria do M/W sendo construída, segmento a segmento
    ============================================================
-   Pedido explícito depois de duas rodadas anteriores (desfoque
-   resolvendo, depois um traçado simples): as letras precisam nascer
-   de partículas/luz convergindo, ganhar um acabamento de vidro/cromo
-   quando terminam, e tudo isso em ~1-2s — não os 2,6-3,4s de antes.
-   Uma coreografia só, cada peça como consequência da anterior:
+   Terceira rodada. As duas anteriores (desfoque resolvendo; depois um
+   traçado só por letra) ainda liam como "a logo aparecendo" — o
+   pedido era o oposto: o efeito precisa acontecer NAS letras, cada
+   segmento revelado por vez, com luz e partículas seguindo o próprio
+   traço, e só DEPOIS de tudo formado um reflexo passa pela superfície
+   inteira. Uma coreografia só, cada peça como consequência da anterior:
 
-    ~0ms    partículas nascem ao redor do centro e derivam pra dentro
-            (canvas, ver o script mwBootParticulas)
-    80ms    o M começa a se formar: um traço grosso (o "corpo" de
-            vidro, gradiente azul/roxo da marca) e um traço fino e
-            claro logo à frente dele (a "ponta de energia") correm
-            juntos ao longo do MESMO contorno
-    420ms   o W começa — quando o M já passou da metade, então a
-            formação nunca "para"; lê-se como movimento contínuo
-    580ms   um brilho branco percorre o M uma única vez (o reflexo de
-            vidro/cromo pedido)
-    640ms   halo atrás já aceso; a caixa do nome aparece
-    660ms   o nome começa a "decodificar" (ver mwBootNomeTxt): letras
-            corretas travam da esquerda pra direita enquanto o resto
-            cicla por caracteres aleatórios, com fagulhas piscando
-    ~1100ms COMPLETO — halo respira, tudo estável
-     saída  tudo se desvanece junto, revelando a tela de baixo. Mesma
-            curva e linguagem da entrada, não uma segunda animação.
+    ~0ms     partículas de ambiente nascem ao redor (canvas, ver
+             mwBootParticulas)
+    100ms    o M começa: 4 segmentos retos (perna, diagonal, diagonal,
+             perna) se traçam UM DE CADA VEZ, não a letra inteira de
+             uma vez — cada segmento tem seu próprio gradiente "tubo"
+             (claro no meio, escuro nas bordas: volume, não uma linha
+             chapada). Uma cabeça de luz branca corre na ponta de cada
+             segmento e solta faíscas que seguem EXATAMENTE o traço
+             (canvas, ver mwBootFaiscas) — partículas NO traço, não só
+             ao redor dele.
+    700ms    o W começa seus 4 segmentos — quando o M já entrou na
+             última perna, então a formação nunca "para"
+    ~1300ms  os 8 segmentos completos: um clarão breve atrás do ícone
+             e um reflexo branco atravessa a SUPERFÍCIE INTEIRA da
+             logo (máscara SVG com o contorno real das letras — uma
+             luz cruzando a forma, não um traço ao longo da linha),
+             o acabamento de vidro/cromo pedido
+    1350ms   halo respira mais forte por um instante; a caixa do nome
+             aparece
+    1400ms   o nome começa a "decodificar" (ver mwBootNomeTxt): letras
+             corretas travam da esquerda pra direita enquanto o resto
+             cicla por caracteres aleatórios, com fagulhas piscando
+    ~1800ms  COMPLETO — halo respira, tudo estável
+     saída   tudo se desvanece junto, revelando a tela de baixo. Mesma
+             curva e linguagem da entrada, não uma segunda animação.
 
-   Sobre custo: os traçados usam stroke-dashoffset, que é propriedade
-   de PINTURA (roda na thread principal, ocupada lendo os ~890KB do
-   documento). Por isso são só 6 paths pequenos (corpo+energia+brilho
-   × 2 letras) e NENHUM filtro é animado por quadro — o único filtro
-   (drop-shadow no ícone) fica parado o tempo todo. As partículas são
-   canvas (uma superfície só, sem custo de layout) e reduzem de
-   quantidade sozinhas em aparelho com ponteiro grosso ou poucos
-   núcleos; halo/nome/saída continuam só transform e opacity. */
+   Sobre custo: os 8 segmentos usam stroke-dashoffset (propriedade de
+   PINTURA, roda na thread principal) mas cada um é um traço RETO
+   minúsculo ativo por só ~150ms — bem mais barato que animar uma
+   letra inteira pelo mesmo tempo. O reflexo final usa
+   `transform:translateX` num `<rect>` mascarado (propriedade de
+   COMPOSITOR, a mais barata que existe) em vez de mais
+   stroke-dashoffset. As faíscas e as partículas de ambiente são
+   canvas, não DOM. Tudo reduz de quantidade sozinho em aparelho com
+   ponteiro grosso ou poucos núcleos, e nada disso roda com
+   `prefers-reduced-motion`. */
 #mwBootLoader{
   position:fixed;inset:0;z-index:99999;
   display:flex;align-items:center;justify-content:center;
@@ -2645,12 +2656,15 @@ body.light #app .calendar-card .calendar-nav button:hover{
   gap:16px;
 }
 
-/* ---------- partículas: convergem enquanto M e W se formam ---------- */
+/* ---------- partículas de ambiente: ao redor, não NO traço ---------- */
 /* Canvas, não DOM: um punhado de pontos que nascem ao redor e derivam
    pro centro enquanto as letras se desenham, sumindo antes do "Workspace"
    aparecer. `z-index:0` os mantém atrás do glifo/nome. O próprio script
    (mais abaixo) decide QUANTOS pontos desenhar de acordo com o
-   aparelho — e não desenha nenhum com "menos movimento" ativado. */
+   aparelho — e não desenha nenhum com "menos movimento" ativado. Estas
+   são só a atmosfera; as faíscas que seguem o TRAÇADO das letras são
+   outro canvas, `.mwb-fagulhas-tela`, exatamente sobre o ícone (ver
+   mais abaixo, depois do `.mwb-glifo`). */
 .mwb-particulas{
   position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
   width:min(82vw,360px);height:min(82vw,360px);
@@ -2677,81 +2691,102 @@ body.light #app .calendar-card .calendar-nav button:hover{
     rgba(124,92,255,.08) 58%, transparent 74%);
   opacity:0;transform:scale(.4);
   animation:
-    mwbHalo .6s cubic-bezier(.22,.8,.32,1) .2s both,
-    mwbHaloRespira 2.6s ease-in-out .8s infinite;
+    mwbHalo .5s cubic-bezier(.22,.8,.32,1) .15s both,
+    mwbHaloClimax .5s ease-out 1.3s both,
+    mwbHaloRespira 2.6s ease-in-out 1.85s infinite;
 }
 @keyframes mwbHalo{
   0%{opacity:0;transform:scale(.4)}
   70%{opacity:1}
-  100%{opacity:.82;transform:scale(1)}
+  100%{opacity:.7;transform:scale(1)}
+}
+/* O reflexo passando pela logo (ver .mwb-sweep-rect) precisa de um
+   halo que acende junto, senão o "clímax" fica só na superfície do
+   ícone e a cena ao redor continua igual. */
+@keyframes mwbHaloClimax{
+  0%{opacity:.7;transform:scale(1)}
+  40%{opacity:1;transform:scale(1.14)}
+  100%{opacity:.76;transform:scale(1)}
 }
 @keyframes mwbHaloRespira{
   0%,100%{opacity:.76;transform:scale(1)}
   50%{opacity:1;transform:scale(1.07)}
 }
 
-/* ---------- o símbolo: M e W CONSTRUÍDOS por energia, não colados prontos ---------- */
-/* Pedido explícito: as letras não podem só "aparecer" — têm que ser
-   formadas por luz percorrendo o próprio contorno, como se energia
-   estivesse desenhando a geometria em tempo real, com um brilho de
-   vidro/cromo passando por cima quando terminam. Cada letra é um `<g>`
-   com TRÊS traçados sobre o MESMO `d` (mesma geometria, sem
-   duplicar a forma à mão):
+/* ---------- o clarão: um flash breve no instante do reflexo ---------- */
+.mwb-clarao{
+  position:absolute;left:calc(var(--mwb-simb) / 2);top:50%;
+  width:calc(var(--mwb-simb) * .82);height:calc(var(--mwb-simb) * .82);
+  margin:calc(var(--mwb-simb) * -.41) 0 0 calc(var(--mwb-simb) * -.41);
+  border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle, rgba(255,255,255,.85), rgba(255,255,255,0) 68%);
+  opacity:0;
+  animation:mwbClarao .5s ease-out 1.28s both;
+}
+@keyframes mwbClarao{
+  0%{opacity:0}
+  38%{opacity:.6}
+  100%{opacity:0}
+}
 
-     .mwb-tr-corpo   a "faixa de vidro" — grossa, com o gradiente
-                     azul/roxo da marca, o corpo visível da letra.
-     .mwb-tr-energia um traço fino e claro que corre EXATAMENTE junto
-                     com o corpo, sempre um pouco à frente — a "ponta
-                     de energia" que dá a sensação de estar desenhando,
-                     não só revelando.
-     .mwb-tr-brilho  some até o traçado terminar; aí percorre a letra
-                     UMA vez, um branco puro e breve — o reflexo de
-                     vidro/cromo pedido, sem custar um filtro animado.
+/* ---------- o símbolo: geometria construída segmento a segmento ---------- */
+/* O que faltava nas duas rodadas anteriores: a letra inteira sempre se
+   traçava de uma vez só (um `stroke-dashoffset` do início ao fim da
+   letra inteira). Por mais que houvesse uma "ponta de energia",
+   continuava lendo como "a letra se revelando", não "a letra sendo
+   construída peça por peça". Agora o M e o W são 4 segmentos RETOS
+   cada (perna/diagonal/diagonal/perna) — o `d` de cada `<path>` já
+   nasce só com aquele trecho, então cada um se traça e ACABA antes do
+   próximo começar (ver os atrasos logo abaixo). O gradiente de cada
+   segmento usa `objectBoundingBox` (o padrão do SVG), então UMA
+   definição (`mwbTuboM`/`mwbTuboW`) já sai clara-no-meio/escura-nas-
+   bordas em CADA segmento individualmente — o "volume" de tubo de
+   vidro pedido, sem precisar de 8 gradientes escritos à mão. A cabeça
+   de luz branca que corre na ponta de cada segmento e as faíscas que
+   seguem o traço são canvas (`.mwb-fagulhas-tela`, script mais abaixo)
+   — são elas que fazem o efeito acontecer NO traço, não só ao redor.
 
-   As três usam `pathLength="1"`, então dasharray/dashoffset são
-   sempre em fração do comprimento total, não em pixels medidos à mão.
-   O truque do traço "isolado" (corpo/brilho): folga MUITO maior que 1
-   (ex.: `.1 4`) garante um único segmento visível a cada instante —
-   sem isso, o padrão se repetiria pela letra inteira.
-
-   Custo: ainda são só 6 paths pequenos, só stroke-dashoffset/opacity
-   animando — nenhum filtro é animado por quadro (o único filtro,
-   drop-shadow no <svg>, é ESTÁTICO: parado, ele é barato; animado, não
-   seria). */
+   `pathLength="1"` em cada path normaliza dasharray/dashoffset pra
+   fração do próprio comprimento, então não depende de medir pixels. */
+.mwb-icone-caixa{
+  position:relative;width:var(--mwb-simb);flex:none;
+}
 .mwb-glifo{
-  width:var(--mwb-simb);height:auto;aspect-ratio:172/118;overflow:visible;display:block;flex:none;
+  width:100%;height:auto;aspect-ratio:172/118;overflow:visible;display:block;
   opacity:0;filter:drop-shadow(0 0 12px rgba(56,189,248,.32));
   animation:mwbGlifoSurge .16s linear .05s both;
 }
 @keyframes mwbGlifoSurge{ to{opacity:1} }
+.mwb-fagulhas-tela{
+  position:absolute;inset:0;pointer-events:none;
+}
 
 .mwb-tr-corpo{
-  fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:7.2;
+  fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:7.4;
   stroke-dasharray:1 1;stroke-dashoffset:1;
-  animation:mwbTraco .46s cubic-bezier(.6,0,.28,1) forwards;
-}
-.mwb-tr-energia{
-  fill:none;stroke-linecap:round;stroke-width:2.2;opacity:.92;
-  stroke-dasharray:.1 4;stroke-dashoffset:1.1;
-  animation:mwbEnergia .46s cubic-bezier(.6,0,.28,1) forwards;
-}
-.mwb-tr-brilho{
-  fill:none;stroke-linecap:round;stroke-width:4.4;opacity:0;
-  stroke-dasharray:.22 4;stroke-dashoffset:1.22;
-  animation:mwbSweepBrilho .34s ease-out forwards;
+  animation:mwbTraco var(--dur,.16s) cubic-bezier(.6,0,.28,1) var(--atraso,0s) forwards;
 }
 @keyframes mwbTraco{ to{stroke-dashoffset:0} }
-@keyframes mwbEnergia{ to{stroke-dashoffset:-.1} }
-@keyframes mwbSweepBrilho{
-  0%{opacity:0;stroke-dashoffset:1.22}
-  14%{opacity:1}
-  82%{opacity:1}
-  100%{opacity:0;stroke-dashoffset:-.22}
+
+/* ---------- o reflexo: uma luz cruzando a SUPERFÍCIE inteira ---------- */
+/* Diferença do que existia antes (um "brilho" percorrendo o
+   comprimento do traço, path por path): isto é uma máscara SVG com o
+   contorno REAL das duas letras — `<mask>`, não `<clipPath>`, porque
+   máscara respeita o stroke renderizado e clipPath não. Um `<rect>`
+   grande, pintado com um gradiente diagonal fixo (claro só numa faixa
+   estreita, transparente no resto), atravessa esse recorte via
+   `transform:translateX` — puro compositor, a propriedade mais barata
+   que existe pra animar. O efeito: uma luz passa pela FORMA inteira
+   das letras de uma vez, como reflexo numa superfície de vidro, em vez
+   de "percorrer uma linha". */
+.mwb-sweep-rect{
+  transform:translateX(-58px);
+  animation:mwbSweepMove .55s ease-in-out 1.3s both;
 }
-.mwb-m .mwb-tr-corpo,.mwb-m .mwb-tr-energia{animation-delay:.08s}
-.mwb-w .mwb-tr-corpo,.mwb-w .mwb-tr-energia{animation-delay:.42s}
-.mwb-m .mwb-tr-brilho{animation-delay:.58s}
-.mwb-w .mwb-tr-brilho{animation-delay:.68s}
+@keyframes mwbSweepMove{
+  from{transform:translateX(-58px)}
+  to{transform:translateX(58px)}
+}
 
 /* ---------- o nome: decodifica letra por letra, como a referência ---------- */
 /* O vídeo mandado como referência não faz um fade nem um traçado no
@@ -2770,12 +2805,12 @@ body.light #app .calendar-card .calendar-nav button:hover{
   font-size:clamp(22px,6.6vw,30px);font-weight:600;
   color:rgba(232,244,255,.94);white-space:nowrap;line-height:1;
   opacity:0;
-  animation:mwbNomeSurge .16s ease .64s both;
+  animation:mwbNomeSurge .16s ease 1.38s both;
 }
 @keyframes mwbNomeSurge{ to{opacity:1} }
 .mwb-nome-txt{
   text-shadow:0 0 0 transparent;
-  animation:mwbNomeCintila 1s ease-in-out .64s 1;
+  animation:mwbNomeCintila 1s ease-in-out 1.38s 1;
 }
 @keyframes mwbNomeCintila{
   0%,100%{text-shadow:0 0 0 transparent}
@@ -2790,11 +2825,11 @@ body.light #app .calendar-card .calendar-nav button:hover{
   opacity:0;pointer-events:none;
   animation:mwbFagulha .55s ease-out both;
 }
-.mwb-fagulha-a{margin:-38px 0 0 8px;animation-delay:.68s}
-.mwb-fagulha-b{margin:14px 0 0 -14px;transform:scale(.7);animation-delay:.78s}
-.mwb-fagulha-c{margin:-10px 0 0 96px;transform:scale(.85);animation-delay:.88s}
-.mwb-fagulha-d{margin:26px 0 0 130px;transform:scale(.65);animation-delay:.98s}
-.mwb-fagulha-e{margin:-30px 0 0 168px;animation-delay:1.06s}
+.mwb-fagulha-a{margin:-38px 0 0 8px;animation-delay:1.42s}
+.mwb-fagulha-b{margin:14px 0 0 -14px;transform:scale(.7);animation-delay:1.52s}
+.mwb-fagulha-c{margin:-10px 0 0 96px;transform:scale(.85);animation-delay:1.62s}
+.mwb-fagulha-d{margin:26px 0 0 130px;transform:scale(.65);animation-delay:1.72s}
+.mwb-fagulha-e{margin:-30px 0 0 168px;animation-delay:1.8s}
 @keyframes mwbFagulha{
   0%{opacity:0;transform:scale(.3) rotate(0deg)}
   45%{opacity:1;transform:scale(1) rotate(50deg)}
@@ -2843,8 +2878,8 @@ body.light #app .calendar-card .calendar-nav button:hover{
 
 /* Sem movimento: a marca já formada, parada. */
 @media(prefers-reduced-motion:reduce){
-  .mwb-halo,.mwb-glifo,.mwb-tr-corpo,.mwb-tr-energia,.mwb-tr-brilho,.mwb-nome,.mwb-nome-txt,.mwb-fagulha{animation:none!important;opacity:1!important;filter:none!important;transform:none!important;text-shadow:none!important;stroke-dashoffset:0!important}
-  .mwb-tr-energia,.mwb-tr-brilho,.mwb-fagulha,.mwb-particulas{display:none!important}
+  .mwb-halo,.mwb-glifo,.mwb-tr-corpo,.mwb-sweep-rect,.mwb-clarao,.mwb-nome,.mwb-nome-txt,.mwb-fagulha{animation:none!important;opacity:1!important;filter:none!important;transform:none!important;text-shadow:none!important;stroke-dashoffset:0!important}
+  .mwb-sweep-rect,.mwb-clarao,.mwb-fagulha,.mwb-particulas,.mwb-fagulhas-tela{display:none!important}
   .mwb-espera{animation:none!important;opacity:1!important}
   .mwb-espera i{transition:none!important}
   #mwBootLoader.mw-boot-out,
@@ -2872,32 +2907,79 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
   <canvas class="mwb-particulas" id="mwBootParticulas"></canvas>
   <div class="mwb-palco">
     <span class="mwb-halo"></span>
-    <svg class="mwb-glifo" viewBox="0 0 64 44" fill="none">
-      <defs>
-        <linearGradient id="mwbGradM" x1="4" y1="34" x2="30" y2="10" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#2563eb"/><stop offset=".55" stop-color="#38bdf8"/><stop offset="1" stop-color="#a5f3ff"/>
-        </linearGradient>
-        <linearGradient id="mwbGradW" x1="34" y1="10" x2="60" y2="36" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#a5b8ff"/><stop offset=".5" stop-color="#7c5cff"/><stop offset="1" stop-color="#38bdf8"/>
-        </linearGradient>
-        <linearGradient id="mwbGradEnergia" x1="0" y1="0" x2="1" y2="0">
-          <stop stop-color="#eafcff"/><stop offset="1" stop-color="#7dd3fc"/>
-        </linearGradient>
-        <linearGradient id="mwbGradBrilho" x1="0" y1="0" x2="1" y2="1">
-          <stop stop-color="#ffffff"/><stop offset="1" stop-color="#cfe9ff"/>
-        </linearGradient>
-      </defs>
-      <g class="mwb-m">
-        <path class="mwb-tr-corpo" pathLength="1" stroke="url(#mwbGradM)" d="M6 34.5V11.5L17 26.5L28 11.5V34.5"/>
-        <path class="mwb-tr-energia" pathLength="1" stroke="url(#mwbGradEnergia)" d="M6 34.5V11.5L17 26.5L28 11.5V34.5"/>
-        <path class="mwb-tr-brilho" pathLength="1" stroke="url(#mwbGradBrilho)" d="M6 34.5V11.5L17 26.5L28 11.5V34.5"/>
-      </g>
-      <g class="mwb-w">
-        <path class="mwb-tr-corpo" pathLength="1" stroke="url(#mwbGradW)" d="M36 11.5V34.5L47 19.5L58 34.5V11.5"/>
-        <path class="mwb-tr-energia" pathLength="1" stroke="url(#mwbGradEnergia)" d="M36 11.5V34.5L47 19.5L58 34.5V11.5"/>
-        <path class="mwb-tr-brilho" pathLength="1" stroke="url(#mwbGradBrilho)" d="M36 11.5V34.5L47 19.5L58 34.5V11.5"/>
-      </g>
-    </svg>
+    <span class="mwb-clarao"></span>
+    <div class="mwb-icone-caixa">
+      <svg class="mwb-glifo" viewBox="0 0 64 44" fill="none">
+        <defs>
+          <!-- "tubo": objectBoundingBox (o padrão do SVG) faz UMA definição
+               sair clara-no-meio/escura-nas-bordas em CADA segmento
+               individualmente, porque a caixa delimitadora é calculada por
+               elemento. SÓ que isso quebra pra uma perna PURAMENTE
+               VERTICAL: a caixa delimitadora de uma reta vertical tem
+               LARGURA ZERO, e um gradiente objectBoundingBox variando em
+               x sobre uma caixa de largura zero não renderiza NADA — foi
+               exatamente por isso que as duas pernas de cada letra
+               sumiam (só as diagonais, que têm largura E altura reais,
+               apareciam). As pernas usam gradientes userSpaceOnUse à
+               parte, com o x centrado na coordenada real de cada uma. -->
+          <linearGradient id="mwbTuboM" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#1447c9"/>
+            <stop offset=".45" stop-color="#38bdf8"/>
+            <stop offset=".62" stop-color="#eafcff"/>
+            <stop offset="1" stop-color="#1a5fd6"/>
+          </linearGradient>
+          <linearGradient id="mwbTuboW" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#4c2fb8"/>
+            <stop offset=".45" stop-color="#7c5cff"/>
+            <stop offset=".62" stop-color="#e6e0ff"/>
+            <stop offset="1" stop-color="#5433c9"/>
+          </linearGradient>
+          <linearGradient id="mwbTuboMPernaEsq" gradientUnits="userSpaceOnUse" x1="2.3" y1="0" x2="9.7" y2="0">
+            <stop offset="0" stop-color="#1447c9"/><stop offset=".45" stop-color="#38bdf8"/><stop offset=".62" stop-color="#eafcff"/><stop offset="1" stop-color="#1a5fd6"/>
+          </linearGradient>
+          <linearGradient id="mwbTuboMPernaDir" gradientUnits="userSpaceOnUse" x1="24.3" y1="0" x2="31.7" y2="0">
+            <stop offset="0" stop-color="#1447c9"/><stop offset=".45" stop-color="#38bdf8"/><stop offset=".62" stop-color="#eafcff"/><stop offset="1" stop-color="#1a5fd6"/>
+          </linearGradient>
+          <linearGradient id="mwbTuboWPernaEsq" gradientUnits="userSpaceOnUse" x1="32.3" y1="0" x2="39.7" y2="0">
+            <stop offset="0" stop-color="#4c2fb8"/><stop offset=".45" stop-color="#7c5cff"/><stop offset=".62" stop-color="#e6e0ff"/><stop offset="1" stop-color="#5433c9"/>
+          </linearGradient>
+          <linearGradient id="mwbTuboWPernaDir" gradientUnits="userSpaceOnUse" x1="54.3" y1="0" x2="61.7" y2="0">
+            <stop offset="0" stop-color="#4c2fb8"/><stop offset=".45" stop-color="#7c5cff"/><stop offset=".62" stop-color="#e6e0ff"/><stop offset="1" stop-color="#5433c9"/>
+          </linearGradient>
+          <!-- reflexo final: gradiente FIXO no espaço da viewBox (não no
+               retângulo) — o retângulo desliza por cima dele via
+               transform, então a faixa clara atravessa a máscara abaixo. -->
+          <linearGradient id="mwbGradReflexo" gradientUnits="userSpaceOnUse" x1="0" y1="46" x2="30" y2="-2">
+            <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+            <stop offset=".46" stop-color="#fff" stop-opacity="0"/>
+            <stop offset=".5" stop-color="#fff" stop-opacity="1"/>
+            <stop offset=".54" stop-color="#fff" stop-opacity="0"/>
+            <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+          </linearGradient>
+          <!-- máscara: o CONTORNO REAL das letras (mesmo stroke-width do
+               corpo). Diferente de clipPath, mask respeita o stroke
+               renderizado — é o que confina o reflexo à FORMA da logo. -->
+          <mask id="mwbMascaraLogo" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="44">
+            <path d="M6 34.5L6 11.5L17 26.5L28 11.5L28 34.5" stroke="#fff" stroke-width="7.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <path d="M36 11.5L36 34.5L47 19.5L58 34.5L58 11.5" stroke="#fff" stroke-width="7.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </mask>
+        </defs>
+        <g class="mwb-m">
+          <path class="mwb-tr-corpo" data-seg="0" pathLength="1" stroke="url(#mwbTuboMPernaEsq)" d="M6 34.5L6 11.5"/>
+          <path class="mwb-tr-corpo" data-seg="1" pathLength="1" stroke="url(#mwbTuboM)" d="M6 11.5L17 26.5"/>
+          <path class="mwb-tr-corpo" data-seg="2" pathLength="1" stroke="url(#mwbTuboM)" d="M17 26.5L28 11.5"/>
+          <path class="mwb-tr-corpo" data-seg="3" pathLength="1" stroke="url(#mwbTuboMPernaDir)" d="M28 11.5L28 34.5"/>
+        </g>
+        <g class="mwb-w">
+          <path class="mwb-tr-corpo" data-seg="4" pathLength="1" stroke="url(#mwbTuboWPernaEsq)" d="M36 11.5L36 34.5"/>
+          <path class="mwb-tr-corpo" data-seg="5" pathLength="1" stroke="url(#mwbTuboW)" d="M36 34.5L47 19.5"/>
+          <path class="mwb-tr-corpo" data-seg="6" pathLength="1" stroke="url(#mwbTuboW)" d="M47 19.5L58 34.5"/>
+          <path class="mwb-tr-corpo" data-seg="7" pathLength="1" stroke="url(#mwbTuboWPernaDir)" d="M58 34.5L58 11.5"/>
+        </g>
+        <rect class="mwb-sweep-rect" x="-20" y="-20" width="104" height="84" fill="url(#mwbGradReflexo)" mask="url(#mwbMascaraLogo)"/>
+      </svg>
+      <canvas class="mwb-fagulhas-tela" id="mwBootFagulhas"></canvas>
+    </div>
     <span class="mwb-nome" aria-label="Workspace">
       <span class="mwb-nome-txt" id="mwBootNomeTxt" aria-hidden="true"></span>
       <i class="mwb-fagulha mwb-fagulha-a"></i>
@@ -2911,12 +2993,141 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
 </div>
 <script>
 /* ============================================================
-   PARTÍCULAS — convergem enquanto M e W se formam
+   FAÍSCAS DO TRAÇO — partículas que seguem a GEOMETRIA, não o entorno
+   ============================================================
+   O pedido explícito: o efeito precisa acontecer NAS letras, não só
+   ao redor delas. Isto lê a MESMA lista de segmentos que define os
+   atrasos/durações do CSS (`SEGMENTOS` abaixo é a única fonte da
+   verdade — aplica as variáveis `--atraso`/`--dur` em cada `<path
+   data-seg>` E usa os mesmos números pra saber onde desenhar a cabeça
+   de luz e as faíscas a cada quadro). Sem essa fonte única, os dois
+   lados podiam divergir com qualquer ajuste futuro de tempo.
+
+   A cada quadro, para o segmento que está ativo AGORA: calcula a
+   posição da ponta por interpolação linear (todo segmento é uma reta,
+   então não precisa de `getPointAtLength`), desenha um ponto branco
+   ali (a "cabeça de energia") e solta 1-2 faíscas que se afastam
+   soprando pra fora, esfriando da cor branca pro azul/roxo da letra
+   enquanto desaparecem — literalmente faíscas voando do ponto onde a
+   letra está sendo soldada, não partículas genéricas passando perto.
+
+   O canvas (`mwBootFagulhas`) é do TAMANHO EXATO do ícone (não um
+   quadrado maior como as partículas de ambiente), então o mapeamento
+   viewBox→canvas é uma escala só (64×44 → largura×altura reais). */
+(function(){
+  var caixa = document.querySelector('.mwb-icone-caixa');
+  var tela = document.getElementById('mwBootFagulhas');
+  if (!caixa || !tela || !tela.getContext) return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var SEGMENTOS = [
+    { letra: 'm', x1: 6,  y1: 34.5, x2: 6,  y2: 11.5, atraso: 0.10, dur: 0.16 },
+    { letra: 'm', x1: 6,  y1: 11.5, x2: 17, y2: 26.5, atraso: 0.26, dur: 0.16 },
+    { letra: 'm', x1: 17, y1: 26.5, x2: 28, y2: 11.5, atraso: 0.42, dur: 0.16 },
+    { letra: 'm', x1: 28, y1: 11.5, x2: 28, y2: 34.5, atraso: 0.58, dur: 0.16 },
+    { letra: 'w', x1: 36, y1: 11.5, x2: 36, y2: 34.5, atraso: 0.70, dur: 0.15 },
+    { letra: 'w', x1: 36, y1: 34.5, x2: 47, y2: 19.5, atraso: 0.85, dur: 0.15 },
+    { letra: 'w', x1: 47, y1: 19.5, x2: 58, y2: 34.5, atraso: 1.00, dur: 0.15 },
+    { letra: 'w', x1: 58, y1: 34.5, x2: 58, y2: 11.5, atraso: 1.15, dur: 0.15 }
+  ];
+
+  var paths = caixa.querySelectorAll('.mwb-tr-corpo[data-seg]');
+  for (var p = 0; p < paths.length; p++) {
+    var seg = SEGMENTOS[+paths[p].getAttribute('data-seg')];
+    if (!seg) continue;
+    paths[p].style.setProperty('--atraso', seg.atraso + 's');
+    paths[p].style.setProperty('--dur', seg.dur + 's');
+  }
+
+  var pontero_grosso = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+  var poucos_nucleos = typeof navigator.hardwareConcurrency === 'number' && navigator.hardwareConcurrency <= 4;
+  var leve = pontero_grosso || poucos_nucleos;
+  var POR_QUADRO = leve ? 1 : 2;
+
+  var ctx = tela.getContext('2d');
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var caixaRect = caixa.getBoundingClientRect();
+  var largura = caixaRect.width || 130, altura = caixaRect.height || 90;
+  tela.width = largura * dpr;
+  tela.height = altura * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  var ESCX = largura / 64, ESCY = altura / 44;
+
+  var cores = { m: '165,225,255', w: '221,210,255' };
+  var coresFrias = { m: '56,189,248', w: '124,92,255' };
+  var faiscas = [];
+  var LIMITE = 1.32; // segundos — o último segmento termina em 1.30s
+
+  function cabeca(seg, prog){
+    return {
+      x: (seg.x1 + (seg.x2 - seg.x1) * prog) * ESCX,
+      y: (seg.y1 + (seg.y2 - seg.y1) * prog) * ESCY
+    };
+  }
+
+  var t0 = null, vivo = true;
+  function quadro(agora){
+    if (!vivo) return;
+    if (t0 === null) t0 = agora;
+    var t = (agora - t0) / 1000;
+    ctx.clearRect(0, 0, largura, altura);
+
+    for (var i = 0; i < SEGMENTOS.length; i++) {
+      var seg = SEGMENTOS[i];
+      var fim = seg.atraso + seg.dur;
+      if (t < seg.atraso || t > fim) continue;
+      var prog = (t - seg.atraso) / seg.dur;
+      var cab = cabeca(seg, prog);
+      ctx.beginPath();
+      ctx.fillStyle = '#fff';
+      ctx.arc(cab.x, cab.y, 2.4, 0, Math.PI * 2);
+      ctx.fill();
+      for (var s = 0; s < POR_QUADRO; s++) {
+        var ang = Math.random() * Math.PI * 2;
+        var vel = 0.28 + Math.random() * 0.35;
+        faiscas.push({
+          x: cab.x, y: cab.y,
+          vx: Math.cos(ang) * vel, vy: Math.sin(ang) * vel - 0.12,
+          vida: 0, max: 260 + Math.random() * 180,
+          cor: cores[seg.letra], corFria: coresFrias[seg.letra]
+        });
+      }
+    }
+
+    for (var j = faiscas.length - 1; j >= 0; j--) {
+      var f = faiscas[j];
+      f.vida += 16.7;
+      if (f.vida > f.max) { faiscas.splice(j, 1); continue; }
+      f.x += f.vx; f.y += f.vy; f.vx *= 0.94; f.vy *= 0.94;
+      var k = 1 - f.vida / f.max;
+      var cor = f.vida / f.max < 0.4 ? f.cor : f.corFria;
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(' + cor + ',' + (k * 0.92).toFixed(2) + ')';
+      ctx.arc(f.x, f.y, 1.3 * k + 0.35, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    if (t < LIMITE + 0.4) {
+      requestAnimationFrame(quadro);
+    } else {
+      ctx.clearRect(0, 0, largura, altura);
+      vivo = false;
+    }
+  }
+  requestAnimationFrame(quadro);
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden) vivo = false;
+  });
+})();
+</script>
+<script>
+/* ============================================================
+   PARTÍCULAS DE AMBIENTE — atmosfera ao redor, não NO traço
    ============================================================
    Canvas em vez de dezenas de <div>: um punhado de pontos nasce ao
    redor do centro e deriva pra dentro enquanto as letras se desenham,
-   dissipando antes do nome aparecer — a "energia ao redor" pedida,
-   sem custar layout nenhum (só um <canvas> pintando).
+   dissipando perto do reflexo final — a atmosfera, complementar às
+   faíscas do script anterior (que seguem a geometria de perto).
 
    Desempenho: a contagem de partículas cai bastante em aparelho com
    ponteiro grosso (touch) ou poucos núcleos — a mesma heurística
@@ -2924,7 +3135,7 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
    porque É a parte cara de desenhar num círculo; níveis mais fortes
    ganham um shadowBlur pequeno. `prefers-reduced-motion` não desenha
    nada — o canvas fica em branco e as letras se formam sozinhas. O
-   laço para sozinho depois de ~1,1s (a formação já terminou) e também
+   laço para sozinho depois de ~1,3s (a formação já terminou) e também
    se a aba for pra segundo plano no meio, pra nunca gastar quadro à
    toa. */
 (function(){
@@ -2955,8 +3166,8 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
       ang: ang,
       raioIni: raioIni,
       raioFim: raioFim,
-      nasce: Math.random() * 550,
-      vida: 480 + Math.random() * 320,
+      nasce: Math.random() * 750,
+      vida: 500 + Math.random() * 420,
       tam: 1.1 + Math.random() * 1.6,
       cor: cores[i % cores.length]
     });
@@ -2964,7 +3175,7 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
 
   var inicio = null;
   var vivo = true;
-  var LIMITE = 1150; // ms — depois disso a formação já terminou, some o laço
+  var LIMITE = 1320; // ms — depois disso a formação já terminou, some o laço
 
   function quadro(agora){
     if (!vivo) return;
@@ -3040,7 +3251,7 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
       clearInterval(id);
     }
   }
-  setTimeout(function(){ id = setInterval(passo, 40); }, 660);
+  setTimeout(function(){ id = setInterval(passo, 40); }, 1400);
 })();
 </script>
 <script>
@@ -4335,16 +4546,17 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
   /* A entrada agora termina em ~2780ms (o nome assenta) e respira mais
      um instante antes de sair — foi o pedido de "um pouquinho mais
      lento e demorar um tempinho a mais antes do login". */
-  /* Pedido explícito: a abertura inteira precisa caber em "1-2
-     segundos", não nos 2,6-3,4s do desfoque/traçado anterior. A nova
-     coreografia (partículas convergindo, M se formando por energia,
-     W em seguida, o brilho de vidro passando, o nome decodificando)
-     termina de verdade por volta de 1,1s. O piso dá só ~650ms de marca
-     parada e respirando antes de sair — o suficiente pra registrar
-     "chegou", sem virar espera. O teto continua sendo só a rede de
-     segurança para não prender o app se algo raro demorar. */
-  var MW_BOOT_MIN = 1750;
-  var MW_BOOT_MAX = 2300;
+  /* Terceira rodada: o pedido deixou de ser "caiba em 1-2s" e passou a
+     ser "quero ASSISTIR a logo sendo construída" — os 8 segmentos do
+     M/W um de cada vez, as faíscas seguindo o traço, e só depois o
+     reflexo cruzando a superfície inteira, tudo isso precisa de tempo
+     pra se ver. A construção termina de verdade por volta de 1,3s, o
+     reflexo/clímax vai até ~1,8s, e o piso dá só ~500ms de marca
+     estável antes de sair — o suficiente pra registrar "chegou", sem
+     virar espera parada. O teto continua sendo só a rede de segurança
+     para não prender o app se algo raro demorar. */
+  var MW_BOOT_MIN = 2300;
+  var MW_BOOT_MAX = 2900;
   var MW_BOOT_SAIDA = 460;   // igual à duração das animações de saída
   var mwBootDone = false;
 
