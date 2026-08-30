@@ -3454,7 +3454,13 @@ body.light .mw-faceid-gate-card p{color:#526988}
       <div class="mwv2-form-track">
 
         <!-- ENTRAR -->
-        <div class="mwv2-auth-pane">
+        <!-- Precisa ser um <form> de verdade (não só uma <div>): sem ele, o
+             Safari/iOS não tem como associar com confiança "este par de
+             campos é um login deste site" e às vezes preenche uma senha
+             salva de outra hora, para outra conta. O botão continua
+             type="button" (o clique já é tratado em JS); o listener de
+             submit abaixo só cobre o Enter no teclado, sem duplicar lógica. -->
+        <form id="mwLoginForm" class="mwv2-auth-pane" autocomplete="on">
           <p class="mwv2-switch-text">Não tem conta? <button type="button" data-switch="signup">Criar agora.</button></p>
 
           <label for="username">E-mail ou usuário</label>
@@ -3467,7 +3473,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
 
           <button class="ref-primary" id="loginButton" type="button">ENTRAR</button>
           <div class="status" id="status"></div>
-        </div>
+        </form>
 
         <!-- CRIAR CONTA -->
         <form id="inlineCreateForm" class="mwv2-auth-pane">
@@ -19095,6 +19101,20 @@ document.addEventListener('click', function(e){
 
      Se o servidor recusar (nome tomado, e-mail já cadastrado), o fluxo
      para aqui e a mensagem aparece — a animação nem começa. */
+  /* O <form> de login existe só para o Safari/iOS reconhecer o par
+     usuário+senha como um login de verdade (autopreenchimento mais
+     confiável). O clique em #loginButton já cobre o fluxo inteiro;
+     isto aqui só evita que apertar Enter no campo de senha dispare o
+     envio nativo do formulário (que recarregaria a página) — e, de
+     brinde, faz o Enter funcionar como atalho para entrar. */
+  document.addEventListener('submit', function(e){
+    var form = e.target;
+    if (!form || form.id !== 'mwLoginForm') return;
+    e.preventDefault();
+    var botao = document.getElementById('loginButton');
+    if (botao) botao.click();
+  });
+
   document.addEventListener('submit', function(e){
     var form = e.target;
     if (!form || form.id !== 'inlineCreateForm') return;
