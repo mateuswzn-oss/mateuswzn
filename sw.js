@@ -1,5 +1,49 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v34: desfaz a v33 — a lente na barra da Nyc AI foi mal-entendido
+   (o pedido "chat, praticamente igual" era só descrevendo o vídeo de
+   referência do WhatsApp, um app de chat, não pedindo pra colocar na
+   Nyc AI). A lente continua só na barra de baixo, como na v32.
+   window.mwCriaLenteVidro segue genérica (aceita qualquer barra), só
+   não é mais chamada pra .mateus-ai-form. */
+/* v33: a mesma lente de vidro arrastável (v32) agora também na barra de
+   digitar da Nyc AI (.mateus-ai-form), pedido explícito pra ficar
+   "praticamente igual" nos dois lugares. window.mwCriaLenteVidro virou
+   função reutilizável em vez de código só da barra de baixo; a chamada
+   pra Nyc AI acontece no show() do modal (só cria na primeira vez que
+   abre, idempotente). Sem trocar o nome do cache, quem já tinha o app
+   instalado continuaria sem a lente ali. */
+/* v32: lente de vidro arrastável na barra de baixo (pedido explícito,
+   com vídeo de referência mostrando a lente do WhatsApp/iOS 26 Liquid
+   Glass) — um círculo que a pessoa arrasta sobre a barra e o que está
+   atrás DOBRA de verdade perto da borda, não só borra. Usa um filtro
+   SVG (feDisplacementMap) aplicado via backdrop-filter:url(#...) —
+   funciona onde já testei (Chrome/Edge/Android); no Safari/iOS, que
+   historicamente não aplica filtro SVG dentro de backdrop-filter, a
+   declaração inteira é ignorada e sobra só um círculo de vidro liso
+   (sem quebrar nada, só sem a dobra). Sem trocar o nome do cache, quem
+   já tinha o app instalado continuaria sem a lente. */
+/* v31: quatro coisas de uma vez —
+   1) Navegação diferente por contexto: a cápsula flutuante de baixo
+      (Início/Faculdade/...) virou exclusiva de quando o site está
+      instalado de verdade (display-mode:standalone / navigator.standalone
+      — checado no <head>, antes de qualquer layout). No navegador comum,
+      mesmo logado, ela some e quem navega é o menu lateral — reativado o
+      botão de hambúrguer no mobile (estava com display:none de uma regra
+      antiga, de quando a cápsula ainda cobria sozinha toda a navegação).
+   2) "Esqueci minha senha" e "esqueci meu usuário" viraram uma linha só
+      no login, em vez de dois blocos empilhados repetindo "esqueci".
+   3) As trocas de usuário/e-mail/senha/telefone em Configurações → Conta
+      deixaram de usar prompt()/alert() nativos do navegador (a caixinha
+      cinza fora do estilo do app) — agora usam um diálogo com a mesma
+      cara do de confirmação de identidade (window.mwPedirValor). O
+      "esqueci meu usuário" do login também passou a usar esse diálogo.
+   4) Vidro da barra de baixo mais forte (blur 26px->38px de base,
+      saturate 190%->215%) — o anterior deixava passar detalhe fino
+      demais contra fundos com textura; a referência (Instagram) borra
+      até virar só cor.
+   Sem trocar o nome do cache, quem já tinha o app instalado continuaria
+   servindo o index.html de antes, sem nada disso. */
 /* v30: cinco coisas de uma vez —
    1) Painel Admin passou a usar dados reais do Supabase, com checagem de
       is_admin no SERVIDOR (ver supabase/ajuste-04-admin-e-extras.sql);
@@ -90,7 +134,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v30';
+const CACHE_NAME = 'mw-shell-v34';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

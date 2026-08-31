@@ -4,6 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#020617">
+<script>
+/* Detecta cedo (antes de qualquer layout) se está rodando como app
+   instalado — só assim dá pra decidir sem flash se a barra flutuante de
+   baixo (Início/Faculdade/...) aparece ou não. display-mode:standalone
+   cobre Android/desktop; navigator.standalone é o equivalente no iOS
+   Safari, que não implementa o media feature. */
+try {
+  var mwStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
+    || window.navigator.standalone === true;
+  if (mwStandalone) document.documentElement.classList.add('mw-standalone');
+} catch (e) {}
+</script>
 <!-- O navegador pinta a TELA DELE (a canvas, antes de qualquer CSS do
      documento valer) usando o esquema de cores declarado. Sem esta
      linha o padrao e claro, e e por isso que sobra um lampejo BRANCO
@@ -3207,6 +3219,20 @@ try {
 .mwv2-forgot{text-align:right;margin:0 0 14px}
 .mwv2-forgot button{border:0;background:none;color:var(--muted2);font-size:10.5px;cursor:pointer}
 .mwv2-forgot button:hover{color:var(--blue2);text-decoration:underline}
+
+/* "Esqueci minha senha" e "esqueci meu usuário" numa linha só — eram
+   dois blocos empilhados repetindo o mesmo "esqueci", lendo como duas
+   perguntas separadas em vez de uma única área de recuperação. */
+.mwv2-forgot-row{
+  display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;
+  gap:6px;margin:0 0 14px;
+}
+.mwv2-forgot-row button{
+  border:0;background:none;color:var(--muted2);font-size:10.5px;cursor:pointer;
+  padding:4px 6px;border-radius:8px;transition:color .2s ease,background .2s ease;
+}
+.mwv2-forgot-row button:hover{background:rgba(56,189,248,.08);color:var(--blue2)}
+.mwv2-forgot-sep{width:3px;height:3px;border-radius:50%;background:currentColor;color:var(--muted2);opacity:.45}
 #status.status{min-height:16px;margin:2px 0 6px;text-align:left;font-size:11px}
 
 /* Entrar e Criar conta com o MESMO desenho: pílula compacta, sem sombra */
@@ -3289,6 +3315,24 @@ try {
     <div class="mw-confirma-acoes">
       <button type="button" class="small-btn" id="mwConfirmaCancelar">Cancelar</button>
       <button type="button" class="save-btn" id="mwConfirmaOk">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Mesmo desenho do diálogo acima, genérico: pede um valor (texto)
+     em vez de senha/código. Substitui os prompt()/alert() nativos do
+     navegador nas trocas de conta e no telefone — window.mwPedirValor
+     abaixo é o ponto único, reaproveitado em qualquer fluxo que
+     precise pedir um valor com essa cara. -->
+<div id="mwPedirValor" class="hidden" role="dialog" aria-modal="true" aria-labelledby="mwPedirValorTitulo">
+  <div class="mw-confirma-card">
+    <h3 id="mwPedirValorTitulo">Novo valor</h3>
+    <p id="mwPedirValorTexto"></p>
+    <input id="mwPedirValorCampo" type="text" autocomplete="off">
+    <p class="form-error" id="mwPedirValorErro" hidden></p>
+    <div class="mw-confirma-acoes">
+      <button type="button" class="small-btn" id="mwPedirValorCancelar">Cancelar</button>
+      <button type="button" class="save-btn" id="mwPedirValorOk">Continuar</button>
     </div>
   </div>
 </div>
@@ -3428,7 +3472,12 @@ body.light .mw-faceid-gate-card p{color:#526988}
           <label for="password">Senha</label>
           <div class="mwv2-input-wrap"><input id="password" type="password" autocomplete="current-password" placeholder="Senha"><button class="toggle" id="togglePassword" type="button">◌</button></div>
 
-          <div class="mwv2-forgot"><button type="button" id="forgotPasswordLink">Esqueci minha senha</button></div><div class="mwv2-forgot"><button type="button" id="forgotUsernameLink">Esqueci meu usuário</button></div><div class="mwv2-forgot mw-forgot-transfere"><button type="button" id="mwTrazerConta">Já tenho conta em outro lugar</button></div>
+          <div class="mwv2-forgot-row">
+            <button type="button" id="forgotPasswordLink">Esqueci minha senha</button>
+            <span class="mwv2-forgot-sep" aria-hidden="true"></span>
+            <button type="button" id="forgotUsernameLink">Esqueci meu usuário</button>
+          </div>
+          <div class="mwv2-forgot mw-forgot-transfere"><button type="button" id="mwTrazerConta">Já tenho conta em outro lugar</button></div>
 
           <button class="ref-primary" id="loginButton" type="button">ENTRAR</button>
           <div class="status" id="status"></div>
@@ -8493,6 +8542,106 @@ img,svg,video,canvas{max-width:100%}
     document.body.appendChild(nav);
   }
   const avatarMenuBtn = document.getElementById('mwBottomMenu');
+
+  /* ============================================================
+     LENTE DE VIDRO ARRASTÁVEL — distorção de verdade, não só blur
+     ============================================================
+     Pedido explícito, com vídeo de referência mostrando a lente do
+     WhatsApp/iOS: um círculo que a pessoa arrasta sobre uma barra e o
+     que está atrás DOBRA visivelmente perto da borda — diferente do
+     resto da barra, que só borra (blur) o que está atrás.
+
+     blur() sozinho nunca faz essa dobra: ele espalha os pixels, não
+     desloca. Quem desloca é feDisplacementMap, um filtro SVG que lê um
+     "mapa" (aqui, um gradiente radial: cinza no centro = sem
+     deslocamento, claro/escuro na borda = empurra pixel pra fora/pra
+     dentro) e aplica isso ao que está atrás via backdrop-filter:url(#).
+
+     Onde funciona: Chrome/Edge/Android de verdade — testado. Onde não:
+     o Safari/iOS historicamente não aplica filtro SVG dentro de
+     backdrop-filter (só entende blur/saturate simples ali). Por isso a
+     regra de CSS declara o blur simples PRIMEIRO e o filtro com
+     distorção DEPOIS — no navegador que não entende url() como filtro
+     válido, a segunda declaração é ignorada inteira (sintaxe
+     inválida pra ele) e a primeira continua valendo: a lente não
+     quebra, só fica um círculo de vidro liso em vez de deformar.
+
+     window.mwCriaLenteVidro(container) recebe qualquer barra — feita
+     genérica de propósito, mesmo só sendo chamada aqui pra
+     #mwBottomNav por enquanto, pra dar pra reaproveitar em outro lugar
+     sem reescrever a lógica. Cada chamada cria a SUA lente (uma por
+     container), reaproveitando o mesmo filtro SVG (ele só precisa
+     existir uma vez no documento). */
+  window.mwCriaLenteVidro = function(container){
+    if (!container || container.querySelector('.mw-lente-vidro')) return;
+
+    if (!document.getElementById('mwLenteFiltroSvg')) {
+      var svgFiltro = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svgFiltro.id = 'mwLenteFiltroSvg';
+      svgFiltro.setAttribute('aria-hidden', 'true');
+      svgFiltro.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden';
+      var mapaSvg = "data:image/svg+xml;utf8," +
+        "%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E" +
+        "%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='50%25' r='50%25'%3E" +
+        "%3Cstop offset='0%25' stop-color='%23808080'/%3E" +
+        "%3Cstop offset='55%25' stop-color='%23808080'/%3E" +
+        "%3Cstop offset='80%25' stop-color='%23ffffff'/%3E" +
+        "%3Cstop offset='100%25' stop-color='%23000000'/%3E" +
+        "%3C/radialGradient%3E%3C/defs%3E" +
+        "%3Crect width='200' height='200' fill='url(%23g)'/%3E%3C/svg%3E";
+      svgFiltro.innerHTML =
+        '<defs><filter id="mwLenteFiltro" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">' +
+        '<feImage x="0" y="0" width="100%" height="100%" result="mapa" href="' + mapaSvg + '"/>' +
+        '<feDisplacementMap in="SourceGraphic" in2="mapa" scale="44" xChannelSelector="R" yChannelSelector="R"/>' +
+        '</filter></defs>';
+      document.body.appendChild(svgFiltro);
+    }
+
+    var lente = document.createElement('div');
+    lente.className = 'mw-lente-vidro';
+    lente.setAttribute('aria-hidden', 'true');
+    container.appendChild(lente);
+
+    var arrastando = false;
+    function posiciona(clientX){
+      var r = container.getBoundingClientRect();
+      var raio = lente.offsetWidth / 2;
+      var x = Math.max(raio, Math.min(r.width - raio, clientX - r.left));
+      lente.style.left = x + 'px';
+    }
+    lente.addEventListener('pointerdown', function(e){
+      arrastando = true;
+      lente.classList.add('mw-arrastando');
+      try { lente.setPointerCapture(e.pointerId); } catch (er) {}
+      e.preventDefault();
+    });
+    lente.addEventListener('pointermove', function(e){
+      if (!arrastando) return;
+      posiciona(e.clientX);
+    });
+    function solta(){ arrastando = false; lente.classList.remove('mw-arrastando'); }
+    lente.addEventListener('pointerup', solta);
+    lente.addEventListener('pointercancel', solta);
+
+    /* Posição inicial: sobre o primeiro item, um convite discreto a
+       notar que dá pra arrastar (sem nenhum texto ensinando isso). O
+       container pode estar com display:none nesse momento (a barra de
+       baixo só aparece depois do login; a barra da Nyc AI só quando o
+       modal abre) — medir com largura zero prendia a lente fora da
+       tela pra sempre. Espera o container ter largura de verdade,
+       tentando de novo a cada quadro por até 5s. */
+    (function espera(tentativas){
+      var primeiro = container.querySelector('button');
+      if (primeiro && container.offsetWidth > 0) {
+        posiciona(primeiro.getBoundingClientRect().left + primeiro.offsetWidth / 2);
+        return;
+      }
+      if (tentativas <= 0) return;
+      requestAnimationFrame(function(){ espera(tentativas - 1); });
+    })(300);
+  };
+
+  window.mwCriaLenteVidro(nav);
 
   /* ============================================================
      MÁQUINA DE ESTADOS DA BOTTOM NAV — FONTE ÚNICA DE VERDADE
@@ -14885,8 +15034,17 @@ html body #mwBottomNav{
     radial-gradient(150% 170% at 50% 120%,rgba(0,0,0,.10),transparent 62%),
     linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.008) 45%,rgba(255,255,255,.025)),
     linear-gradient(160deg,rgba(9,9,11,calc(.045 + var(--mw-nav-compact,0) * .085)),rgba(4,4,6,calc(.075 + var(--mw-nav-compact,0) * .085)))!important;
-  backdrop-filter:blur(calc(26px + var(--mw-nav-compact,0) * 10px)) saturate(190%) brightness(1.06)!important;
-  -webkit-backdrop-filter:blur(calc(26px + var(--mw-nav-compact,0) * 10px)) saturate(190%) brightness(1.06)!important;
+  /* Referência pedida (Instagram): quadro a quadro, o vidro dele
+     obscurece detalhe fino quase por completo — o que sobra é cor
+     borrada, nunca forma reconhecível. blur(26px) chegava perto só
+     com fundos já pouco carregados; contra algo com mais detalhe
+     (texto, ícones pequenos) sobrava nitidez demais. 26->38px de base
+     (34->48px no estado compacto do scroll) e saturate mais alto
+     (190%->215%) é o mesmo ajuste que a Apple documenta pro "Liquid
+     Glass": mais desfoque MASCARANDO em vez de cor lavada por cima —
+     a diferença de "vidro" pra "quadrado semitransparente". */
+  backdrop-filter:blur(calc(38px + var(--mw-nav-compact,0) * 10px)) saturate(215%) brightness(1.05)!important;
+  -webkit-backdrop-filter:blur(calc(38px + var(--mw-nav-compact,0) * 10px)) saturate(215%) brightness(1.05)!important;
   border:none!important;
   box-shadow:
     0 10px 26px -16px rgba(0,0,0,calc(.30 + var(--mw-nav-compact,0) * .12)),
@@ -15010,6 +15168,52 @@ html body.light #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar::after{
   html body #mwBottomNav{transition:none}
   html body #mwBottomNav .mwnav-icon svg{transition:opacity .15s linear;transform:none!important}
   html body #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar{transition:none}
+}
+
+/* Lente de vidro arrastável — ver window.mwCriaLenteVidro logo depois
+   da criação de #mwBottomNav (é lá que mwLenteFiltroSvg é criado) pra
+   entender o filtro. window.mwCriaLenteVidro(container) é genérica de
+   propósito (recebe qualquer barra), mas por enquanto só é chamada
+   pra #mwBottomNav — tamanho fixo (64px) em vez de herdar a variável
+   --mw-icon, então dá pra reaproveitar em outra barra no futuro sem
+   mexer aqui. */
+html body .mw-lente-vidro{
+  position:absolute;top:50%;left:50%;
+  width:64px;height:64px;
+  transform:translate(-50%,-50%);
+  border-radius:50%;cursor:grab;touch-action:none;z-index:5;
+  /* Fallback primeiro (todo navegador com backdrop-filter entende
+     isto): só um vidro liso, sem dobra. */
+  backdrop-filter:blur(2px) saturate(150%)!important;
+  -webkit-backdrop-filter:blur(3px) saturate(150%)!important;
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255,255,255,.5),
+    inset 0 3px 6px rgba(255,255,255,.3),
+    inset 0 -3px 6px rgba(0,0,0,.3),
+    0 10px 22px rgba(0,0,0,.4);
+  transition:transform .12s cubic-bezier(.3,1.3,.5,1);
+}
+/* Reforço com o filtro de distorção de verdade — cai por cima do
+   fallback acima só em quem entende backdrop-filter:url(#...). Ver o
+   comentário grande no JS: onde não entende, o navegador ignora esta
+   declaração inteira e o fallback simples continua valendo. */
+html body .mw-lente-vidro{
+  backdrop-filter:url(#mwLenteFiltro) saturate(130%)!important;
+}
+html body .mw-lente-vidro::before{
+  content:"";position:absolute;inset:-2px;border-radius:50%;pointer-events:none;
+  background:conic-gradient(from 0deg,
+    rgba(255,90,90,.32),rgba(255,215,90,.14),rgba(120,255,180,.22),
+    rgba(90,180,255,.32),rgba(190,120,255,.22),rgba(255,90,90,.32));
+  mix-blend-mode:screen;opacity:.5;
+  -webkit-mask:radial-gradient(circle,transparent 60%,#000 68%,#000 90%,transparent 97%);
+  mask:radial-gradient(circle,transparent 60%,#000 68%,#000 90%,transparent 97%);
+}
+html body .mw-lente-vidro.mw-arrastando{
+  cursor:grabbing;transform:translate(-50%,-50%) scale(1.06);
+}
+@media(prefers-reduced-motion:reduce){
+  html body .mw-lente-vidro{transition:none}
 }
 </style>
 <script id="mw-liquid-nav-scroll">
@@ -17023,6 +17227,12 @@ body.mw-entrando #app .main > * .stat{
   background:rgba(2,6,23,.72);backdrop-filter:blur(6px);
 }
 #mwConfirmaSegredo:not(.hidden){display:flex}
+#mwPedirValor{
+  position:fixed;inset:0;z-index:10000;display:none;
+  align-items:center;justify-content:center;padding:22px;
+  background:rgba(2,6,23,.72);backdrop-filter:blur(6px);
+}
+#mwPedirValor:not(.hidden){display:flex}
 .mw-confirma-card{
   width:min(360px,100%);padding:24px 22px 18px;border-radius:20px;
   background:var(--panel2);border:1px solid var(--line);color:var(--text);
@@ -17639,18 +17849,67 @@ body.light .mw-transfere-nota b{color:#0b1830}
     });
   }
 
-  function trocar(rotulo, texto, pedir, aplicar){
+  /* Substitui prompt() nativo (a caixinha cinza do sistema operacional,
+     fora de qualquer estilo do app) por um diálogo com a MESMA cara do
+     de confirmação acima. Devolve uma promessa: string digitada, ou
+     null se cancelou — mesmo contrato do prompt(), pra trocar um pelo
+     outro sem reescrever quem chama.
+
+     opcoes: { tipo, placeholder, valorInicial, erroInicial } — todos
+     opcionais. `erroInicial` mostra uma mensagem de erro já na
+     abertura (útil pra reabrir o mesmo diálogo depois de uma resposta
+     inválida, sem fechar e abrir de novo). */
+  var pedirDialogo = document.getElementById('mwPedirValor');
+  function pedirValor(titulo, texto, opcoes){
+    opcoes = opcoes || {};
+    return new Promise(function(resolve){
+      var campo = document.getElementById('mwPedirValorCampo');
+      var erro = document.getElementById('mwPedirValorErro');
+      var ok = document.getElementById('mwPedirValorOk');
+      var cancelar = document.getElementById('mwPedirValorCancelar');
+      var textoEl = document.getElementById('mwPedirValorTexto');
+      var tituloEl = document.getElementById('mwPedirValorTitulo');
+      if (tituloEl) tituloEl.textContent = titulo || 'Novo valor';
+      if (textoEl) { textoEl.textContent = texto || ''; textoEl.hidden = !texto; }
+      campo.type = opcoes.tipo || 'text';
+      campo.placeholder = opcoes.placeholder || '';
+      campo.value = opcoes.valorInicial || '';
+      if (opcoes.erroInicial) { erro.textContent = opcoes.erroInicial; erro.hidden = false; }
+      else { erro.hidden = true; erro.textContent = ''; }
+      pedirDialogo.classList.remove('hidden');
+      setTimeout(function(){ campo.focus(); if (opcoes.valorInicial) campo.select(); }, 40);
+
+      function fechar(resultado){
+        pedirDialogo.classList.add('hidden');
+        ok.removeEventListener('click', confirma);
+        cancelar.removeEventListener('click', desiste);
+        campo.removeEventListener('keydown', porEnter);
+        resolve(resultado);
+      }
+      function confirma(){ fechar(campo.value); }
+      function desiste(){ fechar(null); }
+      function porEnter(e){ if (e.key === 'Enter') { e.preventDefault(); confirma(); } }
+
+      ok.addEventListener('click', confirma);
+      cancelar.addEventListener('click', desiste);
+      campo.addEventListener('keydown', porEnter);
+    });
+  }
+  window.mwPedirValor = pedirValor;
+
+  function trocar(rotulo, texto, pedir, aplicar, opcoesValor){
     return function(){
       aviso('');
       confirmar(texto).then(function(provou){
         if (!provou) return;
-        var valor = prompt(pedir);
-        if (valor === null) return;
-        aplicar(valor).then(function(r){
-          if (!r.ok) { aviso(r.erro, false); return; }
-          pintar();
-          aviso(rotulo + ' atualizado.', true);
-          if (typeof toast === 'function') toast(rotulo + ' atualizado');
+        pedirValor(rotulo, pedir, opcoesValor).then(function(valor){
+          if (valor === null) return;
+          aplicar(valor).then(function(r){
+            if (!r.ok) { aviso(r.erro, false); return; }
+            pintar();
+            aviso(rotulo + ' atualizado.', true);
+            if (typeof toast === 'function') toast(rotulo + ' atualizado');
+          });
         });
       });
     };
@@ -17659,20 +17918,23 @@ body.light .mw-transfere-nota b{color:#0b1830}
   document.getElementById('mwContaTrocarUsuario')?.addEventListener('click',
     trocar('Nome de usuário',
       'Para trocar o nome de usuário, confirme que é você.',
-      'Novo nome de usuário (3 a 20 caracteres):',
-      function(v){ return window.mwConta.trocarUsuario(v); }));
+      'Novo nome de usuário',
+      function(v){ return window.mwConta.trocarUsuario(v); },
+      { placeholder: '3 a 20 caracteres' }));
 
   document.getElementById('mwContaTrocarEmail')?.addEventListener('click',
     trocar('E-mail',
       'Para trocar o e-mail, confirme que é você.',
-      'Novo e-mail:',
-      function(v){ return window.mwConta.trocarEmail(v); }));
+      'Novo e-mail',
+      function(v){ return window.mwConta.trocarEmail(v); },
+      { tipo: 'email', placeholder: 'seu@email.com' }));
 
   document.getElementById('mwContaTrocarSenha')?.addEventListener('click',
     trocar('Senha',
       'Para trocar a senha, confirme a senha atual ou o código de acesso.',
-      'Nova senha (mínimo 6 caracteres):',
-      function(v){ return window.mwConta.trocarSenha(v); }));
+      'Nova senha',
+      function(v){ return window.mwConta.trocarSenha(v); },
+      { tipo: 'password', placeholder: 'Mínimo 6 caracteres' }));
 
   /* Telefone não usa trocar() porque são DUAS perguntas em sequência
      (número, depois o código que chega por SMS), não uma. O código só
@@ -17683,18 +17945,20 @@ body.light .mw-transfere-nota b{color:#0b1830}
     aviso('');
     confirmar('Para adicionar ou trocar o telefone, confirme que é você.').then(function(provou){
       if (!provou) return;
-      var numero = prompt('Telefone com DDD (ex.: 11999999999):');
-      if (numero === null) return;
-      aviso('Enviando código por SMS...');
-      window.mwConta.enviarCodigoTelefone(numero).then(function(r){
-        if (!r.ok) { aviso(r.erro, false); return; }
-        var codigo = prompt('Digite o código de 6 dígitos recebido por SMS em ' + r.telefone + ':');
-        if (codigo === null) { aviso(''); return; }
-        window.mwConta.confirmarCodigoTelefone(r.telefone, codigo).then(function(r2){
-          if (!r2.ok) { aviso(r2.erro, false); return; }
-          pintarTelefone();
-          aviso('Telefone confirmado.', true);
-          if (typeof toast === 'function') toast('Telefone confirmado');
+      pedirValor('Telefone', 'Com DDD, só números.', { tipo: 'tel', placeholder: '11999999999' }).then(function(numero){
+        if (numero === null) return;
+        aviso('Enviando código por SMS...');
+        window.mwConta.enviarCodigoTelefone(numero).then(function(r){
+          if (!r.ok) { aviso(r.erro, false); return; }
+          pedirValor('Código de confirmação', 'Recebido por SMS em ' + r.telefone + '.', { tipo: 'tel', placeholder: '6 dígitos' }).then(function(codigo){
+            if (codigo === null) { aviso(''); return; }
+            window.mwConta.confirmarCodigoTelefone(r.telefone, codigo).then(function(r2){
+              if (!r2.ok) { aviso(r2.erro, false); return; }
+              pintarTelefone();
+              aviso('Telefone confirmado.', true);
+              if (typeof toast === 'function') toast('Telefone confirmado');
+            });
+          });
         });
       });
     });
@@ -20053,11 +20317,15 @@ html body.light #mwRecupera input{background:#fff!important;color:#0b1830!import
 <script id="mw-esqueci-usuario-js">
 (function(){
   'use strict';
-  /* Mais simples de propósito que a recuperação de senha: não tem
-     estado nenhum pra guardar entre passos (é uma pergunta, uma
-     resposta), então um prompt()/alert() resolve sem precisar de
-     outra caixa com CSS própria. Mesmo padrão já usado no fluxo de
-     telefone em Configurações.
+  /* Usa o mesmo diálogo com cara de app (window.mwPedirValor, definido
+     em mw-conta-ui-js) que substituiu os prompt()/alert() nativos do
+     Configurações → Conta — antes essa tela era a única com caixinha
+     cinza do sistema operacional, destoando do resto.
+
+     O resultado fica escrito ao lado do link (mesmo padrão já usado em
+     "Já tenho conta em outro lugar" ali do lado) em vez de um alert():
+     um alert desaparece ao clicar OK, e um nome de usuário é
+     informação que a pessoa quer copiar/lembrar com calma.
 
      Mostra o usuário direto, sem esconder se a conta existe ou não —
      diferente da recuperação de senha (que dá a mesma resposta nos
@@ -20068,25 +20336,103 @@ html body.light #mwRecupera input{background:#fff!important;color:#0b1830!import
      é de uso pessoal — por isso o mesmo tradeoff vale aqui. */
   var link = document.getElementById('forgotUsernameLink');
   if (!link) return;
+  var recado = null;
+
+  function mostra(msg, ruim){
+    if (!recado) {
+      recado = document.createElement('p');
+      recado.id = 'mwEsqueciUsuarioAviso';
+      var linha = link.closest('.mwv2-forgot-row') || link.parentElement;
+      linha.insertAdjacentElement('afterend', recado);
+    }
+    recado.textContent = msg;
+    recado.classList.toggle('mw-ruim', !!ruim);
+  }
 
   link.addEventListener('click', function(e){
     e.preventDefault();
     if (!window.mwNuvem || !window.mwNuvem.ligado()) {
-      alert('Recuperar usuário precisa de internet. Conecte e tente de novo.');
+      mostra('Precisa de internet para recuperar o usuário.', true);
       return;
     }
-    var email = prompt('Digite o e-mail da sua conta:');
-    if (email === null) return;
-    email = String(email).trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert('Digite um e-mail válido.'); return; }
+    window.mwPedirValor('Esqueci meu usuário', 'Digite o e-mail da sua conta.', { tipo: 'email', placeholder: 'seu@email.com' })
+      .then(function(email){
+        if (email === null) return;
+        email = String(email).trim();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { mostra('Digite um e-mail válido.', true); return; }
 
-    window.mwNuvem.usernamePorEmail(email).then(function(usuario){
-      if (usuario) alert('O nome de usuário dessa conta é: ' + usuario);
-      else alert('Não encontramos nenhuma conta com esse e-mail.');
-    });
+        mostra('Procurando...');
+        window.mwNuvem.usernamePorEmail(email).then(function(usuario){
+          if (usuario) mostra('O nome de usuário dessa conta é: ' + usuario, false);
+          else mostra('Não encontramos nenhuma conta com esse e-mail.', true);
+        });
+      });
   });
 })();
 </script>
+<style id="mw-esqueci-usuario-css">
+#mwEsqueciUsuarioAviso{
+  margin:-6px 0 14px;text-align:right;font-size:11.5px;color:var(--blue2);
+}
+#mwEsqueciUsuarioAviso.mw-ruim{color:#fb7185}
+</style>
+
+<style id="mw-nav-por-contexto">
+/* ============================================================
+   NAVEGAÇÃO DIFERENTE NO NAVEGADOR X NO APP INSTALADO
+   ============================================================
+   `mw-in-app` (definida lá em cima, em #mwSetupSidebar/syncChrome) NÃO
+   significa "app instalado" — apesar do nome parecido, ela só marca
+   "a pessoa está logada, vendo o #app" (o oposto de estar na tela de
+   login). Sempre foi assim, e é por causa disso que a cápsula flutuante
+   de baixo (Início/Faculdade/...) aparecia igual num navegador comum e
+   no app instalado na tela de início — nunca existiu uma checagem de
+   instalação de verdade ali.
+
+   `mw-standalone` (nova, decidida no <head>, antes de qualquer layout)
+   é a checagem de instalação de verdade: display-mode:standalone
+   (Android/desktop) ou navigator.standalone (iOS). A barra flutuante
+   passa a ser exclusiva de quem tem as duas coisas — logado E
+   instalado.
+
+   A especificidade do seletor abaixo (dois tipos + duas classes + um
+   id, com :not() somando mais uma classe) é de propósito maior que a
+   de TODAS as regras "body.mw-in-app #mwBottomNav{display:...!important}"
+   espalhadas pelo arquivo (a mais específica delas soma só um tipo +
+   duas classes + um id) — assim esta regra vence a cascata inteira sem
+   precisar caçar e editar cada uma.
+
+   IMPORTANTE sobre o seletor: :not(.mw-standalone) precisa vir colado
+   no "html" (é ali que a classe é aplicada), não no "body" — colado no
+   body ele checaria uma classe que o body nunca tem, e daria sempre
+   verdadeiro. Foi exatamente esse engano na primeira versão desta
+   regra: a barra continuava escondida mesmo instalado, porque
+   "body.mw-in-app:not(.mw-standalone)" na prática não filtrava nada. */
+html:not(.mw-standalone) body.mw-in-app #mwBottomNav,
+html:not(.mw-standalone) body.mw-in-app #mwBottomNav.mwbn{
+  display:none!important;
+}
+
+/* Sem a cápsula de baixo, quem navega no navegador (não instalado) é
+   o menu lateral — e a única porta pra abri-lo no celular é o botão
+   de hambúrguer (#mwMobileMenu). Ele já existe, já está com o clique
+   funcionando (abre/fecha a gaveta lateral, em mw-responsive-js), só
+   estava com display:none!important de uma regra antiga — de uma
+   época em que a cápsula de baixo cobria sozinha toda a navegação
+   mobile e o hambúrguer virou redundante. Ele deixou de ser redundante
+   no momento em que a cápsula passou a sumir no navegador; sem este
+   reforço, quem abrisse pelo navegador no celular ficava sem nenhum
+   jeito de alcançar Projetos, Atividades, Anotações, Suporte etc. —
+   só os 5 itens da cápsula (que nem aparece mais aqui) chegavam antes.
+   Preso dentro do mesmo @media(max-width:860px) da regra antiga: fora
+   dele (desktop), a barra lateral já é fixa e o hambúrguer continua
+   escondido, sem imagem, sem mudança nenhuma. */
+@media(max-width:860px){
+  html:not(.mw-standalone) #mwMobileMenu.mw-mobile-menu{
+    display:grid!important;
+  }
+}
+</style>
 
 </body>
 </html>
