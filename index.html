@@ -3602,6 +3602,24 @@ body.light .mw-faceid-gate-card p{color:#526988}
 
           <button class="ref-primary" id="loginButton" type="button">ENTRAR</button>
           <div class="status" id="status"></div>
+
+          <!-- Entrada social: os botões existem pra deixar claro pra onde
+               o produto vai, mas o OAuth de verdade ainda não está
+               conectado a provedor nenhum. Então eles nascem desabilitados
+               e com selo "em breve" — nada de abrir um fluxo falso que
+               parece funcionar e não vai a lugar nenhum. -->
+          <div class="mw-social-sep" aria-hidden="true"><span>ou</span></div>
+          <div class="mw-social-lista">
+            <button type="button" class="mw-social-btn" data-social="apple" disabled aria-disabled="true" aria-label="Continuar com Apple — em breve">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M16.3 12.8c0-2.2 1.8-3.3 1.9-3.3-1-1.5-2.6-1.7-3.2-1.7-1.4-.1-2.7.8-3.4.8-.7 0-1.8-.8-2.9-.8-1.5 0-2.9.9-3.6 2.2-1.6 2.7-.4 6.7 1.1 8.9.7 1.1 1.6 2.3 2.7 2.2 1.1 0 1.5-.7 2.8-.7s1.7.7 2.9.7c1.2 0 1.9-1.1 2.6-2.1.8-1.2 1.2-2.4 1.2-2.5 0 0-2.2-.9-2.1-3.7zM14.1 6.3c.6-.7 1-1.7.9-2.7-.9 0-2 .6-2.6 1.3-.6.6-1.1 1.7-.9 2.6 1 .1 2-.5 2.6-1.2z"/></svg>
+              Apple
+            </button>
+            <button type="button" class="mw-social-btn" data-social="google" disabled aria-disabled="true" aria-label="Continuar com Google — em breve">
+              <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="#4285F4" d="M21.6 12.2c0-.6-.1-1.3-.2-1.9H12v3.6h5.4a4.6 4.6 0 0 1-2 3v2.5h3.2c1.9-1.7 3-4.3 3-7.2z"/><path fill="#34A853" d="M12 22c2.7 0 5-.9 6.6-2.4l-3.2-2.5c-.9.6-2 1-3.4 1-2.6 0-4.8-1.7-5.6-4.1H3.1v2.6A10 10 0 0 0 12 22z"/><path fill="#FBBC05" d="M6.4 14c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V7.4H3.1a10 10 0 0 0 0 9.2L6.4 14z"/><path fill="#EA4335" d="M12 5.9c1.5 0 2.8.5 3.8 1.5l2.8-2.8A10 10 0 0 0 3.1 7.4L6.4 10c.8-2.4 3-4.1 5.6-4.1z"/></svg>
+              Google
+            </button>
+          </div>
+          <p class="mw-social-nota">Entrar com Apple ou Google chega <strong>em breve</strong>.</p>
         </form>
 
         <!-- CRIAR CONTA -->
@@ -3616,6 +3634,10 @@ body.light .mw-faceid-gate-card p{color:#526988}
 
           <label for="newPass">Senha</label>
           <div class="mwv2-input-wrap"><input id="newPass" type="password" required placeholder="Senha"><button class="toggle" id="toggleNewPass" type="button" aria-label="Mostrar ou ocultar senha">◌</button></div>
+          <div class="mw-forca-senha" id="mwForcaSenha" hidden>
+            <div class="mw-forca-trilho"><i id="mwForcaBarra"></i></div>
+            <span class="mw-forca-texto" id="mwForcaTexto" aria-live="polite"></span>
+          </div>
 
           <!-- Campo-armadilha: invisível pra gente (fora da tela, sem
                label lida por leitor de tela), mas um robô que preenche
@@ -4026,6 +4048,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
         <button type="button" data-footer-link="privacidade">Privacidade</button>
         <button type="button" data-footer-link="termos">Termos</button>
         <button type="button" data-footer-link="ajuda">Ajuda</button>
+        <button type="button" data-footer-link="sobre">Sobre</button>
         <button type="button" id="mwAppFooterSupport">Suporte</button>
       </nav>
       <div class="mw-app-footer-social">
@@ -18504,8 +18527,12 @@ body.light .mw-transfere-nota b{color:#0b1830}
      nenhum clique ligado a ele — não fazia nada. Reaproveita as
      mesmas classes .modal/.modal-box já usadas no resto do app (ver
      authModal, no login), então não precisa de CSS novo. */
-  var btn = document.querySelector('[data-footer-link="privacidade"]');
-  if (!btn) return;
+  /* querySelectorAll, não querySelector: além do botão do rodapé existe
+     agora um link "Política de Privacidade" dentro de Configurações ›
+     Privacidade, e ele aparece ANTES no DOM — com o singular, o clique
+     ficava preso nesse link e o botão do rodapé parava de responder. */
+  var botoes = document.querySelectorAll('[data-footer-link="privacidade"]');
+  if (!botoes.length) return;
 
   function abre(){
     var m = document.getElementById('mwPrivacidadeModal');
@@ -18534,7 +18561,86 @@ body.light .mw-transfere-nota b{color:#0b1830}
     });
   }
 
-  btn.addEventListener('click', abre);
+  botoes.forEach(function(b){ b.addEventListener('click', abre); });
+})();
+</script>
+<script id="mw-termos-ajuda-sobre-js">
+(function(){
+  'use strict';
+  /* "Termos" e "Ajuda" existiam no rodapé só como botão morto — sem
+     clique, sem conteúdo. "Sobre" nem existia. Os três agora usam
+     exatamente o mesmo padrão do modal de Privacidade logo acima
+     (classes .modal/.modal-box já existentes, nenhum CSS novo).
+     Conteúdo escrito na régua do resto do app: o que é verdade sobre
+     este projeto, sem inventar garantia, certificação ou promessa de
+     disponibilidade que não existe. */
+  var PAGINAS = {
+    termos: {
+      titulo: 'Termos de uso',
+      html:
+        '<p><strong>O que é este serviço:</strong> o Mateus Workspace é um app para organizar a vida acadêmica — disciplinas, atividades, projetos, prazos e anotações. É um projeto pessoal, em desenvolvimento contínuo, oferecido gratuitamente e no estado em que se encontra.</p>' +
+        '<p><strong>Sua conta:</strong> você é responsável por manter sua senha em segredo e pelo que é feito na sua conta. Se achar que alguém acessou sua conta, troque a senha em Configurações › Conta e saia dos outros aparelhos.</p>' +
+        '<p><strong>O que você cria é seu:</strong> disciplinas, anotações, projetos e arquivos que você registra continuam sendo seus. Não usamos esse conteúdo para nenhuma outra finalidade além de mostrá-lo de volta pra você dentro do app.</p>' +
+        '<p><strong>Uso responsável:</strong> não use o Workspace para armazenar conteúdo ilegal, nem para tentar derrubar, invadir ou sobrecarregar o serviço.</p>' +
+        '<p><strong>Sem garantia de disponibilidade:</strong> como é um projeto em evolução, o serviço pode ficar fora do ar, mudar de funcionamento ou ser descontinuado. Por isso existe a exportação de backup em Configurações › Privacidade — vale a pena guardar uma cópia dos seus dados de vez em quando.</p>' +
+        '<p><strong>Mudanças:</strong> estes termos podem mudar conforme o app evolui. A versão vigente é sempre a que está aqui.</p>'
+    },
+    ajuda: {
+      titulo: 'Ajuda',
+      html:
+        '<p><strong>Como começar:</strong> em <em>Faculdade</em>, preencha sua instituição, curso e semestre. Depois cadastre suas matérias em <em>Disciplinas</em> — o dashboard passa a calcular seu progresso a partir delas.</p>' +
+        '<p><strong>Atividades e prazos:</strong> tudo que tem data (prova, entrega, trabalho) vira uma <em>Atividade</em>. O que está atrasado ou vence hoje ganha um selo automático na lista.</p>' +
+        '<p><strong>Esqueci minha senha:</strong> na tela de entrada, toque em “Esqueci minha senha”. O código de recuperação chega no e-mail cadastrado.</p>' +
+        '<p><strong>Instalar como aplicativo:</strong> em Configurações › Aplicativo, toque em “Instalar aplicativo”. No iPhone, use o botão de compartilhar do Safari › “Adicionar à Tela de Início”.</p>' +
+        '<p><strong>Minha conta não aparece no app instalado:</strong> no iPhone, o app da tela de início guarda os dados separado do Safari. Use Configurações › Aplicativo › “Usar a mesma conta no app” pra levar a conta de um lado ao outro.</p>' +
+        '<p><strong>Perdi alguma coisa / quero uma cópia:</strong> Configurações › Privacidade › “Exportar backup” gera um arquivo com tudo que está salvo.</p>' +
+        '<p><strong>Não achou aqui?</strong> Abra um chamado pelo <button type="button" data-abre-suporte style="all:unset;cursor:pointer;color:var(--blue2);text-decoration:underline">Suporte</button>.</p>'
+    },
+    sobre: {
+      titulo: 'Sobre o Workspace',
+      html:
+        '<p>O <strong>Mateus Workspace</strong> nasceu como um jeito de organizar a vida universitária inteira num lugar só, em vez de espalhar prazos entre bloco de notas, calendário e grupos de mensagem.</p>' +
+        '<p>Hoje ele reúne disciplinas, atividades, projetos, anotações, calendário acadêmico e a <strong>Nyc AI</strong>, uma assistente para ajudar a organizar os estudos.</p>' +
+        '<p><strong>Como seus dados funcionam:</strong> ficam salvos na sua conta (no Supabase) e também localmente no navegador, pra que o app abra mesmo com a internet ruim. Detalhes em <button type="button" data-abre-privacidade style="all:unset;cursor:pointer;color:var(--blue2);text-decoration:underline">Privacidade</button>.</p>' +
+        '<p><strong>Em desenvolvimento:</strong> é um projeto pessoal, melhorado continuamente. Algumas áreas aparecem marcadas como “em breve” justamente porque ainda não estão prontas — preferimos avisar a fingir que funcionam.</p>'
+    }
+  };
+
+  function abrePagina(chave){
+    var pagina = PAGINAS[chave];
+    if (!pagina) return;
+    var m = document.getElementById('mwPaginaInfoModal');
+    if (!m) {
+      m = document.createElement('div');
+      m.id = 'mwPaginaInfoModal';
+      m.className = 'modal';
+      document.body.appendChild(m);
+    }
+    m.innerHTML =
+      '<div class="modal-box auth-modal-card">' +
+        '<div class="modal-head"><h3>' + pagina.titulo + '</h3><button class="close" data-close>×</button></div>' +
+        '<div style="padding:4px 4px 8px;font-size:13px;line-height:1.6;color:var(--text)">' + pagina.html + '</div>' +
+      '</div>';
+    m.classList.remove('hidden');
+    function fecha(){ m.classList.add('hidden'); }
+    m.querySelector('[data-close]').onclick = fecha;
+    var suporte = m.querySelector('[data-abre-suporte]');
+    if (suporte) suporte.addEventListener('click', function(){
+      fecha();
+      document.getElementById('mwAppFooterSupport')?.click();
+    });
+    var privacidade = m.querySelector('[data-abre-privacidade]');
+    if (privacidade) privacidade.addEventListener('click', function(){
+      fecha();
+      document.querySelector('[data-footer-link="privacidade"]')?.click();
+    });
+  }
+
+  Object.keys(PAGINAS).forEach(function(chave){
+    document.querySelectorAll('[data-footer-link="' + chave + '"]').forEach(function(btn){
+      btn.addEventListener('click', function(){ abrePagina(chave); });
+    });
+  });
 })();
 </script>
 <script id="mw-sair-outros-js">
@@ -21175,6 +21281,106 @@ body.light #app .mw-reference-nav button[data-view="admin"] .nav-icon{background
 })();
 </script>
 
+<style id="mw-forca-senha-e-social">
+/* Força da senha: barra fina abaixo do campo, três estados. Cor
+   semântica (vermelho/âmbar/verde) em vez do azul da marca, porque
+   aqui a cor É a informação, não decoração. */
+.mw-forca-senha{display:flex;align-items:center;gap:10px;margin:-2px 0 10px}
+.mw-forca-trilho{flex:1;height:4px;border-radius:99px;background:rgba(255,255,255,.10);overflow:hidden}
+.mw-forca-trilho i{display:block;height:100%;width:0;border-radius:99px;background:#f87171;transition:width .25s ease,background .25s ease}
+.mw-forca-senha[data-nivel="media"] .mw-forca-trilho i{background:#fbbf24}
+.mw-forca-senha[data-nivel="forte"] .mw-forca-trilho i{background:#34d399}
+.mw-forca-texto{font-size:11.5px;font-weight:600;color:#f87171;min-width:52px;text-align:right}
+.mw-forca-senha[data-nivel="media"] .mw-forca-texto{color:#fbbf24}
+.mw-forca-senha[data-nivel="forte"] .mw-forca-texto{color:#34d399}
+body.light .mw-forca-trilho{background:rgba(15,35,70,.12)}
+@media(prefers-reduced-motion:reduce){.mw-forca-trilho i{transition:none}}
+
+/* Entrada social — presente, mas honestamente desabilitada até existir
+   OAuth de verdade. */
+.mw-social-sep{display:flex;align-items:center;gap:12px;margin:14px 0 10px;color:rgba(220,228,255,.42);font-size:11.5px}
+.mw-social-sep::before,.mw-social-sep::after{content:"";flex:1;height:1px;background:rgba(255,255,255,.12)}
+body.light .mw-social-sep{color:rgba(15,35,70,.45)}
+body.light .mw-social-sep::before,body.light .mw-social-sep::after{background:rgba(15,35,70,.14)}
+/* Duas colunas, não empilhados: em pé, os dois botões + separador
+   estouravam a altura do card de login e o rótulo quebrava em duas
+   linhas. Lado a lado cabem folgados e o aviso "em breve" vira uma
+   linha só embaixo, em vez de um selo repetido em cada botão. */
+.mw-social-lista{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mw-social-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:10px 12px;border-radius:12px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.045);
+  color:rgba(233,240,255,.62);
+  font-size:13px;font-weight:600;
+  cursor:not-allowed;
+}
+.mw-social-btn svg{flex:none;opacity:.75}
+.mw-social-nota{margin:8px 0 0;font-size:11.5px;line-height:1.5;text-align:center;color:rgba(220,228,255,.45)}
+.mw-social-nota strong{color:#c4b5fd;font-weight:700}
+body.light .mw-social-btn{background:rgba(15,35,70,.035);border-color:rgba(15,35,70,.12);color:rgba(15,35,70,.6)}
+body.light .mw-social-nota{color:rgba(15,35,70,.5)}
+body.light .mw-social-nota strong{color:#6d28d9}
+</style>
+<script id="mw-forca-senha-e-social-js">
+(function(){
+  'use strict';
+  var campo = document.getElementById('newPass');
+  var caixa = document.getElementById('mwForcaSenha');
+  var barra = document.getElementById('mwForcaBarra');
+  var texto = document.getElementById('mwForcaTexto');
+
+  if (campo && caixa && barra && texto) {
+    /* Pontuação simples e explicável, não um "score" mágico: comprimento
+       conta mais (é o que de fato dificulta um ataque de força bruta) e
+       cada tipo de caractere diferente soma um pouco. O mínimo real do
+       cadastro continua sendo 6 caracteres — isto aqui é orientação
+       visual, não uma segunda regra de validação. */
+    function avalia(senha){
+      if (!senha) return null;
+      var pontos = 0;
+      if (senha.length >= 6) pontos++;
+      if (senha.length >= 10) pontos++;
+      if (senha.length >= 14) pontos++;
+      if (/[a-z]/.test(senha) && /[A-Z]/.test(senha)) pontos++;
+      if (/\d/.test(senha)) pontos++;
+      if (/[^A-Za-z0-9]/.test(senha)) pontos++;
+      if (senha.length < 6) return { nivel: 'fraca', rotulo: 'Fraca', pct: 22 };
+      if (pontos <= 2) return { nivel: 'fraca', rotulo: 'Fraca', pct: 33 };
+      if (pontos <= 4) return { nivel: 'media', rotulo: 'Média', pct: 66 };
+      return { nivel: 'forte', rotulo: 'Forte', pct: 100 };
+    }
+    function pinta(){
+      var r = avalia(campo.value);
+      if (!r) { caixa.hidden = true; return; }
+      caixa.hidden = false;
+      caixa.setAttribute('data-nivel', r.nivel);
+      barra.style.width = r.pct + '%';
+      texto.textContent = r.rotulo;
+    }
+    campo.addEventListener('input', pinta);
+    pinta();
+  }
+
+  /* Clique nos botões sociais: eles já nascem disabled (o navegador nem
+     dispara o evento), mas o listener fica aqui pro caso de alguém
+     habilitar via teclado/leitor de tela — responde com a verdade em vez
+     de simular um login.
+     Escopado em .mw-social-btn de propósito: o rodapé já tem botões de
+     Instagram/Facebook com data-social próprio, e um seletor solto
+     roubaria o clique deles. */
+  document.querySelectorAll('.mw-social-btn[data-social]').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      var nome = btn.getAttribute('data-social') === 'apple' ? 'Apple' : 'Google';
+      if (typeof window.notify === 'function') {
+        window.notify('Entrar com ' + nome + ' ainda não está disponível.', true);
+      }
+    });
+  });
+})();
+</script>
 <style id="mw-perfil-config-separados">
 /* Cabeçalhos de categoria dentro de Configurações (Conta, Aparência,
    Notificações, Segurança, IA, Privacidade, Aplicativo) — reaproveitam
