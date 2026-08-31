@@ -1,5 +1,11 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v34: desfaz a v33 — a lente na barra da Nyc AI foi mal-entendido
+   (o pedido "chat, praticamente igual" era só descrevendo o vídeo de
+   referência do WhatsApp, um app de chat, não pedindo pra colocar na
+   Nyc AI). A lente continua só na barra de baixo, como na v32.
+   window.mwCriaLenteVidro segue genérica (aceita qualquer barra), só
+   não é mais chamada pra .mateus-ai-form. */
 /* v33: a mesma lente de vidro arrastável (v32) agora também na barra de
    digitar da Nyc AI (.mateus-ai-form), pedido explícito pra ficar
    "praticamente igual" nos dois lugares. window.mwCriaLenteVidro virou
@@ -128,7 +134,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v33';
+const CACHE_NAME = 'mw-shell-v34';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

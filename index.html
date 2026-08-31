@@ -5576,7 +5576,7 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
     queue.push(t); if(input) input.value='';
     processQueue();
   };
-  const show=()=>{modal.classList.remove('hidden','is-closing');modal.setAttribute('aria-hidden','false');setTimeout(()=>input.focus(),320);window.mwCriaLenteVidro?.(form)};
+  const show=()=>{modal.classList.remove('hidden','is-closing');modal.setAttribute('aria-hidden','false');setTimeout(()=>input.focus(),320)};
   const hide=()=>{if(modal.classList.contains('hidden')||modal.classList.contains('is-closing'))return;modal.classList.add('is-closing');modal.setAttribute('aria-hidden','true');try{speechSynthesis.cancel()}catch(e){}setTimeout(()=>{modal.classList.add('hidden');modal.classList.remove('is-closing');},180)};
   open.addEventListener('click',show); close.addEventListener('click',hide);
   modal.addEventListener('click',e=>{if(e.target===modal)hide()});
@@ -8566,11 +8566,12 @@ img,svg,video,canvas{max-width:100%}
      inválida pra ele) e a primeira continua valendo: a lente não
      quebra, só fica um círculo de vidro liso em vez de deformar.
 
-     window.mwCriaLenteVidro(container) é o ponto único — pedido depois
-     pra Nyc AI também ter a mesma lente na barra de digitar
-     (.mateus-ai-form), "praticamente igual" à da barra de baixo. Cada
-     chamada cria a SUA lente (uma por container), reaproveitando o
-     mesmo filtro SVG (ele só precisa existir uma vez no documento). */
+     window.mwCriaLenteVidro(container) recebe qualquer barra — feita
+     genérica de propósito, mesmo só sendo chamada aqui pra
+     #mwBottomNav por enquanto, pra dar pra reaproveitar em outro lugar
+     sem reescrever a lógica. Cada chamada cria a SUA lente (uma por
+     container), reaproveitando o mesmo filtro SVG (ele só precisa
+     existir uma vez no documento). */
   window.mwCriaLenteVidro = function(container){
     if (!container || container.querySelector('.mw-lente-vidro')) return;
 
@@ -15171,17 +15172,11 @@ html body.light #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar::after{
 
 /* Lente de vidro arrastável — ver window.mwCriaLenteVidro logo depois
    da criação de #mwBottomNav (é lá que mwLenteFiltroSvg é criado) pra
-   entender o filtro. Genérica de propósito (não presa a #mwBottomNav):
-   a Nyc AI usa a mesma, na barra de digitar (.mateus-ai-form) — mesmo
-   tamanho fixo nas duas, pra ficar "praticamente igual" nos dois
-   lugares em vez de herdar uma variável (--mw-icon) que só existe na
-   barra de baixo.
-
-   position:relative é o que faz a lente (position:absolute) se
-   ancorar NESTA barra, e não em algum ancestral mais acima — sem
-   isso a matemática do arraste (calculada contra o retângulo desta
-   barra, em mw-cria-lente-vidro) e o que aparece na tela discordariam. */
-html body .mateus-ai-form{position:relative}
+   entender o filtro. window.mwCriaLenteVidro(container) é genérica de
+   propósito (recebe qualquer barra), mas por enquanto só é chamada
+   pra #mwBottomNav — tamanho fixo (64px) em vez de herdar a variável
+   --mw-icon, então dá pra reaproveitar em outra barra no futuro sem
+   mexer aqui. */
 html body .mw-lente-vidro{
   position:absolute;top:50%;left:50%;
   width:64px;height:64px;
