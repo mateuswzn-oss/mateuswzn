@@ -5576,7 +5576,7 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
     queue.push(t); if(input) input.value='';
     processQueue();
   };
-  const show=()=>{modal.classList.remove('hidden','is-closing');modal.setAttribute('aria-hidden','false');setTimeout(()=>input.focus(),320)};
+  const show=()=>{modal.classList.remove('hidden','is-closing');modal.setAttribute('aria-hidden','false');setTimeout(()=>input.focus(),320);window.mwCriaLenteVidro?.(form)};
   const hide=()=>{if(modal.classList.contains('hidden')||modal.classList.contains('is-closing'))return;modal.classList.add('is-closing');modal.setAttribute('aria-hidden','true');try{speechSynthesis.cancel()}catch(e){}setTimeout(()=>{modal.classList.add('hidden');modal.classList.remove('is-closing');},180)};
   open.addEventListener('click',show); close.addEventListener('click',hide);
   modal.addEventListener('click',e=>{if(e.target===modal)hide()});
@@ -8547,7 +8547,7 @@ img,svg,video,canvas{max-width:100%}
      LENTE DE VIDRO ARRASTÁVEL — distorção de verdade, não só blur
      ============================================================
      Pedido explícito, com vídeo de referência mostrando a lente do
-     WhatsApp/iOS: um círculo que a pessoa arrasta sobre a barra e o
+     WhatsApp/iOS: um círculo que a pessoa arrasta sobre uma barra e o
      que está atrás DOBRA visivelmente perto da borda — diferente do
      resto da barra, que só borra (blur) o que está atrás.
 
@@ -8564,9 +8564,15 @@ img,svg,video,canvas{max-width:100%}
      distorção DEPOIS — no navegador que não entende url() como filtro
      válido, a segunda declaração é ignorada inteira (sintaxe
      inválida pra ele) e a primeira continua valendo: a lente não
-     quebra, só fica um círculo de vidro liso em vez de deformar. */
-  (function(){
-    if (nav.querySelector('.mw-lente-vidro')) return;
+     quebra, só fica um círculo de vidro liso em vez de deformar.
+
+     window.mwCriaLenteVidro(container) é o ponto único — pedido depois
+     pra Nyc AI também ter a mesma lente na barra de digitar
+     (.mateus-ai-form), "praticamente igual" à da barra de baixo. Cada
+     chamada cria a SUA lente (uma por container), reaproveitando o
+     mesmo filtro SVG (ele só precisa existir uma vez no documento). */
+  window.mwCriaLenteVidro = function(container){
+    if (!container || container.querySelector('.mw-lente-vidro')) return;
 
     if (!document.getElementById('mwLenteFiltroSvg')) {
       var svgFiltro = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -8593,11 +8599,11 @@ img,svg,video,canvas{max-width:100%}
     var lente = document.createElement('div');
     lente.className = 'mw-lente-vidro';
     lente.setAttribute('aria-hidden', 'true');
-    nav.appendChild(lente);
+    container.appendChild(lente);
 
     var arrastando = false;
     function posiciona(clientX){
-      var r = nav.getBoundingClientRect();
+      var r = container.getBoundingClientRect();
       var raio = lente.offsetWidth / 2;
       var x = Math.max(raio, Math.min(r.width - raio, clientX - r.left));
       lente.style.left = x + 'px';
@@ -8616,24 +8622,25 @@ img,svg,video,canvas{max-width:100%}
     lente.addEventListener('pointerup', solta);
     lente.addEventListener('pointercancel', solta);
 
-    /* Posição inicial: sobre o primeiro botão, um convite discreto a
-       notar que dá pra arrastar (sem nenhum texto ensinando isso).
-       Este script roda na carga da página, quando a barra ainda está
-       com display:none (só aparece depois do login, condicionada a
-       mw-in-app/mw-standalone) — medir agora dava um retângulo zerado
-       e prendia a lente fora da tela pra sempre. Espera a barra ter
-       largura de verdade antes de posicionar, tentando de novo a cada
-       quadro por até 5s (sobra pro login mais lento). */
+    /* Posição inicial: sobre o primeiro item, um convite discreto a
+       notar que dá pra arrastar (sem nenhum texto ensinando isso). O
+       container pode estar com display:none nesse momento (a barra de
+       baixo só aparece depois do login; a barra da Nyc AI só quando o
+       modal abre) — medir com largura zero prendia a lente fora da
+       tela pra sempre. Espera o container ter largura de verdade,
+       tentando de novo a cada quadro por até 5s. */
     (function espera(tentativas){
-      var primeiro = nav.querySelector('button');
-      if (primeiro && nav.offsetWidth > 0) {
+      var primeiro = container.querySelector('button');
+      if (primeiro && container.offsetWidth > 0) {
         posiciona(primeiro.getBoundingClientRect().left + primeiro.offsetWidth / 2);
         return;
       }
       if (tentativas <= 0) return;
       requestAnimationFrame(function(){ espera(tentativas - 1); });
     })(300);
-  })();
+  };
+
+  window.mwCriaLenteVidro(nav);
 
   /* ============================================================
      MÁQUINA DE ESTADOS DA BOTTOM NAV — FONTE ÚNICA DE VERDADE
@@ -15162,11 +15169,22 @@ html body.light #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar::after{
   html body #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar{transition:none}
 }
 
-/* Lente de vidro arrastável — ver a IIFE logo depois da criação de
-   #mwBottomNav (a que cria mwLenteFiltroSvg) pra entender o filtro. */
-html body #mwBottomNav .mw-lente-vidro{
+/* Lente de vidro arrastável — ver window.mwCriaLenteVidro logo depois
+   da criação de #mwBottomNav (é lá que mwLenteFiltroSvg é criado) pra
+   entender o filtro. Genérica de propósito (não presa a #mwBottomNav):
+   a Nyc AI usa a mesma, na barra de digitar (.mateus-ai-form) — mesmo
+   tamanho fixo nas duas, pra ficar "praticamente igual" nos dois
+   lugares em vez de herdar uma variável (--mw-icon) que só existe na
+   barra de baixo.
+
+   position:relative é o que faz a lente (position:absolute) se
+   ancorar NESTA barra, e não em algum ancestral mais acima — sem
+   isso a matemática do arraste (calculada contra o retângulo desta
+   barra, em mw-cria-lente-vidro) e o que aparece na tela discordariam. */
+html body .mateus-ai-form{position:relative}
+html body .mw-lente-vidro{
   position:absolute;top:50%;left:50%;
-  width:calc(var(--mw-icon) * 2.15);height:calc(var(--mw-icon) * 2.15);
+  width:64px;height:64px;
   transform:translate(-50%,-50%);
   border-radius:50%;cursor:grab;touch-action:none;z-index:5;
   /* Fallback primeiro (todo navegador com backdrop-filter entende
@@ -15184,10 +15202,10 @@ html body #mwBottomNav .mw-lente-vidro{
    fallback acima só em quem entende backdrop-filter:url(#...). Ver o
    comentário grande no JS: onde não entende, o navegador ignora esta
    declaração inteira e o fallback simples continua valendo. */
-html body #mwBottomNav .mw-lente-vidro{
+html body .mw-lente-vidro{
   backdrop-filter:url(#mwLenteFiltro) saturate(130%)!important;
 }
-html body #mwBottomNav .mw-lente-vidro::before{
+html body .mw-lente-vidro::before{
   content:"";position:absolute;inset:-2px;border-radius:50%;pointer-events:none;
   background:conic-gradient(from 0deg,
     rgba(255,90,90,.32),rgba(255,215,90,.14),rgba(120,255,180,.22),
@@ -15196,11 +15214,11 @@ html body #mwBottomNav .mw-lente-vidro::before{
   -webkit-mask:radial-gradient(circle,transparent 60%,#000 68%,#000 90%,transparent 97%);
   mask:radial-gradient(circle,transparent 60%,#000 68%,#000 90%,transparent 97%);
 }
-html body #mwBottomNav .mw-lente-vidro.mw-arrastando{
+html body .mw-lente-vidro.mw-arrastando{
   cursor:grabbing;transform:translate(-50%,-50%) scale(1.06);
 }
 @media(prefers-reduced-motion:reduce){
-  html body #mwBottomNav .mw-lente-vidro{transition:none}
+  html body .mw-lente-vidro{transition:none}
 }
 </style>
 <script id="mw-liquid-nav-scroll">

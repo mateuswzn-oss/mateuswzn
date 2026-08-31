@@ -1,5 +1,12 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v33: a mesma lente de vidro arrastável (v32) agora também na barra de
+   digitar da Nyc AI (.mateus-ai-form), pedido explícito pra ficar
+   "praticamente igual" nos dois lugares. window.mwCriaLenteVidro virou
+   função reutilizável em vez de código só da barra de baixo; a chamada
+   pra Nyc AI acontece no show() do modal (só cria na primeira vez que
+   abre, idempotente). Sem trocar o nome do cache, quem já tinha o app
+   instalado continuaria sem a lente ali. */
 /* v32: lente de vidro arrastável na barra de baixo (pedido explícito,
    com vídeo de referência mostrando a lente do WhatsApp/iOS 26 Liquid
    Glass) — um círculo que a pessoa arrasta sobre a barra e o que está
@@ -121,7 +128,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v32';
+const CACHE_NAME = 'mw-shell-v33';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
