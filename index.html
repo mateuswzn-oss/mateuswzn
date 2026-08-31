@@ -3931,25 +3931,45 @@ body.light .mw-faceid-gate-card p{color:#526988}
         </form>
       </section>
     </section>
-    <section class="view" id="view-settings"><section class="card section"><div class="section-head"><h3>Configurações</h3><span>Perfil, preferências e sessão</span></div>
-      <div class="settings-group" id="mwContaGrupo"><h4>Conta</h4><p>Nome de usuário, e-mail e senha. Mudar qualquer um deles pede sua senha ou o código de acesso, porque são as três coisas com que se entra na conta.</p>
-        <div class="mw-conta-linha"><div class="mw-conta-campo"><label>Nome de usuário</label><input id="mwContaUsuario" type="text" readonly autocomplete="off"></div><button type="button" class="small-btn" id="mwContaTrocarUsuario">Alterar</button></div>
-        <div class="mw-conta-linha"><div class="mw-conta-campo"><label>E-mail</label><input id="mwContaEmail" type="email" readonly autocomplete="off"></div><button type="button" class="small-btn" id="mwContaTrocarEmail">Alterar</button></div>
-        <div class="mw-conta-linha"><div class="mw-conta-campo"><label>Senha</label><input id="mwContaSenha" type="password" value="••••••••" readonly autocomplete="off"></div><button type="button" class="small-btn" id="mwContaTrocarSenha">Alterar</button></div>
-        <div class="mw-conta-linha"><div class="mw-conta-campo"><label>Telefone</label><div class="mw-tel-exibicao" id="mwContaTelefoneExibicao"><span class="mw-tel-vazio" id="mwContaTelefoneVazio">Não cadastrado</span><span class="mw-tel-valor" id="mwContaTelefoneValor" hidden></span><span class="mw-tel-badge" id="mwContaTelefoneBadge" hidden>Aguardando confirmação</span></div></div><button type="button" class="small-btn" id="mwContaTrocarTelefone">Adicionar</button></div>
-        <p class="form-error" id="mwContaStatus" hidden></p></div>
-        <div class="settings-group"><h4>Dados do perfil</h4><p>Como você aparece no Workspace. O nome de exibição pode ser trocado a qualquer momento, sem senha.</p><div class="profile-form"><div class="form-field"><label>Nome de exibição</label><input id="profileName" type="text" placeholder="Mateus"></div><div class="form-field"><label>E-mail</label><input id="profileEmail" type="email" readonly placeholder="seu@email.com" title="O e-mail da conta muda no grupo Conta, acima."></div><div class="form-field full profile-photo-field">
+    <section class="view" id="view-profile"><section class="card section"><div class="section-head"><h3>Perfil</h3><span>Como você aparece no Workspace</span></div>
+      <div class="mw-perfil-resumo">
+        <div class="mw-perfil-chip"><span>Usuário</span><strong id="mwPerfilResumoUsuario">—</strong><a href="javascript:void(0)" data-ir-config>Alterar em Configurações</a></div>
+        <div class="mw-perfil-chip"><span>E-mail</span><strong id="mwPerfilResumoEmail">—</strong><a href="javascript:void(0)" data-ir-config>Alterar em Configurações</a></div>
+        <div class="mw-perfil-chip"><span>Curso</span><strong id="mwPerfilResumoCurso">Seu curso</strong><a href="javascript:void(0)" data-ir-faculdade>Editar em Faculdade</a></div>
+        <div class="mw-perfil-chip"><span>Instituição</span><strong id="mwPerfilResumoInstituicao">—</strong><a href="javascript:void(0)" data-ir-faculdade>Editar em Faculdade</a></div>
+        <div class="mw-perfil-chip"><span>Semestre</span><strong id="mwPerfilResumoSemestre">1º</strong><a href="javascript:void(0)" data-ir-faculdade>Editar em Faculdade</a></div>
+      </div>
+      <div class="settings-group"><h4>Nome e foto</h4><p>Como você aparece no Workspace. O nome de exibição pode ser trocado a qualquer momento, sem senha.</p><div class="profile-form"><div class="form-field"><label>Nome de exibição</label><input id="profileName" type="text" placeholder="Mateus"></div><div class="form-field"><label>E-mail</label><input id="profileEmail" type="email" readonly placeholder="seu@email.com" title="O e-mail da conta muda em Configurações › Conta."></div><div class="form-field full profile-photo-field">
 <label>Foto de perfil</label>
 <div class="profile-photo-card" id="profilePhotoCard">
   <div class="profile-avatar-preview" id="profileAvatarPreview"><span id="profileAvatarInitials">MW</span></div>
   <div class="profile-photo-copy"><strong>Foto do perfil</strong><small>Escolha uma foto e ajuste o enquadramento antes de salvar.</small><div class="profile-photo-actions"><button class="small-btn" type="button" id="chooseProfilePhoto">Escolher foto</button><button class="small-btn" type="button" id="editProfilePhoto">Ajustar</button><button class="small-btn danger" type="button" id="removeProfilePhoto">Remover</button></div><input id="profilePhotoFile" type="file" accept="image/*" hidden><input id="profilePhoto" type="hidden"></div>
 </div>
 </div></div><div class="profile-actions"><button class="save-btn" id="saveProfile">Salvar perfil</button></div></div>
-      <div class="settings-group hidden" id="legacyThemeGroup"><h4>Preferências</h4><div class="theme-row"><button class="theme-btn" id="darkModeBtn">Modo Escuro</button><button class="theme-btn" id="lightModeBtn">Modo Claro</button></div></div>
+    </section></section>
+    <section class="view" id="view-settings"><section class="card section"><div class="section-head"><h3>Configurações</h3><span>Conta, aparência e segurança</span></div>
+      <h3 class="mw-settings-categoria">Conta</h3>
+      <div class="settings-group" id="mwContaGrupo"><h4>Informações de acesso</h4><p>Nome de usuário, e-mail e senha. Mudar qualquer um deles pede sua senha ou o código de acesso, porque são as três coisas com que se entra na conta.</p>
+        <div class="mw-conta-linha"><div class="mw-conta-campo"><label>Nome de usuário</label><input id="mwContaUsuario" type="text" readonly autocomplete="off"></div><button type="button" class="small-btn" id="mwContaTrocarUsuario">Alterar</button></div>
+        <div class="mw-conta-linha"><div class="mw-conta-campo"><label>E-mail</label><input id="mwContaEmail" type="email" readonly autocomplete="off"></div><button type="button" class="small-btn" id="mwContaTrocarEmail">Alterar</button></div>
+        <div class="mw-conta-linha"><div class="mw-conta-campo"><label>Senha</label><input id="mwContaSenha" type="password" value="••••••••" readonly autocomplete="off"></div><button type="button" class="small-btn" id="mwContaTrocarSenha">Alterar</button></div>
+        <div class="mw-conta-linha"><div class="mw-conta-campo"><label>Telefone</label><div class="mw-tel-exibicao" id="mwContaTelefoneExibicao"><span class="mw-tel-vazio" id="mwContaTelefoneVazio">Não cadastrado</span><span class="mw-tel-valor" id="mwContaTelefoneValor" hidden></span><span class="mw-tel-badge" id="mwContaTelefoneBadge" hidden>Aguardando confirmação</span></div></div><button type="button" class="small-btn" id="mwContaTrocarTelefone">Adicionar</button></div>
+        <p class="form-error" id="mwContaStatus" hidden></p></div>
       <div class="settings-group"><h4>Sessão</h4><p>Sua conta fica guardada neste navegador. Ao sair, será preciso entrar de novo com seu usuário e senha.</p><div class="profile-actions"><button class="small-btn mw-logout-btn" id="logout">Sair</button><button class="small-btn" id="mwSairOutrosAparelhos">Sair de todos os outros aparelhos</button></div><p class="form-error" id="mwSairOutrosStatus" hidden></p></div>
-      <div class="settings-group" id="mwFaceIdGroup" hidden><h4>Segurança</h4><p>Use o Face ID deste iPhone/iPad para entrar no Workspace sem digitar nada.</p><div class="mw-faceid-row"><span class="mw-faceid-row-label">Entrar com Face ID</span><button type="button" class="mw-faceid-switch" id="mwFaceIdToggle" role="switch" aria-checked="false" aria-label="Entrar com Face ID"><i></i></button></div><p class="mw-faceid-limite">Atalho só deste aparelho: agiliza a entrada sem precisar de senha aqui. A proteção da sua conta continua sendo a senha (e a recuperação por e-mail), não o Face ID.</p><p class="form-error" id="mwFaceIdStatus" hidden></p></div>
+      <h3 class="mw-settings-categoria">Aparência</h3>
+      <div class="settings-group" id="legacyThemeGroup"><h4>Tema</h4><p>Escolha entre escuro e claro — o mesmo alternador do topo, aqui também.</p><div class="theme-row"><button class="theme-btn" id="darkModeBtn">Modo Escuro</button><button class="theme-btn" id="lightModeBtn">Modo Claro</button></div></div>
+      <h3 class="mw-settings-categoria">Notificações</h3>
+      <div class="settings-group"><h4>Lembretes e prazos</h4><p class="mw-settings-em-breve">Notificações de atividades e prazos ainda não existem neste navegador — em breve.</p></div>
+      <h3 class="mw-settings-categoria">Segurança</h3>
+      <div class="settings-group" id="mwFaceIdGroup" hidden><h4>Face ID</h4><p>Use o Face ID deste iPhone/iPad para entrar no Workspace sem digitar nada.</p><div class="mw-faceid-row"><span class="mw-faceid-row-label">Entrar com Face ID</span><button type="button" class="mw-faceid-switch" id="mwFaceIdToggle" role="switch" aria-checked="false" aria-label="Entrar com Face ID"><i></i></button></div><p class="mw-faceid-limite">Atalho só deste aparelho: agiliza a entrada sem precisar de senha aqui. A proteção da sua conta continua sendo a senha (e a recuperação por e-mail), não o Face ID.</p><p class="form-error" id="mwFaceIdStatus" hidden></p></div>
         <div class="settings-group" id="mwPinGroup"><h4>Código de acesso</h4><p>Um código de 6 dígitos para destravar o Workspace ao reabrir. Funciona em qualquer aparelho, com ou sem Face ID.</p><div class="mw-pin-row"><span class="mw-pin-estado" id="mwPinEstado">Nenhum código definido.</span><div class="mw-pin-acoes"><button type="button" class="small-btn" id="mwPinDefinir">Definir código</button><button type="button" class="small-btn mw-pin-remover" id="mwPinRemover" hidden>Remover</button></div></div><p class="form-error" id="mwPinStatus" hidden></p></div>
-      <div class="settings-group"><h4>Aplicativo</h4><p id="mwSettingsInstallDesc">Adicione o Mateus Workspace à tela de início para abrir como um app.</p><div class="profile-actions"><button class="small-btn" id="mwSettingsInstallBtn">Instalar aplicativo</button></div></div>
+      <h3 class="mw-settings-categoria">IA</h3>
+      <div class="settings-group"><h4>Nyc AI</h4><p class="mw-settings-em-breve">Preferências de voz, histórico e comportamento da Nyc AI ainda não existem — em breve.</p></div>
+      <h3 class="mw-settings-categoria">Privacidade</h3>
+      <div class="settings-group"><h4>Backup</h4><p>Seus dados ficam salvos só neste navegador. Exporte um arquivo de backup pra não perder nada ao trocar de aparelho ou limpar os dados do navegador.</p><div class="profile-actions"><button class="small-btn" id="exportBackup">Exportar backup</button><button class="small-btn" id="importBackupBtn">Importar backup</button><input type="file" id="importBackupFile" accept="application/json" hidden></div><div class="form-error" id="importBackupError"></div></div>
+      <div class="settings-group"><h4>Dados</h4><p>Remove disciplinas, atividades, projetos e anotações salvos neste navegador. Veja também a <a href="javascript:void(0)" data-footer-link="privacidade">Política de Privacidade</a>.</p><button class="small-btn danger mw-clear-btn" id="clearAll">Apagar todos os dados</button></div>
+      <h3 class="mw-settings-categoria">Aplicativo</h3>
+      <div class="settings-group"><h4>Instalação</h4><p id="mwSettingsInstallDesc">Adicione o Mateus Workspace à tela de início para abrir como um app.</p><div class="profile-actions"><button class="small-btn" id="mwSettingsInstallBtn">Instalar aplicativo</button></div></div>
       <div class="settings-group" id="mwTransfereGrupo"><h4>Usar a mesma conta no app</h4>
         <p id="mwTransfereOnde" class="mw-transfere-onde"></p>
         <ol class="mw-transfere-passos"><li id="mwPasso1"><b>No Safari:</b> toque em <b>Copiar código</b>.</li><li id="mwPasso2"><b>No app da tela de início:</b> abra Configurações e toque em <b>Colar código</b>.</li><li>Entre com o <b>mesmo usuário e senha</b> de sempre.</li></ol><p class="mw-transfere-nota">O código é uma <b>cópia do momento</b>, não uma sincronização. Mudou a foto ou criou uma disciplina depois de transferir? Copie de novo e cole do outro lado.</p>
@@ -3957,8 +3977,6 @@ body.light .mw-faceid-gate-card p{color:#526988}
         <textarea id="mwTransfereCodigo" rows="3" readonly hidden aria-label="Código da conta"></textarea>
         <p class="form-error" id="mwTransfereStatus" hidden></p>
         <details class="mw-transfere-porque"><summary>Por que preciso fazer isso?</summary><p>No iPhone, o app da tela de início guarda os dados <b>separado</b> do Safari. É assim que o iOS funciona e nenhum ajuste no site muda isso: a conta criada num não existe no outro. O código leva a conta de um lado para o outro. Ele não carrega sua senha — quem receber ainda precisa dela para entrar — mas leva seus dados do Workspace, então trate como coisa sua.</p></details></div>
-        <div class="settings-group"><h4>Backup</h4><p>Seus dados ficam salvos só neste navegador. Exporte um arquivo de backup pra não perder nada ao trocar de aparelho ou limpar os dados do navegador.</p><div class="profile-actions"><button class="small-btn" id="exportBackup">Exportar backup</button><button class="small-btn" id="importBackupBtn">Importar backup</button><input type="file" id="importBackupFile" accept="application/json" hidden></div><div class="form-error" id="importBackupError"></div></div>
-      <div class="settings-group"><h4>Dados</h4><p>Remove disciplinas, atividades, projetos e anotações salvos neste navegador.</p><button class="small-btn danger mw-clear-btn" id="clearAll">Apagar todos os dados</button></div>
     </section></section>
 
     <section class="view" id="view-admin">
@@ -4680,9 +4698,17 @@ $('#msButton').onclick=()=>{msStage='email';msAccount='';msTitle.textContent='En
 $('#msCancel').onclick=()=>msModal.classList.add('hidden');
 msForm.addEventListener('submit',e=>{e.preventDefault();const value=msEmail.value.trim();if(msStage==='email'){if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)){msError.textContent='Digite um endereço de e-mail válido.';return}msAccount=value;msStage='password';msTitle.textContent='Digite sua senha';msDescription.textContent='Conta: '+msAccount;msEmail.type='password';msEmail.value='';msEmail.placeholder='Senha';msEmail.autocomplete='current-password';msError.textContent='';msContinue.textContent='Entrar';setTimeout(()=>msEmail.focus(),40);return}if(value.length<1){msError.textContent='Digite sua senha para continuar.';return}msContinue.disabled=true;msContinue.textContent='Entrando...';setTimeout(()=>{msContinue.disabled=false;msModal.classList.add('hidden');enterApp();toast('Autenticação Microsoft simulada com sucesso')},800)});
 /* Navigation */
-function showView(view){$$('.view').forEach(v=>v.classList.remove('active'));$('#view-'+view)?.classList.add('active');$$('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===view));if(view==='settings')loadProfileFields();window.mwSyncBottomNavActive?.()}
+function showView(view){$$('.view').forEach(v=>v.classList.remove('active'));$('#view-'+view)?.classList.add('active');$$('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===view));if(view==='profile')loadProfileFields();window.mwSyncBottomNavActive?.()}
+// showView() vive dentro de uma IIFE — nunca foi de verdade um global,
+// apesar de outros scripts (inclusive um deles logo abaixo) já
+// assumirem "window.showView" como se existisse. Essa suposição sempre
+// falhava em silêncio (o `if(typeof oldShow==='function')` deles nunca
+// era verdadeiro); expor de propósito aqui faz esses pontos funcionarem
+// pela primeira vez, sem mudar nada pra quem já chamava showView() por
+// referência direta dentro desta mesma função.
+window.showView = showView;
 $$('#nav button').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
-$('#profileBtn').onclick=()=>showView('settings');$('#quickAdd').onclick=()=>openModal('subjects');
+$('#profileBtn').onclick=()=>showView('profile');$('#quickAdd').onclick=()=>openModal('subjects');
 /* Dynamic data */
 function progress(){if(!data.subjects.length)return 0;return Math.round(data.subjects.reduce((a,s)=>a+Number(s.progress||0),0)/data.subjects.length)}
 function empty(text){return `<div class="empty"><strong>${esc(text)}</strong><span>Use o botão + para começar.</span></div>`}
@@ -6492,9 +6518,13 @@ body.light #app .search-wrap input:focus{
       const data = raw ? JSON.parse(raw) : {};
       const p = data.profile || {};
       const name = String(p.name || 'Mateus').trim() || 'Mateus';
-      const email = String(p.email || 'Workspace local').trim() || 'Workspace local';
+      // #mwSidebarEmail, apesar do nome do id, é o subtítulo de CURSO em
+      // todo o resto do app (ver data.college.course) — essa era a única
+      // função ainda escrevendo o e-mail ali, uma ambiguidade que só não
+      // aparecia na prática por sorte de ordem de execução.
+      const curso = String((data.college && data.college.course) || '').trim() || 'Seu curso';
       if (nameEl) nameEl.textContent = name;
-      if (emailEl) emailEl.textContent = email;
+      if (emailEl) emailEl.textContent = curso;
       if (avatarEl) avatarEl.textContent = name.slice(0,2).toUpperCase();
     } catch {}
   };
@@ -6563,10 +6593,11 @@ body.light #app .search-wrap input:focus{
       if (avatar) avatar.textContent = name.slice(0,2).toUpperCase();
     } catch {}
   };
-  /* Mesmo caso do outro script: profileBtn é display:none no desktop,
-     então .click() nele é um no-op silencioso por spec. Invocar o
-     onclick diretamente contorna isso. */
-  profileSettings?.addEventListener('click', () => profileBtn?.onclick?.());
+  // Antes, o botão de engrenagem ("Abrir configurações") só reaproveitava
+  // o clique do avatar — os dois iam pro mesmo lugar porque Perfil e
+  // Configurações eram a mesma tela. Agora que são telas separadas, cada
+  // botão precisa ir pro seu próprio destino.
+  profileSettings?.addEventListener('click', () => window.showView?.('settings'));
   syncProfile();
   window.addEventListener('storage', syncProfile);
 })();
@@ -18732,6 +18763,20 @@ body.light #app .mw-reference-profile.mw-estado-ativo .mw-profile-main{
   background:linear-gradient(100deg,rgba(37,99,235,.13),rgba(124,92,255,.10))!important;
   border-color:rgba(37,99,235,.18)!important;
 }
+/* Mesmo tratamento pro botão de Configurações — agora tela própria,
+   separada do Perfil, precisa do mesmo destaque quando ativa. */
+#app .mw-reference-row#mwSidebarSettings.mw-estado-ativo{
+  color:#fff!important;
+  background:linear-gradient(100deg,rgba(102,224,255,.14),rgba(124,92,255,.16))!important;
+  border-color:rgba(102,224,255,.15)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 8px 22px rgba(20,45,120,.12)!important;
+}
+#app .mw-reference-row#mwSidebarSettings.mw-estado-ativo *{color:inherit!important}
+body.light #app .mw-reference-row#mwSidebarSettings.mw-estado-ativo{
+  color:#0b1830!important;
+  background:linear-gradient(100deg,rgba(37,99,235,.13),rgba(124,92,255,.10))!important;
+  border-color:rgba(37,99,235,.18)!important;
+}
 </style>
 <script id="mw-perfil-estado-real-js">
 /* ============================================================
@@ -18782,18 +18827,23 @@ body.light #app .mw-reference-profile.mw-estado-ativo .mw-profile-main{
 
     var view = app.querySelector('.view.active');
     var id = view ? view.id.replace('view-', '') : null;
-    /* Desktop: o Perfil É a view de configurações — o mesmo estado,
-       outra superfície. */
-    if (id === 'settings') return 'perfil';
+    /* Desktop: Perfil agora é a própria view "profile" (separada de
+       Configurações — antes as duas eram a mesma tela). */
+    if (id === 'profile') return 'perfil';
     return id;
   }
 
   function pintar(){
     var estado = ondeEstou();
     var noPerfil = estado === 'perfil';
+    var linhaConfig = document.getElementById('mwSidebarSettings');
 
     if (linhaPerfil) linhaPerfil.classList.toggle('mw-estado-ativo', noPerfil);
     if (botaoPerfil) botaoPerfil.setAttribute('aria-current', noPerfil ? 'page' : 'false');
+    // Configurações ganhou o mesmo tratamento de destaque, agora que é
+    // uma tela própria (antes ficava sem nada aceso, porque a marcação
+    // toda ia pro Perfil mesmo estando nas duas juntas).
+    if (linhaConfig) { linhaConfig.classList.toggle('mw-estado-ativo', estado === 'settings'); linhaConfig.setAttribute('aria-current', estado === 'settings' ? 'page' : 'false'); }
 
     /* Um ativo só, e a marca é DERIVADA do estado — não "tirada" numa
        hora e "reposta" noutra. A primeira versão disto só removia a
@@ -19178,7 +19228,7 @@ html body.mw-in-app.mw-tela-folha #app .main{padding-bottom:24px!important}
 (function(){
   var app = document.getElementById('app');
   if (!app || !window.MutationObserver) return;
-  var FOLHAS = ['view-settings', 'view-support', 'view-admin'];
+  var FOLHAS = ['view-profile', 'view-settings', 'view-support', 'view-admin'];
 
   function marcar(){
     var v = app.querySelector('.view.active');
@@ -21122,6 +21172,75 @@ body.light #app .mw-reference-nav button[data-view="admin"] .nav-icon{background
     campo.addEventListener('focus', fecha);
     campo.addEventListener('blur', abre);
   });
+})();
+</script>
+
+<style id="mw-perfil-config-separados">
+/* Cabeçalhos de categoria dentro de Configurações (Conta, Aparência,
+   Notificações, Segurança, IA, Privacidade, Aplicativo) — reaproveitam
+   os mesmos settings-group de sempre, só agrupados visualmente. */
+#view-settings .mw-settings-categoria{
+  margin:26px 0 6px!important;font-size:11.5px!important;font-weight:800!important;
+  letter-spacing:.07em!important;text-transform:uppercase!important;
+  color:var(--muted,#8b93a6)!important;
+}
+#view-settings .mw-settings-categoria:first-of-type{margin-top:4px!important}
+.mw-settings-em-breve{font-size:12.5px;color:var(--muted,#8b93a6);font-style:italic;margin:0}
+/* Resumo de identidade no topo do Perfil: cada chip mostra um dado real
+   (curso/instituição/semestre vêm de data.college; usuário/e-mail vêm da
+   mesma fonte que Configurações usa, window.mwConta.atual()) com um link
+   pro lugar certo de editar — sem duplicar o formulário de edição aqui. */
+.mw-perfil-resumo{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:16px 0 22px}
+.mw-perfil-chip{display:flex;flex-direction:column;gap:4px;padding:14px 16px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
+.mw-perfil-chip span{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted,#8b93a6)}
+.mw-perfil-chip strong{font-size:15px;color:var(--text,#eef2ff);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mw-perfil-chip a{font-size:11.5px;color:#7ec3ff;text-decoration:none;width:fit-content;margin-top:2px}
+.mw-perfil-chip a:hover{text-decoration:underline}
+body.light .mw-perfil-chip{background:rgba(15,35,70,.04);border-color:rgba(15,35,70,.10)}
+body.light .mw-perfil-chip strong{color:#0b1830}
+body.light .mw-perfil-chip a{color:#1d4ed8}
+</style>
+<script id="mw-perfil-config-separados-js">
+(function(){
+  'use strict';
+  function pintarResumoPerfil(){
+    var conta = window.mwConta && window.mwConta.atual();
+    var raw = {};
+    try { raw = JSON.parse(localStorage.getItem('mateusWorkspaceV4') || '{}'); } catch (e) {}
+    var college = raw.college || {};
+    var mapa = {
+      mwPerfilResumoUsuario: (conta && conta.username) || '—',
+      mwPerfilResumoEmail: (conta && conta.email) || '—',
+      mwPerfilResumoCurso: (college.course || '').trim() || 'Seu curso',
+      mwPerfilResumoInstituicao: (college.institution || '').trim() || '—',
+      mwPerfilResumoSemestre: (Number(college.semester) || 1) + 'º',
+    };
+    Object.keys(mapa).forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.textContent = mapa[id];
+    });
+  }
+  document.querySelectorAll('[data-ir-config]').forEach(function(a){
+    a.addEventListener('click', function(){ window.showView && window.showView('settings'); });
+  });
+  document.querySelectorAll('[data-ir-faculdade]').forEach(function(a){
+    a.addEventListener('click', function(){ window.showView && window.showView('college'); });
+  });
+  // A maioria dos cliques chama showView() por referência direta de
+  // closure (o onclick do #profileBtn, os botões de #nav), nunca
+  // passando por window.showView — então "encapsular" window.showView
+  // não pega a maioria das navegações reais. Observando .view.active
+  // (o mesmo padrão já usado por mw-perfil-estado-real-js e pelo botão
+  // de voltar) funciona não importa qual caminho levou até o Perfil.
+  var app = document.getElementById('app');
+  if (app) {
+    new MutationObserver(function(){
+      var ativa = app.querySelector('.view.active');
+      if (ativa && ativa.id === 'view-profile') pintarResumoPerfil();
+    }).observe(app, { subtree: true, attributes: true, attributeFilter: ['class'] });
+  }
+  window.addEventListener('storage', pintarResumoPerfil);
+  pintarResumoPerfil();
 })();
 </script>
 
