@@ -382,7 +382,7 @@ body.light{--bg:#efefeb;--bg2:#e6e6e1;--panel:rgba(255,255,252,.76);--panel2:rgb
 .workspace-instagram{margin:14px 14px 8px;position:relative;display:flex;justify-content:center}.workspace-instagram .login-social-bar{margin:0;width:62px;height:44px;box-shadow:none !important;background:#24272a;border-color:rgba(255,255,255,.09);backdrop-filter:none}.workspace-instagram .social-profile-btn{width:36px;height:36px;box-shadow:none !important;}.workspace-instagram .social-profile-popover{bottom:52px;background:#222528;box-shadow:none !important;backdrop-filter:none}
 .workspace-instagram .creator-animated{animation:none}
 /* College setup */
-.college-setup{display:grid;grid-template-columns:1.2fr .8fr .8fr;gap:12px;margin-top:16px}.college-setup .form-field{min-width:0}.college-setup input,.college-setup select{width:100%;height:42px;border-radius:12px;border:1px solid rgba(255,255,255,.09);background:#292c2f;color:var(--text);padding:0 12px;outline:none}.college-save{margin-top:12px}
+.college-setup{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:16px}.college-setup .form-field{min-width:0}.college-setup input,.college-setup select{width:100%;height:42px;border-radius:12px;border:1px solid rgba(255,255,255,.09);background:#292c2f;color:var(--text);padding:0 12px;outline:none}.college-save{margin-top:12px}
 @media(max-width:800px){.college-setup{grid-template-columns:1fr}.search-wrap:focus-within,.search-wrap.open{width:210px}.lecture-grid{grid-template-columns:1fr}}
 </style>
 
@@ -3791,7 +3791,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
     <div class="mw-reference-profile" id="mwSidebarProfile">
       <button type="button" class="mw-profile-main" id="mwSidebarProfileBtn" aria-label="Abrir perfil">
         <span class="mw-avatar-wrap" aria-hidden="true"><span class="mw-profile-avatar" id="mwSidebarAvatar">MW</span><span class="mw-online-dot"></span></span>
-        <span class="mw-profile-copy label"><strong id="mwSidebarName">Mateus</strong><small id="mwSidebarEmail">Engenharia de Software</small><span class="mw-online-label"><i class="mw-online-label-dot" aria-hidden="true"></i>Online</span></span>
+        <span class="mw-profile-copy label"><strong id="mwSidebarName">Mateus</strong><small id="mwSidebarEmail">Seu curso</small><span class="mw-online-label"><i class="mw-online-label-dot" aria-hidden="true"></i>Online</span></span>
       </button>
     </div>
 
@@ -3833,7 +3833,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
     </div>
   </aside>
   <main class="main">
-    <header class="topbar"><button type="button" class="mw-mobile-menu" id="mwMobileMenu" aria-label="Abrir menu"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><button type="button" class="mw-back-btn" id="mwBackBtn" aria-label="Voltar ao início" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg></button><div class="hello"><h2>Olá, Mateus!</h2><p>Quarto semestre • Engenharia de Software</p></div><div class="top-actions"><div class="search-wrap" id="searchWrap"><button type="button" class="search-icon icon-btn" id="searchToggle" aria-label="Pesquisar" title="Pesquisar (Ctrl+K)"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="m16.2 16.2 3.6 3.6"/></svg></button><input id="globalSearch" type="search" placeholder="Pesquisar..."></div><div class="mw-bell-wrap" style="position:relative"><button class="icon-btn bell-btn" id="notificationBtn" title="Notificações"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 2a6.5 6.5 0 0 0-6.5 6.5c0 4.6-1.8 6.6-2.4 7.2A1 1 0 0 0 4 17.8h16a1 1 0 0 0 .9-1.6c-.6-.6-2.4-2.6-2.4-7.2A6.5 6.5 0 0 0 12 2zm-1.6 18a1.6 1.6 0 0 0 3.2 0z"/></svg><span class="bell-dot"></span></button><div class="notification-menu hidden" id="notificationMenu"><strong>Notificações</strong><div id="notificationList"><div class="notification-item">Nada novo por agora.</div></div></div></div><button class="icon-btn mwv2-theme-btn" id="themeToggle" title="Alternar tema"><svg class="mwv2-icon-sun" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.5v2.4M12 19.1v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/></svg><span class="mwv2-moon-glow" aria-hidden="true"></span><svg class="mwv2-icon-moon" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z"/></svg><span class="mwv2-star s1" aria-hidden="true"></span><span class="mwv2-star s2" aria-hidden="true"></span></button><button class="icon-btn" id="quickAdd" title="Adicionar">＋</button><button class="mateus-ai-btn" id="mateusAiBtn" type="button" title="Abrir Nyc AI"><span>✦</span><span class="eva-label">Nyc AI</span></button><button class="profile-btn" id="profileBtn" title="Configurações do perfil">MW</button></div></header>
+    <header class="topbar"><button type="button" class="mw-mobile-menu" id="mwMobileMenu" aria-label="Abrir menu"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><button type="button" class="mw-back-btn" id="mwBackBtn" aria-label="Voltar ao início" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg></button><div class="hello"><h2>Olá, Mateus!</h2><p>1º semestre • Seu curso</p></div><div class="top-actions"><div class="search-wrap" id="searchWrap"><button type="button" class="search-icon icon-btn" id="searchToggle" aria-label="Pesquisar" title="Pesquisar (Ctrl+K)"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="m16.2 16.2 3.6 3.6"/></svg></button><input id="globalSearch" type="search" placeholder="Pesquisar..."></div><div class="mw-bell-wrap" style="position:relative"><button class="icon-btn bell-btn" id="notificationBtn" title="Notificações"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 2a6.5 6.5 0 0 0-6.5 6.5c0 4.6-1.8 6.6-2.4 7.2A1 1 0 0 0 4 17.8h16a1 1 0 0 0 .9-1.6c-.6-.6-2.4-2.6-2.4-7.2A6.5 6.5 0 0 0 12 2zm-1.6 18a1.6 1.6 0 0 0 3.2 0z"/></svg><span class="bell-dot"></span></button><div class="notification-menu hidden" id="notificationMenu"><strong>Notificações</strong><div id="notificationList"><div class="notification-item">Nada novo por agora.</div></div></div></div><button class="icon-btn mwv2-theme-btn" id="themeToggle" title="Alternar tema"><svg class="mwv2-icon-sun" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.5v2.4M12 19.1v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/></svg><span class="mwv2-moon-glow" aria-hidden="true"></span><svg class="mwv2-icon-moon" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z"/></svg><span class="mwv2-star s1" aria-hidden="true"></span><span class="mwv2-star s2" aria-hidden="true"></span></button><button class="icon-btn" id="quickAdd" title="Adicionar">＋</button><button class="mateus-ai-btn" id="mateusAiBtn" type="button" title="Abrir Nyc AI"><span>✦</span><span class="eva-label">Nyc AI</span></button><button class="profile-btn" id="profileBtn" title="Configurações do perfil">MW</button></div></header>
     <section class="view active" id="view-home">
       <div class="grid stats"><div class="card stat"><div class="kicker">Disciplinas</div><strong id="statSubjects">0</strong><span id="statSubjectsHint">Nenhuma cadastrada</span></div><div class="card stat"><div class="kicker">Atividades</div><strong id="statActivities">0</strong><span id="statActivitiesHint">Nenhuma cadastrada</span></div><div class="card stat"><div class="kicker">Projetos</div><strong id="statProjects">0</strong><span id="statProjectsHint">Nenhum cadastrado</span></div><div class="card stat"><div class="kicker">Progresso</div><strong id="statProgress">0%</strong><span id="statProgressHint">Sem dados ainda</span></div></div>
       <section class="card section mwv2-chart-card" id="mwv2ChartCard">
@@ -3858,7 +3858,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
     <section class="card liquid-card extra-panel" id="academicCalendarPanel"><div class="section-head"><h3>Calendário acadêmico</h3><div class="cal-nav" id="calNav"><button type="button" id="calPrev" aria-label="Mês anterior">‹</button><strong id="calMonthLabel">Agosto 2026</strong><button type="button" id="calNext" aria-label="Próximo mês">›</button></div></div><p class="mw-cal-todayline" id="calTodayLine"></p><div class="calendar-grid" id="academicCalendar"></div><div class="mw-cal-detail" id="calDayDetail" hidden></div></section>
     <section class="card liquid-card extra-panel" id="lecturesPanel"><div class="section-head"><h3>Aulas</h3><span class="aulas-sub">Suas aulas e progresso</span></div><div class="lecture-grid" id="lectureGrid"><div class="lecture-card"><strong>Nenhuma aula cadastrada</strong><div class="lecture-meta">Adicione disciplinas para começar a organizar suas aulas.</div><div class="progress-line"><i></i></div></div></div></section>
     </div>
-<section class="view" id="view-college"><section class="card section"><div class="section-head"><h3>Faculdade</h3><span>Seu contexto acadêmico</span></div><div class="section-grid grid"><div class="card section-card"><h3 id="collegeCourseLabel">Engenharia de Software</h3><p id="collegeSemesterLabel">4º semestre</p></div><div class="card section-card"><h3>Progresso do semestre</h3><p id="collegeProgress2">0% calculado a partir das suas disciplinas</p></div><div class="card section-card"><h3>Organização</h3><p>Use Disciplinas, Atividades e Projetos para montar seu Workspace.</p></div></div><div class="college-setup"><div class="form-field"><label>Área de atuação</label><select id="collegeArea"><option>Desenvolvimento Web</option><option>Mobile</option><option>Dados e IA</option><option>Cloud / DevOps</option><option>Segurança</option><option>Outro</option></select></div><div class="form-field"><label>Semestre</label><select id="collegeSemester"><option value="1">1º semestre</option><option value="2">2º semestre</option><option value="3">3º semestre</option><option value="4">4º semestre</option><option value="5">5º semestre</option><option value="6">6º semestre</option><option value="7">7º semestre</option><option value="8">8º semestre</option></select></div><div class="form-field"><label>Curso</label><input id="collegeCourse" value="Engenharia de Software"></div></div><button class="save-btn college-save" id="saveCollege">Salvar organização</button></section></section>
+<section class="view" id="view-college"><section class="card section"><div class="section-head"><h3>Faculdade</h3><span>Seu contexto acadêmico</span></div><div class="section-grid grid"><div class="card section-card"><h3 id="collegeCourseLabel">Seu curso</h3><p id="collegeSemesterLabel">1º semestre</p></div><div class="card section-card"><h3>Progresso do curso</h3><p id="collegeProgress2">0% calculado a partir das suas disciplinas</p></div><div class="card section-card"><h3>Organização</h3><p>Use Disciplinas, Atividades e Projetos para montar seu Workspace.</p></div></div><div class="college-setup"><div class="form-field"><label>Instituição</label><input id="collegeInstitution" list="collegeInstitutionOptions" placeholder="Sua faculdade ou universidade" autocomplete="organization"><datalist id="collegeInstitutionOptions"></datalist></div><div class="form-field"><label>Curso</label><input id="collegeCourse" list="collegeCourseOptions" placeholder="Seu curso"><datalist id="collegeCourseOptions"></datalist></div><div class="form-field"><label>Área/Especialização (opcional)</label><input id="collegeArea" list="collegeAreaOptions" placeholder="Sua área de interesse"><datalist id="collegeAreaOptions"></datalist></div><div class="form-field"><label>Semestre atual</label><input id="collegeSemester" type="number" min="1" max="20" value="1"></div></div><button class="save-btn college-save" id="saveCollege">Salvar organização</button></section></section>
     <section class="view" id="view-subjects"><section class="card section"><div class="section-head"><h3>Disciplinas</h3><button class="add-btn" data-add="subjects">+ Adicionar</button></div><div class="list" id="subjectsList"></div></section></section>
     <section class="view" id="view-projects"><section class="card section"><div class="section-head"><h3>Projetos</h3><button class="add-btn" data-add="projects">+ Adicionar</button></div><div class="list" id="projectsList"></div></section></section>
     <section class="view" id="view-activities"><section class="card section"><div class="section-head"><h3>Atividades</h3><button class="add-btn" data-add="activities">+ Adicionar</button></div><div class="list" id="activitiesList"></div></section></section>
@@ -4631,7 +4631,7 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
 (()=>{
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const storeKey='mateusWorkspaceV4';
-const defaults={subjects:[],projects:[],activities:[],notes:[],profile:{name:'Mateus',email:'',photo:''},theme:'dark'};
+const defaults={subjects:[],projects:[],activities:[],notes:[],profile:{name:'Mateus',email:'',photo:''},college:{institution:'',course:'',area:'',semester:1},theme:'dark'};
 /* Sem "let" de propósito: alguns scripts carregados depois (autosave,
    métricas do dashboard, recarregar dados ao trocar de conta) leem/escrevem
    "data" esperando uma variável global compartilhada — várias delas já
@@ -4945,13 +4945,45 @@ window.toast = toast;
  function syncPanels(view){const homeOn=view==='home'||q('#view-home')?.classList.contains('active'); if(cal)cal.style.display=homeOn?'block':'none'; if(lec)lec.style.display=homeOn?'block':'none'}
  const oldShow=window.showView;
  if(typeof oldShow==='function'){window.showView=(v)=>{oldShow(v);syncPanels(v)}} else {syncPanels('home')}
- // College preferences
- const collegeKey='mwCollegePrefs';
- let prefs={course:'Engenharia de Software',semester:'4',area:'Desenvolvimento Web'};
- try{prefs={...prefs,...JSON.parse(localStorage.getItem(collegeKey)||'{}')}}catch{}
- const area=q('#collegeArea'),sem=q('#collegeSemester'),course=q('#collegeCourse'); if(area)area.value=prefs.area;if(sem)sem.value=prefs.semester;if(course)course.value=prefs.course;
- function updateCollege(){const s=Number(sem?.value||4), count=(window.data?.subjects||[]).length;const progress=Math.min(100,Math.round((Math.max(0,s-1)/8)*70+Math.min(30,count*5)));const label=q('#collegeSemesterLabel'),cl=q('#collegeCourseLabel'),p=q('#collegeProgress2');if(label)label.textContent=s+'º semestre';if(cl)cl.textContent=course?.value||prefs.course;if(p)p.textContent=progress+'% — calculado pelo semestre e disciplinas cadastradas';localStorage.setItem(collegeKey,JSON.stringify({course:course?.value||prefs.course,semester:String(s),area:area?.value||prefs.area}));}
- q('#saveCollege')?.addEventListener('click',()=>{updateCollege(); if(typeof toast==='function')toast('Organização acadêmica salva.')});[area,sem,course].forEach(el=>el?.addEventListener('change',updateCollege));updateCollege();
+ // College preferences — agora dentro de "data.college" (o mesmo objeto
+ // sincronizado do resto do Workspace), não mais numa chave solta de
+ // localStorage: antes disso, o curso/instituição salvos aqui nunca
+ // chegavam à sidebar/topbar (que liam outro lugar, sempre vazio) e se
+ // perdiam ao trocar de aparelho, já que "mwCollegePrefs" não fazia parte
+ // do blob que vai pro Supabase.
+ // A porcentagem de progresso (#collegeProgress/#collegeProgress2) já
+ // tem dono — a função progress()/renderAll() mais abaixo, que já é
+ // agnóstica de curso (média das disciplinas cadastradas). Este bloco só
+ // cuida da identidade acadêmica (instituição/curso/área/semestre), sem
+ // recalcular progresso nenhum — dois donos pro mesmo texto faziam o
+ // número "piscar" entre duas contas diferentes a cada clique.
+ if(!data.college) data.college={institution:'',course:'',area:'',semester:1};
+ const institutionEl=q('#collegeInstitution'),area=q('#collegeArea'),sem=q('#collegeSemester'),course=q('#collegeCourse');
+ function pintaCollege(){
+   const c=data.college||{};
+   if(institutionEl)institutionEl.value=c.institution||'';
+   if(area)area.value=c.area||'';
+   if(sem)sem.value=c.semester||1;
+   if(course)course.value=c.course||'';
+   const s=Math.max(1,Number(c.semester)||1);
+   const cursoTxt=(c.course||'').trim();
+   const label=q('#collegeSemesterLabel'),cl=q('#collegeCourseLabel'),hello=q('.hello p'),sidebarRole=q('#mwSidebarEmail');
+   if(label)label.textContent=s+'º semestre';
+   if(cl)cl.textContent=cursoTxt||'Seu curso';
+   if(hello)hello.textContent=s+'º semestre'+(cursoTxt?' • '+cursoTxt:'');
+   if(sidebarRole)sidebarRole.textContent=cursoTxt||'Seu curso';
+ }
+ function updateCollege(){
+   data.college={
+     institution:institutionEl?.value.trim()||'',
+     course:course?.value.trim()||'',
+     area:area?.value.trim()||'',
+     semester:Math.max(1,Number(sem?.value)||1),
+   };
+   pintaCollege();
+   if(typeof save==='function') save();
+ }
+ q('#saveCollege')?.addEventListener('click',()=>{updateCollege(); if(typeof toast==='function')toast('Organização acadêmica salva.')});[institutionEl,area,sem,course].forEach(el=>el?.addEventListener('change',updateCollege));pintaCollege();
  // Workspace Instagram expandable, closed initially.
  const bar=q('.workspace-instagram .login-social-bar'),btn=q('#workspaceProfileSocialBtn'),pop=q('#workspaceProfileSocialPopover');
  btn?.addEventListener('click',e=>{e.stopPropagation();const open=pop.hidden;pop.hidden=!open;bar?.classList.toggle('expanded',open)});
@@ -5161,17 +5193,16 @@ body.light #app #collegeArea,body.light #app #collegeCourse,body.light #app #col
  // Normalize lecture wording.
  const lh=$('#lecturesPanel h3'); if(lh) lh.textContent='Aulas';
  const lm=$('#lecturesPanel .lecture-meta'); if(lm) lm.textContent='Adicione disciplinas para começar a organizar suas aulas.';
- // Replace college course text input with a professional course selector, preserving saved value.
- const course=$('#collegeCourse');
- if(course && course.tagName==='INPUT'){
-   const opts=['Engenharia de Software','Ciência da Computação','Sistemas de Informação','Análise e Desenvolvimento de Sistemas','Engenharia da Computação','Tecnologia em Desenvolvimento de Sistemas','Tecnologia em Sistemas para Internet','Tecnologia em Redes de Computadores','Tecnologia em Segurança da Informação','Inteligência Artificial','Ciência de Dados','Jogos Digitais','Design Digital','Engenharia de Dados','Computação em Nuvem'];
-   const sel=document.createElement('select'); sel.id='collegeCourse'; sel.className=course.className; sel.innerHTML=opts.map(o=>`<option>${o}</option>`).join(''); sel.value=opts.includes(course.value)?course.value:opts[0]; course.replaceWith(sel);
- }
- // Add more programming areas without changing the existing flow.
- const area=$('#collegeArea'); if(area){['Front-end','Back-end','Full Stack','Mobile','DevOps / Cloud','Cibersegurança','Dados e IA','Machine Learning','QA / Testes','Game Development','UI / UX','Arquitetura de Software'].forEach(v=>{if(![...area.options].some(o=>o.text===v)){const o=document.createElement('option');o.text=v;area.add(o)}})}
- // Ensure progress is driven by semester (1..8) and remains capped at 100.
- const sem=$('#collegeSemester'); const syncSem=()=>{if(!sem)return; const n=Math.max(1,Math.min(8,Number(sem.value)||1)); const pct=Math.round((n/8)*100); ['#collegeProgress','#collegeProgress2'].forEach(id=>{const e=$(id);if(e)e.textContent=pct+'% — '+n+'º semestre de 8';}); const label=$('#collegeSemesterLabel');if(label)label.textContent=n+'º semestre';};
- sem?.addEventListener('change',syncSem); syncSem();
+ // Curso, instituição e área ficaram travados em listas fixas de TI numa
+ // rodada anterior ("um seletor mais profissional") — pedido explícito
+ // agora é o oposto: qualquer curso, de qualquer instituição, sem opção
+ // travada. Viram texto livre com sugestões (datalist) só como atalho,
+ // nunca como limite. Quem já tinha um valor salvo continua com ele.
+ const collegeSugestoesCurso=['Engenharia de Software','Ciência da Computação','Sistemas de Informação','Medicina','Direito','Administração','Enfermagem','Psicologia','Arquitetura e Urbanismo','Pedagogia','Engenharia Civil','Contabilidade','Design','Fisioterapia','Nutrição'];
+ const collegeSugestoesArea=['Front-end','Back-end','Mobile','Dados e IA','Clínica','Cirurgia','Direito Penal','Direito Civil','Finanças','Recursos Humanos','Educação Infantil','Estrutural','UI / UX','Pesquisa'];
+ function preencheDatalist(id,valores){const dl=$(id); if(dl && !dl.dataset.preenchido){dl.innerHTML=valores.map(v=>`<option value="${v.replace(/"/g,'&quot;')}">`).join('');dl.dataset.preenchido='1';}}
+ preencheDatalist('#collegeCourseOptions',collegeSugestoesCurso);
+ preencheDatalist('#collegeAreaOptions',collegeSugestoesArea);
  // Give the workspace search a reliable open/close interaction and visible magnifier.
  const sw=$('.search-wrap'), si=$('.search-icon'), inp=$('#globalSearch'); if(sw&&si&&inp&&!sw.dataset.final){sw.dataset.final='1'; const open=()=>{sw.classList.add('open');setTimeout(()=>inp.focus(),20)}; si.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();open()}); document.addEventListener('click',e=>{if(!sw.contains(e.target))sw.classList.remove('open')}); inp.addEventListener('keydown',e=>{if(e.key==='Escape'){inp.value='';sw.classList.remove('open')}})}
  // Improve the sidebar icon semantics while keeping the existing layout.
@@ -5308,7 +5339,10 @@ body.light .mw-photo-hint{color:#72767a;}
 
  // Replace native college selects with lightweight glass dropdowns.
  function makeGlassSelect(sel){
-   if(!sel||sel.dataset.glassReady==='1')return;
+   // Curso/área/semestre da Faculdade deixaram de ser <select> (agora são
+   // texto livre com datalist, ou número) — chamar isso num <input>
+   // quebrava em sel.options, que só existe em <select>.
+   if(!sel||sel.tagName!=='SELECT'||sel.dataset.glassReady==='1')return;
    sel.dataset.glassReady='1';
    const wrap=document.createElement('div');wrap.className='mw-custom-select';
    const btn=document.createElement('button');btn.type='button';btn.setAttribute('aria-haspopup','listbox');
@@ -5320,7 +5354,8 @@ body.light .mw-photo-hint{color:#72767a;}
    document.addEventListener('click',e=>{if(!wrap.contains(e.target))wrap.classList.remove('open');});
    sel.addEventListener('change',sync);sync();
  }
- ['#collegeArea','#collegeSemester','#collegeCourse'].forEach(s=>makeGlassSelect($(s)));
+ // collegeArea/collegeCourse/collegeSemester não são mais <select> (ver
+ // guard acima); o guard já cobre isso, mas nem chamamos mais pra esses.
 
  // Photo picker: create a real circular crop/scale control and remove button.
  const photo=$('#profilePhoto');
@@ -5588,6 +5623,8 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
   const form=$('#mateusAiForm'), input=$('#mateusAiInput'), messages=$('#mateusAiMessages'), status=$('#mateusAiStatus');
   if(!modal||!open||!close||!form||!input||!messages)return;
   const userName=()=>{try{const d=JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}');return String((d.profile&&d.profile.name)||'Mateus').trim()||'Mateus'}catch{return 'Mateus'}};
+  const cursoAtual=()=>{try{const d=JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}');return String((d.college&&d.college.course)||'').trim()}catch{return ''}};
+  const semestreAtual=()=>{try{const d=JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}');return Number((d.college&&d.college.semester))||null}catch{return null}};
 
   let convoHistory=[];
   const add=(text,kind)=>{
@@ -5641,8 +5678,11 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
       return 'HTML é o esqueleto: cada card, botão e título é uma tag. CSS é o corpo: cor, espaçamento, paleta navy/ciano/violeta do Workspace, modo claro, o squircle de 34px dos ícones. JavaScript é o sistema nervoso.\n\nRegra prática: se mudou o conteúdo, é HTML. Se mudou a aparência, é CSS. Se mudou o comportamento, é JavaScript. Quando as três camadas ficam misturadas, o layout quebra — exatamente o tipo de bug que a gente evitou na barra lateral, congelando os ícones e animando só a coluna.';
     if(q.includes('disciplina')||q.includes('organizar'))
       return 'Organização profissional das disciplinas, no seu Workspace:\n\n1) Cadastre cada matéria em Disciplinas, com nome, descrição e um progresso honesto (0–100).\n2) Em Faculdade, confirme curso, semestre e área — isso alimenta o cartão “Olá, Mateus” e o progresso do dashboard.\n3) Transforme cada prova, lista e trabalho em Atividade com data. O que tem prazo vira compromisso, não lembrete solto.\n4) Projetos da matéria (site, API, app) vão em Projetos, com uma tag da tecnologia.\n5) Anotações curtas por aula. Não copie slide: escreva o que você explicaria para um colega.\n\nO dashboard atualiza sozinho. Se uma matéria está em 0%, não é bug — é sinal de que ainda não registrou o andamento. Comece pela que tem prova mais perto.';
-    if(q.includes('plano de estudo')||q.includes('semestre')||q.includes('estudar'))
-      return 'Plano de estudo para o 4º semestre de Engenharia de Software — objetivo: sair da aula com domínio, não só com presença.\n\nRotina semanal (10–12h além da aula):\n• Segunda e quarta — 90 min de código (projeto da matéria mais pesada).\n• Terça e quinta — 60 min de teoria + 30 min de exercícios.\n• Sexta — revisão ativa: feche o material e explique em voz alta o que viu na semana. Use o microfone da Nyc AI se quiser treinar.\n• Sábado — 2h no projeto pessoal (este Workspace conta).\n• Domingo — 40 min de revisão espaçada + planejar a semana no calendário acadêmico.\n\nMétodo: Pomodoro 50/10. Uma matéria por bloco. Antes de cada prova, 3 simulações cronometradas. Me diga as disciplinas atuais que eu monto a grade dia a dia.';
+    if(q.includes('plano de estudo')||q.includes('semestre')||q.includes('estudar')){
+      const curso=cursoAtual(), sem=semestreAtual();
+      const contexto=curso?(sem?`o ${sem}º semestre de ${curso}`:curso):'o seu semestre atual';
+      return `Plano de estudo para ${contexto} — objetivo: sair da aula com domínio, não só com presença.\n\nRotina semanal (10–12h além da aula):\n• Segunda e quarta — 90 min na disciplina mais pesada do semestre.\n• Terça e quinta — 60 min de teoria + 30 min de exercícios ou casos práticos.\n• Sexta — revisão ativa: feche o material e explique em voz alta o que viu na semana. Use o microfone da Nyc AI se quiser treinar.\n• Sábado — 2h num projeto ou trabalho em andamento (este Workspace conta).\n• Domingo — 40 min de revisão espaçada + planejar a semana no calendário acadêmico.\n\nMétodo: Pomodoro 50/10. Uma matéria por bloco. Antes de cada prova, 3 simulações cronometradas. Me diga as disciplinas atuais que eu monto a grade dia a dia.`;
+    }
     if(q.includes('projeto'))
       return 'Um projeto de engenharia de software nasce nesta ordem: problema, usuário, fluxo, dados, interface, prazo.\n\n1) Escreva em uma frase o que o app faz. Se não couber, o escopo está grande.\n2) Liste 3 telas no máximo para a versão 1 — no Workspace, login, dashboard e configurações já são um produto.\n3) Defina o estado: o que precisa sobreviver ao F5? Isso vai para localStorage ou API.\n4) Construa o menor pedaço usável (um botão que salva de verdade) antes de embelezar.\n5) Só então animações, paleta e microinterações.\n\nSe quiser, descreve o projeto que você tem agora que eu quebro em tarefas de 1 hora.';
     if(q.includes('como') && (q.includes('faco')||q.includes('fazer')||q.includes('criar')||q.includes('montar')))
@@ -6026,7 +6066,7 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
        último. Antes o `mwSession` era escrito 59ms ANTES da conta, e
        nessa janela existia uma sessão apontando para uma conta que
        ainda não existia. */
-    const data={subjects:[],projects:[],activities:[],notes:[],profile:{name:username,email,photo:''},theme:'dark'};
+    const data={subjects:[],projects:[],activities:[],notes:[],profile:{name:username,email,photo:''},college:{institution:'',course:'',area:'',semester:1},theme:'dark'};
     const nova={name:username,username,email,data};
     const contaGravada=Promise.resolve(
         window.mwSenha?window.mwSenha.grava(nova,pass):(nova.password=pass)
@@ -6511,7 +6551,10 @@ body.light #app .search-wrap input:focus{
       const data = raw ? JSON.parse(raw) : {};
       const p = data.profile || {};
       const name = String(p.name || 'Mateus').trim() || 'Mateus';
-      const area = String(p.area || p.role || 'Engenharia de Software').trim() || 'Engenharia de Software';
+      // p.area/p.role nunca são gravados em lugar nenhum do app — essa
+      // leitura sempre caía no fallback fixo. O curso de verdade que a
+      // pessoa preenche mora em data.college.course.
+      const area = String((data.college && data.college.course) || '').trim() || 'Seu curso';
       const nameEl = q('#mwSidebarName');
       const roleEl = q('#mwSidebarEmail');
       const avatar = q('#mwSidebarAvatar');
@@ -10809,7 +10852,7 @@ body.light #app .bell-btn{
       const raw = JSON.parse(localStorage.getItem('mateusWorkspaceV4') || '{}');
       const p = raw.profile || {};
       if (nameEl) nameEl.textContent = (p.name || 'Mateus').trim() || 'Mateus';
-      if (roleEl) roleEl.textContent = 'Engenharia de Software';
+      if (roleEl) roleEl.textContent = String((raw.college && raw.college.course) || '').trim() || 'Seu curso';
     } catch {}
   };
   q('#saveProfile')?.addEventListener('click', () => setTimeout(syncName, 40));
@@ -11406,12 +11449,13 @@ html body.light .eva-voice{
 
   /* Foto de perfil → avatar da sidebar (vence o gradient !important) */
   const applyPhoto = () => {
-    let photo = '', name = 'Mateus';
+    let photo = '', name = 'Mateus', curso = 'Seu curso';
     try {
       const raw = JSON.parse(localStorage.getItem('mateusWorkspaceV4') || '{}');
       const p = raw.profile || {};
       photo = p.photo || q('#profilePhoto')?.value || '';
       name = (p.name || q('#profileName')?.value || 'Mateus').trim() || 'Mateus';
+      curso = String((raw.college && raw.college.course) || '').trim() || 'Seu curso';
     } catch {}
     const initials = name.split(/\s+/).filter(Boolean).slice(0,2).map(x => x[0]).join('').toUpperCase() || 'MW';
     const targets = [q('#mwSidebarAvatar'), q('#profileBtn'), q('#profileAvatarPreview')].filter(Boolean);
@@ -11443,7 +11487,7 @@ html body.light .eva-voice{
     const nameEl = q('#mwSidebarName');
     const roleEl = q('#mwSidebarEmail');
     if (nameEl) nameEl.textContent = name;
-    if (roleEl) roleEl.textContent = 'Engenharia de Software';
+    if (roleEl) roleEl.textContent = curso;
     const hello = q('.hello h2');
     if (hello) hello.textContent = 'Olá, ' + name + '!';
   };
@@ -12710,8 +12754,8 @@ html body.light .eva-chips button{
   const course = (() => {
     try {
       const d = JSON.parse(localStorage.getItem('mateusWorkspaceV4') || '{}');
-      return String((d.college && (d.college.course || d.college.curso)) || 'Engenharia de Software');
-    } catch { return 'Engenharia de Software'; }
+      return String((d.college && (d.college.course || d.college.curso)) || '').trim() || 'Seu curso';
+    } catch { return 'Seu curso'; }
   })();
   const emailEl = q('#mwSidebarEmail');
   if (emailEl && !emailEl.textContent.trim()) emailEl.textContent = course;
@@ -13211,20 +13255,11 @@ body.light #app .mw-dev-tool h4 { color:#153651; } body.light #app .mw-dev-tool 
     const type=button.dataset.dashboardGo, nav=document.querySelector(`#nav [data-view="${type}"]`);
     nav?.click(); setTimeout(()=>document.querySelector(`[data-add="${type}"]`)?.click(),60);
   });
-  // The course field is upgraded from input to a glass select later in the page;
-  // bind the live replacement so it persists just like area and semester.
-  const course=document.getElementById('collegeCourse');
-  const syncCourse=()=>{
-    if(!course)return;
-    try{
-      const prefs=JSON.parse(localStorage.getItem('mwCollegePrefs')||'{}');
-      prefs.course=course.value; localStorage.setItem('mwCollegePrefs',JSON.stringify(prefs));
-    }catch{}
-    const label=document.getElementById('collegeCourseLabel'); if(label)label.textContent=course.value;
-  };
-  course?.addEventListener('change',syncCourse);
-  document.getElementById('saveCollege')?.addEventListener('click',syncCourse);
-  syncCourse();
+  // O curso passou a viver em data.college (ver mw-final-behavior), que já
+  // cuida de #collegeCourseLabel com o fallback "Seu curso" — este bloco
+  // escrevia direto o valor do campo (sem fallback) numa chave antiga
+  // ("mwCollegePrefs") que ninguém mais lê, e sobrescrevia o rótulo com
+  // string vazia sempre que o campo estivesse em branco.
 })();
 </script>
 <style id="mw-productivity-and-eva-size">
@@ -16021,7 +16056,7 @@ html body #app .mw-reference-sidebar .mw-reference-profile .mw-profile-main{
      conta é revelada, sem precisar tocar em cada um desses fluxos. */
   const app=document.getElementById('app');
   if(!app) return;
-  const defaults={subjects:[],projects:[],activities:[],notes:[],profile:{name:'Mateus',email:'',photo:''},theme:'dark'};
+  const defaults={subjects:[],projects:[],activities:[],notes:[],profile:{name:'Mateus',email:'',photo:''},college:{institution:'',course:'',area:'',semester:1},theme:'dark'};
   /* Exposta porque a sincronização com o servidor também precisa dela.
      A "data" em memória é global e é regravada no localStorage quando a
      página fecha; se dados baixados do servidor entrarem no storage sem
