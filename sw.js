@@ -1,5 +1,12 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v27: cada carregamento do site chama registra_acesso no Supabase (IP,
+   aparelho e página, ver supabase/ajuste-03-log-acessos.sql) — é o log de
+   acessos pedido, pra consultar depois pelo Table Editor do Supabase. Só
+   dispara quando o cliente do Supabase existe; sem rede/offline, é
+   ignorado em silêncio, como todo o resto do módulo mw-nuvem. Sem trocar
+   o nome do cache, quem já tinha o app instalado continuaria servindo o
+   index.html de antes, sem esse registro. */
 /* v26: recarregar a página (mesma aba/app, mesma sessão) deixa de
    repetir a construção completa da marca — agora mostra só um spinner
    mínimo. sessionStorage.mwBooted guarda se a marca já foi vista nesta
@@ -52,7 +59,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v26';
+const CACHE_NAME = 'mw-shell-v27';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

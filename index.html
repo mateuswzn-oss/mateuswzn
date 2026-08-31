@@ -18539,6 +18539,17 @@ document.addEventListener('click', function(e){
   };
 
   window.mwNuvem = mwNuvem;
+
+  /* Registra este carregamento (IP, aparelho, página) pro log de acessos —
+     ver supabase/ajuste-03-log-acessos.sql. Só o caminho (sem hash/query:
+     o link de redefinir senha carrega o token ali, e isso nunca pode virar
+     texto guardado). Dispara e esquece: nada aqui pode atrasar nem quebrar
+     a abertura do app, por isso sem then/catch tratando o resultado. */
+  try {
+    if (cliente) {
+      cliente.rpc('registra_acesso', { p_pagina: window.location.pathname }).catch(function(){});
+    }
+  } catch (e) {}
 })();
 </script>
 <script id="mw-nuvem-liga-js">
