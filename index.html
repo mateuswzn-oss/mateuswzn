@@ -8544,6 +8544,98 @@ img,svg,video,canvas{max-width:100%}
   const avatarMenuBtn = document.getElementById('mwBottomMenu');
 
   /* ============================================================
+     LENTE DE VIDRO ARRASTÁVEL — distorção de verdade, não só blur
+     ============================================================
+     Pedido explícito, com vídeo de referência mostrando a lente do
+     WhatsApp/iOS: um círculo que a pessoa arrasta sobre a barra e o
+     que está atrás DOBRA visivelmente perto da borda — diferente do
+     resto da barra, que só borra (blur) o que está atrás.
+
+     blur() sozinho nunca faz essa dobra: ele espalha os pixels, não
+     desloca. Quem desloca é feDisplacementMap, um filtro SVG que lê um
+     "mapa" (aqui, um gradiente radial: cinza no centro = sem
+     deslocamento, claro/escuro na borda = empurra pixel pra fora/pra
+     dentro) e aplica isso ao que está atrás via backdrop-filter:url(#).
+
+     Onde funciona: Chrome/Edge/Android de verdade — testado. Onde não:
+     o Safari/iOS historicamente não aplica filtro SVG dentro de
+     backdrop-filter (só entende blur/saturate simples ali). Por isso a
+     regra de CSS declara o blur simples PRIMEIRO e o filtro com
+     distorção DEPOIS — no navegador que não entende url() como filtro
+     válido, a segunda declaração é ignorada inteira (sintaxe
+     inválida pra ele) e a primeira continua valendo: a lente não
+     quebra, só fica um círculo de vidro liso em vez de deformar. */
+  (function(){
+    if (nav.querySelector('.mw-lente-vidro')) return;
+
+    if (!document.getElementById('mwLenteFiltroSvg')) {
+      var svgFiltro = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svgFiltro.id = 'mwLenteFiltroSvg';
+      svgFiltro.setAttribute('aria-hidden', 'true');
+      svgFiltro.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden';
+      var mapaSvg = "data:image/svg+xml;utf8," +
+        "%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E" +
+        "%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='50%25' r='50%25'%3E" +
+        "%3Cstop offset='0%25' stop-color='%23808080'/%3E" +
+        "%3Cstop offset='55%25' stop-color='%23808080'/%3E" +
+        "%3Cstop offset='80%25' stop-color='%23ffffff'/%3E" +
+        "%3Cstop offset='100%25' stop-color='%23000000'/%3E" +
+        "%3C/radialGradient%3E%3C/defs%3E" +
+        "%3Crect width='200' height='200' fill='url(%23g)'/%3E%3C/svg%3E";
+      svgFiltro.innerHTML =
+        '<defs><filter id="mwLenteFiltro" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">' +
+        '<feImage x="0" y="0" width="100%" height="100%" result="mapa" href="' + mapaSvg + '"/>' +
+        '<feDisplacementMap in="SourceGraphic" in2="mapa" scale="44" xChannelSelector="R" yChannelSelector="R"/>' +
+        '</filter></defs>';
+      document.body.appendChild(svgFiltro);
+    }
+
+    var lente = document.createElement('div');
+    lente.className = 'mw-lente-vidro';
+    lente.setAttribute('aria-hidden', 'true');
+    nav.appendChild(lente);
+
+    var arrastando = false;
+    function posiciona(clientX){
+      var r = nav.getBoundingClientRect();
+      var raio = lente.offsetWidth / 2;
+      var x = Math.max(raio, Math.min(r.width - raio, clientX - r.left));
+      lente.style.left = x + 'px';
+    }
+    lente.addEventListener('pointerdown', function(e){
+      arrastando = true;
+      lente.classList.add('mw-arrastando');
+      try { lente.setPointerCapture(e.pointerId); } catch (er) {}
+      e.preventDefault();
+    });
+    lente.addEventListener('pointermove', function(e){
+      if (!arrastando) return;
+      posiciona(e.clientX);
+    });
+    function solta(){ arrastando = false; lente.classList.remove('mw-arrastando'); }
+    lente.addEventListener('pointerup', solta);
+    lente.addEventListener('pointercancel', solta);
+
+    /* Posição inicial: sobre o primeiro botão, um convite discreto a
+       notar que dá pra arrastar (sem nenhum texto ensinando isso).
+       Este script roda na carga da página, quando a barra ainda está
+       com display:none (só aparece depois do login, condicionada a
+       mw-in-app/mw-standalone) — medir agora dava um retângulo zerado
+       e prendia a lente fora da tela pra sempre. Espera a barra ter
+       largura de verdade antes de posicionar, tentando de novo a cada
+       quadro por até 5s (sobra pro login mais lento). */
+    (function espera(tentativas){
+      var primeiro = nav.querySelector('button');
+      if (primeiro && nav.offsetWidth > 0) {
+        posiciona(primeiro.getBoundingClientRect().left + primeiro.offsetWidth / 2);
+        return;
+      }
+      if (tentativas <= 0) return;
+      requestAnimationFrame(function(){ espera(tentativas - 1); });
+    })(300);
+  })();
+
+  /* ============================================================
      MÁQUINA DE ESTADOS DA BOTTOM NAV — FONTE ÚNICA DE VERDADE
      ============================================================
      Antes: o estado era DERIVADO do DOM a cada sincronização —
@@ -15068,6 +15160,47 @@ html body.light #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar::after{
   html body #mwBottomNav{transition:none}
   html body #mwBottomNav .mwnav-icon svg{transition:opacity .15s linear;transform:none!important}
   html body #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar{transition:none}
+}
+
+/* Lente de vidro arrastável — ver a IIFE logo depois da criação de
+   #mwBottomNav (a que cria mwLenteFiltroSvg) pra entender o filtro. */
+html body #mwBottomNav .mw-lente-vidro{
+  position:absolute;top:50%;left:50%;
+  width:calc(var(--mw-icon) * 2.15);height:calc(var(--mw-icon) * 2.15);
+  transform:translate(-50%,-50%);
+  border-radius:50%;cursor:grab;touch-action:none;z-index:5;
+  /* Fallback primeiro (todo navegador com backdrop-filter entende
+     isto): só um vidro liso, sem dobra. */
+  backdrop-filter:blur(2px) saturate(150%)!important;
+  -webkit-backdrop-filter:blur(3px) saturate(150%)!important;
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255,255,255,.5),
+    inset 0 3px 6px rgba(255,255,255,.3),
+    inset 0 -3px 6px rgba(0,0,0,.3),
+    0 10px 22px rgba(0,0,0,.4);
+  transition:transform .12s cubic-bezier(.3,1.3,.5,1);
+}
+/* Reforço com o filtro de distorção de verdade — cai por cima do
+   fallback acima só em quem entende backdrop-filter:url(#...). Ver o
+   comentário grande no JS: onde não entende, o navegador ignora esta
+   declaração inteira e o fallback simples continua valendo. */
+html body #mwBottomNav .mw-lente-vidro{
+  backdrop-filter:url(#mwLenteFiltro) saturate(130%)!important;
+}
+html body #mwBottomNav .mw-lente-vidro::before{
+  content:"";position:absolute;inset:-2px;border-radius:50%;pointer-events:none;
+  background:conic-gradient(from 0deg,
+    rgba(255,90,90,.32),rgba(255,215,90,.14),rgba(120,255,180,.22),
+    rgba(90,180,255,.32),rgba(190,120,255,.22),rgba(255,90,90,.32));
+  mix-blend-mode:screen;opacity:.5;
+  -webkit-mask:radial-gradient(circle,transparent 60%,#000 68%,#000 90%,transparent 97%);
+  mask:radial-gradient(circle,transparent 60%,#000 68%,#000 90%,transparent 97%);
+}
+html body #mwBottomNav .mw-lente-vidro.mw-arrastando{
+  cursor:grabbing;transform:translate(-50%,-50%) scale(1.06);
+}
+@media(prefers-reduced-motion:reduce){
+  html body #mwBottomNav .mw-lente-vidro{transition:none}
 }
 </style>
 <script id="mw-liquid-nav-scroll">

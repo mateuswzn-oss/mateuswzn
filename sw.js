@@ -1,5 +1,15 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v32: lente de vidro arrastável na barra de baixo (pedido explícito,
+   com vídeo de referência mostrando a lente do WhatsApp/iOS 26 Liquid
+   Glass) — um círculo que a pessoa arrasta sobre a barra e o que está
+   atrás DOBRA de verdade perto da borda, não só borra. Usa um filtro
+   SVG (feDisplacementMap) aplicado via backdrop-filter:url(#...) —
+   funciona onde já testei (Chrome/Edge/Android); no Safari/iOS, que
+   historicamente não aplica filtro SVG dentro de backdrop-filter, a
+   declaração inteira é ignorada e sobra só um círculo de vidro liso
+   (sem quebrar nada, só sem a dobra). Sem trocar o nome do cache, quem
+   já tinha o app instalado continuaria sem a lente. */
 /* v31: quatro coisas de uma vez —
    1) Navegação diferente por contexto: a cápsula flutuante de baixo
       (Início/Faculdade/...) virou exclusiva de quando o site está
@@ -111,7 +121,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v31';
+const CACHE_NAME = 'mw-shell-v32';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
