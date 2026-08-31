@@ -1,5 +1,32 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v43 (BETA — Fase 1 da reformulação, ainda não é a versão estável):
+   (1) Faculdade deixou de ser presa a graduações de TI — curso, área e
+   instituição (campo novo) viraram texto livre com sugestões, e o
+   semestre perdeu o teto de 8. O formulário gravava numa chave solta de
+   localStorage que a sidebar nunca lia, então o subtítulo mostrava
+   "Engenharia de Software" fixo pra qualquer curso salvo; agora tudo
+   vive em data.college, o mesmo objeto sincronizado do resto do app.
+   (2) Perfil virou tela própria, separada de Configurações (que eram a
+   mesma view). Configurações reorganizada em categorias — Conta,
+   Aparência, Notificações, Segurança, IA, Privacidade, Aplicativo —
+   reaproveitando os grupos existentes, com "em breve" honesto onde o
+   recurso ainda não existe. showView() foi exposta como window.showView:
+   nunca tinha sido de verdade, e vários scripts já a chamavam assim,
+   falhando em silêncio.
+   (3) Termos, Ajuda e Sobre saíram de botão morto pra conteúdo real,
+   no mesmo padrão do modal de Privacidade.
+   (4) Cadastro ganhou indicador de força de senha; a tela de entrar
+   ganhou Apple e Google desabilitados com aviso de "em breve" — sem
+   fluxo falso, porque OAuth real não existe ainda.
+   (5) Projetos ganharam status, prioridade e integrantes; campos que já
+   existiam mas não apareciam viraram selos; criar/editar in-place
+   (antes só dava pra criar e excluir) e filtros de exibição.
+   Auditoria da fase: 3 tamanhos × 2 temas, zero erro de JS, zero scroll
+   horizontal, nav sempre sincronizada, scroll sempre no topo ao trocar
+   de seção, contraste dos textos novos aprovado em AA nos dois temas, e
+   o boot conferido de novo (fundo escuro imediato, login só depois do
+   loader sumir, recarga leve na mesma sessão). */
 /* v42 (BETA — branch beta/reformulacao-profissional, não é a versão
    estável): primeira leva da auditoria de estabilidade/profissionalismo
    pedida, com achados confirmados e corrigidos de forma isolada —
@@ -294,7 +321,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v42-beta';
+const CACHE_NAME = 'mw-shell-v43-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

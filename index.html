@@ -21477,7 +21477,7 @@ body.light .mw-social-sep::before,body.light .mw-social-sep::after{background:rg
   cursor:not-allowed;
 }
 .mw-social-btn svg{flex:none;opacity:.75}
-.mw-social-nota{margin:8px 0 0;font-size:11.5px;line-height:1.5;text-align:center;color:rgba(220,228,255,.45)}
+.mw-social-nota{margin:8px 0 0;font-size:11.5px;line-height:1.5;text-align:center;color:rgba(222,232,255,.66)}
 .mw-social-nota strong{color:#c4b5fd;font-weight:700}
 body.light .mw-social-btn{background:rgba(15,35,70,.035);border-color:rgba(15,35,70,.12);color:rgba(15,35,70,.6)}
 body.light .mw-social-nota{color:rgba(15,35,70,.5)}
@@ -21558,12 +21558,16 @@ body.light .mw-social-nota strong{color:#6d28d9}
    pro lugar certo de editar — sem duplicar o formulário de edição aqui. */
 .mw-perfil-resumo{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:16px 0 22px}
 .mw-perfil-chip{display:flex;flex-direction:column;gap:4px;padding:14px 16px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
-.mw-perfil-chip span{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted,#8b93a6)}
+/* Rótulo do chip: medido em 2.15:1 contra o fundo do chip com o
+   var(--muted) — reprovado pro tamanho (10.5px pede 4.5:1). Cor própria,
+   mais clara, em vez do muted genérico. */
+.mw-perfil-chip span{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:rgba(214,226,248,.86)}
 .mw-perfil-chip strong{font-size:15px;color:var(--text,#eef2ff);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mw-perfil-chip a{font-size:11.5px;color:#7ec3ff;text-decoration:none;width:fit-content;margin-top:2px}
 .mw-perfil-chip a:hover{text-decoration:underline}
 body.light .mw-perfil-chip{background:rgba(15,35,70,.04);border-color:rgba(15,35,70,.10)}
 body.light .mw-perfil-chip strong{color:#0b1830}
+body.light .mw-perfil-chip span{color:rgba(28,45,80,.82)}
 body.light .mw-perfil-chip a{color:#1d4ed8}
 </style>
 <script id="mw-perfil-config-separados-js">
