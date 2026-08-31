@@ -1849,9 +1849,13 @@ body.light #app .mw-reference-sidebar .mw-switch i{
 }
 #app .mw-reference-sidebar .side-brand .mw-brand-copy strong::after{
   content:"WORKSPACE";
-  font-size:11px!important;
+  /* 11px lia como legenda solta, não como nome do app — pedido
+     explícito pra aumentar porque "não tá dando pra diferenciar".
+     15px + peso mais alto lê como marca de verdade ao lado do ícone,
+     sem estourar a largura da sidebar aberta (280px de sobra). */
+  font-size:15px!important;
   line-height:1!important;
-  letter-spacing:.10em!important;
+  letter-spacing:.06em!important;
   font-weight:800!important;
 }
 #app .mw-reference-sidebar .side-brand .mw-brand-copy{
@@ -1860,7 +1864,12 @@ body.light #app .mw-reference-sidebar .mw-switch i{
 }
 #app .mw-reference-sidebar .mw-logo-mark{
   width:40px!important;height:40px!important;min-width:40px!important;
-  border-radius:12px!important;
+  /* 12px não tinha overflow:hidden — nada recortava o conteúdo do
+     ícone pelos cantos, então a imagem quadrada lá dentro sempre lia
+     como "colada por cima" em vez de encaixada num ícone de verdade.
+     16px (40% da caixa) + overflow:hidden é o que faz o raio valer
+     pra qualquer coisa dentro, não só pro fundo. */
+  border-radius:16px!important;overflow:hidden!important;
   display:grid!important;place-items:center!important;
 }
 #app .mw-reference-sidebar .mw-logo-mark span{
@@ -2881,12 +2890,26 @@ html.mw-reload-leve #mwBootLoader.mw-boot-out{
    expande e dissolve, só então encolhendo e sumindo junto com a tela
    de baixo aparecendo. */
 #mwBootLoader.mw-boot-out{
+  /* pointer-events:none NÃO fica mais fora do @keyframes. Ele estava
+     aplicado no instante em que .mw-boot-out entra — opacidade ainda
+     em 1, e só cai de verdade perto do fim porque a curva
+     cubic-bezier(.45,0,.8,.3) é "ease-in" (segura perto de opaco por
+     boa parte da duração). Resultado: por quase os 620ms inteiros da
+     saída (ou 280ms no reload leve), a tela de login por baixo já
+     estava 100% clicável enquanto o loader ainda parecia cobrir tudo
+     — é exatamente essa janela que deixava o campo de usuário/senha
+     alcançável e disparava o autofill do navegador fora de hora,
+     "atravessando" um loader que na tela ainda parecia sólido. Agora
+     pointer-events segue dentro do keyframe: continua bloqueando por
+     85% da animação (a maior parte, enquanto ainda há opacidade real)
+     e só libera nos 15% finais, quando a curva já derrubou a
+     opacidade o bastante pra estar visualmente quase sumido. */
   animation:mwbFundoSai .62s cubic-bezier(.45,0,.8,.3) both;
-  pointer-events:none;
 }
 @keyframes mwbFundoSai{
-  from{opacity:1}
-  to{opacity:0}
+  from{opacity:1;pointer-events:auto}
+  85%{opacity:.3;pointer-events:auto}
+  to{opacity:0;pointer-events:none}
 }
 #mwBootLoader.mw-boot-out .mwb-palco{
   animation:mwbPalcoSai .62s cubic-bezier(.45,0,.8,.3) both;
@@ -3680,7 +3703,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
 <section id="app" class="hidden">
   <aside class="sidebar mw-sidebar-polished mw-reference-sidebar">
     <div class="side-brand mw-sidebar-brand">
-      <div class="mini-logo mw-logo-mark" aria-hidden="true"><img src="data:image/png;base64,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" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+      <div class="mini-logo mw-logo-mark" aria-hidden="true"><svg viewBox="0 0 64 44" width="62%" height="62%" fill="none" style="display:block"><path d="M6 34.5V11.5L17 26.5L28 11.5V34.5" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M36 11.5V34.5L47 19.5L58 34.5V11.5" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity=".82"/></svg></div>
       <div class="mw-brand-copy label"><strong>WORKSPACE</strong></div>
       <button type="button" class="mw-sidebar-collapse" id="mwSidebarCollapse" aria-label="Recolher barra lateral" title="Recolher barra lateral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="17" height="16" rx="3"/><path d="M9.2 4v16"/></svg></button>
     </div>
@@ -10023,14 +10046,21 @@ html body #app.mw-sidebar-polished .nav button.active{
   transform: none !important;
 }
 
+/* .mw-logo-mark (a marca "MW") saiu desta lista de uniformização —
+   ela achatava a logo do app pro MESMO tamanho/raio genérico dos
+   ícones de navegação (34px, 10px), fazendo a marca perder qualquer
+   destaque visual e ficar "igual a um ícone qualquer" (pedido
+   explícito pra corrigir isso). O tamanho/raio próprios da logo agora
+   vêm só da regra dedicada #app .mw-reference-sidebar .mw-logo-mark
+   (40px, 16px) — o comportamento de escondê-la quando a sidebar está
+   recolhida continua intacto, coberto por regras próprias já
+   existentes (não precisava estar duplicado aqui também). */
 html body #app aside.sidebar .nav-icon,
 html body #app.mw-sidebar-collapsed aside.sidebar .nav-icon,
 html body #app aside.sidebar .mw-row-icon,
 html body #app.mw-sidebar-collapsed aside.sidebar .mw-row-icon,
 html body #app aside.sidebar .mw-profile-avatar,
 html body #app.mw-sidebar-collapsed aside.sidebar .mw-profile-avatar,
-html body #app aside.sidebar .mw-logo-mark,
-html body #app.mw-sidebar-collapsed aside.sidebar .mw-logo-mark,
 html body #app.mw-sidebar-collapsed aside.sidebar.mw-reference-sidebar .nav-icon,
 html body #app.mw-sidebar-collapsed aside.sidebar.mw-reference-sidebar .mw-profile-avatar,
 html body #app.mw-sidebar-collapsed aside.sidebar.mw-reference-sidebar .mw-reference-nav .nav-icon{
@@ -17161,6 +17191,33 @@ body.mw-entrando #app .main > * .stat{
   body.mw-entrando #app .main > *,
   body.mw-entrando #app .main > * .card,
   body.mw-entrando #app .main > * .stat{animation:none!important;opacity:1!important;transform:none!important}
+}
+
+/* Esta cascata nasceu pra ser a ÚNICA animação de entrada ("um
+   MutationObserver... em vez de espalhar chamadas", comentário acima)
+   mas o sistema antigo que ela devia substituir nunca foi removido:
+   #app{animation:mwAppReveal...} (sempre ligado), #app .main
+   .view.active{animation:mwViewIn...} (sempre ligado) e
+   #app .main .stats .stat:nth-child(N){animation-delay:...} (sempre
+   ligado, e mais específico que o :nth-child daqui) continuavam
+   rodando ao MESMO TEMPO que mwEntraBloco/mwEntraCartao, disputando a
+   propriedade animation no mesmo elemento — o card acabava com o
+   NOME do keyframe novo mas o ATRASO do antigo, uma combinação que
+   nenhum dos dois sistemas foi desenhado pra produzir, e o painel
+   inteiro (#app) deslizando ENQUANTO seus filhos também deslizavam
+   por conta própria. Isso é a causa exata do "aparece tudo bugado"
+   relatado depois do login.
+
+   Silenciar o sistema antigo só enquanto mw-entrando está ativo
+   resolve sem tocar no uso normal: trocar de aba fora dessa janela
+   continua com a mesma transição de sempre (mwViewIn/mwCardIn), só
+   não briga mais com a cascata durante os ~1.5s da entrada. */
+body.mw-entrando #app,
+body.mw-entrando #app .main .view.active,
+body.mw-entrando #app .main .stats .stat,
+body.mw-entrando #app .main .cols>.card,
+body.mw-entrando #app .main .activity-list .activity-card{
+  animation:none!important;
 }
 </style>
 <script id="mw-entrada-workspace-js">

@@ -1,5 +1,30 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v39: três correções de bugs relatados com vídeo/print reais —
+   (1) o preloader de saída (.mw-boot-out) desligava pointer-events na
+   hora em que a classe entrava, enquanto a opacidade (curva ease-in)
+   ainda ficava visualmente quase opaca por boa parte dos 620ms/280ms
+   de fade — a tela de login por baixo já ficava clicável enquanto o
+   loader ainda parecia cobrir tudo, e um toque nesse instante caía
+   direto no campo de usuário/senha e disparava o autofill do
+   navegador fora de hora. Agora pointer-events vai dentro do próprio
+   @keyframes: continua bloqueando por 85% da animação, só libera nos
+   15% finais, quando já não há quase nada visível pra "atravessar".
+   (2) a cascata de entrada do dashboard (mw-entrando) foi feita pra
+   ser a única responsável pela animação depois do login, mas o
+   sistema antigo que ela devia substituir (mwAppReveal no #app,
+   mwViewIn na view ativa, mwCardIn com atraso por nth-child nos
+   cards) nunca foi removido e os dois brigavam pela mesma propriedade
+   ao mesmo tempo — um card podia sair com o NOME do keyframe novo mas
+   o ATRASO do antigo. Agora o sistema antigo fica desligado só
+   enquanto mw-entrando está ativo (troca normal de aba fora dessa
+   janela continua exatamente igual). (3) a logo "MW" da sidebar
+   estava sendo achatada pro mesmo tamanho/raio genérico dos ícones de
+   navegação (34px/10px) por uma regra de uniformização que não
+   devia alcançá-la — devolvida ao tamanho próprio dela (40px/16px,
+   com overflow:hidden de verdade) e o texto "WORKSPACE" ao lado
+   aumentou de 11px pra 15px. Sem trocar o nome do cache, quem já
+   tinha o app instalado continuaria vendo os três bugs. */
 /* v38: duas coisas — (1) o texto "Brasil +55" no seletor de país do
    diálogo de telefone vazava por trás da setinha do combobox (132px
    não bastava); agora trunca com reticências e o DDI vem logo depois
@@ -182,7 +207,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v38';
+const CACHE_NAME = 'mw-shell-v39';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
