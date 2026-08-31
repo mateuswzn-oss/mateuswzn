@@ -1,5 +1,19 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v41: as duas últimas coisas pedidas na mesma rodada do v40 —
+   (1) os 9 ícones da sidebar (Dashboard, Faculdade, Disciplinas,
+   Projetos, Atividades, Anotações, Arquivos, Suporte, Painel Admin)
+   usavam todos o mesmo fundo cinza no estado parado ("muito genérico,
+   muito igual", difícil de diferenciar de relance) — cada um ganhou
+   uma cor de destaque própria (dark e light), sem mexer no hover/ativo.
+   (2) a silhueta do avatar no card de login/cadastro ganhou dois
+   "olhos" (SVG) que se deslocam conforme o tamanho do que já foi
+   digitado no usuário/e-mail e fecham quando o campo de senha está
+   com foco — a "miniatura com movimento" pedida, presente tanto em
+   Entrar quanto em Criar conta (o SVG #heroMediaShared já é
+   compartilhado pelos dois formulários). Sem trocar o nome do cache,
+   quem já tinha o app instalado continuaria vendo os ícones genéricos
+   e a silhueta parada. */
 /* v40: rodada de bugs/pedidos relatados com print real de iPhone —
    (1) a folha nativa "Iniciar Sessão" (AutoFill de senha) aparecia por
    cima da tela de CARREGAMENTO, não da de login: o formulário de
@@ -246,7 +260,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v40';
+const CACHE_NAME = 'mw-shell-v41';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
