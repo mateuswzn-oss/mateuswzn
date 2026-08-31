@@ -3428,7 +3428,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
           <label for="password">Senha</label>
           <div class="mwv2-input-wrap"><input id="password" type="password" autocomplete="current-password" placeholder="Senha"><button class="toggle" id="togglePassword" type="button">◌</button></div>
 
-          <div class="mwv2-forgot"><button type="button" id="forgotPasswordLink">Esqueci minha senha</button></div><div class="mwv2-forgot mw-forgot-transfere"><button type="button" id="mwTrazerConta">Já tenho conta em outro lugar</button></div>
+          <div class="mwv2-forgot"><button type="button" id="forgotPasswordLink">Esqueci minha senha</button></div><div class="mwv2-forgot"><button type="button" id="forgotUsernameLink">Esqueci meu usuário</button></div><div class="mwv2-forgot mw-forgot-transfere"><button type="button" id="mwTrazerConta">Já tenho conta em outro lugar</button></div>
 
           <button class="ref-primary" id="loginButton" type="button">ENTRAR</button>
           <div class="status" id="status"></div>
@@ -3446,6 +3446,20 @@ body.light .mw-faceid-gate-card p{color:#526988}
 
           <label for="newPass">Senha</label>
           <div class="mwv2-input-wrap"><input id="newPass" type="password" required placeholder="Senha"><button class="toggle" id="toggleNewPass" type="button" aria-label="Mostrar ou ocultar senha">◌</button></div>
+
+          <!-- Campo-armadilha: invisível pra gente (fora da tela, sem
+               label lida por leitor de tela), mas um robô que preenche
+               todo campo do formulário cega nele. Se vier preenchido,
+               o cadastro é ignorado em silêncio — é assim que se detecta
+               um robô sem incomodar quem é gente de verdade com captcha. -->
+          <div style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden" aria-hidden="true">
+            <input type="text" id="newWebsite" name="website" tabindex="-1" autocomplete="off">
+          </div>
+
+          <!-- Só aparece quando window.MW_TURNSTILE_SITE_KEY está
+               preenchida (ver mw-turnstile-js). Vazio hoje = nunca
+               aparece, cadastro sem captcha nenhum, igual já era. -->
+          <div id="mwTurnstileWidget" hidden style="margin:4px 0"></div>
 
           <div class="form-error" id="inlineCreateError"></div>
 
@@ -3762,7 +3776,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
 </div>
 </div></div><div class="profile-actions"><button class="save-btn" id="saveProfile">Salvar perfil</button></div></div>
       <div class="settings-group hidden" id="legacyThemeGroup"><h4>Preferências</h4><div class="theme-row"><button class="theme-btn" id="darkModeBtn">Modo Escuro</button><button class="theme-btn" id="lightModeBtn">Modo Claro</button></div></div>
-      <div class="settings-group"><h4>Sessão</h4><p>Sua conta fica guardada neste navegador. Ao sair, será preciso entrar de novo com seu usuário e senha.</p><div class="profile-actions"><button class="small-btn mw-logout-btn" id="logout">Sair</button></div></div>
+      <div class="settings-group"><h4>Sessão</h4><p>Sua conta fica guardada neste navegador. Ao sair, será preciso entrar de novo com seu usuário e senha.</p><div class="profile-actions"><button class="small-btn mw-logout-btn" id="logout">Sair</button><button class="small-btn" id="mwSairOutrosAparelhos">Sair de todos os outros aparelhos</button></div><p class="form-error" id="mwSairOutrosStatus" hidden></p></div>
       <div class="settings-group" id="mwFaceIdGroup" hidden><h4>Segurança</h4><p>Use o Face ID deste iPhone/iPad para entrar no Workspace sem digitar nada.</p><div class="mw-faceid-row"><span class="mw-faceid-row-label">Entrar com Face ID</span><button type="button" class="mw-faceid-switch" id="mwFaceIdToggle" role="switch" aria-checked="false" aria-label="Entrar com Face ID"><i></i></button></div><p class="form-error" id="mwFaceIdStatus" hidden></p></div>
         <div class="settings-group" id="mwPinGroup"><h4>Código de acesso</h4><p>Um código de 6 dígitos para destravar o Workspace ao reabrir. Funciona em qualquer aparelho, com ou sem Face ID.</p><div class="mw-pin-row"><span class="mw-pin-estado" id="mwPinEstado">Nenhum código definido.</span><div class="mw-pin-acoes"><button type="button" class="small-btn" id="mwPinDefinir">Definir código</button><button type="button" class="small-btn mw-pin-remover" id="mwPinRemover" hidden>Remover</button></div></div><p class="form-error" id="mwPinStatus" hidden></p></div>
       <div class="settings-group"><h4>Aplicativo</h4><p id="mwSettingsInstallDesc">Adicione o Mateus Workspace à tela de início para abrir como um app.</p><div class="profile-actions"><button class="small-btn" id="mwSettingsInstallBtn">Instalar aplicativo</button></div></div>
@@ -3778,26 +3792,26 @@ body.light .mw-faceid-gate-card p{color:#526988}
     </section></section>
 
     <section class="view" id="view-admin">
-      <section class="card section mw-admin-warning" role="alert">
+      <section class="card section mw-admin-warning" id="mwAdminAviso" role="alert">
         <div class="mw-admin-warning-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.6 1.9 20.4a1 1 0 0 0 .87 1.5h18.46a1 1 0 0 0 .87-1.5L12 2.6z"/><path d="M12 9.4v4.6"/><circle cx="12" cy="17.2" r="1" fill="currentColor" stroke="none"/></svg></div>
         <div class="mw-admin-warning-copy">
-          <strong>Protótipo visual — sem proteção real de backend</strong>
-          <p>Esta tela é só a interface do Painel Admin, feita para revisar layout e dados de exemplo. Ela <u>não tem nenhuma autorização real por trás</u>: não existe verificação de papel (role) no servidor, e qualquer pessoa com acesso ao app hoje consegue abrir esta view. <strong>Não conecte dados reais de usuários aqui</strong> até existir um backend que confira <code>role === "admin"</code> em cada requisição antes de responder — nunca uma checagem só no front-end (tipo esconder o botão ou comparar o nome do usuário em JavaScript).</p>
+          <strong id="mwAdminAvisoTitulo">Verificando permissão…</strong>
+          <p id="mwAdminAvisoTexto">A checagem de quem é admin acontece no servidor, não neste navegador — mesmo abrindo esta tela pelo console, sem <code>is_admin = true</code> na conta nenhum dado real é devolvido.</p>
         </div>
       </section>
 
-      <section class="card section">
-        <div class="section-head"><h3>Painel Admin</h3><span>Visão geral · dados de exemplo</span></div>
+      <section class="card section" id="mwAdminConteudo" hidden>
+        <div class="section-head"><h3>Painel Admin</h3><span>Visão geral</span></div>
         <div class="mw-admin-stats">
           <div class="mw-admin-stat"><span class="mw-admin-stat-label">Usuários registrados</span><strong id="mwAdminStatUsers">—</strong></div>
-          <div class="mw-admin-stat"><span class="mw-admin-stat-label">Online agora</span><strong id="mwAdminStatOnline">—</strong></div>
+          <div class="mw-admin-stat"><span class="mw-admin-stat-label">Acessos (24h)</span><strong id="mwAdminStatOnline">—</strong></div>
           <div class="mw-admin-stat"><span class="mw-admin-stat-label">Último acesso</span><strong id="mwAdminStatLastAccess">—</strong></div>
           <div class="mw-admin-stat"><span class="mw-admin-stat-label">Status do sistema</span><strong class="mw-admin-status-ok">Operacional</strong></div>
         </div>
       </section>
 
-      <section class="card section">
-        <div class="section-head"><h3>Usuários</h3><span>Exemplo — não reflete dados reais de produção</span></div>
+      <section class="card section" id="mwAdminUsersSecao" hidden>
+        <div class="section-head"><h3>Usuários</h3><span>Contas cadastradas</span></div>
         <div class="mw-admin-table-wrap">
           <table class="mw-admin-table">
             <thead><tr><th>Nome</th><th>E-mail</th><th>Papel</th><th>Último acesso</th><th>Status</th></tr></thead>
@@ -3806,8 +3820,8 @@ body.light .mw-faceid-gate-card p{color:#526988}
         </div>
       </section>
 
-      <section class="card section">
-        <div class="section-head"><h3>Logs administrativos</h3><span>Acessos, login/logout e alterações — exemplo</span></div>
+      <section class="card section" id="mwAdminLogSecao" hidden>
+        <div class="section-head"><h3>Acessos recentes</h3><span>IP, localização e aparelho — últimos 50</span></div>
         <ul class="mw-admin-log-list" id="mwAdminLogList"></ul>
       </section>
     </section>
@@ -16121,63 +16135,107 @@ html body.light #mwBottomNav button.active .mwnav-label{color:#151a22!important}
 </style>
 <script id="mw-admin-panel-js">
 (() => {
-  // ATENÇÃO — leia antes de ligar isto a dados reais:
-  // Este painel é 100% fachada visual (decisão explícita do usuário: "painel
-  // só visual por agora, com aviso claro"). Os dados abaixo são inventados
-  // no cliente só pra preencher o layout. NÃO existe verificação de permissão
-  // de verdade aqui — qualquer pessoa que abrir o app consegue ver esta tela.
-  // Antes de usar com usuários reais, um backend precisa:
-  //   1) guardar um campo role ("user" | "admin") por usuário no servidor;
-  //   2) checar esse role em CADA requisição de dado administrativo, no
-  //      servidor — nunca confiar em "if (user === 'Mateus')" ou em
-  //      esconder só o botão no front-end;
-  //   3) recusar e logar tentativas de acesso de quem não é admin, sem
-  //      devolver nenhum dado administrativo na resposta;
-  //   4) impedir que o próprio usuário mude seu papel, e nunca expor um
-  //      jeito público de virar admin;
-  //   5) registrar login/logout/admin e alterações administrativas.
+  /* Dados de verdade, vindos das quatro funções do banco (ver
+     supabase/ajuste-04-admin-e-extras.sql). Cada uma delas checa
+     sou_admin() sozinha, no servidor — esta tela não decide quem vê o
+     quê, só pergunta e mostra o que veio (ou nada, se a resposta foi
+     recusada). É exatamente a checagem que o aviso antigo desta tela
+     pedia: nunca confiar em esconder botão ou comparar nome no
+     JavaScript. */
   const el = (tag, cls, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; };
 
-  const mockUsers = [
-    { name: 'Mateus', email: 'mateus@workspace.local', role: 'admin', lastAccess: 'agora', online: true },
-    { name: 'QA Tester', email: 'qa@teste.com', role: 'user', lastAccess: 'há 12 min', online: true },
-    { name: 'Convidado Beta', email: 'beta@teste.com', role: 'user', lastAccess: 'há 3 h', online: false },
-    { name: 'Ana Souza', email: 'ana.souza@teste.com', role: 'user', lastAccess: 'ontem', online: false },
-  ];
-  const mockLogs = [
-    { time: 'agora', text: 'Mateus (admin) abriu o Painel Admin.' },
-    { time: 'há 12 min', text: 'QA Tester fez login.' },
-    { time: 'há 40 min', text: 'Tentativa de acesso ao painel admin bloqueada (papel: user).' },
-    { time: 'há 3 h', text: 'Convidado Beta fez logout.' },
-    { time: 'ontem', text: 'Mateus (admin) alterou uma permissão de exemplo.' },
-  ];
+  function formataData(iso) {
+    if (!iso) return 'nunca';
+    try { return new Date(iso).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }); }
+    catch (e) { return iso; }
+  }
 
-  function render() {
-    const usersBody = document.getElementById('mwAdminUsersBody');
-    const logList = document.getElementById('mwAdminLogList');
-    if (!usersBody || !logList) return;
-    if (usersBody.dataset.rendered) return;
-    usersBody.dataset.rendered = '1';
+  function escapa(t) {
+    return String(t == null ? '' : t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  }
 
-    document.getElementById('mwAdminStatUsers').textContent = String(mockUsers.length);
-    document.getElementById('mwAdminStatOnline').textContent = String(mockUsers.filter(u => u.online).length);
-    document.getElementById('mwAdminStatLastAccess').textContent = mockUsers[0].lastAccess;
+  function mostraAviso(titulo, texto) {
+    var aviso = document.getElementById('mwAdminAviso');
+    var t = document.getElementById('mwAdminAvisoTitulo');
+    var p = document.getElementById('mwAdminAvisoTexto');
+    if (aviso) aviso.hidden = false;
+    if (t) t.textContent = titulo;
+    if (p) p.textContent = texto;
+  }
 
-    mockUsers.forEach(u => {
-      const tr = el('tr');
-      tr.appendChild(el('td', null, `<strong>${u.name}</strong>`));
-      tr.appendChild(el('td', null, u.email));
-      tr.appendChild(el('td', null, `<span class="mw-admin-role-badge ${u.role}">${u.role === 'admin' ? 'Admin' : 'Usuário'}</span>`));
-      tr.appendChild(el('td', null, u.lastAccess));
-      tr.appendChild(el('td', null, `<span class="mw-admin-online-dot ${u.online ? 'on' : 'off'}"></span>${u.online ? 'Online' : 'Offline'}`));
-      usersBody.appendChild(tr);
+  function escondeAviso() {
+    var aviso = document.getElementById('mwAdminAviso');
+    if (aviso) aviso.hidden = true;
+  }
+
+  function preencheTabelas(contas, acessos) {
+    var usersBody = document.getElementById('mwAdminUsersBody');
+    var logList = document.getElementById('mwAdminLogList');
+    if (usersBody) {
+      usersBody.innerHTML = '';
+      (contas || []).forEach(u => {
+        var tr = el('tr');
+        tr.appendChild(el('td', null, `<strong>${escapa(u.nome || u.username)}</strong>`));
+        tr.appendChild(el('td', null, escapa(u.email)));
+        tr.appendChild(el('td', null, `<span class="mw-admin-role-badge ${u.is_admin ? 'admin' : 'user'}">${u.is_admin ? 'Admin' : 'Usuário'}</span>`));
+        tr.appendChild(el('td', null, escapa(formataData(u.ultimo_login))));
+        tr.appendChild(el('td', null, `<span class="mw-admin-online-dot ${u.email_confirmado ? 'on' : 'off'}"></span>${u.email_confirmado ? 'E-mail confirmado' : 'E-mail pendente'}`));
+        usersBody.appendChild(tr);
+      });
+      if (!contas || !contas.length) usersBody.appendChild(el('tr', null, '<td colspan="5">Nenhuma conta ainda.</td>'));
+    }
+    if (logList) {
+      logList.innerHTML = '';
+      (acessos || []).forEach(a => {
+        var local = [a.cidade, a.regiao, a.pais].filter(Boolean).join(', ');
+        var quem = a.username ? ('@' + a.username) : 'visitante não identificado';
+        var texto = `${quem} — ${escapa(a.ip || 'IP desconhecido')}${local ? ' · ' + escapa(local) : ''}`;
+        var li = el('li');
+        li.appendChild(el('span', 'mw-admin-log-time', formataData(a.criado_em)));
+        li.appendChild(el('span', null, texto));
+        logList.appendChild(li);
+      });
+      if (!acessos || !acessos.length) logList.appendChild(el('li', null, '<span>Nenhum acesso registrado ainda.</span>'));
+    }
+  }
+
+  function carregaDados() {
+    Promise.all([
+      window.mwNuvem.adminEstatisticas(),
+      window.mwNuvem.adminListaContas(),
+      window.mwNuvem.adminListaAcessos(50)
+    ]).then(([stats, contas, acessos]) => {
+      if (!stats || !contas || !acessos) {
+        mostraAviso('Não foi possível carregar os dados agora.', 'Confira sua conexão e tente reabrir esta tela.');
+        return;
+      }
+      escondeAviso();
+      document.getElementById('mwAdminConteudo').hidden = false;
+      document.getElementById('mwAdminUsersSecao').hidden = false;
+      document.getElementById('mwAdminLogSecao').hidden = false;
+      document.getElementById('mwAdminStatUsers').textContent = String(stats.usuarios || 0);
+      document.getElementById('mwAdminStatOnline').textContent = String(stats.acessos_24h || 0);
+      document.getElementById('mwAdminStatLastAccess').textContent = formataData(stats.ultimo_acesso);
+      preencheTabelas(contas, acessos);
     });
+  }
 
-    mockLogs.forEach(l => {
-      const li = el('li');
-      li.appendChild(el('span', 'mw-admin-log-time', l.time));
-      li.appendChild(el('span', null, l.text));
-      logList.appendChild(li);
+  var carregado = false;
+  function render() {
+    if (!document.querySelector('#view-admin.active')) return;
+    if (carregado) return;
+    carregado = true;
+    if (!window.mwNuvem || !window.mwNuvem.ligado()) {
+      mostraAviso('Precisa de conta na nuvem conectada.', 'O Painel Admin lê dados do servidor — sem uma conta Supabase conectada não há o que mostrar.');
+      return;
+    }
+    window.mwNuvem.souAdmin().then(sim => {
+      if (!sim) {
+        mostraAviso('Acesso negado.', 'Sua conta não tem permissão de administrador. Quem é dono do projeto pode conceder rodando "select public.definir_admin(\'seu_usuario\', true);" no SQL Editor do Supabase.');
+        return;
+      }
+      mostraAviso('Carregando…', 'Buscando dados no servidor.');
+      carregaDados();
     });
   }
 
@@ -16185,6 +16243,25 @@ html body.light #mwBottomNav button.active .mwnav-label{color:#151a22!important}
   if (view) {
     render();
     new MutationObserver(render).observe(view, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  /* Esconde o item "Painel Admin" da barra lateral pra quem não é
+     admin — só estética (a proteção de verdade são as quatro funções
+     acima recusando sozinhas). Reavalia sempre que o app volta a
+     ficar visível, porque outra conta pode ter entrado. */
+  const app = document.getElementById('app');
+  const navAdmin = document.getElementById('mwNavAdmin');
+  if (app && navAdmin && window.MutationObserver) {
+    var verificado = false;
+    function verificaNav() {
+      if (app.classList.contains('hidden')) { verificado = false; navAdmin.hidden = true; return; }
+      if (verificado) return;
+      verificado = true;
+      if (!window.mwNuvem || !window.mwNuvem.ligado()) { navAdmin.hidden = true; return; }
+      window.mwNuvem.souAdmin().then(sim => { navAdmin.hidden = !sim; });
+    }
+    new MutationObserver(verificaNav).observe(app, { attributes: true, attributeFilter: ['class'] });
+    verificaNav();
   }
 })();
 </script>
@@ -17634,6 +17711,74 @@ body.light .mw-transfere-nota b{color:#0b1830}
   pintar();
 })();
 </script>
+<script id="mw-privacidade-js">
+(function(){
+  'use strict';
+  /* O botão "Privacidade" no rodapé já existia no HTML, mas sem
+     nenhum clique ligado a ele — não fazia nada. Reaproveita as
+     mesmas classes .modal/.modal-box já usadas no resto do app (ver
+     authModal, no login), então não precisa de CSS novo. */
+  var btn = document.querySelector('[data-footer-link="privacidade"]');
+  if (!btn) return;
+
+  function abre(){
+    var m = document.getElementById('mwPrivacidadeModal');
+    if (!m) {
+      m = document.createElement('div');
+      m.id = 'mwPrivacidadeModal';
+      m.className = 'modal';
+      document.body.appendChild(m);
+    }
+    m.innerHTML =
+      '<div class="modal-box auth-modal-card">' +
+        '<div class="modal-head"><h3>Privacidade</h3><button class="close" data-close>×</button></div>' +
+        '<div style="padding:4px 4px 8px;font-size:13px;line-height:1.6;color:var(--text)">' +
+          '<p><strong>O que fica guardado da sua conta:</strong> nome de usuário, e-mail, senha (com hash — ninguém, nem quem administra o site, consegue ler a senha em texto puro) e o conteúdo que você cria no Workspace (disciplinas, projetos, atividades, anotações). Tudo isso fica no Supabase, o serviço de banco de dados usado pelo site.</p>' +
+          '<p><strong>O que fica guardado de cada acesso ao site</strong> (mesmo sem estar logado): o endereço IP, uma localização aproximada (cidade/estado/país, estimada a partir do IP por um serviço externo — não é GPS, não pede permissão), o navegador/aparelho usado e a página acessada. Serve pra quem administra o site acompanhar acessos e proteger contra abuso.</p>' +
+          '<p><strong>Com quem isso é compartilhado:</strong> com ninguém além do Supabase (onde os dados ficam guardados) e do serviço público usado só pra estimar a localização a partir do IP. Não é vendido nem usado pra publicidade.</p>' +
+          '<p><strong>Por quanto tempo:</strong> enquanto sua conta existir, ou enquanto o site estiver no ar, no caso dos acessos. Quer que seus dados sejam apagados? Peça pelo <button type="button" id="mwPrivacidadeSuporte" style="all:unset;cursor:pointer;color:var(--blue2);text-decoration:underline">Suporte</button>.</p>' +
+        '</div>' +
+      '</div>';
+    m.classList.remove('hidden');
+    m.querySelector('[data-close]').onclick = function(){ m.classList.add('hidden'); };
+    var suporte = m.querySelector('#mwPrivacidadeSuporte');
+    if (suporte) suporte.addEventListener('click', function(){
+      m.classList.add('hidden');
+      document.getElementById('mwAppFooterSupport')?.click();
+    });
+  }
+
+  btn.addEventListener('click', abre);
+})();
+</script>
+<script id="mw-sair-outros-js">
+(function(){
+  var btn = document.getElementById('mwSairOutrosAparelhos');
+  var status = document.getElementById('mwSairOutrosStatus');
+  if (!btn) return;
+
+  function aviso(msg, bom){
+    if (!status) return;
+    status.textContent = msg || '';
+    status.hidden = !msg;
+    status.classList.toggle('mw-ok', !!bom);
+  }
+
+  btn.addEventListener('click', function(){
+    if (!window.mwNuvem || !window.mwNuvem.ligado()) {
+      aviso('Precisa de conta na nuvem conectada e internet.', false);
+      return;
+    }
+    if (!confirm('Isso derruba a sessão em qualquer outro aparelho ou navegador logado nesta conta (a sessão aqui continua). Continuar?')) return;
+    aviso('Encerrando...');
+    window.mwNuvem.sairOutrosAparelhos().then(function(){
+      aviso('Pronto — os outros aparelhos precisarão entrar de novo.', true);
+    }).catch(function(){
+      aviso('Não foi possível agora. Tente de novo.', false);
+    });
+  });
+})();
+</script>
 <script id="mw-pin-js">
 /* ============================================================
    CÓDIGO DE ACESSO DE 6 DÍGITOS
@@ -18476,6 +18621,15 @@ document.addEventListener('click', function(e){
      — quem guarda é o serviço de autenticação, com bcrypt.
      ============================================================ -->
 <script>window.MW_SUPABASE={url:'https://xuklhbhnibhxfjjxtgso.supabase.co',chave:'sb_publishable_DShBOIkf4gyu1yqMBfvlrA_KbB5Nx8D'};</script>
+<script>
+/* Chave do site do Cloudflare Turnstile (CAPTCHA), vazia por padrão =
+   desligado. Pra ligar: crie um site em dash.cloudflare.com/?to=/:account/turnstile,
+   cole a "Site Key" aqui e a "Secret Key" no painel do Supabase
+   (Authentication → Settings → CAPTCHA protection → Turnstile). Sem os
+   dois lados configurados, nada muda: nenhum script extra carrega e o
+   cadastro segue exatamente como está hoje. */
+window.MW_TURNSTILE_SITE_KEY = '';
+</script>
 <script src="./vendor/supabase.js"></script>
 <script id="mw-nuvem-js">
 (function(){
@@ -18543,12 +18697,17 @@ document.addEventListener('click', function(e){
         .catch(function(){ return null; });
     },
 
-    cadastrar: function(usuario, email, senha, nomeExibicao){
+    cadastrar: function(usuario, email, senha, nomeExibicao, captchaToken){
       if (!cliente) return Promise.reject(new Error('offline'));
+      var opcoes = { data: { username: limpaUsuario(usuario), nome: nomeExibicao || usuario } };
+      /* captchaToken só existe quando o Turnstile está configurado (ver
+         window.MW_TURNSTILE_SITE_KEY) — sem isso o Supabase Auth ignora
+         o campo e segue normal, então é seguro mandar sempre. */
+      if (captchaToken) opcoes.captchaToken = captchaToken;
       return comPrazo(cliente.auth.signUp({
         email: String(email || '').trim().toLowerCase(),
         password: senha,
-        options: { data: { username: limpaUsuario(usuario), nome: nomeExibicao || usuario } }
+        options: opcoes
       }), 12000).then(function(r){
         if (r.error) throw r.error;
         return r.data;
@@ -18583,6 +18742,19 @@ document.addEventListener('click', function(e){
     sair: function(){
       if (!cliente) return Promise.resolve();
       return cliente.auth.signOut().catch(function(){});
+    },
+
+    /* Derruba a sessão em qualquer OUTRO aparelho/navegador logado
+       nesta conta, sem mexer na sessão daqui (scope:'others' é feature
+       nativa do Supabase Auth — não precisa de lista de sessões nem de
+       chave de serviço pra isso). Útil se perdeu o celular ou deixou
+       a conta aberta num computador que não é seu. */
+    sairOutrosAparelhos: function(){
+      if (!cliente) return Promise.reject(new Error('offline'));
+      return comPrazo(cliente.auth.signOut({ scope: 'others' }), 12000).then(function(r){
+        if (r && r.error) throw r.error;
+        return true;
+      });
     },
 
     /* Pede o e-mail de redefinição. O redirectTo precisa estar na lista de
@@ -18698,6 +18870,48 @@ document.addEventListener('click', function(e){
         .eq('id', uid), 12000)
         .then(function(r){ return !r.error; })
         .catch(function(){ return false; });
+    },
+
+    /* --------------------------------------------------------------
+       "Esqueci meu usuário"
+       -------------------------------------------------------------- */
+    usernamePorEmail: function(email){
+      if (!cliente) return Promise.resolve(null);
+      return comPrazo(cliente.rpc('username_por_email', { p_email: String(email || '').trim().toLowerCase() }), 7000)
+        .then(function(r){ return r.error ? null : (r.data || null); })
+        .catch(function(){ return null; });
+    },
+
+    /* --------------------------------------------------------------
+       Painel Admin — as quatro funções recusam sozinhas quem não é
+       admin (checagem dentro delas, no servidor); aqui só se chama e
+       se devolve o que veio. */
+    souAdmin: function(){
+      if (!cliente) return Promise.resolve(false);
+      return comPrazo(cliente.rpc('sou_admin'), 7000)
+        .then(function(r){ return !r.error && !!r.data; })
+        .catch(function(){ return false; });
+    },
+
+    adminEstatisticas: function(){
+      if (!cliente) return Promise.resolve(null);
+      return comPrazo(cliente.rpc('admin_estatisticas'), 9000)
+        .then(function(r){ return (!r.error && r.data && r.data[0]) || null; })
+        .catch(function(){ return null; });
+    },
+
+    adminListaContas: function(){
+      if (!cliente) return Promise.resolve(null);
+      return comPrazo(cliente.rpc('admin_lista_contas'), 9000)
+        .then(function(r){ return r.error ? null : (r.data || []); })
+        .catch(function(){ return null; });
+    },
+
+    adminListaAcessos: function(limite){
+      if (!cliente) return Promise.resolve(null);
+      return comPrazo(cliente.rpc('admin_lista_acessos', { p_limite: limite || 50 }), 9000)
+        .then(function(r){ return r.error ? null : (r.data || []); })
+        .catch(function(){ return null; });
     }
   };
 
@@ -18734,6 +18948,37 @@ document.addEventListener('click', function(e){
         });
     }
   } catch (e) {}
+})();
+</script>
+<script id="mw-turnstile-js">
+(function(){
+  'use strict';
+  /* Fica inerte por completo enquanto MW_TURNSTILE_SITE_KEY estiver
+     vazia (padrão) — nem carrega o script do Cloudflare. window.mwTurnstileToken
+     é lido pelo submit do cadastro (mw-nuvem-liga-js) só como um sinal a
+     mais: continua null pra sempre se o captcha nunca foi ligado, então
+     o cadastro segue exatamente como sempre seguiu. */
+  var chave = window.MW_TURNSTILE_SITE_KEY;
+  if (!chave) return;
+
+  window.mwTurnstileToken = null;
+
+  var script = document.createElement('script');
+  script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+  script.async = true;
+  script.defer = true;
+  script.onload = function(){
+    var alvo = document.getElementById('mwTurnstileWidget');
+    if (!alvo || !window.turnstile) return;
+    alvo.hidden = false;
+    window.turnstile.render(alvo, {
+      sitekey: chave,
+      callback: function(token){ window.mwTurnstileToken = token; },
+      'expired-callback': function(){ window.mwTurnstileToken = null; },
+      'error-callback': function(){ window.mwTurnstileToken = null; }
+    });
+  };
+  document.head.appendChild(script);
 })();
 </script>
 <script id="mw-nuvem-liga-js">
@@ -19123,12 +19368,29 @@ document.addEventListener('click', function(e){
     if (form.dataset.mwNuvemPassa === '1') { form.dataset.mwNuvemPassa = ''; return; }
     if (!temNuvem()) return;
 
+    /* Campo-armadilha preenchido = robô. Corta aqui, sem preventDefault
+       e sem mensagem nenhuma: silêncio total é o que faz o robô achar
+       que "funcionou" e não insistir tentando outro jeito. */
+    var hp = q('#newWebsite');
+    if (hp && hp.value) return;
+
     var usuario = (q('#newUsername') && q('#newUsername').value || '').trim();
     var email   = (q('#newEmail') && q('#newEmail').value || '').trim().toLowerCase();
     var senha   = (q('#newPass') && q('#newPass').value) || '';
     var err     = q('#inlineCreateError');
 
     if (!/^[A-Za-z0-9._-]{3,20}$/.test(usuario) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !senha) return;
+
+    /* Só existe token pra pedir quando o Turnstile está de fato ligado
+       (ver mw-turnstile-js) — window.mwTurnstileToken nem existiria
+       como variável se MW_TURNSTILE_SITE_KEY estivesse vazia. */
+    if (window.mwTurnstileToken === null) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (err) err.textContent = 'Complete a verificação acima antes de continuar.';
+      return;
+    }
+    var captchaToken = window.mwTurnstileToken || undefined;
 
     e.preventDefault();
     e.stopPropagation();
@@ -19140,6 +19402,15 @@ document.addEventListener('click', function(e){
       form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     }
 
+    /* Token do Turnstile só serve uma vez — reseta assim que é usado
+       (der certo o cadastro ou não), pra uma segunda tentativa exigir
+       marcar a caixinha de novo em vez de travar pra sempre com um
+       token já gasto. */
+    if (window.mwTurnstileToken !== undefined) {
+      window.mwTurnstileToken = null;
+      try { window.turnstile && window.turnstile.reset(); } catch (er) {}
+    }
+
     window.mwNuvem.usuarioLivre(usuario).then(function(livre){
       if (livre === false) {
         if (err) err.textContent = 'Esse nome de usuário já está em uso. Escolha outro.';
@@ -19149,7 +19420,7 @@ document.addEventListener('click', function(e){
          cadastro local; a conta sobe na primeira entrada com rede. */
       if (livre === null) { segue(); return null; }
 
-      return window.mwNuvem.cadastrar(usuario, email, senha, usuario).then(function(dados){
+      return window.mwNuvem.cadastrar(usuario, email, senha, usuario, captchaToken).then(function(dados){
         /* Com "Confirm email" ligado no Supabase, o cadastro devolve o
            usuário mas NÃO devolve sessão: a conta existe e ainda não pode
            entrar. Guardar o uid aqui seria mentir para o resto do app —
@@ -19776,6 +20047,44 @@ html body.light #mwRecupera input{background:#fff!important;color:#0b1830!import
   })(12);
 
   window.mwRecuperaAbrir = function(){ abrir('pedir', {}); };
+})();
+</script>
+
+<script id="mw-esqueci-usuario-js">
+(function(){
+  'use strict';
+  /* Mais simples de propósito que a recuperação de senha: não tem
+     estado nenhum pra guardar entre passos (é uma pergunta, uma
+     resposta), então um prompt()/alert() resolve sem precisar de
+     outra caixa com CSS própria. Mesmo padrão já usado no fluxo de
+     telefone em Configurações.
+
+     Mostra o usuário direto, sem esconder se a conta existe ou não —
+     diferente da recuperação de senha (que dá a mesma resposta nos
+     dois casos de propósito). É o mesmo risco já aceito no projeto
+     para email_por_username (ver ajuste-02-limite-consulta.sql): com a
+     chave pública em mãos dá pra descobrir o usuário de um e-mail que
+     já se conheça. Não expõe senha, é limitado por aparelho, e o app
+     é de uso pessoal — por isso o mesmo tradeoff vale aqui. */
+  var link = document.getElementById('forgotUsernameLink');
+  if (!link) return;
+
+  link.addEventListener('click', function(e){
+    e.preventDefault();
+    if (!window.mwNuvem || !window.mwNuvem.ligado()) {
+      alert('Recuperar usuário precisa de internet. Conecte e tente de novo.');
+      return;
+    }
+    var email = prompt('Digite o e-mail da sua conta:');
+    if (email === null) return;
+    email = String(email).trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert('Digite um e-mail válido.'); return; }
+
+    window.mwNuvem.usernamePorEmail(email).then(function(usuario){
+      if (usuario) alert('O nome de usuário dessa conta é: ' + usuario);
+      else alert('Não encontramos nenhuma conta com esse e-mail.');
+    });
+  });
 })();
 </script>
 

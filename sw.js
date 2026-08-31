@@ -1,5 +1,20 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v30: cinco coisas de uma vez —
+   1) Painel Admin passou a usar dados reais do Supabase, com checagem de
+      is_admin no SERVIDOR (ver supabase/ajuste-04-admin-e-extras.sql);
+      sem is_admin=true na conta, as funções recusam sozinhas.
+   2) "Esqueci meu usuário" (e-mail → usuário) ao lado de "esqueci minha
+      senha" na tela de login.
+   3) "Sair de todos os outros aparelhos" em Configurações → Sessão
+      (Supabase Auth signOut scope:'others', sem lista de sessões).
+   4) Botão "Privacidade" do rodapé (existia, não fazia nada) agora abre
+      um aviso real sobre o que é guardado — inclusive o log de acessos.
+   5) Cadastro ganhou campo-armadilha contra robôs (sempre ativo) e
+      plumbing pronta pra Cloudflare Turnstile (captcha), desligada até
+      MW_TURNSTILE_SITE_KEY ser preenchida — hoje não muda nada.
+   Sem trocar o nome do cache, quem já tinha o app instalado continuaria
+   servindo o index.html de antes, sem nada disso. */
 /* v29: e-mail do cadastro e da recuperação de senha agora exige formato
    de verdade (não só um "@" solto) — mesma regra que a troca de e-mail
    em Configurações já usava. E entrou telefone com confirmação real por
@@ -75,7 +90,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v29';
+const CACHE_NAME = 'mw-shell-v30';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
