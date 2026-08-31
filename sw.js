@@ -1,5 +1,44 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v40: rodada de bugs/pedidos relatados com print real de iPhone —
+   (1) a folha nativa "Iniciar Sessão" (AutoFill de senha) aparecia por
+   cima da tela de CARREGAMENTO, não da de login: o formulário de
+   login de verdade (com autocomplete=username/current-password) não
+   nascia com display:none quando não havia sessão salva — só ficava
+   coberto visualmente pelo preloader, e isso não impede a heurística
+   de autofill do sistema (que flutua acima de qualquer z-index da
+   página). Agora #loginScreen fica display:none de verdade até
+   html.mw-login-pronto (só ligada quando o boot termina por completo).
+   (2) o preloader saindo e a tela de baixo entrando aconteciam ao
+   MESMO TEMPO (decisão estética antiga) — pedido explícito reverteu
+   isso: agora a entrada só começa depois que o preloader já foi
+   removido do DOM, sequencial de verdade.
+   (3) bug real de CSS: misturar inset:-12px (top/bottom) com
+   height:100dvh!important deixava a caixa do preloader
+   SOBRE-restringida — o navegador ignorava o bottom declarado e
+   recalculava a partir de top+height, deixando uma sobra de 12px sem
+   cobrir no rodapé da tela (o "risco/rastro" relatado) e a marca
+   descentralizada. Trocado por um inset uniforme só (-16px nos 4
+   lados, sem width/height competindo) — cobre e centraliza de
+   verdade.
+   (4) a cascata de entrada do dashboard (mw-entrando) teve duração e
+   atraso cortados quase pela metade — sentia como demora, não como
+   cascata rápida.
+   (5) puxar-pra-recarregar agora força o modo leve (só giro curto) de
+   propósito antes do reload, em vez de confiar cegamente que
+   sessionStorage já estava correto — e um bug real nessa mesma chave
+   foi corrigido: a rotina de reset único do navegador limpava
+   sessionStorage INTEIRO (incluindo a marca que decide boot completo
+   vs. leve) no mesmo carregamento em que ela tinha acabado de ser
+   gravada.
+   (6) a logo "MW" da sidebar trocou o SVG customizado (lido como
+   "estradas cruzando") por texto limpo "MW", e o tile deixou de ser
+   achatado pro tamanho/raio genérico dos ícones de navegação por uma
+   regra de uniformização que não devia alcançá-lo.
+   (7) rodapé de login reorganizado: "esqueci senha/usuário" numa
+   ponta, um indicador de que o navegador salva a senha na outra.
+   Sem trocar o nome do cache, quem já tinha o app instalado
+   continuaria vendo todos esses bugs. */
 /* v39: três correções de bugs relatados com vídeo/print reais —
    (1) o preloader de saída (.mw-boot-out) desligava pointer-events na
    hora em que a classe entrava, enquanto a opacidade (curva ease-in)
@@ -207,7 +246,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v39';
+const CACHE_NAME = 'mw-shell-v40';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
