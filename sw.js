@@ -1,5 +1,19 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v37: a v35 tentou resolver o círculo quebrado no Safari/iOS testando
+   se o navegador ACEITAVA a sintaxe url(#mwLenteFiltro) — e um vídeo
+   real de iPhone provou esse teste insuficiente: o Safari aceita a
+   sintaxe (então o teste dizia "suportado"), mas não RENDERIZA a
+   distorção de verdade, e ainda por cima perde o próprio blur do
+   fallback no processo — sobra exatamente o círculo liso do vídeo.
+   mwLenteVidroSuportada() agora exclui por PLATAFORMA antes de
+   qualquer teste de sintaxe: todo navegador em iOS (Safari, Chrome,
+   Firefox, Edge — a Apple obriga todos a usarem o motor WebKit dela
+   lá) e o Safari de desktop não recebem a lente. Testado com
+   user-agents de iPhone, "Chrome" em iPhone, iPad moderno (que se
+   disfarça de Mac) e Safari de macOS — todos ficam sem o círculo; só
+   Chrome/Android continua recebendo. Sem trocar o nome do cache, quem
+   já tinha o app instalado continuaria vendo o círculo quebrado. */
 /* v36: campo de telefone (Configurações → Conta) deixou de ser um
    <input readonly> estático. Agora é: (1) um diálogo próprio
    (window.mwPedirTelefone, mwTelDialog) com seletor de país por
@@ -156,7 +170,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v36';
+const CACHE_NAME = 'mw-shell-v37';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

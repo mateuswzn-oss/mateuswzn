@@ -8591,19 +8591,47 @@ img,svg,video,canvas{max-width:100%}
      container), reaproveitando o mesmo filtro SVG (ele só precisa
      existir uma vez no documento).
 
-     Feedback de um iPhone real (Safari) confirmou o que o comentário
-     acima já previa: ali a distorção não é aplicada, e um círculo de
-     vidro liso boiando sozinho sobre um ícone parece BUG, não um
-     efeito visual — pior do que simplesmente não ter lente nenhuma.
-     Por isso, antes de criar qualquer coisa, mwLenteVidroSuportada()
-     testa de verdade se o navegador aceitou url(#mwLenteFiltro) como
-     filtro válido (lendo o valor computado de volta — se o navegador
-     não entendeu a sintaxe, a declaração é descartada e o computado
-     nunca contém "url("). Sem suporte de verdade, a função não cria
-     nada: a barra fica só com o vidro base (blur/saturate), sem
-     nenhum círculo extra. */
+     Feedback de dois vídeos reais de iPhone confirmou o que o
+     comentário acima já previa: ali a distorção não é aplicada, e um
+     círculo de vidro liso boiando sozinho sobre um ícone parece BUG,
+     não um efeito visual — pior do que simplesmente não ter lente
+     nenhuma. Por isso, antes de criar qualquer coisa,
+     mwLenteVidroSuportada() decide se este navegador é dos que
+     renderizam a distorção de verdade — ver o comentário dentro dela
+     pra saber por que isso não é só "testar a sintaxe aceita". Sem
+     suporte de verdade, a função não cria nada: a barra fica só com o
+     vidro base (blur/saturate), sem nenhum círculo extra. */
   function mwLenteVidroSuportada(){
     try {
+      /* A v35 confiava só no teste de computed style abaixo — e um
+         iPhone real (vídeo do usuário) mostrou que ele dá FALSO
+         POSITIVO no Safari/iOS: o navegador aceita url(#mwLenteFiltro)
+         como sintaxe válida (o computado continua com "url(" depois de
+         aplicado) mas não RENDERIZA a distorção de verdade — o feImage
+         com o SVG do mapa de deslocamento embutido como data URI
+         simplesmente não carrega ali, então o filtro vira, na prática,
+         um blur quebrado (nem o blur simples do fallback sobrevive,
+         porque a declaração com url() já substituiu a anterior por ter
+         "passado" no parser). Resultado: exatamente o círculo liso e
+         sem graça do vídeo, apesar do teste de sintaxe ter dito "ok".
+
+         Testar RENDERIZAÇÃO de verdade (em vez de só sintaxe) exigiria
+         capturar pixels por trás de um backdrop-filter — não dá pra
+         fazer isso com CSSOM, só rasterizando a página de outro jeito.
+         Mais simples e mais confiável: todo navegador em iOS (Safari,
+         Chrome, Firefox, Edge — a Apple OBRIGA todos a rodarem sobre o
+         motor WebKit dela lá, não é escolha de cada um) tem o mesmo
+         motor de renderização e portanto o mesmo bug, então excluir por
+         PLATAFORMA (é iOS? é Safari de desktop?) é mais confiável do
+         que confiar no que o CSSOM diz que "aceitou". iPadOS moderno se
+         disfarça de Mac no user-agent; maxTouchPoints > 1 é o jeito
+         padrão de diferenciar um iPad de um Mac de verdade. */
+      var ua = navigator.userAgent || '';
+      var ehIOS = /iPad|iPhone|iPod/.test(ua) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      var ehSafariDesktop = /^((?!chrome|crios|fxios|edg|android).)*safari/i.test(ua);
+      if (ehIOS || ehSafariDesktop) return false;
+
       var teste = document.createElement('div');
       teste.style.cssText = 'position:fixed;width:1px;height:1px;left:-9999px;top:-9999px;pointer-events:none;visibility:hidden';
       document.body.appendChild(teste);
