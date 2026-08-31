@@ -1,5 +1,41 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v37: a v35 tentou resolver o círculo quebrado no Safari/iOS testando
+   se o navegador ACEITAVA a sintaxe url(#mwLenteFiltro) — e um vídeo
+   real de iPhone provou esse teste insuficiente: o Safari aceita a
+   sintaxe (então o teste dizia "suportado"), mas não RENDERIZA a
+   distorção de verdade, e ainda por cima perde o próprio blur do
+   fallback no processo — sobra exatamente o círculo liso do vídeo.
+   mwLenteVidroSuportada() agora exclui por PLATAFORMA antes de
+   qualquer teste de sintaxe: todo navegador em iOS (Safari, Chrome,
+   Firefox, Edge — a Apple obriga todos a usarem o motor WebKit dela
+   lá) e o Safari de desktop não recebem a lente. Testado com
+   user-agents de iPhone, "Chrome" em iPhone, iPad moderno (que se
+   disfarça de Mac) e Safari de macOS — todos ficam sem o círculo; só
+   Chrome/Android continua recebendo. Sem trocar o nome do cache, quem
+   já tinha o app instalado continuaria vendo o círculo quebrado. */
+/* v36: campo de telefone (Configurações → Conta) deixou de ser um
+   <input readonly> estático. Agora é: (1) um diálogo próprio
+   (window.mwPedirTelefone, mwTelDialog) com seletor de país por
+   bandeira + DDI (30 países, Brasil/+55 como padrão) ao lado do campo
+   do número, em vez do prompt genérico que só aceitava dígitos crus
+   assumindo Brasil; (2) uma exibição de verdade depois de cadastrado —
+   bandeira + DDI + número formatado ((DD) 9NNNN-NNNN pro Brasil,
+   agrupamento genérico pros demais países), com um selo "Aguardando
+   confirmação" enquanto o SMS não foi confirmado, em vez do E.164 cru
+   colado num input. mw-conta-js.paraE164BR (só Brasil) virou
+   paraE164 (genérico — quem monta o número completo com o DDI certo
+   agora é o diálogo). Sem trocar o nome do cache, quem já tinha o app
+   instalado continuaria vendo o input antigo. */
+/* v35: feedback real, de um iPhone (Safari), confirmou o que o comentário
+   da v32 já previa — ali a distorção não é aplicada, e sobrava um círculo
+   de vidro liso flutuando sozinho sobre um ícone, que lia como BUG e não
+   como efeito. window.mwCriaLenteVidro agora testa de verdade, antes de
+   criar qualquer coisa, se o navegador aceitou url(#mwLenteFiltro) como
+   filtro válido (lendo o valor computado de volta). Sem esse suporte
+   real, a função não cria nada — a barra fica só com o vidro base, sem
+   nenhum círculo extra. Sem trocar o nome do cache, quem já tinha o app
+   instalado continuaria vendo o círculo quebrado. */
 /* v34: desfaz a v33 — a lente na barra da Nyc AI foi mal-entendido
    (o pedido "chat, praticamente igual" era só descrevendo o vídeo de
    referência do WhatsApp, um app de chat, não pedindo pra colocar na
@@ -134,7 +170,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v34';
+const CACHE_NAME = 'mw-shell-v37';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
