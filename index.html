@@ -3336,6 +3336,24 @@ try {
     </div>
   </div>
 </div>
+<!-- Mesma cara dos diálogos acima, mas com DOIS campos lado a lado
+     (país e número) em vez de um só — window.mwPedirTelefone abaixo é o
+     ponto único pra pedir telefone com DDI selecionável por bandeira. -->
+<div id="mwTelDialog" class="hidden" role="dialog" aria-modal="true" aria-labelledby="mwTelDialogTitulo">
+  <div class="mw-confirma-card mw-tel-card">
+    <h3 id="mwTelDialogTitulo">Telefone</h3>
+    <p id="mwTelDialogTexto">Escolha o país e digite o número, com DDD.</p>
+    <div class="mw-tel-linha">
+      <select id="mwTelDialogPais" class="mw-tel-select" aria-label="País"></select>
+      <input id="mwTelDialogCampo" type="tel" inputmode="numeric" autocomplete="off" placeholder="11999999999">
+    </div>
+    <p class="form-error" id="mwTelDialogErro" hidden></p>
+    <div class="mw-confirma-acoes">
+      <button type="button" class="small-btn" id="mwTelDialogCancelar">Cancelar</button>
+      <button type="button" class="save-btn" id="mwTelDialogOk">Continuar</button>
+    </div>
+  </div>
+</div>
 <div id="mwPinGate" class="hidden" role="dialog" aria-modal="true" aria-label="Digite seu código de acesso">
   <div class="mw-pin-card">
     <div class="mw-pin-icone" aria-hidden="true"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10.5" rx="3"/><path d="M8 10.5V7.2a4 4 0 0 1 8 0v3.3"/></svg></div>
@@ -3815,7 +3833,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
         <div class="mw-conta-linha"><div class="mw-conta-campo"><label>Nome de usuário</label><input id="mwContaUsuario" type="text" readonly autocomplete="off"></div><button type="button" class="small-btn" id="mwContaTrocarUsuario">Alterar</button></div>
         <div class="mw-conta-linha"><div class="mw-conta-campo"><label>E-mail</label><input id="mwContaEmail" type="email" readonly autocomplete="off"></div><button type="button" class="small-btn" id="mwContaTrocarEmail">Alterar</button></div>
         <div class="mw-conta-linha"><div class="mw-conta-campo"><label>Senha</label><input id="mwContaSenha" type="password" value="••••••••" readonly autocomplete="off"></div><button type="button" class="small-btn" id="mwContaTrocarSenha">Alterar</button></div>
-        <div class="mw-conta-linha"><div class="mw-conta-campo"><label>Telefone</label><input id="mwContaTelefone" type="tel" readonly autocomplete="off" placeholder="Não cadastrado"></div><button type="button" class="small-btn" id="mwContaTrocarTelefone">Adicionar</button></div>
+        <div class="mw-conta-linha"><div class="mw-conta-campo"><label>Telefone</label><div class="mw-tel-exibicao" id="mwContaTelefoneExibicao"><span class="mw-tel-vazio" id="mwContaTelefoneVazio">Não cadastrado</span><span class="mw-tel-valor" id="mwContaTelefoneValor" hidden></span><span class="mw-tel-badge" id="mwContaTelefoneBadge" hidden>Aguardando confirmação</span></div></div><button type="button" class="small-btn" id="mwContaTrocarTelefone">Adicionar</button></div>
         <p class="form-error" id="mwContaStatus" hidden></p></div>
         <div class="settings-group"><h4>Dados do perfil</h4><p>Como você aparece no Workspace. O nome de exibição pode ser trocado a qualquer momento, sem senha.</p><div class="profile-form"><div class="form-field"><label>Nome de exibição</label><input id="profileName" type="text" placeholder="Mateus"></div><div class="form-field"><label>E-mail</label><input id="profileEmail" type="email" readonly placeholder="seu@email.com" title="O e-mail da conta muda no grupo Conta, acima."></div><div class="form-field full profile-photo-field">
 <label>Foto de perfil</label>
@@ -17249,6 +17267,25 @@ body.mw-entrando #app .main > * .stat{
 #mwContaStatus{margin-top:10px}
 #mwContaStatus.mw-ok{color:var(--blue2)}
 
+/* Telefone deixou de ser um <input readonly> (lia como campo de
+   formulário "morto", sem fazer nada) e virou uma exibição de verdade:
+   mesma caixa visual do resto da coluna, mas com a bandeira do país e o
+   número já formatado (DDI, DDD, hífen) — igual a qualquer app que trata
+   telefone como identidade, não como texto solto. */
+.mw-tel-exibicao{
+  width:100%;min-height:44px;padding:11px 13px;border-radius:12px;
+  background:var(--panel2);border:1px solid var(--line);color:var(--text);
+  font-size:14px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;
+}
+.mw-tel-vazio{color:var(--muted)}
+.mw-tel-valor{font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.mw-tel-badge{
+  font-size:11px;padding:2px 8px;border-radius:999px;
+  background:rgba(250,180,60,.16);border:1px solid rgba(250,180,60,.32);
+  color:#e0a72e;white-space:nowrap;
+}
+body.light .mw-tel-badge{background:rgba(220,140,10,.12);border-color:rgba(220,140,10,.3);color:#a3670a}
+
 /* Diálogo de conferência */
 #mwConfirmaSegredo{
   position:fixed;inset:0;z-index:10000;display:none;
@@ -17262,6 +17299,20 @@ body.mw-entrando #app .main > * .stat{
   background:rgba(2,6,23,.72);backdrop-filter:blur(6px);
 }
 #mwPedirValor:not(.hidden){display:flex}
+#mwTelDialog{
+  position:fixed;inset:0;z-index:10000;display:none;
+  align-items:center;justify-content:center;padding:22px;
+  background:rgba(2,6,23,.72);backdrop-filter:blur(6px);
+}
+#mwTelDialog:not(.hidden){display:flex}
+.mw-tel-card{width:min(380px,100%)}
+.mw-tel-linha{display:flex;gap:8px;margin-bottom:6px}
+.mw-tel-select{
+  flex:0 0 auto;max-width:132px;padding:11px 8px;border-radius:12px;
+  background:var(--panel);border:1px solid var(--line);color:var(--text);
+  font:inherit;font-size:13px;
+}
+.mw-tel-linha input{width:auto;flex:1;min-width:0;margin-bottom:0}
 .mw-confirma-card{
   width:min(360px,100%);padding:24px 22px 18px;border-radius:20px;
   background:var(--panel2);border:1px solid var(--line);color:var(--text);
@@ -17504,29 +17555,23 @@ body.light .mw-confirma-card{background:#fff;color:#0b1830}
      três funções abaixo devolvem erro claro nesse caso, em vez de
      fingir que funcionou.
 
-     Só Brasil por enquanto: o formulário pede DDD + número e a função
-     de formato assume o código do país 55. Um número que já venha com
-     código de país diferente de 55 é recusado — dar suporte a outros
-     países é decisão de produto (o "+" de qual país aparece na tela?),
-     não só técnica, então fica de fora até alguém pedir. */
-  function paraE164BR(v){
+     Suporte a qualquer país: quem monta o número completo (DDI da
+     bandeira escolhida + DDD/local) é o diálogo de telefone
+     (window.mwPedirTelefone, em mw-conta-ui-js) — chega aqui já como
+     E.164 completo (ex.: "+5511999999999"). Esta função só confere que
+     o formato bate com a regra do E.164 (8 a 15 dígitos no total,
+     contando o DDI); não conhece bandeira nem país nenhum — isso é
+     detalhe de exibição, não de validação. */
+  function paraE164(v){
     var d = String(v || '').replace(/\D/g, '');
-    if (!d) return '';
-    if (d.charAt(0) === '0') d = d.slice(1);
-    if (d.length === 12 || d.length === 13) {
-      if (d.indexOf('55') !== 0) return '';
-    } else if (d.length === 10 || d.length === 11) {
-      d = '55' + d;
-    } else {
-      return '';
-    }
+    if (!d || d.length < 8 || d.length > 15) return '';
     return '+' + d;
   }
 
   function enviarCodigoTelefone(numero){
-    var e164 = paraE164BR(numero);
+    var e164 = paraE164(numero);
     if (!e164)
-      return Promise.resolve({ ok: false, erro: 'Digite um telefone brasileiro válido, com DDD (ex.: 11999999999).' });
+      return Promise.resolve({ ok: false, erro: 'Telefone inválido.' });
     return comNuvem(function(){
       return window.mwNuvem.enviarCodigoTelefone(e164);
     }).then(function(r){
@@ -17810,6 +17855,81 @@ body.light .mw-transfere-nota b{color:#0b1830}
     status.classList.toggle('mw-ok', !!bom);
   }
 
+  /* DDI + bandeira de cada país, pro seletor do diálogo de telefone e
+     pra formatar o número na exibição. Brasil primeiro (app é
+     brasileiro, é o padrão do seletor); o resto em ordem de uso
+     provável, não alfabética — não é uma lista de TODOS os ~200
+     países do mundo (isso seria peso morto pra um seletor que ninguém
+     rola até o fim), é uma lista prática dos países mais comuns pra
+     quem usa este app. paisPorDdi() ordena por tamanho do DDI antes de
+     comparar, senão um DDI de 1 dígito (ex.: "1") bateria antes de um
+     de 3 (ex.: "351") só por vir primeiro na lista. */
+  var PAISES_DDI = [
+    { ddi:'55',  nome:'Brasil',           bandeira:'🇧🇷' },
+    { ddi:'351', nome:'Portugal',         bandeira:'🇵🇹' },
+    { ddi:'1',   nome:'Estados Unidos',   bandeira:'🇺🇸' },
+    { ddi:'1',   nome:'Canadá',           bandeira:'🇨🇦' },
+    { ddi:'54',  nome:'Argentina',        bandeira:'🇦🇷' },
+    { ddi:'56',  nome:'Chile',            bandeira:'🇨🇱' },
+    { ddi:'57',  nome:'Colômbia',         bandeira:'🇨🇴' },
+    { ddi:'52',  nome:'México',           bandeira:'🇲🇽' },
+    { ddi:'598', nome:'Uruguai',          bandeira:'🇺🇾' },
+    { ddi:'595', nome:'Paraguai',         bandeira:'🇵🇾' },
+    { ddi:'591', nome:'Bolívia',          bandeira:'🇧🇴' },
+    { ddi:'51',  nome:'Peru',             bandeira:'🇵🇪' },
+    { ddi:'593', nome:'Equador',          bandeira:'🇪🇨' },
+    { ddi:'58',  nome:'Venezuela',        bandeira:'🇻🇪' },
+    { ddi:'244', nome:'Angola',           bandeira:'🇦🇴' },
+    { ddi:'258', nome:'Moçambique',       bandeira:'🇲🇿' },
+    { ddi:'34',  nome:'Espanha',          bandeira:'🇪🇸' },
+    { ddi:'33',  nome:'França',           bandeira:'🇫🇷' },
+    { ddi:'49',  nome:'Alemanha',         bandeira:'🇩🇪' },
+    { ddi:'39',  nome:'Itália',           bandeira:'🇮🇹' },
+    { ddi:'44',  nome:'Reino Unido',      bandeira:'🇬🇧' },
+    { ddi:'31',  nome:'Países Baixos',    bandeira:'🇳🇱' },
+    { ddi:'41',  nome:'Suíça',            bandeira:'🇨🇭' },
+    { ddi:'46',  nome:'Suécia',           bandeira:'🇸🇪' },
+    { ddi:'353', nome:'Irlanda',          bandeira:'🇮🇪' },
+    { ddi:'27',  nome:'África do Sul',    bandeira:'🇿🇦' },
+    { ddi:'81',  nome:'Japão',            bandeira:'🇯🇵' },
+    { ddi:'86',  nome:'China',            bandeira:'🇨🇳' },
+    { ddi:'91',  nome:'Índia',            bandeira:'🇮🇳' },
+    { ddi:'61',  nome:'Austrália',        bandeira:'🇦🇺' },
+  ];
+
+  function paisPorDdi(digitosCompletos){
+    var candidatos = PAISES_DDI.slice().sort(function(a, b){ return b.ddi.length - a.ddi.length; });
+    for (var i = 0; i < candidatos.length; i++) {
+      if (digitosCompletos.indexOf(candidatos[i].ddi) === 0) return candidatos[i];
+    }
+    return null;
+  }
+
+  /* Formato "bonito" por país: Brasil ganha a formatação real de
+     verdade ((DD) 9NNNN-NNNN / (DD) NNNN-NNNN, com e sem o 9º dígito
+     do celular); os demais países ganham um agrupamento genérico em
+     blocos de 4 a partir da direita — não é a formatação oficial de
+     cada país (isso pediria uma tabela de regras por país, tipo
+     libphonenumber), mas já deixa de ser uma sequência ilegível de
+     dígitos colados. */
+  function agruparGenerico(d){
+    var partes = [];
+    var i = d.length;
+    while (i > 0) {
+      var inicio = Math.max(0, i - 4);
+      partes.unshift(d.slice(inicio, i));
+      i = inicio;
+    }
+    return partes.join(' ');
+  }
+  function formatarNumeroLocal(pais, digitos){
+    if (pais.ddi === '55') {
+      if (digitos.length === 11) return '(' + digitos.slice(0, 2) + ') ' + digitos.slice(2, 7) + '-' + digitos.slice(7);
+      if (digitos.length === 10) return '(' + digitos.slice(0, 2) + ') ' + digitos.slice(2, 6) + '-' + digitos.slice(6);
+    }
+    return agruparGenerico(digitos);
+  }
+
   function pintar(){
     var conta = window.mwConta && window.mwConta.atual();
     campoUsuario.value = (conta && conta.username) || '';
@@ -17822,18 +17942,30 @@ body.light .mw-transfere-nota b{color:#0b1830}
   }
 
   /* Separado de pintar() porque telefoneAtual() é assíncrono (pergunta
-     ao servidor) — os outros campos leem do localStorage na hora. */
+     ao servidor) — os outros campos leem do localStorage na hora.
+     Substituiu o <input readonly> por uma exibição de verdade: bandeira
+     do país + DDI + número formatado (não mais o E.164 cru colado). */
   function pintarTelefone(){
-    var campo = document.getElementById('mwContaTelefone');
+    var vazio = document.getElementById('mwContaTelefoneVazio');
+    var valor = document.getElementById('mwContaTelefoneValor');
+    var badge = document.getElementById('mwContaTelefoneBadge');
     var btn = document.getElementById('mwContaTrocarTelefone');
-    if (!campo || !window.mwConta || !window.mwConta.telefoneAtual) return;
+    if (!vazio || !valor || !window.mwConta || !window.mwConta.telefoneAtual) return;
     window.mwConta.telefoneAtual().then(function(info){
       if (!info || !info.numero) {
-        campo.value = '';
+        vazio.hidden = false;
+        valor.hidden = true;
+        if (badge) badge.hidden = true;
         if (btn) btn.textContent = 'Adicionar';
         return;
       }
-      campo.value = info.numero + (info.confirmado ? '' : ' (aguardando confirmação)');
+      var digitos = String(info.numero).replace(/\D/g, '');
+      var pais = paisPorDdi(digitos) || PAISES_DDI[0];
+      var local = digitos.slice(pais.ddi.length);
+      valor.textContent = pais.bandeira + ' +' + pais.ddi + ' ' + formatarNumeroLocal(pais, local);
+      valor.hidden = false;
+      vazio.hidden = true;
+      if (badge) badge.hidden = !!info.confirmado;
       if (btn) btn.textContent = 'Alterar';
     });
   }
@@ -17926,6 +18058,80 @@ body.light .mw-transfere-nota b{color:#0b1830}
   }
   window.mwPedirValor = pedirValor;
 
+  /* Mesma ideia do pedirValor acima, mas telefone precisa de DOIS
+     campos (país + número), não um texto solto — por isso um diálogo
+     próprio em vez de reaproveitar o genérico. Devolve uma promessa:
+     { ddi, bandeira, nomePais, numero, e164 } com o número já montado
+     e validado, ou null se cancelou. */
+  var telDialogo = document.getElementById('mwTelDialog');
+  var telSelectPreenchido = false;
+  function preencherSelectPaises(){
+    if (telSelectPreenchido) return;
+    var select = document.getElementById('mwTelDialogPais');
+    if (!select) return;
+    PAISES_DDI.forEach(function(pais, i){
+      var opt = document.createElement('option');
+      opt.value = String(i);
+      opt.textContent = pais.bandeira + ' ' + pais.nome + ' +' + pais.ddi;
+      select.appendChild(opt);
+    });
+    telSelectPreenchido = true;
+  }
+  function pedirTelefone(titulo, texto, opcoes){
+    opcoes = opcoes || {};
+    if (!telDialogo) return Promise.resolve(null);
+    preencherSelectPaises();
+    return new Promise(function(resolve){
+      var select = document.getElementById('mwTelDialogPais');
+      var campo = document.getElementById('mwTelDialogCampo');
+      var erro = document.getElementById('mwTelDialogErro');
+      var ok = document.getElementById('mwTelDialogOk');
+      var cancelar = document.getElementById('mwTelDialogCancelar');
+      var textoEl = document.getElementById('mwTelDialogTexto');
+      var tituloEl = document.getElementById('mwTelDialogTitulo');
+      if (tituloEl) tituloEl.textContent = titulo || 'Telefone';
+      if (textoEl) { textoEl.textContent = texto || ''; textoEl.hidden = !texto; }
+      select.value = String(opcoes.indicePaisInicial || 0);
+      campo.value = opcoes.valorInicial || '';
+      erro.hidden = true; erro.textContent = '';
+      telDialogo.classList.remove('hidden');
+      setTimeout(function(){ campo.focus(); }, 40);
+
+      function fechar(resultado){
+        telDialogo.classList.add('hidden');
+        ok.removeEventListener('click', confirma);
+        cancelar.removeEventListener('click', desiste);
+        campo.removeEventListener('keydown', porEnter);
+        resolve(resultado);
+      }
+      function confirma(){
+        var pais = PAISES_DDI[Number(select.value)] || PAISES_DDI[0];
+        var digitos = String(campo.value || '').replace(/\D/g, '');
+        if (digitos.charAt(0) === '0') digitos = digitos.slice(1);
+        if (!digitos) {
+          erro.textContent = 'Digite o número, com DDD.';
+          erro.hidden = false;
+          campo.focus();
+          return;
+        }
+        var completo = pais.ddi + digitos;
+        if (completo.length < 8 || completo.length > 15) {
+          erro.textContent = 'Número inválido para ' + pais.nome + '.';
+          erro.hidden = false;
+          campo.focus();
+          return;
+        }
+        fechar({ ddi: pais.ddi, bandeira: pais.bandeira, nomePais: pais.nome, numero: digitos, e164: '+' + completo });
+      }
+      function desiste(){ fechar(null); }
+      function porEnter(e){ if (e.key === 'Enter') { e.preventDefault(); confirma(); } }
+
+      ok.addEventListener('click', confirma);
+      cancelar.addEventListener('click', desiste);
+      campo.addEventListener('keydown', porEnter);
+    });
+  }
+
   function trocar(rotulo, texto, pedir, aplicar, opcoesValor){
     return function(){
       aviso('');
@@ -17974,10 +18180,10 @@ body.light .mw-transfere-nota b{color:#0b1830}
     aviso('');
     confirmar('Para adicionar ou trocar o telefone, confirme que é você.').then(function(provou){
       if (!provou) return;
-      pedirValor('Telefone', 'Com DDD, só números.', { tipo: 'tel', placeholder: '11999999999' }).then(function(numero){
-        if (numero === null) return;
+      pedirTelefone('Telefone', 'Escolha o país e digite o número, com DDD.').then(function(escolhido){
+        if (escolhido === null) return;
         aviso('Enviando código por SMS...');
-        window.mwConta.enviarCodigoTelefone(numero).then(function(r){
+        window.mwConta.enviarCodigoTelefone(escolhido.e164).then(function(r){
           if (!r.ok) { aviso(r.erro, false); return; }
           pedirValor('Código de confirmação', 'Recebido por SMS em ' + r.telefone + '.', { tipo: 'tel', placeholder: '6 dígitos' }).then(function(codigo){
             if (codigo === null) { aviso(''); return; }

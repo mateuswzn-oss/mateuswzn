@@ -1,5 +1,18 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v36: campo de telefone (Configurações → Conta) deixou de ser um
+   <input readonly> estático. Agora é: (1) um diálogo próprio
+   (window.mwPedirTelefone, mwTelDialog) com seletor de país por
+   bandeira + DDI (30 países, Brasil/+55 como padrão) ao lado do campo
+   do número, em vez do prompt genérico que só aceitava dígitos crus
+   assumindo Brasil; (2) uma exibição de verdade depois de cadastrado —
+   bandeira + DDI + número formatado ((DD) 9NNNN-NNNN pro Brasil,
+   agrupamento genérico pros demais países), com um selo "Aguardando
+   confirmação" enquanto o SMS não foi confirmado, em vez do E.164 cru
+   colado num input. mw-conta-js.paraE164BR (só Brasil) virou
+   paraE164 (genérico — quem monta o número completo com o DDI certo
+   agora é o diálogo). Sem trocar o nome do cache, quem já tinha o app
+   instalado continuaria vendo o input antigo. */
 /* v35: feedback real, de um iPhone (Safari), confirmou o que o comentário
    da v32 já previa — ali a distorção não é aplicada, e sobrava um círculo
    de vidro liso flutuando sozinho sobre um ícone, que lia como BUG e não
@@ -143,7 +156,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v35';
+const CACHE_NAME = 'mw-shell-v36';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
