@@ -1,5 +1,10 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v26: recarregar a página (mesma aba/app, mesma sessão) deixa de
+   repetir a construção completa da marca — agora mostra só um spinner
+   mínimo. sessionStorage.mwBooted guarda se a marca já foi vista nesta
+   sessão; some quando a aba/app é fechada de verdade, que é exatamente
+   quando a construção completa deve voltar a aparecer. */
 /* v25: o botão de Instagram do rodapé deixou de redirecionar pro perfil
    real (pedido explícito, "por enquanto") — o ícone/aparência/posição
    continuam intactos, só o clique agora mostra "em breve", igual ao
@@ -47,7 +52,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v25';
+const CACHE_NAME = 'mw-shell-v26';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

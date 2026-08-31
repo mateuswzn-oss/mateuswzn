@@ -2627,6 +2627,31 @@ html:has(#mwBootLoader),
 body:has(#mwBootLoader){
   overflow:hidden!important;
 }
+/* Recarregar a página não é "sair e voltar" — a marca já foi vista
+   nesta sessão, então mostrar a construção inteira de novo só deixa
+   tudo mais lento sem motivo. Nesse caso (html.mw-reload-leve, decidido
+   síncrono lá em cima antes deste elemento existir) o preloader vira
+   só um spinner mínimo. A construção completa continua acontecendo
+   normalmente sempre que a aba/app é aberta do zero. */
+html.mw-reload-leve #mwBootLoader .mwb-fundo-respiro,
+html.mw-reload-leve #mwBootLoader .mwb-palco,
+html.mw-reload-leve #mwBootLoader .mwb-espera{
+  display:none!important;
+}
+html.mw-reload-leve #mwBootLoader:after{
+  content:"";
+  width:30px;height:30px;border-radius:50%;
+  border:2.5px solid rgba(148,180,255,.18);
+  border-top-color:#7db8ff;
+  animation:mwSpinLeve .75s linear infinite;
+}
+@keyframes mwSpinLeve{ to{transform:rotate(360deg)} }
+html.mw-reload-leve #mwBootLoader.mw-boot-out{
+  animation:mwbFundoSai .28s ease both!important;
+}
+@media(prefers-reduced-motion:reduce){
+  html.mw-reload-leve #mwBootLoader:after{animation:none!important;opacity:.75}
+}
 .mwb-fundo-respiro{
   position:absolute;inset:0;pointer-events:none;
   background:
@@ -2925,6 +2950,23 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
   body.mw-boot-revealing #mwFaceIdGate:not(.hidden){animation:none!important}
 }
 </style>
+<script>
+/* Decide ANTES do preloader existir se esta é uma sessão nova (mostra
+   a construção completa da marca) ou só um recarregamento da mesma
+   aba (mostra um spinner mínimo). sessionStorage sobrevive a
+   recarregamentos mas some quando a aba/app é fechada de verdade —
+   exatamente a distinção pedida: "só volta pra tela de carregamento
+   se a pessoa sair do site ou do app". Roda de forma síncrona, como
+   o primeiro script do <body>, então a classe já está no <html>
+   antes do preloader ser inserido no DOM — sem flash da versão
+   completa antes de trocar pra leve. */
+try {
+  if (sessionStorage.getItem('mwBooted') === '1') {
+    document.documentElement.classList.add('mw-reload-leve');
+  }
+  sessionStorage.setItem('mwBooted', '1');
+} catch (e) {}
+</script>
 <div id="mwBootLoader" aria-hidden="true">
   <span class="mwb-fundo-respiro"></span>
   <div class="mwb-palco">
@@ -4233,9 +4275,14 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
      junto. A saída também deixou de ser um fade simples: virou um
      flash de energia + onda de choque, por isso a duração foi de 520
      para 620ms. */
-  var MW_BOOT_MIN = 4550;
-  var MW_BOOT_MAX = 5450;
-  var MW_BOOT_SAIDA = 620;   // igual à duração das animações de saída
+  /* Recarregamento na mesma sessão usa o spinner mínimo (ver a classe
+     mw-reload-leve, decidida antes do markup do loader existir) — não
+     faz sentido segurar 4,5s de piso pra uma tela que não tem nenhuma
+     construção de marca pra terminar. */
+  var mwReloadLeve = document.documentElement.classList.contains('mw-reload-leve');
+  var MW_BOOT_MIN = mwReloadLeve ? 250 : 4550;
+  var MW_BOOT_MAX = mwReloadLeve ? 1500 : 5450;
+  var MW_BOOT_SAIDA = mwReloadLeve ? 280 : 620;   // igual à duração das animações de saída
   var mwBootDone = false;
 
   /* A promessa já foi criada logo abaixo do markup do loader (ver o
