@@ -693,7 +693,7 @@ body.light .college-save,body.light .add-btn,body.light .save-btn,body.light .mo
 .mateus-ai-eyebrow{font-size:8px;letter-spacing:.16em;color:#9299a2}.mateus-ai-head h3{margin:3px 0 0;font-size:17px}
 .mateus-ai-close{width:34px;height:34px;border:0;border-radius:10px;background:rgba(255,255,255,.06);color:inherit;font-size:20px}
 .mateus-ai-messages{min-height:260px;max-height:54vh;overflow:auto;padding:16px;display:grid;gap:10px}
-.mateus-ai-msg{max-width:88%;padding:10px 12px;border-radius:15px;font-size:12px;line-height:1.55;white-space:pre-wrap}
+.mateus-ai-msg{max-width:88%;padding:10px 12px;border-radius:15px;font-size:12px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}
 .mateus-ai-msg.assistant{justify-self:start;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.06)}
 .mateus-ai-msg.user{justify-self:end;background:rgba(124,92,255,.17);border:1px solid rgba(124,92,255,.20)}
 .mateus-ai-form{display:flex;gap:8px;padding:12px;border-top:1px solid rgba(255,255,255,.07)}
@@ -3493,6 +3493,11 @@ body.light .mw-faceid-gate-card p{color:#526988}
 .mw-faceid-switch.on{background:linear-gradient(100deg,#2563eb,#0ea5e9);border-color:rgba(37,99,235,.5);justify-content:flex-end}
 .mw-faceid-switch:disabled{opacity:.6;cursor:default}
 @media(prefers-reduced-motion:reduce){.mw-faceid-switch i{transition:none}}
+/* Deixa explícito que o Face ID aqui é um atalho LOCAL (WebAuthn contra
+   o autenticador da plataforma, sem servidor validando nada) — não
+   substitui a senha como proteção real da conta. Melhor avisar do que
+   deixar a pessoa achar que é uma segunda camada de segurança. */
+.mw-faceid-limite{margin-top:8px;font-size:11.5px;line-height:1.5;color:var(--muted)}
 </style>
 <section id="loginScreen">
   <div class="mwv2-ambient a1"></div>
@@ -3942,7 +3947,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
 </div></div><div class="profile-actions"><button class="save-btn" id="saveProfile">Salvar perfil</button></div></div>
       <div class="settings-group hidden" id="legacyThemeGroup"><h4>Preferências</h4><div class="theme-row"><button class="theme-btn" id="darkModeBtn">Modo Escuro</button><button class="theme-btn" id="lightModeBtn">Modo Claro</button></div></div>
       <div class="settings-group"><h4>Sessão</h4><p>Sua conta fica guardada neste navegador. Ao sair, será preciso entrar de novo com seu usuário e senha.</p><div class="profile-actions"><button class="small-btn mw-logout-btn" id="logout">Sair</button><button class="small-btn" id="mwSairOutrosAparelhos">Sair de todos os outros aparelhos</button></div><p class="form-error" id="mwSairOutrosStatus" hidden></p></div>
-      <div class="settings-group" id="mwFaceIdGroup" hidden><h4>Segurança</h4><p>Use o Face ID deste iPhone/iPad para entrar no Workspace sem digitar nada.</p><div class="mw-faceid-row"><span class="mw-faceid-row-label">Entrar com Face ID</span><button type="button" class="mw-faceid-switch" id="mwFaceIdToggle" role="switch" aria-checked="false" aria-label="Entrar com Face ID"><i></i></button></div><p class="form-error" id="mwFaceIdStatus" hidden></p></div>
+      <div class="settings-group" id="mwFaceIdGroup" hidden><h4>Segurança</h4><p>Use o Face ID deste iPhone/iPad para entrar no Workspace sem digitar nada.</p><div class="mw-faceid-row"><span class="mw-faceid-row-label">Entrar com Face ID</span><button type="button" class="mw-faceid-switch" id="mwFaceIdToggle" role="switch" aria-checked="false" aria-label="Entrar com Face ID"><i></i></button></div><p class="mw-faceid-limite">Atalho só deste aparelho: agiliza a entrada sem precisar de senha aqui. A proteção da sua conta continua sendo a senha (e a recuperação por e-mail), não o Face ID.</p><p class="form-error" id="mwFaceIdStatus" hidden></p></div>
         <div class="settings-group" id="mwPinGroup"><h4>Código de acesso</h4><p>Um código de 6 dígitos para destravar o Workspace ao reabrir. Funciona em qualquer aparelho, com ou sem Face ID.</p><div class="mw-pin-row"><span class="mw-pin-estado" id="mwPinEstado">Nenhum código definido.</span><div class="mw-pin-acoes"><button type="button" class="small-btn" id="mwPinDefinir">Definir código</button><button type="button" class="small-btn mw-pin-remover" id="mwPinRemover" hidden>Remover</button></div></div><p class="form-error" id="mwPinStatus" hidden></p></div>
       <div class="settings-group"><h4>Aplicativo</h4><p id="mwSettingsInstallDesc">Adicione o Mateus Workspace à tela de início para abrir como um app.</p><div class="profile-actions"><button class="small-btn" id="mwSettingsInstallBtn">Instalar aplicativo</button></div></div>
       <div class="settings-group" id="mwTransfereGrupo"><h4>Usar a mesma conta no app</h4>
@@ -4115,9 +4120,12 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
     });
   });
   document.getElementById('mwAppFooterSupport')?.addEventListener('click', () => {
+    // O clique abaixo já dispara showView(), e o observer de "começa no
+    // topo" (mw-secao-comeca-no-topo) zera o scroll na hora, sem
+    // animação. O scrollTo suave que existia aqui era de antes dessa
+    // correção e contradizia a regra que ela existe pra garantir
+    // (instantâneo, nunca smooth) — por isso foi removido.
     document.querySelector('#nav [data-view="support"]')?.click();
-    document.querySelector('#app .main')?.scrollTo({top: 0, behavior: 'smooth'});
-    window.scrollTo({top: 0, behavior: 'smooth'});
   });
 })();
 </script>
@@ -13732,6 +13740,15 @@ body.light #app .main .profile-photo-card{background:linear-gradient(150deg,rgba
 #mateusAiModal.mw-eva-full .mateus-ai-messages{max-height:none !important}
 #mateusAiModal.mw-eva-full .eva-fullscreen{color:#8fe0ff}
 @media(max-width:700px){#mateusAiModal.mw-eva-full .mateus-ai-card{top:8px !important;right:8px !important;left:8px !important;bottom:8px !important}}
+/* Cabeçalho "borrado" relatado em tela cheia: .mateus-ai-head só tinha
+   um degradê que termina em transparent (pensado pro modo compacto,
+   onde só sobra alguns px de conteúdo atrás). Em tela cheia, a mensagem
+   do topo rola bem atrás do cabeçalho, e como não havia NENHUMA cor
+   opaca por baixo do degradê, o texto passava raspando/embaçado por
+   trás dele. background-color (por baixo da imagem do degradê, que
+   continua igual) resolve sem alterar a aparência do modo compacto. */
+#mateusAiModal.mw-eva-full .mateus-ai-head{background-color:#0f2138!important;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+body.light #mateusAiModal.mw-eva-full .mateus-ai-head{background-color:#eaf5ff!important}
 
 /* ---------- Ajustes de paleta clara/escura mais deliberados ---------- */
 body.light #app .main .stat:nth-child(1)::after{background:linear-gradient(90deg,#2563eb,#0ea5e9)}
@@ -14089,6 +14106,11 @@ html body #mateusAiInput{background:transparent!important;border:0!important;lin
   transition:opacity .35s ease,filter .35s ease;
 }
 .mwv2-ai-placeholder.mwv2-fade{opacity:0;filter:blur(6px)}
+/* O placeholder "falso" (span, não o atributo placeholder nativo) só
+   tinha essa cor azul-clara translúcida pensada pro card escuro; no
+   tema claro o card fica quase branco e esse texto ficava com
+   contraste baixíssimo — nunca teve uma regra própria pro light. */
+body.light .mwv2-ai-placeholder{color:rgba(15,35,70,.46)}
 </style>
 
 <script id="mwv2-ai-composer">

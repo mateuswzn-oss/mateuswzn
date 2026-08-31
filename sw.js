@@ -1,5 +1,39 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v42 (BETA — branch beta/reformulacao-profissional, não é a versão
+   estável): primeira leva da auditoria de estabilidade/profissionalismo
+   pedida, com achados confirmados e corrigidos de forma isolada —
+   (1) placeholder do campo da Nyc AI (o span decorativo, não o
+   atributo nativo) não tinha cor própria pro tema claro e ficava quase
+   ilegível (azul pálido sobre fundo quase branco); agora tem uma cor
+   escura equivalente só pro body.light.
+   (2) mensagens da Nyc AI sem overflow-wrap/word-break: uma resposta
+   com uma palavra/link bem comprido conseguia estourar a largura do
+   balão; agora quebra dentro do card.
+   (3) cabeçalho da Nyc AI em tela cheia (#96, header "borrado"): a
+   causa real era o cabeçalho ter só um degradê que termina em
+   transparent (pensado pro modo compacto) e nenhuma cor opaca por
+   baixo — em tela cheia, o texto rolando por trás aparecia raspando/
+   embaçado através dele. Corrigido com uma cor opaca por baixo do
+   mesmo degradê (visual idêntico no modo compacto, onde não há nada
+   atrás pra vazar).
+   (4) removido um scrollTo suave morto/contraditório no clique de
+   "Suporte" do rodapé — desde o P3 (troca de seção sempre no topo,
+   instantânea) esse scroll suave nunca chegava a rodar de verdade e
+   contrariava a regra que o P3 existe pra garantir.
+   (5) aviso explícito abaixo do interruptor de Face ID nas
+   Configurações: é um atalho SÓ deste aparelho (WebAuthn contra o
+   autenticador da plataforma, sem nenhum servidor validando nada) —
+   não é uma segunda camada de segurança da conta, só evita digitar a
+   senha de novo no mesmo dispositivo. Auditoria confirmou que a
+   implementação já é uma cerimônia WebAuthn real (não simulada), só
+   deixava essa limitação implícita.
+   Auditoria também CONFIRMOU (sem necessidade de mudança) que já
+   funcionam corretamente: sincronia da nav (sidebar/bottom
+   nav/botão-voltar) em todas as 8 views + Configurações como tela-
+   folha, scroll-ao-topo instantâneo sem animação ao trocar de seção,
+   fundo escuro imediato sem flash branco na abertura, e ausência total
+   de qualquer código de áudio no boot. */
 /* v41: as duas últimas coisas pedidas na mesma rodada do v40 —
    (1) os 9 ícones da sidebar (Dashboard, Faculdade, Disciplinas,
    Projetos, Atividades, Anotações, Arquivos, Suporte, Painel Admin)
@@ -260,7 +294,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v41';
+const CACHE_NAME = 'mw-shell-v42-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
