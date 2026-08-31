@@ -1,5 +1,26 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v31: quatro coisas de uma vez —
+   1) Navegação diferente por contexto: a cápsula flutuante de baixo
+      (Início/Faculdade/...) virou exclusiva de quando o site está
+      instalado de verdade (display-mode:standalone / navigator.standalone
+      — checado no <head>, antes de qualquer layout). No navegador comum,
+      mesmo logado, ela some e quem navega é o menu lateral — reativado o
+      botão de hambúrguer no mobile (estava com display:none de uma regra
+      antiga, de quando a cápsula ainda cobria sozinha toda a navegação).
+   2) "Esqueci minha senha" e "esqueci meu usuário" viraram uma linha só
+      no login, em vez de dois blocos empilhados repetindo "esqueci".
+   3) As trocas de usuário/e-mail/senha/telefone em Configurações → Conta
+      deixaram de usar prompt()/alert() nativos do navegador (a caixinha
+      cinza fora do estilo do app) — agora usam um diálogo com a mesma
+      cara do de confirmação de identidade (window.mwPedirValor). O
+      "esqueci meu usuário" do login também passou a usar esse diálogo.
+   4) Vidro da barra de baixo mais forte (blur 26px->38px de base,
+      saturate 190%->215%) — o anterior deixava passar detalhe fino
+      demais contra fundos com textura; a referência (Instagram) borra
+      até virar só cor.
+   Sem trocar o nome do cache, quem já tinha o app instalado continuaria
+   servindo o index.html de antes, sem nada disso. */
 /* v30: cinco coisas de uma vez —
    1) Painel Admin passou a usar dados reais do Supabase, com checagem de
       is_admin no SERVIDOR (ver supabase/ajuste-04-admin-e-extras.sql);
@@ -90,7 +111,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v30';
+const CACHE_NAME = 'mw-shell-v31';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
