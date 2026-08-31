@@ -1,5 +1,9 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v25: o botão de Instagram do rodapé deixou de redirecionar pro perfil
+   real (pedido explícito, "por enquanto") — o ícone/aparência/posição
+   continuam intactos, só o clique agora mostra "em breve", igual ao
+   Facebook ao lado. */
 /* v24: abertura mais impactante (traço mais lento, estalo de luz no fim
    da construção, saída com flash + onda de choque, fundo que "respira"
    e brilho no nome) e a correção do scroll fantasma na tela de
@@ -43,7 +47,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v24';
+const CACHE_NAME = 'mw-shell-v25';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
