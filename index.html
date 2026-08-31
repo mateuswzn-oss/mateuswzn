@@ -18540,14 +18540,35 @@ document.addEventListener('click', function(e){
 
   window.mwNuvem = mwNuvem;
 
-  /* Registra este carregamento (IP, aparelho, página) pro log de acessos —
-     ver supabase/ajuste-03-log-acessos.sql. Só o caminho (sem hash/query:
-     o link de redefinir senha carrega o token ali, e isso nunca pode virar
-     texto guardado). Dispara e esquece: nada aqui pode atrasar nem quebrar
-     a abertura do app, por isso sem then/catch tratando o resultado. */
+  /* Registra este carregamento (IP, localização aproximada, aparelho,
+     página) pro log de acessos — ver supabase/ajuste-03-log-acessos.sql.
+     Só o caminho (sem hash/query: o link de redefinir senha carrega o
+     token ali, e isso nunca pode virar texto guardado). Dispara e
+     esquece: nada aqui pode atrasar nem quebrar a abertura do app.
+
+     A localização vem de um serviço público que estima cidade/estado/país
+     a partir do IP de quem está acessando — sem pedir permissão nenhuma
+     (não é o GPS do aparelho, que abriria um pop-up). Falhando (rede,
+     serviço fora), o acesso ainda é registrado, só sem essa parte. */
   try {
     if (cliente) {
-      cliente.rpc('registra_acesso', { p_pagina: window.location.pathname }).catch(function(){});
+      var mwPagina = window.location.pathname;
+      comPrazo(fetch('https://get.geojs.io/v1/ip/geo.json'), 4000)
+        .then(function(r){ return r.ok ? r.json() : null; })
+        .catch(function(){ return null; })
+        .then(function(geo){
+          /* O builder do rpc() só implementa .then (thenable), não é uma
+             Promise de verdade — .catch direto nele estoura "is not a
+             function". comPrazo() resolve isso: Promise.race sempre
+             devolve uma Promise nativa, com .catch de verdade, seja qual
+             for o formato do que entrou nela. */
+          comPrazo(cliente.rpc('registra_acesso', {
+            p_pagina: mwPagina,
+            p_cidade: (geo && geo.city) || null,
+            p_regiao: (geo && geo.region) || null,
+            p_pais: (geo && geo.country) || null
+          }), 6000).catch(function(){});
+        });
     }
   } catch (e) {}
 })();

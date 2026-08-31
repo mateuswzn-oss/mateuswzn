@@ -1,10 +1,12 @@
 -- ============================================================================
--- Mateus Workspace — registro de acessos (IP, aparelho, página)
+-- Mateus Workspace — registro de acessos (IP, localização, aparelho, página)
 -- ============================================================================
 -- Cole este arquivo inteiro no SQL Editor do Supabase e clique em "Run".
 -- Pode rodar mais de uma vez sem problema: tudo aqui é idempotente.
 --
--- Por quê: guardar uma linha por acesso ao site — de onde veio (IP), em que
+-- Por quê: guardar uma linha por acesso ao site — de onde veio (IP e uma
+-- localização aproximada: cidade/estado/país, estimada a partir do IP pelo
+-- próprio navegador de quem acessou, sem pedir permissão nenhuma), em que
 -- aparelho/navegador (user-agent) e em que página — pra você poder olhar
 -- depois quem acessou, sem precisar de nada em tempo real.
 --
@@ -23,16 +25,36 @@ create table if not exists public.acessos (
   criado_em  timestamptz not null default now()
 );
 
+-- Cidade/estado/país entraram depois do IP e do aparelho; `if not exists`
+-- faz este arquivo servir tanto pra quem nunca rodou nada quanto pra quem
+-- já tinha rodado a versão anterior, sem apagar nada que já foi gravado.
+alter table public.acessos add column if not exists cidade text;
+alter table public.acessos add column if not exists regiao text;
+alter table public.acessos add column if not exists pais   text;
+
 -- RLS ligado e SEM NENHUMA política: ninguém lê nem escreve nesta tabela
 -- direto pelo PostgREST, nem com a chave pública. Só a função abaixo grava
 -- (roda como dona da tabela, ignora RLS) e só você lê, pelo painel.
 alter table public.acessos enable row level security;
 
--- Função que o site chama a cada carregamento de página. security definer
--- pra conseguir gravar apesar do RLS acima; nunca estoura erro pra quem
--- chamou — registrar acesso é estatística, não pode derrubar o app se o
--- banco estiver fora ou o limite bater.
-create or replace function public.registra_acesso(p_pagina text default null)
+-- O Postgres não deixa CREATE OR REPLACE mudar a lista de parâmetros de uma
+-- função existente (só o corpo) — por isso o drop antes, igual ao
+-- ajuste-02 quando username_livre ganhou um parâmetro novo.
+drop function if exists public.registra_acesso(text);
+
+-- Função que o site chama a cada carregamento de página. A localização vem
+-- PRONTA do site (cidade/regiao/pais já estimados no navegador de quem
+-- acessou); o IP e o aparelho continuam vindo daqui de dentro, direto dos
+-- cabeçalhos da requisição — esses dois ninguém de fora escolhe o valor.
+-- security definer pra conseguir gravar apesar do RLS acima; nunca estoura
+-- erro pra quem chamou — registrar acesso é estatística, não pode derrubar
+-- o app se o banco estiver fora ou o limite bater.
+create or replace function public.registra_acesso(
+  p_pagina text default null,
+  p_cidade text default null,
+  p_regiao text default null,
+  p_pais   text default null
+)
 returns void
 language plpgsql
 security definer
@@ -50,8 +72,15 @@ begin
   v_ip := public.chave_do_chamador();
   v_agente := nullif(current_setting('request.headers', true)::json->>'user-agent', '');
 
-  insert into public.acessos (ip, agente, pagina, usuario_id)
-  values (v_ip, v_agente, left(coalesce(p_pagina, ''), 300), auth.uid());
+  insert into public.acessos (ip, agente, pagina, cidade, regiao, pais, usuario_id)
+  values (
+    v_ip, v_agente,
+    left(coalesce(p_pagina, ''), 300),
+    left(coalesce(p_cidade, ''), 120),
+    left(coalesce(p_regiao, ''), 120),
+    left(coalesce(p_pais, ''), 120),
+    auth.uid()
+  );
 exception when others then
   -- inclui o 'muitas-tentativas' do aplica_limite: nesse caso o acesso
   -- simplesmente não é registrado, sem erro nenhum voltando pro site.
@@ -59,5 +88,5 @@ exception when others then
 end;
 $$;
 
-revoke all on function public.registra_acesso(text) from public;
-grant execute on function public.registra_acesso(text) to anon, authenticated;
+revoke all on function public.registra_acesso(text, text, text, text) from public;
+grant execute on function public.registra_acesso(text, text, text, text) to anon, authenticated;

@@ -1,5 +1,11 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v28: o log de acessos (v27) ganhou localização aproximada — antes do
+   registra_acesso, o site consulta um serviço público que estima
+   cidade/estado/país a partir do IP (sem pop-up de permissão, não é o GPS
+   do aparelho). Falhando essa consulta, o acesso ainda é gravado, só sem
+   essa parte. Sem trocar o nome do cache, quem já tinha o app instalado
+   continuaria gravando o acesso sem localização. */
 /* v27: cada carregamento do site chama registra_acesso no Supabase (IP,
    aparelho e página, ver supabase/ajuste-03-log-acessos.sql) — é o log de
    acessos pedido, pra consultar depois pelo Table Editor do Supabase. Só
@@ -59,7 +65,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v27';
+const CACHE_NAME = 'mw-shell-v28';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
