@@ -1,5 +1,17 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v38: duas coisas — (1) o texto "Brasil +55" no seletor de país do
+   diálogo de telefone vazava por trás da setinha do combobox (132px
+   não bastava); agora trunca com reticências e o DDI vem logo depois
+   da bandeira, então mesmo cortado o pedaço que importa continua
+   visível. (2) puxar a página pra baixo, parado no topo do scroll,
+   agora recarrega — pedido explícito, "igual nos apps e sites". O
+   gesto nativo do navegador fazia isso sozinho, mas
+   overscroll-behavior-y:none em html,body (que existe pra impedir
+   vazamento de scroll de listas internas) desliga esse gesto nativo
+   junto; mw-pull-refresh-js refaz o puxão à mão só na página, nunca
+   dentro de modais/listas com scroll próprio. Sem trocar o nome do
+   cache, quem já tinha o app instalado continuaria sem os dois. */
 /* v37: a v35 tentou resolver o círculo quebrado no Safari/iOS testando
    se o navegador ACEITAVA a sintaxe url(#mwLenteFiltro) — e um vídeo
    real de iPhone provou esse teste insuficiente: o Safari aceita a
@@ -170,7 +182,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v37';
+const CACHE_NAME = 'mw-shell-v38';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
