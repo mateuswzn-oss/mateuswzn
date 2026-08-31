@@ -4734,9 +4734,24 @@ $$('#nav button').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.v
 $('#profileBtn').onclick=()=>showView('profile');$('#quickAdd').onclick=()=>openModal('subjects');
 /* Dynamic data */
 function progress(){if(!data.subjects.length)return 0;return Math.round(data.subjects.reduce((a,s)=>a+Number(s.progress||0),0)/data.subjects.length)}
+/* Selos das listas: status, prioridade, integrantes e tag. Campos que já
+   existiam (prioridade das atividades, tag e prazo dos projetos) eram
+   salvos mas nunca apareciam na lista — quem preenchia não via
+   diferença nenhuma. Itens antigos, salvos antes desses campos, caem no
+   `if` de cada bloco e simplesmente não ganham selo. */
+function mwSelos(tipo, item){
+  const selos = [];
+  const esc2 = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  if (item.status) selos.push(`<span class="mw-selo mw-selo-status" data-v="${esc2(item.status)}">${esc2(item.status)}</span>`);
+  if (item.priority) selos.push(`<span class="mw-selo mw-selo-prio" data-v="${esc2(item.priority)}">${esc2(item.priority)}</span>`);
+  if (tipo === 'projects' && item.deadline) selos.push(`<span class="mw-selo">Prazo: ${esc2(item.deadline)}</span>`);
+  if (item.members) selos.push(`<span class="mw-selo">${esc2(item.members)}</span>`);
+  if (item.tag) selos.push(`<span class="mw-selo">${esc2(item.tag)}</span>`);
+  return selos.length ? `<div class="mw-selos">${selos.join('')}</div>` : '';
+}
 function empty(text){return `<div class="empty"><strong>${esc(text)}</strong><span>Use o botão + para começar.</span></div>`}
 function projectHtml(p){return `<div class="project"><b>${esc(p.name)}</b><p>${esc(p.description||'Projeto acadêmico ou pessoal.')}</p><div class="tags"><span class="tag">${esc(p.tag||'Projeto')}</span></div></div>`}
-function renderAll(){const p=progress();$('#statSubjects').textContent=data.subjects.length;$('#statActivities').textContent=data.activities.length;$('#statProjects').textContent=data.projects.length;$('#statProgress').textContent=p+'%';$('#statSubjectsHint').textContent=data.subjects.length?'cadastradas no semestre':'Nenhuma cadastrada';$('#statActivitiesHint').textContent=data.activities.length?'registradas':'Nenhuma cadastrada';$('#statProjectsHint').textContent=data.projects.length?'cadastrados':'Nenhum cadastrado';$('#statProgressHint').textContent=data.subjects.length?'média das disciplinas':'Sem dados ainda';$('#subjectsCountLabel').textContent=`${data.subjects.length} cadastrada${data.subjects.length===1?'':'s'}`;$('#projectsCountLabel').textContent=`${data.projects.length} cadastrado${data.projects.length===1?'':'s'}`;$('#collegeProgress').textContent=p+'% — calculado automaticamente com seus registros.';$('#collegeProgress2').textContent=p+'% calculado a partir das suas disciplinas';$('#homeSubjects').innerHTML=data.subjects.length?data.subjects.slice(0,5).map(s=>`<div class="course"><div class="course-dot">${esc((s.name||'DS').slice(0,2).toUpperCase())}</div><div><b>${esc(s.name)}</b><small>${esc(s.description||'Disciplina do semestre')}</small></div><div class="progress"><i style="width:${Math.max(0,Math.min(100,Number(s.progress)||0))}%"></i></div></div>`).join(''):empty('Nenhuma disciplina cadastrada.');$('#homeProjects').innerHTML=data.projects.length?data.projects.slice(0,4).map(projectHtml).join(''):empty('Nenhum projeto cadastrado.');$('#subjectsList').innerHTML=data.subjects.length?data.subjects.map((s,i)=>`<div class="list-item"><div><strong>${esc(s.name)}</strong><small>${esc(s.description||'Sem descrição')} · ${Number(s.progress)||0}%</small></div><button class="small-btn" data-delete="subjects" data-index="${i}">Excluir</button></div>`).join(''):empty('Nenhuma disciplina cadastrada.');$('#projectsList').innerHTML=data.projects.length?data.projects.map((p,i)=>`<div class="list-item"><div><strong>${esc(p.name)}</strong><small>${esc(p.description||'Sem descrição')}</small></div><button class="small-btn" data-delete="projects" data-index="${i}">Excluir</button></div>`).join(''):empty('Nenhum projeto cadastrado.');$('#activitiesList').innerHTML=data.activities.length?data.activities.map((a,i)=>{const today=new Date();today.setHours(0,0,0,0);const due=a.date?new Date(a.date+'T00:00:00'):null;const overdue=!!(due&&due<today);const isToday=!!(due&&due.getTime()===today.getTime());const badge=overdue?'<span class="mw-due-badge overdue">Atrasada</span>':isToday?'<span class="mw-due-badge today">Hoje</span>':'';return `<div class="list-item${overdue?' mw-overdue':''}"><div><strong>${esc(a.name)}</strong><small>${esc(a.description||'Sem descrição')} · ${esc(a.date||'Sem data')}</small>${badge}</div><button class="small-btn" data-delete="activities" data-index="${i}">Excluir</button></div>`}).join(''):empty('Nenhuma atividade cadastrada.');$('#notesList').innerHTML=data.notes.length?data.notes.map((n,i)=>`<div class="list-item"><div><strong>${esc(n.title)}</strong><small>${esc(n.body||'')}</small></div><button class="small-btn" data-delete="notes" data-index="${i}">Excluir</button></div>`).join(''):empty('Nenhuma anotação criada.');$$('[data-delete]').forEach(b=>b.onclick=()=>{data[b.dataset.delete].splice(Number(b.dataset.index),1);save();toast('Item removido')});if(typeof window.mwDashRefresh==='function')window.mwDashRefresh(data)}
+function renderAll(){const p=progress();$('#statSubjects').textContent=data.subjects.length;$('#statActivities').textContent=data.activities.length;$('#statProjects').textContent=data.projects.length;$('#statProgress').textContent=p+'%';$('#statSubjectsHint').textContent=data.subjects.length?'cadastradas no semestre':'Nenhuma cadastrada';$('#statActivitiesHint').textContent=data.activities.length?'registradas':'Nenhuma cadastrada';$('#statProjectsHint').textContent=data.projects.length?'cadastrados':'Nenhum cadastrado';$('#statProgressHint').textContent=data.subjects.length?'média das disciplinas':'Sem dados ainda';$('#subjectsCountLabel').textContent=`${data.subjects.length} cadastrada${data.subjects.length===1?'':'s'}`;$('#projectsCountLabel').textContent=`${data.projects.length} cadastrado${data.projects.length===1?'':'s'}`;$('#collegeProgress').textContent=p+'% — calculado automaticamente com seus registros.';$('#collegeProgress2').textContent=p+'% calculado a partir das suas disciplinas';$('#homeSubjects').innerHTML=data.subjects.length?data.subjects.slice(0,5).map(s=>`<div class="course"><div class="course-dot">${esc((s.name||'DS').slice(0,2).toUpperCase())}</div><div><b>${esc(s.name)}</b><small>${esc(s.description||'Disciplina do semestre')}</small></div><div class="progress"><i style="width:${Math.max(0,Math.min(100,Number(s.progress)||0))}%"></i></div></div>`).join(''):empty('Nenhuma disciplina cadastrada.');$('#homeProjects').innerHTML=data.projects.length?data.projects.slice(0,4).map(projectHtml).join(''):empty('Nenhum projeto cadastrado.');$('#subjectsList').innerHTML=data.subjects.length?data.subjects.map((s,i)=>`<div class="list-item"><div><strong>${esc(s.name)}</strong><small>${esc(s.description||'Sem descrição')} · ${Number(s.progress)||0}%</small></div><button class="small-btn" data-delete="subjects" data-index="${i}">Excluir</button></div>`).join(''):empty('Nenhuma disciplina cadastrada.');$('#projectsList').innerHTML=data.projects.length?data.projects.map((p,i)=>`<div class="list-item"><div><strong>${esc(p.name)}</strong><small>${esc(p.description||'Sem descrição')}</small>${mwSelos('projects',p)}</div><div class="mw-item-acoes"><button class="small-btn" data-edit="projects" data-index="${i}">Editar</button><button class="small-btn" data-delete="projects" data-index="${i}">Excluir</button></div></div>`).join(''):empty('Nenhum projeto cadastrado.');$('#activitiesList').innerHTML=data.activities.length?data.activities.map((a,i)=>{const today=new Date();today.setHours(0,0,0,0);const due=a.date?new Date(a.date+'T00:00:00'):null;const overdue=!!(due&&due<today);const isToday=!!(due&&due.getTime()===today.getTime());const badge=overdue?'<span class="mw-due-badge overdue">Atrasada</span>':isToday?'<span class="mw-due-badge today">Hoje</span>':'';return `<div class="list-item${overdue?' mw-overdue':''}"><div><strong>${esc(a.name)}</strong><small>${esc(a.description||'Sem descrição')} · ${esc(a.date||'Sem data')}</small>${badge}${mwSelos('activities',a)}</div><div class="mw-item-acoes"><button class="small-btn" data-edit="activities" data-index="${i}">Editar</button><button class="small-btn" data-delete="activities" data-index="${i}">Excluir</button></div></div>`}).join(''):empty('Nenhuma atividade cadastrada.');$('#notesList').innerHTML=data.notes.length?data.notes.map((n,i)=>`<div class="list-item"><div><strong>${esc(n.title)}</strong><small>${esc(n.body||'')}</small></div><button class="small-btn" data-delete="notes" data-index="${i}">Excluir</button></div>`).join(''):empty('Nenhuma anotação criada.');$$('[data-delete]').forEach(b=>b.onclick=()=>{data[b.dataset.delete].splice(Number(b.dataset.index),1);save();toast('Item removido')});if(typeof window.mwDashRefresh==='function')window.mwDashRefresh(data)}
 /* Forms */
 const modal=$('#modal'),form=$('#modalForm');
 function openModal(type){const configs={subjects:{title:'Nova disciplina',fields:[['name','Nome da disciplina','text','Ex.: Programação Web'],['description','Descrição','text','Ex.: Front-end e aplicações'],['progress','Progresso (%)','number','0']]},projects:{title:'Novo projeto',fields:[['name','Nome do projeto','text','Ex.: Mateus Workspace'],['description','Descrição','text','O que você está construindo?'],['tag','Tecnologia / tag','text','Ex.: JavaScript']]},activities:{title:'Nova atividade',fields:[['name','Nome da atividade','text','Ex.: Entregar trabalho'],['description','Descrição','text','Detalhes da tarefa'],['date','Data','date','']]},notes:{title:'Nova anotação',fields:[['title','Título','text','Ex.: Ideias'],['body','Conteúdo','textarea','Escreva sua anotação...']]}};const c=configs[type];if(!c)return;$('#modalTitle').textContent=c.title;form.innerHTML=c.fields.map(([id,label,t,ph])=>`<div class="form-field"><label for="f-${id}">${label}</label>${t==='textarea'?`<textarea id="f-${id}" placeholder="${ph}"></textarea>`:`<input id="f-${id}" type="${t}" placeholder="${ph}" ${t==='number'?'min="0" max="100" value="0"':''}>`}</div>`).join('')+`<button class="modal-submit" type="submit">Salvar</button>`;modal.classList.remove('hidden');form.onsubmit=e=>{e.preventDefault();const obj={};c.fields.forEach(([id])=>obj[id]=$('#f-'+id).value.trim());if(type==='subjects')obj.progress=Math.max(0,Math.min(100,Number(obj.progress)||0));data[type].push(obj);save();closeModal();toast('Salvo com sucesso')};setTimeout(()=>$('#f-'+c.fields[0][0])?.focus(),40)}
@@ -13073,7 +13088,7 @@ body.light #app .workspace-form input,body.light #app .workspace-form textarea,b
 
   const configs = {
     subjects:{ title:'Disciplinas', intro:'Planeje suas matérias, acompanhe progresso e mantenha o semestre sob controle.', action:'Nova disciplina', fields:[['name','Nome da disciplina','text','Ex.: Programação Web',true],['description','Objetivo ou descrição','text','Ex.: Front-end e aplicações',false],['progress','Progresso (%)','number','0',false],['code','Código da disciplina','text','Ex.: PWEB-2026',false]] },
-    projects:{ title:'Projetos', intro:'Centralize ideias, entregas e tecnologias dos projetos que importam agora.', action:'Novo projeto', fields:[['name','Nome do projeto','text','Ex.: Mateus Workspace',true],['description','Resumo do objetivo','textarea','O que você está construindo?',true],['tag','Tecnologia / tag','text','Ex.: JavaScript',false],['deadline','Prazo','date','',false]] },
+    projects:{ title:'Projetos', intro:'Centralize ideias, entregas e prazos dos projetos que importam agora.', action:'Novo projeto', fields:[['name','Nome do projeto','text','Ex.: Trabalho de conclusão',true],['description','Resumo do objetivo','textarea','O que você está construindo?',true],['tag','Área / tag','text','Ex.: Pesquisa',false],['status','Status','select','Em andamento',false,['Planejado','Em andamento','Em revisão','Concluído']],['priority','Prioridade','select','Média',false,['Baixa','Média','Alta']],['members','Integrantes','text','Ex.: você, Ana, Bruno',false],['deadline','Prazo','date','',false]] },
     activities:{ title:'Atividades', intro:'Organize tarefas e prazos para saber exatamente o que fazer a seguir.', action:'Nova atividade', fields:[['name','Título da atividade','text','Ex.: Entregar trabalho',true],['description','Detalhes','textarea','Inclua o que precisa ser feito.',false],['date','Prazo','date','',false],['priority','Prioridade','select','Média',false,['Baixa','Média','Alta']] ] },
     notes:{ title:'Anotações', intro:'Registre decisões, referências e ideias sem perder o contexto do estudo.', action:'Nova anotação', fields:[['title','Título','text','Ex.: Ideias para a entrega',true],['body','Conteúdo','textarea','Escreva sua anotação...',true],['category','Categoria','select','Estudos',false,['Estudos','Projeto','Referência','Pessoal']] ] }
   };
@@ -13091,9 +13106,30 @@ body.light #app .workspace-form input,body.light #app .workspace-form textarea,b
       event.preventDefault();
       const item = {};
       c.fields.forEach(([id,,kind]) => { const field = panel.querySelector(`#ws-${type}-${id}`); item[id] = kind==='number' ? Math.max(0,Math.min(100,Number(field.value)||0)) : field.value.trim(); });
-      data[type].push(item); save(); panel.reset(); panel.classList.remove('is-open'); updateMetrics(type); toast('Salvo no seu workspace.');
+      /* Edição in-place: até aqui só dava pra criar e excluir — corrigir
+         um erro de digitação obrigava a apagar e cadastrar de novo. O
+         índice em edição fica no próprio formulário; sem ele, o
+         comportamento é o de sempre (criar um item novo). */
+      const emEdicao = panel.dataset.editIndex;
+      if (emEdicao !== undefined && emEdicao !== '' && data[type][Number(emEdicao)]) {
+        Object.assign(data[type][Number(emEdicao)], item);
+        delete panel.dataset.editIndex;
+        const botao = panel.querySelector('.workspace-submit');
+        if (botao) botao.textContent = `Salvar ${c.title.slice(0,-1)}`;
+      } else {
+        data[type].push(item);
+      }
+      save(); panel.reset(); panel.classList.remove('is-open'); updateMetrics(type); toast('Salvo no seu workspace.');
     });
-    panel.querySelector('.workspace-cancel').addEventListener('click', () => panel.classList.remove('is-open'));
+    panel.querySelector('.workspace-cancel').addEventListener('click', () => {
+      panel.classList.remove('is-open');
+      panel.reset();
+      // Cancelar precisa desfazer o modo de edição também, senão o
+      // próximo "adicionar" sobrescreveria o item que estava aberto.
+      delete panel.dataset.editIndex;
+      const botao = panel.querySelector('.workspace-submit');
+      if (botao) botao.textContent = `Salvar ${c.title.slice(0,-1)}`;
+    });
     updateMetrics(type);
   };
   const updateMetrics = type => {
@@ -21281,6 +21317,130 @@ body.light #app .mw-reference-nav button[data-view="admin"] .nav-icon{background
 })();
 </script>
 
+<script id="mw-editar-e-filtrar-js">
+(function(){
+  'use strict';
+  /* Delegação no document: as listas são reescritas inteiras a cada
+     save() (renderAll monta o innerHTML de novo), então listener preso
+     em botão morreria no primeiro salvamento. */
+  document.addEventListener('click', function(e){
+    var botao = e.target.closest('[data-edit]');
+    if (!botao) return;
+    e.preventDefault();
+    var tipo = botao.dataset.edit;
+    var indice = Number(botao.dataset.index);
+    var item = (window.data && window.data[tipo] || [])[indice];
+    var painel = document.querySelector('[data-workspace-form="' + tipo + '"]');
+    if (!item || !painel) return;
+
+    painel.querySelectorAll('input,textarea,select').forEach(function(campo){
+      var id = campo.id.replace('ws-' + tipo + '-', '');
+      if (Object.prototype.hasOwnProperty.call(item, id)) campo.value = item[id] == null ? '' : item[id];
+    });
+    painel.dataset.editIndex = String(indice);
+    var enviar = painel.querySelector('.workspace-submit');
+    if (enviar) enviar.textContent = 'Salvar alterações';
+    painel.classList.add('is-open');
+    painel.querySelector('input,textarea,select')?.focus();
+  });
+
+  /* Filtros: atividades por situação (a data já está no item) e
+     projetos por status. Filtro é só de exibição — esconde o item na
+     lista, nunca mexe nos dados. */
+  var FILTROS = {
+    activities: [
+      ['todas', 'Todas', function(){ return true; }],
+      ['atrasadas', 'Atrasadas', function(el){ return el.classList.contains('mw-overdue'); }],
+      ['comPrazo', 'Com prazo', function(el){ return !/Sem data/.test(el.textContent); }]
+    ],
+    projects: [
+      ['todos', 'Todos', function(){ return true; }],
+      ['andamento', 'Em andamento', function(el){ return !!el.querySelector('[data-v="Em andamento"]'); }],
+      ['concluidos', 'Concluídos', function(el){ return !!el.querySelector('[data-v="Concluído"]'); }]
+    ]
+  };
+
+  function montaFiltros(tipo){
+    var lista = document.getElementById(tipo + 'List');
+    if (!lista || document.querySelector('[data-filtros="' + tipo + '"]')) return;
+    var barra = document.createElement('div');
+    barra.className = 'mw-filtros';
+    barra.setAttribute('data-filtros', tipo);
+    FILTROS[tipo].forEach(function(f, i){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'mw-filtro';
+      b.textContent = f[1];
+      b.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
+      b.addEventListener('click', function(){
+        barra.querySelectorAll('.mw-filtro').forEach(function(x){ x.setAttribute('aria-pressed', 'false'); });
+        b.setAttribute('aria-pressed', 'true');
+        aplica(tipo, f[2]);
+      });
+      barra.appendChild(b);
+    });
+    lista.before(barra);
+  }
+
+  function aplica(tipo, teste){
+    var lista = document.getElementById(tipo + 'List');
+    if (!lista) return;
+    lista.querySelectorAll('.list-item').forEach(function(el){
+      el.hidden = !teste(el);
+    });
+  }
+
+  function reaplica(tipo){
+    var barra = document.querySelector('[data-filtros="' + tipo + '"]');
+    if (!barra) return;
+    var ativos = [...barra.querySelectorAll('.mw-filtro')];
+    var i = ativos.findIndex(function(b){ return b.getAttribute('aria-pressed') === 'true'; });
+    if (i > 0) aplica(tipo, FILTROS[tipo][i][2]);
+  }
+
+  Object.keys(FILTROS).forEach(montaFiltros);
+
+  /* A lista é reescrita a cada save(); reaplicar mantém o filtro
+     escolhido valendo depois de criar/editar/excluir um item. */
+  ['activities', 'projects'].forEach(function(tipo){
+    var lista = document.getElementById(tipo + 'List');
+    if (!lista) return;
+    new MutationObserver(function(){ reaplica(tipo); }).observe(lista, { childList: true });
+  });
+})();
+</script>
+<style id="mw-selos-e-edicao">
+/* Selos de status/prioridade/prazo/integrantes nas listas. */
+.mw-selos{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.mw-selo{
+  font-size:10.5px;font-weight:700;letter-spacing:.02em;
+  padding:3px 9px;border-radius:99px;
+  background:rgba(255,255,255,.07);color:rgba(226,235,255,.72);
+  border:1px solid rgba(255,255,255,.10);
+}
+.mw-selo-status[data-v="Concluído"]{background:rgba(16,185,129,.16);color:#6ee7b7;border-color:rgba(16,185,129,.24)}
+.mw-selo-status[data-v="Em andamento"]{background:rgba(59,130,246,.16);color:#93c5fd;border-color:rgba(59,130,246,.24)}
+.mw-selo-status[data-v="Em revisão"]{background:rgba(245,158,11,.16);color:#fcd34d;border-color:rgba(245,158,11,.24)}
+.mw-selo-prio[data-v="Alta"]{background:rgba(244,63,94,.16);color:#fda4af;border-color:rgba(244,63,94,.24)}
+.mw-selo-prio[data-v="Baixa"]{background:rgba(148,163,184,.14);color:#cbd5e1;border-color:rgba(148,163,184,.20)}
+body.light .mw-selo{background:rgba(15,35,70,.05);color:rgba(15,35,70,.68);border-color:rgba(15,35,70,.10)}
+body.light .mw-selo-status[data-v="Concluído"]{background:rgba(5,150,105,.12);color:#047857;border-color:rgba(5,150,105,.22)}
+body.light .mw-selo-status[data-v="Em andamento"]{background:rgba(37,99,235,.12);color:#1d4ed8;border-color:rgba(37,99,235,.22)}
+body.light .mw-selo-status[data-v="Em revisão"]{background:rgba(217,119,6,.12);color:#b45309;border-color:rgba(217,119,6,.22)}
+body.light .mw-selo-prio[data-v="Alta"]{background:rgba(225,29,72,.12);color:#be123c;border-color:rgba(225,29,72,.22)}
+/* Editar + Excluir lado a lado, sem esticar o card. */
+.mw-item-acoes{display:flex;gap:6px;flex:none;align-items:flex-start}
+/* Filtros das listas. */
+.mw-filtros{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+.mw-filtro{
+  font-size:12px;font-weight:600;padding:6px 12px;border-radius:99px;cursor:pointer;
+  background:rgba(255,255,255,.05);color:rgba(226,235,255,.66);
+  border:1px solid rgba(255,255,255,.10);
+}
+.mw-filtro[aria-pressed="true"]{background:rgba(59,130,246,.18);color:#bfdbfe;border-color:rgba(59,130,246,.28)}
+body.light .mw-filtro{background:rgba(15,35,70,.04);color:rgba(15,35,70,.66);border-color:rgba(15,35,70,.10)}
+body.light .mw-filtro[aria-pressed="true"]{background:rgba(37,99,235,.12);color:#1d4ed8;border-color:rgba(37,99,235,.24)}
+</style>
 <style id="mw-forca-senha-e-social">
 /* Força da senha: barra fina abaixo do campo, três estados. Cor
    semântica (vermelho/âmbar/verde) em vez do azul da marca, porque
