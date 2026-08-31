@@ -2606,7 +2606,7 @@ body.light #app .calendar-card .calendar-nav button:hover{
 #mwBootLoader{
   position:fixed;inset:0;z-index:99999;
   display:flex;align-items:center;justify-content:center;
-  overflow:hidden;
+  overflow:hidden;touch-action:none;
   /* Cor CHAPADA primeiro: ela pinta mesmo que os gradientes ainda não
      tenham sido resolvidos. Nunca há um quadro claro. */
   background-color:#020617;
@@ -2615,102 +2615,236 @@ body.light #app .calendar-card .calendar-nav button:hover{
     radial-gradient(circle at 76% 16%,rgba(124,92,255,.09),transparent 38%),
     linear-gradient(180deg,#020617,#07142c 46%,#020617);
 }
+/* Trava o scroll do documento inteiro enquanto o loader existir. Puro
+   CSS (:has), sem depender de nenhum JS rodar a tempo: o loader é o
+   primeiro elemento do <body> e já está no HTML antes de qualquer
+   script executar, então sem isto a página por trás (mais alta que a
+   viewport) podia ser arrastada/rolada por baixo do preloader fixed —
+   no touch do iOS, "fixed" sozinho não impede o rubber-band scroll do
+   body. Some sozinho no instante em que loader.remove() roda, sem
+   precisar de nenhuma limpeza. */
+html:has(#mwBootLoader),
+body:has(#mwBootLoader){
+  overflow:hidden!important;
+}
+.mwb-fundo-respiro{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(circle at 50% 46%,rgba(56,189,248,.26),transparent 55%),
+    radial-gradient(circle at 64% 62%,rgba(124,92,255,.2),transparent 52%);
+  opacity:0;
+  animation:mwbFundoRespiro 3.4s ease .05s both;
+}
+@keyframes mwbFundoRespiro{
+  0%{opacity:0}
+  51%{opacity:.32}
+  79%{opacity:.32}
+  88%{opacity:.68}
+  100%{opacity:.32}
+}
+#mwBootLoader.mw-boot-out .mwb-fundo-respiro{
+  animation:mwbFundoRespiroSai .62s ease both;
+}
+@keyframes mwbFundoRespiroSai{
+  0%{opacity:.32}
+  20%{opacity:.85}
+  100%{opacity:0}
+}
 
+/* LOCKUP HORIZONTAL: o símbolo MW se forma, e o nome "Workspace"
+   nasce AO LADO dele, não embaixo. Como o nome só aparece depois, o
+   conjunto começaria descentrado — por isso o palco entra deslocado
+   meia-largura do nome e volta ao centro conforme ele se abre, do mesmo
+   jeito que a barra inferior faz. O valor é MEDIDO pelo script logo
+   abaixo do markup, porque depende da fonte do sistema. */
+/* Tamanho FLUIDO em vez de degraus por media query: com degraus, uma
+   tela de 390px caía no tamanho grande e o lockup ficava com 9,8px de
+   folga — quase encostando na borda. Com clamp o conjunto acompanha a
+   largura e a folga fica confortável em toda a faixa. */
 /* ============================================================
-   LOCKUP — ícone + nome revelados NO LUGAR, referência: Crunchyroll
+   CENTRAGEM ESTRUTURAL — sem medir nada
    ============================================================
-   A abertura de referência não desliza nem redimensiona nada: o
-   círculo vira o símbolo, o nome resolve de um desfoque pra nitidez
-   bem ao lado — sempre nas mesmas coordenadas. Foi isso que se copiou
-   aqui, e é também o que resolve a centralização de vez: a caixa do
-   palco tem a MESMA largura do primeiro ao último quadro (ícone e
-   nome já ocupam seu lugar final desde o início, só invisíveis) — sem
-   trilha de grid abrindo, sem medida de texto, sem deslocamento
-   compensado. `justify-content:center` no pai centraliza uma caixa
-   que nunca muda de tamanho, então não existe momento em que possa
-   sair do centro. */
+   Antes o palco era deslocado para a direita por --mwb-desloc, medido
+   em JS como metade da largura de "Workspace" + o vão, para o símbolo
+   parecer centrado enquanto o nome ainda não existia. Depois o palco
+   voltava a translateX(0) e o par ficava centrado.
+
+   O problema é que essa medida é tirada uma vez, na leitura do
+   documento, quando a fonte do sistema ainda pode não ter sido
+   resolvida. Medido na gravação do iPhone: o glifo ficava 58px à
+   ESQUERDA do centro da tela — a compensação saiu pequena demais.
+
+   Agora não há medida nenhuma. O nome vive dentro de uma trilha de
+   grid que vai de 0fr a 1fr; com a trilha em zero o palco tem
+   exatamente a largura do símbolo, então o `justify-content:center` do
+   pai já o centraliza sozinho. Conforme a trilha abre, o conjunto se
+   recentra CONTINUAMENTE, porque quem centra é o layout, não uma conta
+   feita antes. Não existe valor para errar.
+
+   O vão de 16px também mora dentro da trilha (padding do nome), senão
+   sobraria um vão de 16px ao lado de um nome de largura zero. */
 .mwb-palco{
   --mwb-simb:clamp(112px,33vw,168px);
   position:relative;
   display:flex;flex-direction:row;align-items:center;
-  gap:16px;
+  gap:0;
+  will-change:transform,opacity;
+  animation:mwbPalcoImpacto .6s cubic-bezier(.3,.5,.3,1) 2.78s both;
 }
+@keyframes mwbPalcoImpacto{
+  0%{transform:scale(1)}
+  32%{transform:scale(1.045)}
+  100%{transform:scale(1)}
+}
+.mwb-nome-trilha{
+  display:grid;grid-template-columns:0fr;
+  animation:mwbAbreNome 1.05s cubic-bezier(.22,.7,.28,1) 3s both;
+}
+@keyframes mwbAbreNome{
+  from{grid-template-columns:0fr}
+  to{grid-template-columns:1fr}
+}
+/* O recorte é o que faz a trilha de 0fr esconder o texto de verdade. */
+.mwb-nome-corte{overflow:hidden;min-width:0}
 
-/* ---------- o halo: acende com o símbolo, depois respira ---------- */
-/* A primeira medida (v14) tinha a revelação inteira pronta em ~1,1s e
-   ficava parada por ~2,9s até a saída — no aparelho isso lia como "o
-   efeito passou rápido demais e depois trava, sem vida nenhuma". Duas
-   correções: a revelação ficou mais longa e com mais desfoque, pra ser
-   vista de verdade (não só uma pista pra quem está prestando atenção
-   quadro a quadro); e o halo ganha uma respiração lenta e contínua
-   depois de acender, pra que a espera pareça viva mesmo sem nada
-   "acontecendo" — do jeito que a Crunchyroll mantém um brilho quieto
-   atrás do próprio ícone enquanto segura a marca na tela. */
+/* ---------- a luz que os traços acendem ---------- */
+/* Menor e mais discreto que antes: eram 250px com 34% de opacidade no
+   centro, o que virava um borrão grande e, como o nome ficava embaixo,
+   a luz parecia derramar para o rodapé. Agora tem o tamanho do símbolo
+   e fica ancorada NELE, não no conjunto. */
+.mwb-onda{
+  position:absolute;left:calc(var(--mwb-simb) / 2);top:50%;
+  width:var(--mwb-simb);height:var(--mwb-simb);
+  margin:calc(var(--mwb-simb) * -.5) 0 0 calc(var(--mwb-simb) * -.5);
+  border-radius:50%;pointer-events:none;
+  border:1.5px solid rgba(195,222,255,.75);
+  opacity:0;transform:scale(.7);
+}
 .mwb-halo{
   position:absolute;left:calc(var(--mwb-simb) / 2);top:50%;
   width:calc(var(--mwb-simb) * 1.08);height:calc(var(--mwb-simb) * 1.08);
   margin:calc(var(--mwb-simb) * -.54) 0 0 calc(var(--mwb-simb) * -.54);
   border-radius:50%;pointer-events:none;
   background:radial-gradient(circle,
-    rgba(56,189,248,.26), rgba(37,99,235,.15) 36%,
-    rgba(124,92,255,.08) 58%, transparent 74%);
-  opacity:0;transform:scale(.4);
-  animation:
-    mwbHalo .7s cubic-bezier(.22,.8,.32,1) .32s both,
-    mwbHaloRespira 2.6s ease-in-out 1.02s infinite;
+    rgba(56,189,248,.24), rgba(37,99,235,.14) 36%,
+    rgba(124,92,255,.07) 58%, transparent 74%);
+  opacity:0;transform:scale(.5);
+  will-change:transform,opacity;
+  animation:mwbHalo 1.6s cubic-bezier(.22,.65,.3,1) .15s both,
+            mwbHaloImpacto .55s ease 2.7s both;
 }
 @keyframes mwbHalo{
-  0%{opacity:0;transform:scale(.4)}
-  70%{opacity:1}
-  100%{opacity:.82;transform:scale(1)}
+  0%{opacity:0;transform:scale(.5)}
+  70%{opacity:1;transform:scale(1.08)}
+  100%{opacity:.85;transform:scale(1)}
 }
-@keyframes mwbHaloRespira{
-  0%,100%{opacity:.76;transform:scale(1)}
-  50%{opacity:1;transform:scale(1.07)}
-}
-
-/* ---------- o símbolo: emerge pronto, sem percurso ---------- */
-/* Igual ao anel da Crunchyroll assentando no ícone final: nada aqui é
-   "desenhado" — o glifo inteiro (já com o gradiente) sai de um
-   desfoque fechado direto pra nitidez, crescendo no caminho. Mais
-   longo e com mais desfoque que a primeira versão — o suficiente pra
-   se ver a transição de verdade, não só um "pop". Só opacity/filter/
-   transform no elemento inteiro: mais barato que o traçado anterior
-   (que animava stroke-dashoffset por quadro) e mais fiel à
-   referência, que não tem percurso nenhum, só revelação. */
-.mwb-glifo{
-  width:var(--mwb-simb);height:auto;aspect-ratio:172/118;overflow:visible;display:block;flex:none;
-  opacity:0;filter:blur(26px);transform:scale(.55);
-  animation:mwbGlifoEntra .7s cubic-bezier(.16,.84,.24,1) .34s both;
-}
-@keyframes mwbGlifoEntra{
-  0%{opacity:0;filter:blur(26px);transform:scale(.55)}
-  78%{filter:blur(0)}
-  100%{opacity:1;filter:blur(0);transform:scale(1)}
-}
-.mwb-glifo path{
-  fill:none;stroke-width:5.4;stroke-linecap:round;stroke-linejoin:round;
+@keyframes mwbHaloImpacto{
+  0%{filter:brightness(1)}
+  35%{filter:brightness(1.55)}
+  100%{filter:brightness(1)}
 }
 
-/* ---------- o nome: a mesma revelação, um instante depois ---------- */
+/* ---------- o símbolo ---------- */
+.mwb-glifo{width:var(--mwb-simb);height:auto;aspect-ratio:172/118;overflow:visible;display:block;flex:none}
+/* Trilho: o caminho inteiro, quase invisível. Dá a sensação de que o
+   traço percorre algo que já existia, em vez de surgir do nada. */
+.mwb-trilho{
+  fill:none;stroke:rgba(125,180,255,.10);
+  stroke-width:5.2;stroke-linecap:round;stroke-linejoin:round;
+}
+.mwb-traco{
+  fill:none;stroke-width:5.2;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:84;stroke-dashoffset:84;
+  /* Entrada mais lenta e deliberada (pedido explícito: "tá muito
+     rápido, falta impacto") — 1,08s -> 1,3s por letra. */
+  animation:mwbTracar 1.3s cubic-bezier(.4,.02,.2,1) both;
+}
+/* O rastro: um pedaço curto e claro que corre à frente do traço, com
+   um lampejo (fica mais grosso) bem no instante em que alcança a
+   ponta — o "impacto" da conclusão de cada letra. */
+.mwb-rastro{
+  fill:none;stroke:#dff2ff;stroke-width:5.6;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:7 84;stroke-dashoffset:84;opacity:.92;
+  animation:mwbRastro 1.3s cubic-bezier(.4,.02,.2,1) both;
+}
+/* Uma batida de silêncio antes de qualquer coisa acontecer: a tela
+   azul fica só ela por um instante, e só então o M começa a ser
+   traçado. Sem essa pausa a animação começava colada na abertura do
+   app e parecia atropelada — era o "esperar uns milésimos antes de
+   aparecer". */
+.mwb-m{animation-delay:.55s}
+.mwb-w{animation-delay:1.5s}
+@keyframes mwbTracar{to{stroke-dashoffset:0}}
+@keyframes mwbRastro{
+  0%{stroke-dashoffset:84;opacity:0}
+  10%{opacity:1}
+  80%{opacity:1;stroke-width:5.6}
+  92%{opacity:1;stroke-width:8}
+  100%{stroke-dashoffset:0;opacity:0;stroke-width:5.6}
+}
+
+/* ---------- o brilho que atravessa os contornos ---------- */
+/* O brilho é data:image/svg+xml;utf8,%3Csvg%20xmlns='http:%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox='0%200%2064%2044'%3E%3Cg%20fill='none'%20stroke='%23fff'%20stroke-width='5.2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M6%2034.5V11.5L17%2026.5L28%2011.5V34.5'%2F%3E%3Cpath%20d='M36%2011.5V34.5L47%2019.5L58%2034.5V11.5'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3EDO pelo próprio traçado do MW, então ele corre
+   pelos CONTORNOS em vez de atravessar a tela como uma faixa. Sem a
+   máscara aparecia um retângulo cinza de bordas duras cruzando o
+   símbolo — que é o oposto do efeito.
+   A máscara é um data URI estático: não custa nada por quadro; só o
+   gradiente interno se move, e ele é transform. */
+.mwb-brilho{
+  position:absolute;left:0;top:50%;
+  width:var(--mwb-simb);aspect-ratio:172/118;
+  transform:translateY(-50%);
+  pointer-events:none;overflow:hidden;
+  -webkit-mask:url("data:image/svg+xml;utf8,%3Csvg%20xmlns='http:%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox='0%200%2064%2044'%3E%3Cg%20fill='none'%20stroke='%23fff'%20stroke-width='5.2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M6%2034.5V11.5L17%2026.5L28%2011.5V34.5'%2F%3E%3Cpath%20d='M36%2011.5V34.5L47%2019.5L58%2034.5V11.5'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") center/100% 100% no-repeat;
+  mask:url("data:image/svg+xml;utf8,%3Csvg%20xmlns='http:%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox='0%200%2064%2044'%3E%3Cg%20fill='none'%20stroke='%23fff'%20stroke-width='5.2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M6%2034.5V11.5L17%2026.5L28%2011.5V34.5'%2F%3E%3Cpath%20d='M36%2011.5V34.5L47%2019.5L58%2034.5V11.5'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") center/100% 100% no-repeat;
+}
+.mwb-brilho i{
+  position:absolute;inset:-30% -70%;
+  background:linear-gradient(104deg,
+    transparent 32%, rgba(255,255,255,.98) 50%, transparent 68%);
+  opacity:0;transform:translateX(-46%);
+  will-change:transform,opacity;
+  animation:mwbBrilho 1.2s cubic-bezier(.3,.08,.24,1) 2.75s both;
+}
+@keyframes mwbBrilho{
+  0%{opacity:0;transform:translateX(-46%)}
+  26%{opacity:1}
+  74%{opacity:1}
+  100%{opacity:0;transform:translateX(46%)}
+}
+
+/* ---------- o nome, já com a marca formada ---------- */
+/* "Workspace" nasce colado no símbolo e desliza para o seu lugar,
+   como se tivesse saído de dentro dele. */
 .mwb-nome{
+  position:relative;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,ui-sans-serif,system-ui,sans-serif;
   font-size:clamp(22px,6.6vw,30px);font-weight:600;letter-spacing:-.01em;
-  color:rgba(232,244,255,.94);white-space:nowrap;line-height:1;
-  opacity:0;filter:blur(22px);transform:scale(.9);
-  animation:mwbNomeEntra .68s cubic-bezier(.16,.84,.24,1) .66s both;
+  color:rgba(232,244,255,.92);white-space:nowrap;line-height:1;
+  padding-left:16px;
+  opacity:0;transform:translateX(-10px);
+  will-change:transform,opacity;
+  animation:mwbNome .85s cubic-bezier(.3,1.3,.5,1) 3.1s both,
+            mwbNomeBrilho 1.3s ease 3.1s both;
 }
-@keyframes mwbNomeEntra{
-  0%{opacity:0;filter:blur(22px);transform:scale(.9)}
-  75%{filter:blur(0)}
-  100%{opacity:1;filter:blur(0);transform:scale(1)}
+@keyframes mwbNome{
+  from{opacity:0;transform:translateX(-10px)}
+  to{opacity:1;transform:translateX(0)}
+}
+@keyframes mwbNomeBrilho{
+  0%{text-shadow:0 0 0 rgba(140,190,255,0)}
+  55%{text-shadow:0 0 14px rgba(140,190,255,.55)}
+  100%{text-shadow:0 0 6px rgba(140,190,255,.26)}
 }
 
-/* ---------- SAÍDA: um desvanecer só, como a referência ---------- */
-/* A Crunchyroll não recua nem encolhe pra sair — a marca só se
-   desfaz, e o conteúdo de baixo já está lá. É exatamente isto. */
+/* ---------- SAÍDA: continuação da mesma sequência ---------- */
+/* Não é "esconder o preloader". Em vez do fade simples de antes, agora
+   é um flash de energia — o halo estoura de brilho e o conjunto dá um
+   pequeno "pulo" pra fora — seguido por uma onda de choque que se
+   expande e dissolve, só então encolhendo e sumindo junto com a tela
+   de baixo aparecendo. */
 #mwBootLoader.mw-boot-out{
-  animation:mwbFundoSai .46s cubic-bezier(.4,0,.2,1) both;
+  animation:mwbFundoSai .62s cubic-bezier(.45,0,.8,.3) both;
   pointer-events:none;
 }
 @keyframes mwbFundoSai{
@@ -2718,18 +2852,28 @@ body.light #app .calendar-card .calendar-nav button:hover{
   to{opacity:0}
 }
 #mwBootLoader.mw-boot-out .mwb-palco{
-  animation:mwbPalcoSai .46s cubic-bezier(.4,0,.2,1) both;
+  animation:mwbPalcoSai .62s cubic-bezier(.45,0,.8,.3) both;
 }
 @keyframes mwbPalcoSai{
-  from{opacity:1;transform:scale(1)}
-  to{opacity:0;transform:scale(.98)}
+  0%{opacity:1;transform:scale(1)}
+  20%{opacity:1;transform:scale(1.07)}
+  100%{opacity:0;transform:scale(.86)}
 }
 #mwBootLoader.mw-boot-out .mwb-halo{
-  animation:mwbHaloSai .46s cubic-bezier(.32,.5,.3,1) both;
+  animation:mwbHaloSai .62s cubic-bezier(.3,.4,.3,1) both;
 }
 @keyframes mwbHaloSai{
-  from{opacity:.9;transform:scale(1)}
-  to{opacity:0;transform:scale(1.3)}
+  0%{opacity:.85;transform:scale(1);filter:brightness(1)}
+  20%{opacity:1;transform:scale(1.15);filter:brightness(2)}
+  100%{opacity:0;transform:scale(1.7);filter:brightness(1)}
+}
+#mwBootLoader.mw-boot-out .mwb-onda{
+  animation:mwbOnda .62s cubic-bezier(.16,.8,.3,1) both;
+}
+@keyframes mwbOnda{
+  0%{opacity:.9;transform:scale(.7)}
+  55%{opacity:.5}
+  100%{opacity:0;transform:scale(2.6)}
 }
 
 /* ---------- espera longa: um fio, e só se precisar ---------- */
@@ -2737,7 +2881,7 @@ body.light #app .calendar-card .calendar-nav button:hover{
   position:absolute;left:50%;bottom:13%;transform:translateX(-50%);
   width:120px;height:2px;border-radius:99px;
   background:rgba(148,163,184,.14);overflow:hidden;
-  opacity:0;animation:mwbEsperaEntra .5s ease 4.3s both;
+  opacity:0;animation:mwbEsperaEntra .5s ease 4.9s both;
 }
 @keyframes mwbEsperaEntra{to{opacity:1}}
 .mwb-espera i{
@@ -2746,21 +2890,30 @@ body.light #app .calendar-card .calendar-nav button:hover{
   transition:width .18s linear;
 }
 
-/* Sem movimento: a marca já formada, parada. */
+@media(max-width:380px){ .mwb-nome{padding-left:13px} }
+
+/* Sem movimento: a marca já formada, sem traçado nem brilho. */
 @media(prefers-reduced-motion:reduce){
-  .mwb-halo,.mwb-glifo,.mwb-nome{animation:none!important;opacity:1!important;filter:none!important;transform:none!important}
+  .mwb-palco{animation:none!important;transform:none!important}
+  .mwb-nome-trilha{animation:none!important;grid-template-columns:1fr!important}
+  .mwb-traco{animation:none!important;stroke-dashoffset:0!important}
+  .mwb-rastro,.mwb-brilho,.mwb-onda{display:none!important}
+  .mwb-halo,.mwb-nome{animation:none!important;opacity:1!important;transform:none!important}
+  .mwb-nome{text-shadow:0 0 6px rgba(140,190,255,.26)!important}
+  .mwb-fundo-respiro{animation:none!important;opacity:.32!important}
   .mwb-espera{animation:none!important;opacity:1!important}
   .mwb-espera i{transition:none!important}
   #mwBootLoader.mw-boot-out,
   #mwBootLoader.mw-boot-out .mwb-palco,
-  #mwBootLoader.mw-boot-out .mwb-halo{animation:mwbFundoSai .3s linear both!important}
+  #mwBootLoader.mw-boot-out .mwb-halo,
+  #mwBootLoader.mw-boot-out .mwb-fundo-respiro{animation:mwbFundoSai .3s linear both!important}
 }
 
 /* A tela de baixo entra ao mesmo tempo que o preloader sai. */
 body.mw-boot-revealing #loginScreen:not(.hidden),
 body.mw-boot-revealing #app:not(.hidden),
 body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
-  animation:mwbRevela .52s cubic-bezier(.24,.62,.3,1) both;
+  animation:mwbRevela .62s cubic-bezier(.24,.62,.3,1) both;
 }
 @keyframes mwbRevela{
   0%{opacity:0;transform:scale(1.012)}
@@ -2773,7 +2926,9 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
 }
 </style>
 <div id="mwBootLoader" aria-hidden="true">
+  <span class="mwb-fundo-respiro"></span>
   <div class="mwb-palco">
+    <span class="mwb-onda"></span>
     <span class="mwb-halo"></span>
     <svg class="mwb-glifo" viewBox="0 0 64 44" fill="none">
       <defs>
@@ -2784,10 +2939,15 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
           <stop stop-color="#a5b8ff"/><stop offset=".5" stop-color="#7c5cff"/><stop offset="1" stop-color="#38bdf8"/>
         </linearGradient>
       </defs>
-      <path stroke="url(#mwbGradM)" d="M6 34.5V11.5L17 26.5L28 11.5V34.5"/>
-      <path stroke="url(#mwbGradW)" d="M36 11.5V34.5L47 19.5L58 34.5V11.5"/>
+      <path class="mwb-trilho" d="M6 34.5V11.5L17 26.5L28 11.5V34.5"/>
+      <path class="mwb-trilho" d="M36 11.5V34.5L47 19.5L58 34.5V11.5"/>
+      <path class="mwb-traco mwb-m" stroke="url(#mwbGradM)" d="M6 34.5V11.5L17 26.5L28 11.5V34.5"/>
+      <path class="mwb-traco mwb-w" stroke="url(#mwbGradW)" d="M36 11.5V34.5L47 19.5L58 34.5V11.5"/>
+      <path class="mwb-rastro mwb-m" d="M6 34.5V11.5L17 26.5L28 11.5V34.5"/>
+      <path class="mwb-rastro mwb-w" d="M36 11.5V34.5L47 19.5L58 34.5V11.5"/>
     </svg>
-    <span class="mwb-nome">Workspace</span>
+    <span class="mwb-brilho" aria-hidden="true"><i></i></span>
+    <span class="mwb-nome-trilha"><span class="mwb-nome-corte"><span class="mwb-nome">Workspace</span></span></span>
   </div>
   <div class="mwb-espera"><i id="mwBootBarFill"></i></div>
 </div>
@@ -3713,35 +3873,13 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
     toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
   };
 
-  /* Instagram: abre o app quando instalado (iOS/Android) e cai pro
-     perfil na web quando não abre a nenhum navegador de volta a tempo;
-     no desktop vai direto pro navegador. Só troca o clique — aparência,
-     posição, tamanho, Liquid Glass e animação do botão continuam
-     exatamente como estavam. */
-  const openInstagram = () => {
-    const username = 'mateuswzn';
-    const webUrl = `https://www.instagram.com/${username}/`;
-    const appUrl = `instagram://user?username=${username}`;
-    const ua = navigator.userAgent || '';
-    const isMobile = /iphone|ipad|ipod|android/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    if (!isMobile) {
-      window.open(webUrl, '_blank', 'noopener');
-      return;
-    }
-    let leftPage = false;
-    const onHide = () => { leftPage = true; };
-    document.addEventListener('visibilitychange', onHide, { once: true });
-    const fallback = setTimeout(() => {
-      document.removeEventListener('visibilitychange', onHide);
-      if (!leftPage) window.location.href = webUrl;
-    }, 1400);
-    window.addEventListener('pagehide', () => clearTimeout(fallback), { once: true });
-    window.location.href = appUrl;
-  };
-
+  /* Instagram: o link pro perfil real foi retirado por enquanto (pedido
+     explícito) — o ícone/botão continua exatamente como estava
+     (aparência, posição, tamanho, Liquid Glass, animação), só o clique
+     deixou de redirecionar pra algum lugar, igual ao Facebook ao lado. */
   document.querySelectorAll('.mw-app-footer-icon').forEach(btn => {
     btn.addEventListener('click', () => {
-      if (btn.dataset.social === 'instagram') { openInstagram(); return; }
+      if (btn.dataset.social === 'instagram') { showToast('Instagram em breve por aqui'); return; }
       showToast('Facebook em breve por aqui');
     });
   });
@@ -4083,15 +4221,21 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
   /* A entrada agora termina em ~2780ms (o nome assenta) e respira mais
      um instante antes de sair — foi o pedido de "um pouquinho mais
      lento e demorar um tempinho a mais antes do login". */
-  /* A referência (Crunchyroll) constrói a marca em menos de 1s e some
-     por volta de 2,5s-3s do início — a quietude é curta, não um
-     segundo plano vazio. A revelação por desfoque termina por volta
-     de 1,1s (o nome assenta em .58s+.52s), então o piso dá só ~1,5s
-     de marca parada antes de sair, no lugar dos ~2,9s de antes — que
-     é o que estava parecendo "sem vida, parado". */
-  var MW_BOOT_MIN = 2600;
-  var MW_BOOT_MAX = 3400;
-  var MW_BOOT_SAIDA = 460;   // igual à duração das animações de saída
+  /* A referência constrói a marca em ~1,4s e depois fica IMÓVEL por
+     cerca de 2s antes de sair. É a quietude que soa cinematográfica —
+     não a construção lenta. A nossa construção termina por volta de
+     2,9s (o nome assenta), então o piso passa a dar ~1,1s de marca
+     parada antes da saída, em vez dos ~550ms de antes. */
+  /* Pedido explícito: "tá muito rápido, falta impacto". A construção
+     foi esticada (traço de cada letra 1,08s -> 1,3s, com o estalo de
+     halo/brilho/escala no instante em que o W termina) e agora assenta
+     por volta de 3,95s, não mais 2,9s — daí o piso e o teto subirem
+     junto. A saída também deixou de ser um fade simples: virou um
+     flash de energia + onda de choque, por isso a duração foi de 520
+     para 620ms. */
+  var MW_BOOT_MIN = 4550;
+  var MW_BOOT_MAX = 5450;
+  var MW_BOOT_SAIDA = 620;   // igual à duração das animações de saída
   var mwBootDone = false;
 
   /* A promessa já foi criada logo abaixo do markup do loader (ver o
@@ -14334,13 +14478,7 @@ html body #app.mw-sidebar-collapsed aside.sidebar.mw-reference-sidebar.mw-sideba
   -webkit-overflow-scrolling:touch;
   overscroll-behavior-y:contain;
 }
-/* overscroll-behavior:none nos dois eixos, não só Y: só o vertical
-   estava bloqueado, e no app instalado (sem chrome de navegador pra
-   absorver o gesto) o iOS ainda deixava a página inteira "arrastar"
-   de lado por causa do bounce horizontal — sentia-se como se
-   existisse uma barra de rolagem, mesmo com overflow-x:hidden (que
-   trava o SCROLL, mas não o bounce/rubber-band do gesto). */
-html,body{overscroll-behavior:none}
+html,body{overscroll-behavior-y:none}
 </style>
 <style id="mw-overdue-style">
 .list-item.mw-overdue{border-color:rgba(251,113,133,.35)!important}

@@ -1,5 +1,30 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v25: o botão de Instagram do rodapé deixou de redirecionar pro perfil
+   real (pedido explícito, "por enquanto") — o ícone/aparência/posição
+   continuam intactos, só o clique agora mostra "em breve", igual ao
+   Facebook ao lado. */
+/* v24: abertura mais impactante (traço mais lento, estalo de luz no fim
+   da construção, saída com flash + onda de choque, fundo que "respira"
+   e brilho no nome) e a correção do scroll fantasma na tela de
+   carregamento — o body por trás do preloader ficava rolável (barra de
+   rolagem visível, dava pra "mover" o workspace enquanto ainda estava
+   no carregamento) porque `position:fixed` sozinho não impede o
+   rubber-band scroll do body no iOS. Agora `html:has(#mwBootLoader),
+   body:has(#mwBootLoader){overflow:hidden}` trava o documento inteiro
+   enquanto o loader existir, sem depender de nenhum JS rodar a tempo.
+   Sem trocar o nome do cache, quem já tinha o app instalado continuaria
+   vendo a abertura antiga e o bug de scroll. */
+/* v23: pedido explícito — a restauração anterior (v22) ainda tinha ido
+   curta demais: voltou só até dc073cc (v15, "torna a revelação
+   visível"), que também é uma reescrita feita NESTA conversa a partir
+   do pedido original "cadê os efeitos?". O usuário esclareceu: quer o
+   estado de ANTES de qualquer pedido de mudança na tela de
+   carregamento nesta conversa — ou seja, antes até do v14. index.html
+   e sw.js voltam pro commit 789d80e ("Sobe o cache do service worker
+   para v13"), o parent exato do commit que iniciou a primeira
+   reescrita. É o ícone/nome com traçado SVG (stroke-dashoffset) e
+   trilha de grid abrindo, como era antes de todo este histórico. */
 /* v7: o index.html passou a carregar o cliente do Supabase e a lógica de
    conta na nuvem. Sem trocar o nome, o app instalado continuaria servindo
    o index antigo do cache — sem login de servidor nenhum. */
@@ -11,17 +36,6 @@
    sessão. Trocar o nome do cache é o que faz o service worker descartar o
    que guardou e buscar tudo de novo — o `activate` abaixo apaga todo cache
    cujo nome não seja este. */
-/* v15: a revelação por desfoque do v14 estava rápida e sutil demais —
-   passava despercebida e depois ficava ~2,9s parada, sem vida. Agora
-   dura mais (mais desfoque, mais tempo), o halo ganha uma respiração
-   contínua durante a espera, e o piso/teto do boot encurtou pra
-   segurar só ~1,5s de marca parada, batendo com a proporção da
-   referência. */
-/* v14: reescreve a abertura (ícone e nome revelados por desfoque, sem
-   traçado nem trilha de grid abrindo — a causa da falta de
-   centralização) e trava overscroll-behavior nos dois eixos (só o
-   vertical estava travado; o app instalado ainda "arrastava" de lado
-   pelo bounce horizontal). */
 /* v13: leva ao app instalado tudo que ficou parado nos commits depois
    do v12 — o <form> de login (autopreenchimento correto), a
    Credential Management API, a recarga real após trocar a senha, e a
@@ -33,7 +47,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v15';
+const CACHE_NAME = 'mw-shell-v25';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
