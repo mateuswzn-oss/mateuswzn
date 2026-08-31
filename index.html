@@ -1868,14 +1868,27 @@ body.light #app .mw-reference-sidebar .mw-switch i{
      ícone pelos cantos, então a imagem quadrada lá dentro sempre lia
      como "colada por cima" em vez de encaixada num ícone de verdade.
      16px (40% da caixa) + overflow:hidden é o que faz o raio valer
-     pra qualquer coisa dentro, não só pro fundo. */
+     pra qualquer coisa dentro, não só pro fundo.
+
+     Fundo e cor trocados pra bater com o ícone real do app
+     (icon-192.png: tile escuro, borda com brilho azul/roxo) — pedido
+     explícito de "não quero mais essa [tile] azul, quero a logo do
+     app" depois que um SVG customizado (dois traços tipo M/W)
+     pareceu "estradas cruzando" em vez de uma marca. Aqui é só MW em
+     texto limpo, sem o reflexo diagonal que o ícone tem — exatamente
+     o "sem aquelas estradas" pedido. */
+  background:linear-gradient(150deg,#161b30 0%,#0a0c16 100%)!important;
+  border:1px solid rgba(148,163,255,.28)!important;
+  box-shadow:0 0 0 1px rgba(124,92,255,.16),0 0 16px rgba(76,120,255,.32),inset 0 1px 0 rgba(255,255,255,.10)!important;
   border-radius:16px!important;overflow:hidden!important;
   display:grid!important;place-items:center!important;
 }
 #app .mw-reference-sidebar .mw-logo-mark span{
-  font-size:11px!important;
-  letter-spacing:.02em!important;
-  font-weight:900!important;
+  font-size:16px!important;
+  letter-spacing:-.03em!important;
+  font-weight:800!important;
+  color:#f3f6ff!important;
+  font-family:inherit!important;
 }
 
 /* Collapse control: compact, always visible, with the same left-panel motion language. */
@@ -2088,7 +2101,7 @@ body:not(.light) #app .mw-reference-sidebar .mw-switch i{transform:translateX(15
   display:grid!important;place-items:center!important;
 }
 #app .mw-reference-sidebar .mw-logo-mark span{
-  font-size:11px!important;font-weight:900!important;
+  font-size:16px!important;font-weight:800!important;color:#f3f6ff!important;
 }
 </style>
 
@@ -2969,12 +2982,23 @@ html.mw-reload-leve #mwBootLoader.mw-boot-out{
   #mwBootLoader.mw-boot-out .mwb-fundo-respiro{animation:mwbFundoSai .3s linear both!important}
 }
 
-/* A tela de baixo entra ao mesmo tempo que o preloader sai. */
+/* A tela de baixo só entra depois que o preloader terminou de sair
+   por completo (ver mwBootFinish) — não mais em paralelo. */
 body.mw-boot-revealing #loginScreen:not(.hidden),
 body.mw-boot-revealing #app:not(.hidden),
 body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
   animation:mwbRevela .62s cubic-bezier(.24,.62,.3,1) both;
 }
+/* #loginScreen não nasce com .hidden quando não há sessão salva — o
+   formulário de login de verdade (autocomplete="username"/
+   "current-password", com uma credencial já salva no chaveiro do
+   navegador) fica no DOM, só coberto visualmente pelo preloader por
+   cima. Um z-index alto não impede a folha nativa de AutoFill de
+   senhas do sistema operacional (ela flutua acima de qualquer coisa
+   da página) — só existir escondido de verdade (display:none) tira o
+   formulário da heurística de autofill. html.mw-login-pronto entra
+   só quando mwBootSinaliza() roda (loader já removido de vez). */
+html:not(.mw-login-pronto) #loginScreen{display:none!important}
 @keyframes mwbRevela{
   0%{opacity:0;transform:scale(1.012)}
   100%{opacity:1;transform:scale(1)}
@@ -3077,7 +3101,17 @@ try {
           if (k === MW_MARCA_RESET) return;
           try { localStorage.removeItem(k); } catch (e) {}
         });
-        try { sessionStorage.clear(); } catch (e) {}
+        /* mwBooted é escrito por um script ANTES deste (decide se o
+           boot é completo ou "leve") — limpar sessionStorage inteiro
+           aqui apagava esse valor no MESMO carregamento em que ele
+           acabou de ser gravado, fazendo o reset (que só acontece uma
+           vez na vida do navegador) comer o "leve" do próximo reload
+           sem motivo. Preserva só essa chave, apaga o resto. */
+        try {
+          var mwBootedAtual = sessionStorage.getItem('mwBooted');
+          sessionStorage.clear();
+          if (mwBootedAtual !== null) sessionStorage.setItem('mwBooted', mwBootedAtual);
+        } catch (e) {}
       }
     }
   } catch (e) {}
@@ -3245,11 +3279,23 @@ try {
 
 /* "Esqueci minha senha" e "esqueci meu usuário" numa linha só — eram
    dois blocos empilhados repetindo o mesmo "esqueci", lendo como duas
-   perguntas separadas em vez de uma única área de recuperação. */
+   perguntas separadas em vez de uma única área de recuperação.
+
+   Não existe (nem precisa existir) um "lembrar senha" próprio do app:
+   quem já guarda credencial é o navegador (ver mwGuardaCredencial,
+   chamado depois de um login bem-sucedido) — .mwv2-remember só torna
+   isso visível, em vez de ficar invisível/óbvio demais só pra quem já
+   conhece o comportamento do navegador. */
 .mwv2-forgot-row{
-  display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;
-  gap:6px;margin:0 0 14px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
+  gap:8px 14px;margin:0 0 14px;
 }
+.mwv2-remember{
+  display:flex;align-items:center;gap:5px;
+  font-size:10px;color:var(--muted2);opacity:.8;cursor:default;
+}
+.mwv2-remember svg{flex:0 0 auto;opacity:.85}
+.mwv2-forgot-links{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-left:auto}
 .mwv2-forgot-row button{
   border:0;background:none;color:var(--muted2);font-size:10.5px;cursor:pointer;
   padding:4px 6px;border-radius:8px;transition:color .2s ease,background .2s ease;
@@ -3514,9 +3560,15 @@ body.light .mw-faceid-gate-card p{color:#526988}
           <div class="mwv2-input-wrap"><input id="password" type="password" autocomplete="current-password" placeholder="Senha"><button class="toggle" id="togglePassword" type="button">◌</button></div>
 
           <div class="mwv2-forgot-row">
-            <button type="button" id="forgotPasswordLink">Esqueci minha senha</button>
-            <span class="mwv2-forgot-sep" aria-hidden="true"></span>
-            <button type="button" id="forgotUsernameLink">Esqueci meu usuário</button>
+            <span class="mwv2-remember" title="Depois de entrar, o próprio navegador oferece salvar essa senha para as próximas vezes.">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10.5" width="16" height="9.5" rx="2.5"/><path d="M8 10.5V7.3a4 4 0 0 1 8 0v3.2"/></svg>
+              Senha salva pelo navegador
+            </span>
+            <span class="mwv2-forgot-links">
+              <button type="button" id="forgotPasswordLink">Esqueci minha senha</button>
+              <span class="mwv2-forgot-sep" aria-hidden="true"></span>
+              <button type="button" id="forgotUsernameLink">Esqueci meu usuário</button>
+            </span>
           </div>
           <div class="mwv2-forgot mw-forgot-transfere"><button type="button" id="mwTrazerConta">Já tenho conta em outro lugar</button></div>
 
@@ -3703,7 +3755,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
 <section id="app" class="hidden">
   <aside class="sidebar mw-sidebar-polished mw-reference-sidebar">
     <div class="side-brand mw-sidebar-brand">
-      <div class="mini-logo mw-logo-mark" aria-hidden="true"><svg viewBox="0 0 64 44" width="62%" height="62%" fill="none" style="display:block"><path d="M6 34.5V11.5L17 26.5L28 11.5V34.5" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M36 11.5V34.5L47 19.5L58 34.5V11.5" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity=".82"/></svg></div>
+      <div class="mini-logo mw-logo-mark" aria-hidden="true"><span>MW</span></div>
       <div class="mw-brand-copy label"><strong>WORKSPACE</strong></div>
       <button type="button" class="mw-sidebar-collapse" id="mwSidebarCollapse" aria-label="Recolher barra lateral" title="Recolher barra lateral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="17" height="16" rx="3"/><path d="M9.2 4v16"/></svg></button>
     </div>
@@ -4393,6 +4445,7 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
   /* A promessa já foi criada logo abaixo do markup do loader (ver o
      comentário lá). Aqui só a liberamos, no instante certo. */
   function mwBootSinaliza(){
+    document.documentElement.classList.add('mw-login-pronto');
     if (window.mwLiberarBoot) window.mwLiberarBoot();
     document.dispatchEvent(new CustomEvent('mw:boot-fim'));
   }
@@ -4401,15 +4454,20 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
     if (!loader || mwBootDone) return;
     mwBootDone = true;
     if (mwBootBar) mwBootBar.style.width = '100%';
-    /* As duas classes entram no MESMO instante: o preloader recuando e
-       a tela de baixo aparecendo se cruzam. É isso que faz entrada e
-       saída lerem como uma sequência só, em vez de "escondeu o
-       preloader e mostrou outra coisa". */
-    document.body.classList.add('mw-boot-revealing');
+    /* Antes as duas classes entravam no MESMO instante: o preloader
+       recuando e a tela de baixo aparecendo se cruzavam de propósito,
+       pra ler como uma sequência só em vez de "escondeu o preloader e
+       mostrou outra coisa". Pedido explícito reverteu essa escolha:
+       "a tela de carregamento mal finaliza e a de login já aparece...
+       ela tem que finalizar com o efeito de sair e SÓ DEPOIS aparecer
+       a tela de login" — agora mw-boot-revealing (que dispara
+       mwbRevela na tela de baixo) só entra depois que o loader já
+       terminou de sair e foi removido, nunca em paralelo. */
     loader.classList.add('mw-boot-out');
     setTimeout(function(){
       loader.remove();
       mwBootSinaliza();
+      document.body.classList.add('mw-boot-revealing');
       setTimeout(function(){ document.body.classList.remove('mw-boot-revealing'); }, 400);
     }, MW_BOOT_SAIDA);
   }
@@ -17146,13 +17204,23 @@ html:has(body.light){background-color:#f4f9ff!important}
    -2px não bastava no app instalado: no boot do PWA em iOS, a barra de
    status e a home indicator area podem levar mais de um ciclo para se
    assentar, e o inset fixo por pixels ficava curto bem no primeiro
-   quadro — exatamente quando o preloader precisa cobrir tudo. Uma
-   margem maior, mais 100dvh/100dvw como chão (em vez de depender só do
-   inset:0 herdado), fecha essa folga em qualquer aparelho. */
+   quadro — exatamente quando o preloader precisa cobrir tudo.
+
+   BUG real encontrado depois (relatado como "um risco/rastro lá
+   embaixo"): misturar inset (top/bottom) com height:100dvh!important
+   deixa a caixa SOBRE-restringida — com top, height E bottom todos
+   fixados ao mesmo tempo, o navegador ignora o bottom declarado e
+   recalcula a partir de top+height. Na prática: top:-12px e
+   height:100dvh davam bottom = -12px + 100dvh, ou seja, uma sobra de
+   12px que o inset:-12px pretendia cobrir embaixo NUNCA existia de
+   verdade — o preloader ficava 12px curto no rodapé da tela, exatamente
+   onde qualquer coisa por baixo (like a barra de endereço recolhendo)
+   podia aparecer. Tirar o width/height explícitos e deixar só um
+   inset uniforme (mesmo valor nos 4 lados) resolve: sem outra
+   propriedade competindo, top/right/bottom/left sozinhos definem a
+   caixa sem conflito nenhum, cobrindo os 4 lados de verdade. */
 #mwBootLoader{
-  inset:-12px 0!important;
-  width:100dvw!important;height:100dvh!important;
-  min-width:100vw!important;min-height:100vh!important;
+  inset:-16px!important;
 }
 </style>
 <style id="mw-entrada-workspace">
@@ -17166,10 +17234,17 @@ html:has(body.light){background-color:#f4f9ff!important}
    A classe sai sozinha depois da animação (ver o script), senão os
    elementos ficariam presos com will-change e a cascata se repetiria a
    cada re-render. */
+/* Durações e atrasos cortados quase pela metade (pedido explícito:
+   "a animação está demorando a aparecer tudo") — o tempo até o
+   ÚLTIMO card assentar era de quase 1s numa tela comum, o suficiente
+   pra sentir como demora, não como uma cascata rápida. Continua sendo
+   duas camadas (bloco, depois cartão dentro dele), só que mais justo:
+   40ms/25ms de passo entre itens em vez de 70ms/45ms, e 0,36s/0,3s de
+   duração em vez de 0,62s/0,5s. */
 body.mw-entrando #app .main > *{
   opacity:0;
-  animation:mwEntraBloco .62s cubic-bezier(.22,.72,.26,1) both;
-  animation-delay:calc(var(--mw-i,0) * 70ms);
+  animation:mwEntraBloco .36s cubic-bezier(.22,.72,.26,1) both;
+  animation-delay:calc(var(--mw-i,0) * 40ms);
 }
 @keyframes mwEntraBloco{
   from{opacity:0;transform:translateY(16px) scale(.985)}
@@ -17180,8 +17255,8 @@ body.mw-entrando #app .main > *{
 body.mw-entrando #app .main > * .card,
 body.mw-entrando #app .main > * .stat{
   opacity:0;
-  animation:mwEntraCartao .5s cubic-bezier(.22,.72,.26,1) both;
-  animation-delay:calc(var(--mw-i,0) * 70ms + var(--mw-j,0) * 45ms + 90ms);
+  animation:mwEntraCartao .3s cubic-bezier(.22,.72,.26,1) both;
+  animation-delay:calc(var(--mw-i,0) * 40ms + var(--mw-j,0) * 25ms + 50ms);
 }
 @keyframes mwEntraCartao{
   from{opacity:0;transform:translateY(10px)}
@@ -17251,11 +17326,15 @@ body.mw-entrando #app .main .activity-list .activity-card{
     document.body.classList.add('mw-entrando');
     /* Tira a classe quando a cascata acaba: deixá-la ligada faria a
        animação repetir a cada troca de seção e prenderia os elementos
-       em opacity:0 se algo fosse re-renderizado no meio. */
+       em opacity:0 se algo fosse re-renderizado no meio. 950ms cobre o
+       pior caso com folga: --mw-i até 9 (9*40ms=360ms) + --mw-j até 7
+       (7*25ms+50ms=225ms) de atraso, mais 300ms de duração do cartão
+       = 885ms — ajustado junto com o corte de duração dos keyframes
+       acima (pedido explícito pra cascata inteira ficar mais rápida). */
     setTimeout(function(){
       document.body.classList.remove('mw-entrando');
       rodando = false;
-    }, 1500);
+    }, 950);
   }
 
   var visivel = !app.classList.contains('hidden');
@@ -20868,6 +20947,17 @@ html:not(.mw-standalone) body.mw-in-app #mwBottomNav.mwbn{
       indicador.classList.add('mw-pull-girando');
       indicador.style.opacity = '1';
       indicador.style.transform = 'translate(-50%,10px)';
+      /* Puxar-pra-recarregar tem que recarregar "leve" (só um giro
+         curto), nunca a construção completa da marca — pedido
+         explícito, "não precisa necessariamente voltar pra tela de
+         carregamento". O boot decide isso lendo sessionStorage.mwBooted
+         ANTES de qualquer outro script rodar; normalmente ela já vale
+         '1' a essa altura (é regravada a cada carregamento), mas
+         setar de novo aqui, na marra, garante o modo leve mesmo se
+         algo tiver limpado o sessionStorage entre o carregamento
+         anterior e este puxão (troca de aba/app suspenso pelo sistema
+         e retomado do zero, por exemplo). */
+      try { sessionStorage.setItem('mwBooted', '1'); } catch (e) {}
       setTimeout(function(){ location.reload(); }, 260);
     } else {
       distancia = 0;
