@@ -2606,7 +2606,7 @@ body.light #app .calendar-card .calendar-nav button:hover{
 #mwBootLoader{
   position:fixed;inset:0;z-index:99999;
   display:flex;align-items:center;justify-content:center;
-  overflow:hidden;
+  overflow:hidden;touch-action:none;
   /* Cor CHAPADA primeiro: ela pinta mesmo que os gradientes ainda não
      tenham sido resolvidos. Nunca há um quadro claro. */
   background-color:#020617;
@@ -2614,6 +2614,41 @@ body.light #app .calendar-card .calendar-nav button:hover{
     radial-gradient(circle at 50% 44%,rgba(37,99,235,.15),transparent 48%),
     radial-gradient(circle at 76% 16%,rgba(124,92,255,.09),transparent 38%),
     linear-gradient(180deg,#020617,#07142c 46%,#020617);
+}
+/* Trava o scroll do documento inteiro enquanto o loader existir. Puro
+   CSS (:has), sem depender de nenhum JS rodar a tempo: o loader é o
+   primeiro elemento do <body> e já está no HTML antes de qualquer
+   script executar, então sem isto a página por trás (mais alta que a
+   viewport) podia ser arrastada/rolada por baixo do preloader fixed —
+   no touch do iOS, "fixed" sozinho não impede o rubber-band scroll do
+   body. Some sozinho no instante em que loader.remove() roda, sem
+   precisar de nenhuma limpeza. */
+html:has(#mwBootLoader),
+body:has(#mwBootLoader){
+  overflow:hidden!important;
+}
+.mwb-fundo-respiro{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(circle at 50% 46%,rgba(56,189,248,.26),transparent 55%),
+    radial-gradient(circle at 64% 62%,rgba(124,92,255,.2),transparent 52%);
+  opacity:0;
+  animation:mwbFundoRespiro 3.4s ease .05s both;
+}
+@keyframes mwbFundoRespiro{
+  0%{opacity:0}
+  51%{opacity:.32}
+  79%{opacity:.32}
+  88%{opacity:.68}
+  100%{opacity:.32}
+}
+#mwBootLoader.mw-boot-out .mwb-fundo-respiro{
+  animation:mwbFundoRespiroSai .62s ease both;
+}
+@keyframes mwbFundoRespiroSai{
+  0%{opacity:.32}
+  20%{opacity:.85}
+  100%{opacity:0}
 }
 
 /* LOCKUP HORIZONTAL: o símbolo MW se forma, e o nome "Workspace"
@@ -2654,10 +2689,16 @@ body.light #app .calendar-card .calendar-nav button:hover{
   display:flex;flex-direction:row;align-items:center;
   gap:0;
   will-change:transform,opacity;
+  animation:mwbPalcoImpacto .6s cubic-bezier(.3,.5,.3,1) 2.78s both;
+}
+@keyframes mwbPalcoImpacto{
+  0%{transform:scale(1)}
+  32%{transform:scale(1.045)}
+  100%{transform:scale(1)}
 }
 .mwb-nome-trilha{
   display:grid;grid-template-columns:0fr;
-  animation:mwbAbreNome .92s cubic-bezier(.24,.62,.3,1) 2.12s both;
+  animation:mwbAbreNome 1.05s cubic-bezier(.22,.7,.28,1) 3s both;
 }
 @keyframes mwbAbreNome{
   from{grid-template-columns:0fr}
@@ -2671,21 +2712,36 @@ body.light #app .calendar-card .calendar-nav button:hover{
    centro, o que virava um borrão grande e, como o nome ficava embaixo,
    a luz parecia derramar para o rodapé. Agora tem o tamanho do símbolo
    e fica ancorada NELE, não no conjunto. */
+.mwb-onda{
+  position:absolute;left:calc(var(--mwb-simb) / 2);top:50%;
+  width:var(--mwb-simb);height:var(--mwb-simb);
+  margin:calc(var(--mwb-simb) * -.5) 0 0 calc(var(--mwb-simb) * -.5);
+  border-radius:50%;pointer-events:none;
+  border:1.5px solid rgba(195,222,255,.75);
+  opacity:0;transform:scale(.7);
+}
 .mwb-halo{
   position:absolute;left:calc(var(--mwb-simb) / 2);top:50%;
   width:calc(var(--mwb-simb) * 1.08);height:calc(var(--mwb-simb) * 1.08);
   margin:calc(var(--mwb-simb) * -.54) 0 0 calc(var(--mwb-simb) * -.54);
   border-radius:50%;pointer-events:none;
   background:radial-gradient(circle,
-    rgba(56,189,248,.22), rgba(37,99,235,.13) 36%,
+    rgba(56,189,248,.24), rgba(37,99,235,.14) 36%,
     rgba(124,92,255,.07) 58%, transparent 74%);
-  opacity:0;transform:scale(.55);
+  opacity:0;transform:scale(.5);
   will-change:transform,opacity;
-  animation:mwbHalo 1.15s cubic-bezier(.24,.62,.3,1) 1.42s both;
+  animation:mwbHalo 1.6s cubic-bezier(.22,.65,.3,1) .15s both,
+            mwbHaloImpacto .55s ease 2.7s both;
 }
 @keyframes mwbHalo{
-  from{opacity:0;transform:scale(.55)}
-  to{opacity:1;transform:scale(1)}
+  0%{opacity:0;transform:scale(.5)}
+  70%{opacity:1;transform:scale(1.08)}
+  100%{opacity:.85;transform:scale(1)}
+}
+@keyframes mwbHaloImpacto{
+  0%{filter:brightness(1)}
+  35%{filter:brightness(1.55)}
+  100%{filter:brightness(1)}
 }
 
 /* ---------- o símbolo ---------- */
@@ -2699,29 +2755,32 @@ body.light #app .calendar-card .calendar-nav button:hover{
 .mwb-traco{
   fill:none;stroke-width:5.2;stroke-linecap:round;stroke-linejoin:round;
   stroke-dasharray:84;stroke-dashoffset:84;
-  /* 0,84s -> 1,08s: o traço nasce com mais calma. A curva também ficou
-     menos agressiva no arranque (.42,.02 -> .34,.02), que é o que se
-     sente como "começo mais lento". */
-  animation:mwbTracar 1.08s cubic-bezier(.34,.02,.24,1) both;
+  /* Entrada mais lenta e deliberada (pedido explícito: "tá muito
+     rápido, falta impacto") — 1,08s -> 1,3s por letra. */
+  animation:mwbTracar 1.3s cubic-bezier(.4,.02,.2,1) both;
 }
-/* O rastro: um pedaço curto e claro que corre à frente do traço. */
+/* O rastro: um pedaço curto e claro que corre à frente do traço, com
+   um lampejo (fica mais grosso) bem no instante em que alcança a
+   ponta — o "impacto" da conclusão de cada letra. */
 .mwb-rastro{
   fill:none;stroke:#dff2ff;stroke-width:5.6;stroke-linecap:round;stroke-linejoin:round;
   stroke-dasharray:7 84;stroke-dashoffset:84;opacity:.92;
-  animation:mwbRastro 1.08s cubic-bezier(.34,.02,.24,1) both;
+  animation:mwbRastro 1.3s cubic-bezier(.4,.02,.2,1) both;
 }
 /* Uma batida de silêncio antes de qualquer coisa acontecer: a tela
-   azul fica só ela por ~0,4s, e só então o M começa a ser traçado. Sem
-   essa pausa a animação começava colada na abertura do app e parecia
-   atropelada — era o "esperar uns milésimos antes de aparecer". */
-.mwb-m{animation-delay:.4s}
-.mwb-w{animation-delay:1.04s}
+   azul fica só ela por um instante, e só então o M começa a ser
+   traçado. Sem essa pausa a animação começava colada na abertura do
+   app e parecia atropelada — era o "esperar uns milésimos antes de
+   aparecer". */
+.mwb-m{animation-delay:.55s}
+.mwb-w{animation-delay:1.5s}
 @keyframes mwbTracar{to{stroke-dashoffset:0}}
 @keyframes mwbRastro{
   0%{stroke-dashoffset:84;opacity:0}
-  12%{opacity:.92}
-  82%{opacity:.92}
-  100%{stroke-dashoffset:0;opacity:0}
+  10%{opacity:1}
+  80%{opacity:1;stroke-width:5.6}
+  92%{opacity:1;stroke-width:8}
+  100%{stroke-dashoffset:0;opacity:0;stroke-width:5.6}
 }
 
 /* ---------- o brilho que atravessa os contornos ---------- */
@@ -2742,15 +2801,15 @@ body.light #app .calendar-card .calendar-nav button:hover{
 .mwb-brilho i{
   position:absolute;inset:-30% -70%;
   background:linear-gradient(104deg,
-    transparent 38%, rgba(255,255,255,.92) 50%, transparent 62%);
+    transparent 32%, rgba(255,255,255,.98) 50%, transparent 68%);
   opacity:0;transform:translateX(-46%);
   will-change:transform,opacity;
-  animation:mwbBrilho 1s cubic-bezier(.36,.1,.28,1) 2.12s both;
+  animation:mwbBrilho 1.2s cubic-bezier(.3,.08,.24,1) 2.75s both;
 }
 @keyframes mwbBrilho{
   0%{opacity:0;transform:translateX(-46%)}
-  28%{opacity:1}
-  72%{opacity:1}
+  26%{opacity:1}
+  74%{opacity:1}
   100%{opacity:0;transform:translateX(46%)}
 }
 
@@ -2765,19 +2824,27 @@ body.light #app .calendar-card .calendar-nav button:hover{
   padding-left:16px;
   opacity:0;transform:translateX(-10px);
   will-change:transform,opacity;
-  animation:mwbNome .82s cubic-bezier(.24,.62,.3,1) 2.2s both;
+  animation:mwbNome .85s cubic-bezier(.3,1.3,.5,1) 3.1s both,
+            mwbNomeBrilho 1.3s ease 3.1s both;
 }
 @keyframes mwbNome{
   from{opacity:0;transform:translateX(-10px)}
   to{opacity:1;transform:translateX(0)}
 }
+@keyframes mwbNomeBrilho{
+  0%{text-shadow:0 0 0 rgba(140,190,255,0)}
+  55%{text-shadow:0 0 14px rgba(140,190,255,.55)}
+  100%{text-shadow:0 0 6px rgba(140,190,255,.26)}
+}
 
 /* ---------- SAÍDA: continuação da mesma sequência ---------- */
-/* Não é "esconder o preloader". A luz se dissipa (o halo cresce e
-   apaga), a composição recua um pouco e some, e a tela de baixo
-   aparece ao mesmo tempo — as duas coisas se cruzam. */
+/* Não é "esconder o preloader". Em vez do fade simples de antes, agora
+   é um flash de energia — o halo estoura de brilho e o conjunto dá um
+   pequeno "pulo" pra fora — seguido por uma onda de choque que se
+   expande e dissolve, só então encolhendo e sumindo junto com a tela
+   de baixo aparecendo. */
 #mwBootLoader.mw-boot-out{
-  animation:mwbFundoSai .52s cubic-bezier(.4,0,.2,1) both;
+  animation:mwbFundoSai .62s cubic-bezier(.45,0,.8,.3) both;
   pointer-events:none;
 }
 @keyframes mwbFundoSai{
@@ -2785,18 +2852,28 @@ body.light #app .calendar-card .calendar-nav button:hover{
   to{opacity:0}
 }
 #mwBootLoader.mw-boot-out .mwb-palco{
-  animation:mwbPalcoSai .52s cubic-bezier(.4,0,.2,1) both;
+  animation:mwbPalcoSai .62s cubic-bezier(.45,0,.8,.3) both;
 }
 @keyframes mwbPalcoSai{
-  from{opacity:1;transform:scale(1)}
-  to{opacity:0;transform:scale(.94)}
+  0%{opacity:1;transform:scale(1)}
+  20%{opacity:1;transform:scale(1.07)}
+  100%{opacity:0;transform:scale(.86)}
 }
 #mwBootLoader.mw-boot-out .mwb-halo{
-  animation:mwbHaloSai .52s cubic-bezier(.32,.5,.3,1) both;
+  animation:mwbHaloSai .62s cubic-bezier(.3,.4,.3,1) both;
 }
 @keyframes mwbHaloSai{
-  from{opacity:1;transform:scale(1)}
-  to{opacity:0;transform:scale(1.5)}
+  0%{opacity:.85;transform:scale(1);filter:brightness(1)}
+  20%{opacity:1;transform:scale(1.15);filter:brightness(2)}
+  100%{opacity:0;transform:scale(1.7);filter:brightness(1)}
+}
+#mwBootLoader.mw-boot-out .mwb-onda{
+  animation:mwbOnda .62s cubic-bezier(.16,.8,.3,1) both;
+}
+@keyframes mwbOnda{
+  0%{opacity:.9;transform:scale(.7)}
+  55%{opacity:.5}
+  100%{opacity:0;transform:scale(2.6)}
 }
 
 /* ---------- espera longa: um fio, e só se precisar ---------- */
@@ -2804,7 +2881,7 @@ body.light #app .calendar-card .calendar-nav button:hover{
   position:absolute;left:50%;bottom:13%;transform:translateX(-50%);
   width:120px;height:2px;border-radius:99px;
   background:rgba(148,163,184,.14);overflow:hidden;
-  opacity:0;animation:mwbEsperaEntra .5s ease 4.3s both;
+  opacity:0;animation:mwbEsperaEntra .5s ease 4.9s both;
 }
 @keyframes mwbEsperaEntra{to{opacity:1}}
 .mwb-espera i{
@@ -2820,20 +2897,23 @@ body.light #app .calendar-card .calendar-nav button:hover{
   .mwb-palco{animation:none!important;transform:none!important}
   .mwb-nome-trilha{animation:none!important;grid-template-columns:1fr!important}
   .mwb-traco{animation:none!important;stroke-dashoffset:0!important}
-  .mwb-rastro,.mwb-brilho{display:none!important}
+  .mwb-rastro,.mwb-brilho,.mwb-onda{display:none!important}
   .mwb-halo,.mwb-nome{animation:none!important;opacity:1!important;transform:none!important}
+  .mwb-nome{text-shadow:0 0 6px rgba(140,190,255,.26)!important}
+  .mwb-fundo-respiro{animation:none!important;opacity:.32!important}
   .mwb-espera{animation:none!important;opacity:1!important}
   .mwb-espera i{transition:none!important}
   #mwBootLoader.mw-boot-out,
   #mwBootLoader.mw-boot-out .mwb-palco,
-  #mwBootLoader.mw-boot-out .mwb-halo{animation:mwbFundoSai .3s linear both!important}
+  #mwBootLoader.mw-boot-out .mwb-halo,
+  #mwBootLoader.mw-boot-out .mwb-fundo-respiro{animation:mwbFundoSai .3s linear both!important}
 }
 
 /* A tela de baixo entra ao mesmo tempo que o preloader sai. */
 body.mw-boot-revealing #loginScreen:not(.hidden),
 body.mw-boot-revealing #app:not(.hidden),
 body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
-  animation:mwbRevela .52s cubic-bezier(.24,.62,.3,1) both;
+  animation:mwbRevela .62s cubic-bezier(.24,.62,.3,1) both;
 }
 @keyframes mwbRevela{
   0%{opacity:0;transform:scale(1.012)}
@@ -2846,7 +2926,9 @@ body.mw-boot-revealing #mwFaceIdGate:not(.hidden){
 }
 </style>
 <div id="mwBootLoader" aria-hidden="true">
+  <span class="mwb-fundo-respiro"></span>
   <div class="mwb-palco">
+    <span class="mwb-onda"></span>
     <span class="mwb-halo"></span>
     <svg class="mwb-glifo" viewBox="0 0 64 44" fill="none">
       <defs>
@@ -4166,9 +4248,16 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
      não a construção lenta. A nossa construção termina por volta de
      2,9s (o nome assenta), então o piso passa a dar ~1,1s de marca
      parada antes da saída, em vez dos ~550ms de antes. */
-  var MW_BOOT_MIN = 4000;
-  var MW_BOOT_MAX = 4900;
-  var MW_BOOT_SAIDA = 520;   // igual à duração das animações de saída
+  /* Pedido explícito: "tá muito rápido, falta impacto". A construção
+     foi esticada (traço de cada letra 1,08s -> 1,3s, com o estalo de
+     halo/brilho/escala no instante em que o W termina) e agora assenta
+     por volta de 3,95s, não mais 2,9s — daí o piso e o teto subirem
+     junto. A saída também deixou de ser um fade simples: virou um
+     flash de energia + onda de choque, por isso a duração foi de 520
+     para 620ms. */
+  var MW_BOOT_MIN = 4550;
+  var MW_BOOT_MAX = 5450;
+  var MW_BOOT_SAIDA = 620;   // igual à duração das animações de saída
   var mwBootDone = false;
 
   /* A promessa já foi criada logo abaixo do markup do loader (ver o

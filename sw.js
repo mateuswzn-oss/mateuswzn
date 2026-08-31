@@ -1,5 +1,16 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v24: abertura mais impactante (traço mais lento, estalo de luz no fim
+   da construção, saída com flash + onda de choque, fundo que "respira"
+   e brilho no nome) e a correção do scroll fantasma na tela de
+   carregamento — o body por trás do preloader ficava rolável (barra de
+   rolagem visível, dava pra "mover" o workspace enquanto ainda estava
+   no carregamento) porque `position:fixed` sozinho não impede o
+   rubber-band scroll do body no iOS. Agora `html:has(#mwBootLoader),
+   body:has(#mwBootLoader){overflow:hidden}` trava o documento inteiro
+   enquanto o loader existir, sem depender de nenhum JS rodar a tempo.
+   Sem trocar o nome do cache, quem já tinha o app instalado continuaria
+   vendo a abertura antiga e o bug de scroll. */
 /* v23: pedido explícito — a restauração anterior (v22) ainda tinha ido
    curta demais: voltou só até dc073cc (v15, "torna a revelação
    visível"), que também é uma reescrita feita NESTA conversa a partir
@@ -32,7 +43,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v23';
+const CACHE_NAME = 'mw-shell-v24';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
