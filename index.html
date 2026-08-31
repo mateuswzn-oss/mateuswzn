@@ -3752,6 +3752,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
         <div class="mw-conta-linha"><div class="mw-conta-campo"><label>Nome de usuário</label><input id="mwContaUsuario" type="text" readonly autocomplete="off"></div><button type="button" class="small-btn" id="mwContaTrocarUsuario">Alterar</button></div>
         <div class="mw-conta-linha"><div class="mw-conta-campo"><label>E-mail</label><input id="mwContaEmail" type="email" readonly autocomplete="off"></div><button type="button" class="small-btn" id="mwContaTrocarEmail">Alterar</button></div>
         <div class="mw-conta-linha"><div class="mw-conta-campo"><label>Senha</label><input id="mwContaSenha" type="password" value="••••••••" readonly autocomplete="off"></div><button type="button" class="small-btn" id="mwContaTrocarSenha">Alterar</button></div>
+        <div class="mw-conta-linha"><div class="mw-conta-campo"><label>Telefone</label><input id="mwContaTelefone" type="tel" readonly autocomplete="off" placeholder="Não cadastrado"></div><button type="button" class="small-btn" id="mwContaTrocarTelefone">Adicionar</button></div>
         <p class="form-error" id="mwContaStatus" hidden></p></div>
         <div class="settings-group"><h4>Dados do perfil</h4><p>Como você aparece no Workspace. O nome de exibição pode ser trocado a qualquer momento, sem senha.</p><div class="profile-form"><div class="form-field"><label>Nome de exibição</label><input id="profileName" type="text" placeholder="Mateus"></div><div class="form-field"><label>E-mail</label><input id="profileEmail" type="email" readonly placeholder="seu@email.com" title="O e-mail da conta muda no grupo Conta, acima."></div><div class="form-field full profile-photo-field">
 <label>Foto de perfil</label>
@@ -17177,11 +17178,90 @@ body.light .mw-confirma-card{background:#fff;color:#0b1830}
     });
   }
 
+  /* ----------------------------------------------------------------
+     Telefone (confirmação por SMS)
+     ----------------------------------------------------------------
+     Só existe de verdade com conta na nuvem — o número e a marca de
+     "confirmado" moram no próprio auth.users do Supabase (campos
+     phone / phone_confirmed_at nativos), não em localStorage. Sem
+     conta na nuvem não há onde guardar nem como mandar SMS, então as
+     três funções abaixo devolvem erro claro nesse caso, em vez de
+     fingir que funcionou.
+
+     Só Brasil por enquanto: o formulário pede DDD + número e a função
+     de formato assume o código do país 55. Um número que já venha com
+     código de país diferente de 55 é recusado — dar suporte a outros
+     países é decisão de produto (o "+" de qual país aparece na tela?),
+     não só técnica, então fica de fora até alguém pedir. */
+  function paraE164BR(v){
+    var d = String(v || '').replace(/\D/g, '');
+    if (!d) return '';
+    if (d.charAt(0) === '0') d = d.slice(1);
+    if (d.length === 12 || d.length === 13) {
+      if (d.indexOf('55') !== 0) return '';
+    } else if (d.length === 10 || d.length === 11) {
+      d = '55' + d;
+    } else {
+      return '';
+    }
+    return '+' + d;
+  }
+
+  function enviarCodigoTelefone(numero){
+    var e164 = paraE164BR(numero);
+    if (!e164)
+      return Promise.resolve({ ok: false, erro: 'Digite um telefone brasileiro válido, com DDD (ex.: 11999999999).' });
+    return comNuvem(function(){
+      return window.mwNuvem.enviarCodigoTelefone(e164);
+    }).then(function(r){
+      if (r === null) return { ok: false, erro: 'Adicionar telefone precisa de conta na nuvem conectada e internet.' };
+      return { ok: true, telefone: e164 };
+    }).catch(function(e){
+      var m = String((e && e.message) || e || '');
+      if (/already registered|already exists|already been/i.test(m))
+        return { ok: false, erro: 'Esse telefone já está em uso por outra conta.' };
+      if (/rate limit|too many/i.test(m))
+        return { ok: false, erro: 'Muitas tentativas. Espere um pouco e tente de novo.' };
+      if (/sms|phone.*provider|unsupported/i.test(m))
+        return { ok: false, erro: 'O envio de SMS não está configurado no Supabase ainda.' };
+      return { ok: false, erro: 'Não foi possível enviar o código agora.' };
+    });
+  }
+
+  function confirmarCodigoTelefone(numeroE164, codigo){
+    codigo = String(codigo || '').trim();
+    if (!numeroE164 || !codigo)
+      return Promise.resolve({ ok: false, erro: 'Código inválido.' });
+    return comNuvem(function(){
+      return window.mwNuvem.confirmarCodigoTelefone(numeroE164, codigo);
+    }).then(function(r){
+      if (r === null) return { ok: false, erro: 'Confirmar telefone precisa de conta na nuvem conectada e internet.' };
+      return { ok: true };
+    }).catch(function(e){
+      var m = String((e && e.message) || e || '');
+      if (/expired/i.test(m)) return { ok: false, erro: 'Código expirado. Peça um novo.' };
+      if (/invalid|incorrect/i.test(m)) return { ok: false, erro: 'Código incorreto.' };
+      return { ok: false, erro: 'Não foi possível confirmar o código.' };
+    });
+  }
+
+  function telefoneAtual(){
+    return comNuvem(function(){
+      return window.mwNuvem.usuarioAtual();
+    }).then(function(u){
+      if (!u) return null;
+      return { numero: u.phone || '', confirmado: !!u.phone_confirmed_at };
+    });
+  }
+
   window.mwConta = {
     todas: todas, atual: atual, emailAtivo: emailAtivo,
     usuarioLivre: usuarioLivre, emailLivre: emailLivre,
     verificar: verificar,
     trocarUsuario: trocarUsuario, trocarEmail: trocarEmail, trocarSenha: trocarSenha,
+    enviarCodigoTelefone: enviarCodigoTelefone,
+    confirmarCodigoTelefone: confirmarCodigoTelefone,
+    telefoneAtual: telefoneAtual,
     REGRA_USUARIO: USUARIO_OK, REGRA_EMAIL: EMAIL_OK,
   };
 })();
@@ -17422,6 +17502,24 @@ body.light .mw-transfere-nota b{color:#0b1830}
        mas continua sendo o que a interface mostra em outros lugares. */
     var perfilEmail = document.getElementById('profileEmail');
     if (perfilEmail && conta) perfilEmail.value = conta.email || '';
+    pintarTelefone();
+  }
+
+  /* Separado de pintar() porque telefoneAtual() é assíncrono (pergunta
+     ao servidor) — os outros campos leem do localStorage na hora. */
+  function pintarTelefone(){
+    var campo = document.getElementById('mwContaTelefone');
+    var btn = document.getElementById('mwContaTrocarTelefone');
+    if (!campo || !window.mwConta || !window.mwConta.telefoneAtual) return;
+    window.mwConta.telefoneAtual().then(function(info){
+      if (!info || !info.numero) {
+        campo.value = '';
+        if (btn) btn.textContent = 'Adicionar';
+        return;
+      }
+      campo.value = info.numero + (info.confirmado ? '' : ' (aguardando confirmação)');
+      if (btn) btn.textContent = 'Alterar';
+    });
   }
 
   /* Uma promessa que resolve com true só depois de a pessoa provar
@@ -17498,6 +17596,32 @@ body.light .mw-transfere-nota b{color:#0b1830}
       'Para trocar a senha, confirme a senha atual ou o código de acesso.',
       'Nova senha (mínimo 6 caracteres):',
       function(v){ return window.mwConta.trocarSenha(v); }));
+
+  /* Telefone não usa trocar() porque são DUAS perguntas em sequência
+     (número, depois o código que chega por SMS), não uma. O código só
+     é pedido se o envio dele deu certo — pedir os dois de uma vez
+     falharia sempre, porque o código do segundo campo ainda nem
+     existiria. */
+  document.getElementById('mwContaTrocarTelefone')?.addEventListener('click', function(){
+    aviso('');
+    confirmar('Para adicionar ou trocar o telefone, confirme que é você.').then(function(provou){
+      if (!provou) return;
+      var numero = prompt('Telefone com DDD (ex.: 11999999999):');
+      if (numero === null) return;
+      aviso('Enviando código por SMS...');
+      window.mwConta.enviarCodigoTelefone(numero).then(function(r){
+        if (!r.ok) { aviso(r.erro, false); return; }
+        var codigo = prompt('Digite o código de 6 dígitos recebido por SMS em ' + r.telefone + ':');
+        if (codigo === null) { aviso(''); return; }
+        window.mwConta.confirmarCodigoTelefone(r.telefone, codigo).then(function(r2){
+          if (!r2.ok) { aviso(r2.erro, false); return; }
+          pintarTelefone();
+          aviso('Telefone confirmado.', true);
+          if (typeof toast === 'function') toast('Telefone confirmado');
+        });
+      });
+    });
+  });
 
   /* Repinta ao abrir Configurações: a conta pode ter mudado noutro
      lugar (login diferente, troca de e-mail) desde a última vez. */
@@ -18485,6 +18609,45 @@ document.addEventListener('click', function(e){
       } catch (e) { return false; }
     },
 
+    /* --------------------------------------------------------------
+       Telefone (confirmação por SMS)
+       --------------------------------------------------------------
+       Dois passos porque é assim que o Supabase Auth trata telefone:
+       updateUser({phone}) troca (ou define) o telefone e MANDA o SMS
+       com o código — a troca só vale de verdade depois do verifyOtp
+       com esse código. Exige sessão aberta (é uma mudança na conta já
+       logada), e exige um provedor de SMS configurado no painel do
+       Supabase (Authentication → Providers → Phone) — sem isso, o
+       primeiro passo falha com erro do próprio Supabase. */
+    enviarCodigoTelefone: function(telefoneE164){
+      if (!cliente) return Promise.reject(new Error('offline'));
+      return comPrazo(cliente.auth.updateUser({ phone: telefoneE164 }), 12000).then(function(r){
+        if (r.error) throw r.error;
+        return true;
+      });
+    },
+
+    confirmarCodigoTelefone: function(telefoneE164, codigo){
+      if (!cliente) return Promise.reject(new Error('offline'));
+      return comPrazo(cliente.auth.verifyOtp({
+        phone: telefoneE164, token: codigo, type: 'phone_change'
+      }), 12000).then(function(r){
+        if (r.error) throw r.error;
+        return true;
+      });
+    },
+
+    /* getUser() busca no servidor, ao contrário de getSession() (que só
+       lê o que já tinha em memória) — é o único jeito de saber se o
+       telefone que acabou de ser confirmado já reflete no objeto do
+       usuário. */
+    usuarioAtual: function(){
+      if (!cliente) return Promise.resolve(null);
+      return comPrazo(cliente.auth.getUser(), 7000)
+        .then(function(r){ return (r.data && r.data.user) || null; })
+        .catch(function(){ return null; });
+    },
+
 
     sessao: function(){
       if (!cliente) return Promise.resolve(null);
@@ -18965,7 +19128,7 @@ document.addEventListener('click', function(e){
     var senha   = (q('#newPass') && q('#newPass').value) || '';
     var err     = q('#inlineCreateError');
 
-    if (!/^[A-Za-z0-9._-]{3,20}$/.test(usuario) || !email || email.indexOf('@') === -1 || !senha) return;
+    if (!/^[A-Za-z0-9._-]{3,20}$/.test(usuario) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !senha) return;
 
     e.preventDefault();
     e.stopPropagation();
@@ -19488,7 +19651,7 @@ html body.light #mwRecupera input{background:#fff!important;color:#0b1830!import
     var campo = caixa.querySelector('input');
     var botao = caixa.querySelector('.mw-rec-ok');
     var email = String(campo.value || '').trim().toLowerCase();
-    if (!email || email.indexOf('@') === -1) { diz('Digite um e-mail válido.', true); campo.focus(); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { diz('Digite um e-mail válido.', true); campo.focus(); return; }
     if (!temNuvem()) { diz('Recuperar senha precisa de internet. Conecte e tente de novo.', true); return; }
 
     botao.disabled = true;

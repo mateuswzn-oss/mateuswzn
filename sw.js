@@ -1,5 +1,15 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v29: e-mail do cadastro e da recuperação de senha agora exige formato
+   de verdade (não só um "@" solto) — mesma regra que a troca de e-mail
+   em Configurações já usava. E entrou telefone com confirmação real por
+   SMS: em Configurações → Conta, "Adicionar"/"Alterar" telefone manda um
+   código via Supabase Auth (updateUser + verifyOtp), guardado nativamente
+   em auth.users (phone / phone_confirmed_at) — sem coluna nova no banco.
+   Só funciona de fato depois que um provedor de SMS (Twilio ou outro)
+   estiver configurado no painel do Supabase; até lá, o envio do código
+   falha com uma mensagem clara em vez de travar. Sem trocar o nome do
+   cache, quem já tinha o app instalado continuaria sem essas correções. */
 /* v28: o log de acessos (v27) ganhou localização aproximada — antes do
    registra_acesso, o site consulta um serviço público que estima
    cidade/estado/país a partir do IP (sem pop-up de permissão, não é o GPS
@@ -65,7 +75,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v28';
+const CACHE_NAME = 'mw-shell-v29';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
