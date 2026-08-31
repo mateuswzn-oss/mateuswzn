@@ -8,8 +8,8 @@
      antes de qualquer CSS valer — sem isso sobra um lampejo branco
      antes do primeiro quadro. Mesma técnica já usada no app real. -->
 <meta name="color-scheme" content="dark">
-<title>Mateus Workspace — Em atualização</title>
-<meta name="description" content="Estamos preparando uma nova versão do Mateus Workspace. Voltamos em breve.">
+<title>mateus workspace — em atualização</title>
+<meta name="description" content="estamos preparando uma nova versão do mateus workspace. voltamos em breve.">
 <link rel="icon" href="icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
@@ -67,9 +67,11 @@
   p{
     margin:0;font-size:15px;line-height:1.6;color:rgba(220,228,255,.72);max-width:38ch;
   }
+  /* Sem text-transform: o pedido é que todo o texto fique em minúsculo,
+     e o uppercase daqui desfaria isso na hora de renderizar. */
   .mnt-linha{
     display:flex;align-items:center;gap:8px;margin-top:4px;
-    font-size:12.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+    font-size:13px;font-weight:600;letter-spacing:.03em;
     color:rgba(148,197,255,.85);
   }
   .mnt-ponto{
@@ -93,10 +95,10 @@
   <div class="mnt-fundo" aria-hidden="true"></div>
   <main class="mnt-card">
     <div class="mnt-logo" aria-hidden="true"><span>MW</span></div>
-    <h1>Estamos atualizando o Workspace</h1>
-    <p>Estamos preparando uma nova versão, com melhorias em várias partes do produto. Voltamos em breve — obrigado pela paciência.</p>
-    <div class="mnt-linha"><span class="mnt-ponto" aria-hidden="true"></span>Em atualização</div>
-    <div class="mnt-marca">Mateus Workspace</div>
+    <h1>estamos atualizando o workspace</h1>
+    <p>estamos preparando uma nova versão, com melhorias em várias partes do produto. voltamos em breve. obrigado pela paciência.</p>
+    <div class="mnt-linha"><span class="mnt-ponto" aria-hidden="true"></span>em atualização</div>
+    <div class="mnt-marca">mateus workspace</div>
   </main>
 </body>
 </html>
