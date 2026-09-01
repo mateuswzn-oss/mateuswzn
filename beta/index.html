@@ -2768,6 +2768,16 @@ body.light #app .calendar-card .calendar-nav button:hover{
     <path fill-rule="evenodd" d="M12 5.0a8.7 8.7 0 1 0 0 17.4 8.7 8.7 0 0 0 0-17.4zm0 2.9a5.8 5.8 0 1 1 0 11.6 5.8 5.8 0 0 1 0-11.6z"/>
     <rect x="11.05" y="9.4" width="1.9" height="5.3" rx=".95"/>
   </symbol>
+  <!-- Relatórios: três colunas de alturas diferentes. A diferença de
+       altura É o ícone — colunas iguais viram um código de barras a
+       22px. A base larga ancora o desenho e o separa do ícone de
+       "projetos", que também é retangular. -->
+  <symbol id="mwi-reports" viewBox="0 0 24 24">
+    <rect x="3.4" y="13.2" width="4.4" height="6.2" rx="1.5"/>
+    <rect x="9.8" y="8.4" width="4.4" height="11" rx="1.5"/>
+    <rect x="16.2" y="4.6" width="4.4" height="14.8" rx="1.5"/>
+    <rect x="2.4" y="20.6" width="19.2" height="1.9" rx=".95"/>
+  </symbol>
   <symbol id="mwi-institutions" viewBox="0 0 24 24">
     <path fill-rule="evenodd" d="M12.44 2.62a1 1 0 0 0-.88 0L2.2 7.2a1 1 0 0 0 .44 1.9h18.72a1 1 0 0 0 .44-1.9zM12 4.86l4.35 2.14h-8.7z"/>
     <!-- Colunas grossas com vãos estreitos, e não o contrário: a 22px
@@ -4029,6 +4039,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
       <button data-view="activities"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-activities"/></svg></span><span class="label">Atividades</span></button>
       <button data-view="calendar"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-calendar"/></svg></span><span class="label">Calendário</span></button>
       <button data-view="focus"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-focus"/></svg></span><span class="label">Foco</span></button>
+      <button data-view="reports"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-reports"/></svg></span><span class="label">Relatórios</span></button>
       <button data-view="notes"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-notes"/></svg></span><span class="label">Anotações</span></button>
       <button data-view="files"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-files"/></svg></span><span class="label">Arquivos</span></button>
       <button data-view="support" id="mwNavSupport"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-support"/></svg></span><span class="label">Suporte</span></button>
@@ -4174,6 +4185,57 @@ body.light .mw-faceid-gate-card p{color:#526988}
       <section class="card section mw-foco-historico">
         <div class="section-head"><h3>Sessões</h3><span id="mwFocoContagem"></span></div>
         <div class="list" id="mwFocoLista"></div>
+      </section>
+    </section>
+    <!-- Relatórios. Tudo aqui é lido dos dados que já existem; nenhum
+         número é estimado. Onde o app não tem como saber (não existe
+         registro de quando uma atividade foi concluída, e os itens não
+         guardam data de criação), o relatório DIZ que não sabe, em vez
+         de preencher o espaço com um gráfico plausível. -->
+    <section class="view" id="view-reports">
+      <section class="card section mw-rel-topo">
+        <div class="section-head">
+          <h3>Relatórios</h3>
+          <div class="mw-rel-periodos" role="group" aria-label="Período do relatório">
+            <button type="button" data-rel-periodo="7" aria-pressed="false">7 dias</button>
+            <button type="button" data-rel-periodo="30" aria-pressed="true">30 dias</button>
+            <button type="button" data-rel-periodo="90" aria-pressed="false">90 dias</button>
+            <button type="button" data-rel-periodo="0" aria-pressed="false">Tudo</button>
+          </div>
+        </div>
+        <p class="mw-rel-nota" id="mwRelNota"></p>
+      </section>
+
+      <section class="card section mw-rel-tempo">
+        <div class="section-head"><h3>Tempo de estudo</h3><span id="mwRelTempoPeriodo"></span></div>
+        <div class="mw-rel-numeros" id="mwRelTempoNumeros"></div>
+        <div class="mw-rel-corpo" id="mwRelTempoCorpo"></div>
+      </section>
+
+      <section class="card section mw-rel-prazos">
+        <div class="section-head"><h3>Prazos</h3><span>Situação de hoje</span></div>
+        <div class="mw-rel-numeros" id="mwRelPrazoNumeros"></div>
+        <div class="mw-rel-corpo" id="mwRelPrazoCorpo"></div>
+      </section>
+
+      <section class="card section mw-rel-disciplinas">
+        <div class="section-head"><h3>Disciplinas</h3><span id="mwRelDiscResumo"></span></div>
+        <div class="mw-rel-corpo" id="mwRelDiscCorpo"></div>
+      </section>
+
+      <section class="card section mw-rel-projetos">
+        <div class="section-head"><h3>Projetos</h3><span id="mwRelProjResumo"></span></div>
+        <div class="mw-rel-corpo" id="mwRelProjCorpo"></div>
+      </section>
+
+      <section class="card section mw-rel-limites">
+        <div class="section-head"><h3>O que este relatório ainda não sabe</h3></div>
+        <ul class="mw-rel-limites-lista">
+          <li><strong>Quantas atividades você concluiu.</strong> O app registra o prazo de uma atividade, mas nunca registrou quando ela foi entregue — então "atrasada" aqui quer dizer "o prazo passou", e não "ficou por fazer".</li>
+          <li><strong>Quando cada item foi criado.</strong> Disciplinas, projetos e anotações não guardam data de cadastro, então não dá para dizer honestamente quanto você cadastrou neste mês.</li>
+          <li><strong>Tempo de estudo antes do Foco.</strong> A contagem começa nas sessões gravadas pelo cronômetro; o que foi estudado antes disso não existe como dado.</li>
+        </ul>
+        <p class="mw-rel-limites-pe">Uma cópia completa dos seus dados sai em <button type="button" class="mw-rel-link" data-rel-ir="settings">Configurações › Backup</button>.</p>
       </section>
     </section>
     <section class="view" id="view-notes"><section class="card section"><div class="section-head"><h3>Anotações</h3><button class="add-btn" data-add="notes">+ Nova anotação</button></div><div class="list" id="notesList"></div></section></section>
@@ -23412,6 +23474,7 @@ html body.light #mateusAiTitle .mw-id-beta{
        para quem usa o app no celular. */
     ['calendar',  'Calendário',  '<rect x="3.6" y="5.2" width="16.8" height="15.2" rx="3"/><path d="M8 3.2v3.8M16 3.2v3.8M3.6 10.3h16.8"/>'],
     ['focus',     'Foco',        '<circle cx="12" cy="13.6" r="7.4"/><path d="M12 9.8v4M9.4 2.9h5.2M12 2.9v3.3"/>'],
+    ['reports',   'Relatórios',  '<path d="M4.6 19.4V13M12 19.4V6.6M19.4 19.4v-9"/><path d="M2.8 21.4h18.4"/>'],
     ['files',     'Arquivos',    '<path d="M6.6 3.4h6.3l5.5 5.5v10.7a1.7 1.7 0 0 1-1.7 1.7H6.6a1.7 1.7 0 0 1-1.7-1.7V5.1a1.7 1.7 0 0 1 1.7-1.7z"/><path d="M13.2 3.6v4.4a.9.9 0 0 0 .9.9h4.4"/>'],
     ['notes',     'Anotações',   '<rect x="4.4" y="3.4" width="15.2" height="17.2" rx="2.4"/><path d="M8 9h8M8 12.7h8M8 16.4h5"/>']
   ];
@@ -28030,6 +28093,429 @@ html body #app #view-focus .mw-foco-vazio strong{ display: block; color: var(--d
 })();
 </script>
 
+<style id="mw-relatorios">
+/* =====================================================================
+   §13 RELATÓRIOS
+   =====================================================================
+   A tentação num relatório é preencher a tela. Aqui o desenho tem uma
+   regra: cada bloco ou mostra um número medido, ou diz que não tem
+   dado. Nenhum gráfico existe para ocupar espaço.
+   ===================================================================== */
+html body #app #view-reports.active{
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+html body #app #view-reports .mw-rel-topo,
+html body #app #view-reports .mw-rel-limites{ grid-column: 1 / -1; }
+
+html body #app #view-reports .mw-rel-periodos{
+  display: inline-flex; gap: 3px; padding: 3px;
+  border-radius: 999px; background: var(--ds-vidro-3); box-shadow: var(--ds-fio);
+}
+html body #app #view-reports .mw-rel-periodos button{
+  border: 0; cursor: pointer; padding: 7px 13px; border-radius: 999px;
+  background: transparent; color: var(--ds-txt-2);
+  font: inherit; font-size: 12px; font-weight: 650;
+  transition: color .18s var(--ds-suave), background .18s var(--ds-suave);
+}
+html body #app #view-reports .mw-rel-periodos button[aria-pressed="true"]{
+  background: var(--ds-ac-grad-forte); color: #fff;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--ds-ac) 38%, transparent);
+}
+html body #app #view-reports .mw-rel-nota{
+  margin: 0; font-size: 12.5px; line-height: 1.55; color: var(--ds-txt-3);
+}
+
+/* --- Números ----------------------------------------------------------- */
+html body #app #view-reports .mw-rel-numeros{
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+  gap: 10px; margin-bottom: 16px;
+}
+html body #app #view-reports .mw-rel-num{
+  padding: 13px 12px; border-radius: var(--ds-r-2);
+  background: var(--ds-vidro-3); box-shadow: var(--ds-fio);
+}
+html body #app #view-reports .mw-rel-num b{
+  display: block; font-size: 21px; font-weight: 720; letter-spacing: -.02em;
+  color: var(--ds-txt); font-variant-numeric: tabular-nums;
+}
+html body #app #view-reports .mw-rel-num em{
+  display: block; margin-top: 3px; font-style: normal; font-size: 10.5px;
+  letter-spacing: .05em; text-transform: uppercase; color: var(--ds-txt-3);
+}
+/* Um número só fica em cor de alerta quando ele PEDE ação. Vermelho em
+   tudo que é ruim vira ruído e deixa de avisar. */
+html body #app #view-reports .mw-rel-num[data-tom="alerta"] b{ color: #ff8fa3; }
+html body #app #view-reports .mw-rel-num[data-tom="bom"] b{ color: #4ade80; }
+
+/* --- Barras horizontais -------------------------------------------------
+   Barra deitada, e não pizza: comparar comprimentos é a leitura mais
+   fácil que existe, e o nome da disciplina cabe do lado sem girar. */
+html body #app #view-reports .mw-rel-barra{
+  display: grid; grid-template-columns: minmax(0,1fr) auto;
+  gap: 4px 12px; align-items: baseline; margin-bottom: 11px;
+}
+html body #app #view-reports .mw-rel-barra:last-child{ margin-bottom: 0; }
+html body #app #view-reports .mw-rel-barra > strong{
+  font-size: 12.5px; font-weight: 620; color: var(--ds-txt);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+html body #app #view-reports .mw-rel-barra > span{
+  font-size: 12px; font-weight: 700; color: var(--ds-txt-2);
+  font-variant-numeric: tabular-nums;
+}
+html body #app #view-reports .mw-rel-barra > i{
+  grid-column: 1 / -1; display: block; height: 8px; border-radius: 999px;
+  background: color-mix(in srgb, var(--ds-txt-3) 20%, transparent);
+  position: relative; overflow: hidden;
+}
+html body #app #view-reports .mw-rel-barra > i::after{
+  content: ''; position: absolute; inset: 0 auto 0 0;
+  width: var(--mw-pct, 0%); border-radius: inherit;
+  background: var(--ds-ac-grad);
+  transition: width .5s var(--ds-suave);
+}
+html body #app #view-reports .mw-rel-barra[data-tom="alerta"] > i::after{
+  background: linear-gradient(90deg, #f87171, #fb923c);
+}
+
+/* --- Fila de situações --------------------------------------------------- */
+html body #app #view-reports .mw-rel-situacoes{ display: grid; gap: 9px; }
+html body #app #view-reports .mw-rel-situacao{
+  display: flex; align-items: center; gap: 11px;
+  padding: 10px 13px; border-radius: var(--ds-r-1);
+  background: var(--ds-vidro-3); box-shadow: var(--ds-fio);
+}
+html body #app #view-reports .mw-rel-situacao i{
+  flex: 0 0 auto; width: 9px; height: 9px; border-radius: 999px;
+  background: var(--ds-ac);
+}
+html body #app #view-reports .mw-rel-situacao strong{
+  flex: 1 1 auto; min-width: 0; font-size: 12.5px; font-weight: 620; color: var(--ds-txt);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+html body #app #view-reports .mw-rel-situacao span{
+  flex: 0 0 auto; font-size: 12.5px; font-weight: 700; color: var(--ds-txt-2);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Vazio -------------------------------------------------------------- */
+html body #app #view-reports .mw-rel-vazio{
+  padding: 22px 16px; border-radius: var(--ds-r-2);
+  background: var(--ds-vidro-3); box-shadow: var(--ds-fio);
+  color: var(--ds-txt-3); font-size: 12px; line-height: 1.55;
+}
+html body #app #view-reports .mw-rel-vazio strong{
+  display: block; color: var(--ds-txt-2); font-size: 13px; margin-bottom: 4px;
+}
+
+/* --- Limites ------------------------------------------------------------
+   Este bloco existe para ser lido, não para ser bonito: é onde o app
+   admite o que não sabe. Fundo neutro e texto corrido. */
+html body #app #view-reports .mw-rel-limites-lista{
+  margin: 0; padding: 0; list-style: none; display: grid; gap: 11px;
+}
+html body #app #view-reports .mw-rel-limites-lista li{
+  padding-left: 15px; position: relative;
+  font-size: 12.5px; line-height: 1.6; color: var(--ds-txt-3);
+}
+html body #app #view-reports .mw-rel-limites-lista li::before{
+  content: ''; position: absolute; left: 0; top: .62em;
+  width: 5px; height: 5px; border-radius: 999px;
+  background: color-mix(in srgb, var(--ds-txt-3) 60%, transparent);
+}
+html body #app #view-reports .mw-rel-limites-lista strong{ color: var(--ds-txt-2); font-weight: 640; }
+html body #app #view-reports .mw-rel-limites-pe{
+  margin: 14px 0 0; font-size: 12px; color: var(--ds-txt-3);
+}
+html body #app #view-reports .mw-rel-link{
+  border: 0; padding: 0; background: none; cursor: pointer;
+  font: inherit; color: var(--ds-ac); font-weight: 640;
+  text-decoration: underline; text-underline-offset: 2px;
+}
+
+@media (max-width: 1080px){
+  html body #app #view-reports.active{ grid-template-columns: minmax(0,1fr); }
+}
+@media (max-width: 560px){
+  html body #app #view-reports .mw-rel-periodos{ width: 100%; justify-content: space-between; }
+  html body #app #view-reports .mw-rel-periodos button{ padding: 7px 9px; font-size: 11.5px; }
+  html body #app #view-reports .mw-rel-numeros{ grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+  html body #app #view-reports .mw-rel-num b{ font-size: 18px; }
+}
+</style>
+
+<script id="mw-relatorios-js">
+(function(){
+  'use strict';
+  /* A área de Relatórios.
+
+     Regra única, e ela decide todo o resto: só entra número que possa
+     ser MEDIDO nos dados que já existem. Onde o dado não existe, o
+     bloco diz que não existe.
+
+     O que dá para medir com data de verdade: as sessões do Foco (têm o
+     instante em que terminaram) e os prazos de atividades e projetos.
+     O que NÃO dá: quando uma atividade foi concluída (o app nunca
+     registrou isso) e quando cada item foi cadastrado (não há data de
+     criação). Por isso o seletor de período só governa o tempo de
+     estudo — nos outros blocos ele seria decorativo, e um controle que
+     não faz nada é pior que controle nenhum.
+
+     Nada aqui escreve nos dados. É um leitor. */
+
+  var PERIODO_PADRAO = 30;
+  var periodo = PERIODO_PADRAO;          // em dias; 0 = tudo
+  var SITUACOES = ['Planejamento','Em andamento','Em revisão','Concluído','Arquivado'];
+  var CORES_SITUACAO = {
+    'Planejamento':'#8b5cf6', 'Em andamento':'#5b6cff', 'Em revisão':'#f0b429',
+    'Concluído':'#34d399', 'Arquivado':'#8a99c1'
+  };
+
+  function esc(v){ return String(v == null ? '' : v).replace(/[&<>'"]/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]; }); }
+  function $(id){ return document.getElementById(id); }
+  function dados(){ var d = window.data; return (d && typeof d === 'object') ? d : {}; }
+  function lista(nome){ var v = dados()[nome]; return Array.isArray(v) ? v : []; }
+
+  function horas(min){
+    min = Math.round(min || 0);
+    if (min < 60) return min + ' min';
+    var h = Math.floor(min / 60), m = min % 60;
+    return m ? h + 'h' + String(m).padStart(2,'0') : h + 'h';
+  }
+  /* Data local, nunca new Date('2026-09-05'): essa forma é lida como
+     meia-noite UTC e, em UTC-3, cai no dia anterior. */
+  function deIso(txt){
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(txt || ''));
+    if (!m) return null;
+    return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  }
+  function hoje0(){ var d = new Date(); d.setHours(0,0,0,0); return d; }
+  function vazio(titulo, texto){
+    return '<div class="mw-rel-vazio"><strong>' + esc(titulo) + '</strong>' + esc(texto) + '</div>';
+  }
+  function num(valor, rotulo, tom){
+    return '<div class="mw-rel-num"' + (tom ? ' data-tom="' + tom + '"' : '') + '>' +
+           '<b>' + esc(valor) + '</b><em>' + esc(rotulo) + '</em></div>';
+  }
+  function barra(nome, texto, pct, tom){
+    return '<div class="mw-rel-barra"' + (tom ? ' data-tom="' + tom + '"' : '') + '>' +
+           '<strong>' + esc(nome) + '</strong><span>' + esc(texto) + '</span>' +
+           '<i style="--mw-pct:' + Math.round(Math.max(0, Math.min(100, pct))) + '%"></i></div>';
+  }
+
+  /* --- Tempo de estudo -------------------------------------------------- */
+  function pintaTempo(){
+    var caixaN = $('mwRelTempoNumeros'), caixaC = $('mwRelTempoCorpo'), rotulo = $('mwRelTempoPeriodo');
+    if (!caixaN || !caixaC) return;
+    var f = dados().focus;
+    var todas = (f && Array.isArray(f.sessoes)) ? f.sessoes : [];
+    var corte = periodo ? hoje0().getTime() - (periodo - 1) * 86400000 : 0;
+    var noPeriodo = todas.filter(function(s){ return s.fim >= corte; });
+    var estudo = noPeriodo.filter(function(s){ return s.tipo === 'foco'; });
+
+    if (rotulo) rotulo.textContent = periodo ? 'últimos ' + periodo + ' dias' : 'desde o início';
+
+    if (!estudo.length){
+      caixaN.innerHTML = '';
+      caixaC.innerHTML = todas.length
+        ? vazio('Nenhuma sessão neste período', 'Há sessões gravadas em outras datas — experimente ampliar o período acima.')
+        : vazio('Nenhuma sessão gravada ainda', 'O tempo de estudo vem do cronômetro da área Foco. Assim que você concluir a primeira sessão, ela aparece aqui.');
+      return;
+    }
+
+    var totalMin = 0, completas = 0, porDia = {}, porDisciplina = {};
+    estudo.forEach(function(s){
+      var m = s.minutos || 0;
+      totalMin += m;
+      if (s.completa) completas++;
+      var d = new Date(s.fim);
+      var chave = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
+      porDia[chave] = (porDia[chave] || 0) + m;
+      var disc = s.subject || 'Sem disciplina';
+      porDisciplina[disc] = (porDisciplina[disc] || 0) + m;
+    });
+    var diasComEstudo = Object.keys(porDia).length;
+    var taxa = Math.round((completas / estudo.length) * 100);
+
+    /* Quatro números, não cinco. O quinto ("melhor dia") quebrava a
+       linha e ficava sozinho embaixo — e era o menos acionável deles:
+       saber que num dia você estudou 50 minutos não muda o que você faz
+       amanhã. A média por dia, sim. */
+    caixaN.innerHTML =
+      num(horas(totalMin), 'Total') +
+      num(horas(totalMin / diasComEstudo), 'Média por dia') +
+      num(estudo.length, estudo.length === 1 ? 'Sessão' : 'Sessões') +
+      num(taxa + '%', 'Concluídas', taxa >= 70 ? 'bom' : null);
+
+    var ordenadas = Object.keys(porDisciplina)
+      .map(function(k){ return [k, porDisciplina[k]]; })
+      .sort(function(a,b){ return b[1] - a[1]; });
+    var teto = ordenadas[0][1];
+    caixaC.innerHTML = '<div>' + ordenadas.map(function(par){
+      return barra(par[0], horas(par[1]), (par[1] / teto) * 100);
+    }).join('') + '</div>';
+  }
+
+  /* --- Prazos -------------------------------------------------------------
+     Aqui o período NÃO se aplica: prazo é sobre o que vem pela frente, e
+     um prazo de amanhã não muda porque o filtro diz "7 dias". */
+  function pintaPrazos(){
+    var caixaN = $('mwRelPrazoNumeros'), caixaC = $('mwRelPrazoCorpo');
+    if (!caixaN || !caixaC) return;
+    var h = hoje0().getTime();
+    var semana = h + 7 * 86400000;
+
+    var itens = [];
+    lista('activities').forEach(function(a){
+      var d = deIso(a.date);
+      if (d) itens.push({ nome: a.name || 'Atividade', quando: d.getTime(), disciplina: a.subject || '', tipo: 'atividade' });
+    });
+    lista('projects').forEach(function(p){
+      var d = deIso(p.deadline);
+      /* Projeto concluído ou arquivado não é prazo pendente: contá-lo
+         como atrasado seria cobrar uma coisa que já acabou. */
+      if (d && p.status !== 'Concluído' && p.status !== 'Arquivado'){
+        itens.push({ nome: p.name || 'Projeto', quando: d.getTime(), disciplina: p.subject || '', tipo: 'projeto' });
+      }
+    });
+
+    if (!itens.length){
+      caixaN.innerHTML = '';
+      caixaC.innerHTML = vazio('Nenhum prazo cadastrado',
+        'Atividades e projetos com data aparecem aqui, separados por quanto tempo falta.');
+      return;
+    }
+
+    var atrasados = itens.filter(function(i){ return i.quando < h; });
+    var deHoje    = itens.filter(function(i){ return i.quando === h; });
+    var daSemana  = itens.filter(function(i){ return i.quando > h && i.quando <= semana; });
+    var depois    = itens.filter(function(i){ return i.quando > semana; });
+
+    caixaN.innerHTML =
+      num(atrasados.length, 'Prazo vencido', atrasados.length ? 'alerta' : null) +
+      num(deHoje.length, 'Hoje') +
+      num(daSemana.length, 'Em 7 dias') +
+      num(depois.length, 'Mais adiante');
+
+    var porDisciplina = {};
+    itens.filter(function(i){ return i.quando <= semana; }).forEach(function(i){
+      var k = i.disciplina || 'Sem disciplina';
+      porDisciplina[k] = (porDisciplina[k] || 0) + 1;
+    });
+    var chaves = Object.keys(porDisciplina).sort(function(a,b){ return porDisciplina[b] - porDisciplina[a]; });
+    if (!chaves.length){
+      caixaC.innerHTML = vazio('Nada vencido nem para esta semana',
+        'O prazo mais próximo está a mais de sete dias.');
+      return;
+    }
+    var teto = porDisciplina[chaves[0]];
+    caixaC.innerHTML =
+      '<p class="mw-rel-nota" style="margin:0 0 12px">Vencidos e dos próximos sete dias, por disciplina:</p>' +
+      chaves.map(function(k){
+        return barra(k, porDisciplina[k] + (porDisciplina[k] === 1 ? ' item' : ' itens'),
+                     (porDisciplina[k] / teto) * 100, 'alerta');
+      }).join('');
+  }
+
+  /* --- Disciplinas --------------------------------------------------------- */
+  function pintaDisciplinas(){
+    var caixa = $('mwRelDiscCorpo'), resumo = $('mwRelDiscResumo');
+    if (!caixa) return;
+    var subs = lista('subjects').filter(function(s){ return s && s.name; });
+    if (!subs.length){
+      if (resumo) resumo.textContent = '';
+      caixa.innerHTML = vazio('Nenhuma disciplina cadastrada',
+        'O progresso de cada disciplina, e a média entre elas, aparecem aqui.');
+      return;
+    }
+    var soma = subs.reduce(function(t, s){ return t + (Number(s.progress) || 0); }, 0);
+    var media = Math.round(soma / subs.length);
+    if (resumo) resumo.textContent = 'média de ' + media + '%';
+    var ordenadas = subs.slice().sort(function(a,b){ return (Number(a.progress)||0) - (Number(b.progress)||0); });
+    caixa.innerHTML = ordenadas.map(function(s){
+      var pct = Math.max(0, Math.min(100, Number(s.progress) || 0));
+      return barra(s.name, pct + '%', pct, pct < 30 ? 'alerta' : null);
+    }).join('');
+  }
+
+  /* --- Projetos ------------------------------------------------------------ */
+  function pintaProjetos(){
+    var caixa = $('mwRelProjCorpo'), resumo = $('mwRelProjResumo');
+    if (!caixa) return;
+    var projs = lista('projects').filter(function(p){ return p && p.name; });
+    if (!projs.length){
+      if (resumo) resumo.textContent = '';
+      caixa.innerHTML = vazio('Nenhum projeto cadastrado',
+        'A contagem por situação acompanha as colunas do quadro de Projetos.');
+      return;
+    }
+    if (resumo) resumo.textContent = projs.length + (projs.length === 1 ? ' projeto' : ' projetos');
+    var contagem = {};
+    SITUACOES.forEach(function(s){ contagem[s] = 0; });
+    projs.forEach(function(p){
+      /* Mesma regra do quadro: situação ausente, ou de uma versão
+         anterior, cai na primeira coluna em vez de sumir da conta. */
+      var s = SITUACOES.indexOf(p.status) !== -1 ? p.status : SITUACOES[0];
+      contagem[s]++;
+    });
+    caixa.innerHTML = '<div class="mw-rel-situacoes">' + SITUACOES.map(function(s){
+      return '<div class="mw-rel-situacao">' +
+        '<i style="background:' + CORES_SITUACAO[s] + '"></i>' +
+        '<strong>' + esc(s) + '</strong><span>' + contagem[s] + '</span></div>';
+    }).join('') + '</div>';
+  }
+
+  /* --- Nota do topo --------------------------------------------------------- */
+  function pintaNota(){
+    var el = $('mwRelNota');
+    if (!el) return;
+    el.textContent = periodo
+      ? 'O período escolhido vale para o tempo de estudo. Prazos, disciplinas e projetos mostram a situação de agora — são uma fotografia, não um histórico.'
+      : 'Mostrando todo o tempo de estudo já gravado. Prazos, disciplinas e projetos mostram a situação de agora.';
+    document.querySelectorAll('#view-reports [data-rel-periodo]').forEach(function(b){
+      b.setAttribute('aria-pressed', Number(b.getAttribute('data-rel-periodo')) === periodo ? 'true' : 'false');
+    });
+  }
+
+  function pinta(){
+    if (!$('mwRelTempoNumeros')) return;
+    pintaNota();
+    pintaTempo();
+    pintaPrazos();
+    pintaDisciplinas();
+    pintaProjetos();
+  }
+
+  function liga(){
+    var view = $('view-reports');
+    if (!view || view.dataset.mwLigado === '1') return;
+    view.dataset.mwLigado = '1';
+    view.addEventListener('click', function(ev){
+      var p = ev.target.closest('[data-rel-periodo]');
+      if (p){ periodo = Number(p.getAttribute('data-rel-periodo')) || 0; pinta(); return; }
+      var ir = ev.target.closest('[data-rel-ir]');
+      if (ir && window.showView) window.showView(ir.getAttribute('data-rel-ir'));
+    });
+  }
+
+  function inicia(){ liga(); pinta(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', inicia);
+  else inicia();
+
+  /* A corrente do mwDashRefresh: capturar o anterior e chamá-lo é o que
+     mantém vivo tudo o que foi registrado antes deste bloco. */
+  var anterior = window.mwDashRefresh;
+  window.mwDashRefresh = function(d){
+    if (typeof anterior === 'function') { try { anterior(d); } catch(e){} }
+    try { pinta(); } catch(e){}
+  };
+})();
+</script>
+
 <style id="mw-previa-carimbo">
 #mwPreviaCarimbo{
   position: fixed; top: 8px; left: 50%; transform: translateX(-50%);
@@ -28058,7 +28544,7 @@ html body #app #view-focus .mw-foco-vazio strong{ display: block; color: var(--d
   /* O carimbo entra depois do preloader para não brigar com a abertura
      da marca, e sai sozinho. window.MW_PREVIA fica disponível para
      conferir a versão pelo console sem depender de ver o carimbo. */
-  window.MW_PREVIA = 'v70 · Calendário e Foco no acesso rápido';
+  window.MW_PREVIA = 'v71 · Relatórios';
   function mostra(){
     if (document.getElementById('mwPreviaCarimbo')) return;
     var el = document.createElement('div');
