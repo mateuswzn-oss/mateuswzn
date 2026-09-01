@@ -2610,6 +2610,36 @@ body.light #app .calendar-card .calendar-nav button:hover{
 
 </head>
 <body>
+<noscript>
+  <!-- Sem JavaScript o app trava numa tela de carregamento eterna, e é
+       uma tela BONITA: a marca MW parada no meio, sem nenhum sinal de
+       erro. Quem vê conclui que o app quebrou. O carregamento é HTML e
+       CSS puros de propósito (para o fundo escuro aparecer já no
+       primeiro quadro), então ele desenha mesmo sem script nenhum — e
+       sem script nada o remove. Acontece de verdade em visualizadores
+       de arquivo, em painéis de pré-visualização isolados e em
+       navegadores com script desativado. Aqui a tela some e explica. -->
+  <style>
+    #mwBootLoader,#loginScreen,#app{display:none!important}
+    html:has(#mwBootLoader),body:has(#mwBootLoader){overflow:auto!important}
+    .mw-sem-js{
+      position:fixed;inset:0;z-index:99999;
+      display:grid;place-items:center;padding:28px;
+      background:#020617;color:#eef2ff;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      text-align:center;
+    }
+    .mw-sem-js div{max-width:34ch}
+    .mw-sem-js strong{display:block;font-size:19px;font-weight:700;margin-bottom:10px}
+    .mw-sem-js p{margin:0;font-size:14px;line-height:1.6;color:rgba(220,228,255,.72)}
+  </style>
+  <div class="mw-sem-js">
+    <div>
+      <strong>O Workspace precisa de JavaScript</strong>
+      <p>Ative o JavaScript no navegador e recarregue. Se você abriu este arquivo por uma pré-visualização, abra direto no Safari ou no Chrome.</p>
+    </div>
+  </div>
+</noscript>
 <style id="mw-boot-loader-style">
 /* ============================================================
    CARREGAMENTO — a identidade MW sendo CONSTRUÍDA

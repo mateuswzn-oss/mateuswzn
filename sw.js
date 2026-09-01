@@ -1,5 +1,15 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v48 (BETA — sem JavaScript o app explicava nada e parecia travado):
+   A tela de carregamento é HTML e CSS puros de propósito, para o fundo
+   escuro aparecer já no primeiro quadro. O efeito colateral é que ela
+   DESENHA mesmo sem script nenhum — e sem script nada a remove. O
+   resultado é uma tela bonita, com a marca MW parada no meio, sem
+   nenhum sinal de erro: quem vê conclui que o app quebrou.
+   Acontece de verdade em visualizadores de arquivo, em painéis de
+   pré-visualização isolados e em navegador com script desativado.
+   Agora um <noscript> esconde carregamento, login e app, e mostra o que
+   fazer. Descoberto ao mandar uma prévia em arquivo para testar. */
 /* v47 (BETA — o botão de criar conta agora mostra que está trabalhando):
    O botão de ENTRAR já mostrava "ENTRANDO..." com giro enquanto falava
    com o servidor; o de CRIAR CONTA não mostrava nada. E a espera ali é
@@ -414,7 +424,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v47-beta';
+const CACHE_NAME = 'mw-shell-v48-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
