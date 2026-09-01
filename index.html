@@ -4119,13 +4119,35 @@ body.light .mw-faceid-gate-card p{color:#526988}
       <div class="settings-group"><h4>Sessão</h4><p>Sua conta fica guardada neste navegador. Ao sair, será preciso entrar de novo com seu usuário e senha.</p><div class="profile-actions"><button class="small-btn mw-logout-btn" id="logout">Sair</button><button class="small-btn" id="mwSairOutrosAparelhos">Sair de todos os outros aparelhos</button></div><p class="form-error" id="mwSairOutrosStatus" hidden></p></div>
       <h3 class="mw-settings-categoria">Aparência</h3>
       <div class="settings-group" id="legacyThemeGroup"><h4>Tema</h4><p>Escolha entre escuro e claro — o mesmo alternador do topo, aqui também.</p><div class="theme-row"><button class="theme-btn" id="darkModeBtn">Modo Escuro</button><button class="theme-btn" id="lightModeBtn">Modo Claro</button></div></div>
-      <h3 class="mw-settings-categoria">Notificações <span class="mw-id-beta">Em breve</span></h3>
-      <div class="settings-group"><h4>Lembretes e prazos</h4><p class="mw-settings-em-breve">Notificações de atividades e prazos ainda não existem neste navegador — em breve.</p></div>
+      <div class="settings-group" id="mwCorDestaqueGrupo"><h4>Cor de destaque</h4><p>Muda o realce do app inteiro: botão ativo da navegação, links, chips e a marca. O fundo e a leitura não mudam.</p>
+        <div class="mw-cores" id="mwCores" role="radiogroup" aria-label="Cor de destaque"></div>
+      </div>
+      <h3 class="mw-settings-categoria">Notificações</h3>
+      <div class="settings-group"><h4>Lembretes e prazos</h4><p>O sino do topo mostra o que vence perto. Estas escolhas decidem o que conta como "perto" — e o que entra na lista.</p>
+        <div class="mw-pref-linha">
+          <span>Avisar sobre prazos<small id="mwNotifDiasTexto">até 7 dias antes</small></span>
+          <input type="range" id="mwNotifDias" min="1" max="30" step="1" value="7" aria-label="Quantos dias antes avisar sobre um prazo">
+        </div>
+        <div class="mw-pref-linha">
+          <span>Incluir aulas de hoje<small>Só faz diferença se você cadastrou horário de aula nas disciplinas.</small></span>
+          <label class="mw-id-switch"><input type="checkbox" id="mwNotifAulas" aria-label="Incluir aulas de hoje nas notificações"><i></i></label>
+        </div>
+      </div>
+      <div class="settings-group"><h4>Notificações no aparelho <span class="mw-id-beta">Em breve</span></h4><p class="mw-settings-em-breve">Um aviso que chega com o app fechado precisa de um servidor de push, que ainda não existe. Enquanto isso, os lembretes acima aparecem no sino quando você abre o Workspace — nada é enviado para fora daqui.</p></div>
       <h3 class="mw-settings-categoria">Segurança</h3>
       <div class="settings-group" id="mwFaceIdGroup" hidden><h4>Face ID</h4><p>Use o Face ID deste iPhone/iPad para entrar no Workspace sem digitar nada.</p><div class="mw-faceid-row"><span class="mw-faceid-row-label">Entrar com Face ID</span><button type="button" class="mw-faceid-switch" id="mwFaceIdToggle" role="switch" aria-checked="false" aria-label="Entrar com Face ID"><i></i></button></div><p class="mw-faceid-limite">Atalho só deste aparelho: agiliza a entrada sem precisar de senha aqui. A proteção da sua conta continua sendo a senha (e a recuperação por e-mail), não o Face ID.</p><p class="form-error" id="mwFaceIdStatus" hidden></p></div>
         <div class="settings-group" id="mwPinGroup"><h4>Código de acesso</h4><p>Um código de 6 dígitos para destravar o Workspace ao reabrir. Funciona em qualquer aparelho, com ou sem Face ID.</p><div class="mw-pin-row"><span class="mw-pin-estado" id="mwPinEstado">Nenhum código definido.</span><div class="mw-pin-acoes"><button type="button" class="small-btn" id="mwPinDefinir">Definir código</button><button type="button" class="small-btn mw-pin-remover" id="mwPinRemover" hidden>Remover</button></div></div><p class="form-error" id="mwPinStatus" hidden></p></div>
-      <h3 class="mw-settings-categoria">IA <span class="mw-id-beta">Em breve</span></h3>
-      <div class="settings-group"><h4>Nyc AI</h4><p class="mw-settings-em-breve">Preferências de voz, histórico e comportamento da Nyc AI ainda não existem — em breve.</p></div>
+      <h3 class="mw-settings-categoria">IA</h3>
+      <div class="settings-group"><h4>Nyc AI</h4><p>Suas conversas ficam guardadas neste navegador, junto com o resto do workspace. Nada delas é usado para treinar nada.</p>
+        <div class="mw-pref-linha">
+          <span>Conversas guardadas<small id="mwIaContagem">Nenhuma conversa ainda.</small></span>
+          <button type="button" class="small-btn danger" id="mwIaLimpar">Apagar histórico</button>
+        </div>
+        <div class="mw-pref-linha">
+          <span>Ditar por voz<small id="mwIaVozEstado">Verificando…</small></span>
+          <span class="mw-id-beta" id="mwIaVozSelo" hidden>Indisponível</span>
+        </div>
+      </div>
       <h3 class="mw-settings-categoria">Privacidade</h3>
       <div class="settings-group"><h4>Backup</h4><p>Seus dados ficam salvos só neste navegador. Exporte um arquivo de backup pra não perder nada ao trocar de aparelho ou limpar os dados do navegador.</p><div class="profile-actions"><button class="small-btn" id="exportBackup">Exportar backup</button><button class="small-btn" id="importBackupBtn">Importar backup</button><input type="file" id="importBackupFile" accept="application/json" hidden></div><div class="form-error" id="importBackupError"></div></div>
       <div class="settings-group"><h4>Dados</h4><p>Remove disciplinas, atividades, projetos e anotações salvos neste navegador. Veja também a <a href="javascript:void(0)" data-footer-link="privacidade">Política de Privacidade</a>.</p><button class="small-btn danger mw-clear-btn" id="clearAll">Apagar todos os dados</button></div>
@@ -12170,14 +12192,26 @@ body.light #app .mw-aula-empty strong{ color:#152033 !important; }
     const now = new Date();
     const todayWd = now.getDay();
     const tIso = todayIso();
-    lecturesFrom(data).filter(l => l.weekday === todayWd).forEach(l => {
-      items.push({ title: 'Aula hoje · ' + l.name, meta: l.time + ' · ' + l.room, go: 'home' });
-    });
+    const prefs = typeof window.mwPrefs === 'function' ? window.mwPrefs() : {};
+    if (prefs.notifAulas !== false) {
+      lecturesFrom(data).filter(l => l.weekday === todayWd).forEach(l => {
+        items.push({ title: 'Aula hoje · ' + l.name, meta: l.time + ' · ' + l.room, go: 'home' });
+      });
+    }
     (data.activities || []).forEach(a => {
       if (!a.date) return;
       const humana = typeof window.mwDataHumana === 'function' ? window.mwDataHumana(a.date) : a.date;
-      if (a.date === tIso) items.push({ title: 'Entrega hoje · ' + (a.name || 'Atividade'), meta: a.description || humana, go: 'activities' });
-      else if (a.date > tIso) items.push({ title: 'Prazo · ' + (a.name || 'Atividade'), meta: humana, go: 'activities' });
+      if (a.date === tIso) { items.push({ title: 'Entrega hoje · ' + (a.name || 'Atividade'), meta: a.description || humana, go: 'activities' }); return; }
+      if (a.date < tIso) return;
+      /* Qualquer prazo futuro entrava no sino — inclusive um de quatro
+         meses. Um aviso que aparece cedo demais deixa de ser aviso e
+         vira ruído permanente, e quando o prazo chega de verdade ele já
+         está lá há tanto tempo que ninguém olha. O horizonte é uma
+         escolha da pessoa em Configurações; 7 dias é o padrão. */
+      const limite = (typeof window.mwPrefs === 'function' ? Number(window.mwPrefs().notifDias) : 0) || 7;
+      const dias = Math.round((new Date(a.date + 'T00:00:00') - new Date(tIso + 'T00:00:00')) / 86400000);
+      if (dias > limite) return;
+      items.push({ title: 'Prazo · ' + (a.name || 'Atividade'), meta: humana, go: 'activities' });
     });
     const alerts = items.slice(0, 6);
     if (btn) btn.classList.toggle('has-alerts', alerts.length > 0);
@@ -24369,6 +24403,252 @@ html body.light #app #view-college .college-setup label{ color:#4d5875 !importan
 html body #app .form-field label,
 html body #app .profile-form label{ font-size:12px !important; }
 </style>
+
+
+<style id="mw-preferencias">
+/* Linha de preferência: rótulo à esquerda com a explicação embaixo,
+   controle à direita. O mesmo desenho das linhas de privacidade do
+   perfil, de propósito — é a mesma pergunta ("isto vale?") feita em
+   outra tela. */
+html body #app .mw-pref-linha{
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  padding:13px 2px; border-bottom:1px solid var(--id-borda,rgba(140,165,220,.13));
+}
+html body #app .mw-pref-linha:last-child{ border-bottom:0; }
+html body #app .mw-pref-linha > span:first-child{ font-size:13.5px; color:var(--id-txt,#e9eefb); min-width:0; }
+html body #app .mw-pref-linha small{ display:block; font-size:12px; color:var(--id-txt-3,#7b88a6); margin-top:3px; line-height:1.45; }
+html body.light #app .mw-pref-linha{ border-bottom-color:rgba(20,40,90,.10); }
+html body.light #app .mw-pref-linha > span:first-child{ color:#101a30; }
+html body.light #app .mw-pref-linha small{ color:#5f6983; }
+
+html body #app input[type="range"]#mwNotifDias{
+  flex:0 0 190px; max-width:190px; height:26px; margin:0;
+  accent-color:var(--id-ac,#5b6cff); cursor:pointer; background:transparent;
+}
+
+/* Cor de destaque: as amostras são a própria coisa que escolhem, então
+   a cor É o controle — sem rótulo de texto competindo com ela. O nome
+   fica no title/aria para quem não enxerga a diferença. */
+html body #app .mw-cores{ display:flex; flex-wrap:wrap; gap:11px; margin-top:4px; }
+html body #app .mw-cor{
+  width:42px; height:42px; border-radius:13px; padding:0; cursor:pointer;
+  border:2px solid transparent; position:relative;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.10);
+  transition:transform .16s cubic-bezier(.34,1.4,.64,1), border-color .16s ease;
+}
+html body #app .mw-cor:hover{ transform:translateY(-2px); }
+html body #app .mw-cor[aria-checked="true"]{ border-color:var(--id-txt,#e9eefb); }
+html body #app .mw-cor[aria-checked="true"]::after{
+  content:''; position:absolute; inset:0; margin:auto;
+  width:13px; height:8px; border-left:2.5px solid #fff; border-bottom:2.5px solid #fff;
+  transform:rotate(-45deg) translate(1px,-2px);
+}
+html body #app .mw-cor:focus-visible{ outline:3px solid color-mix(in srgb,var(--id-ac,#5b6cff) 45%,transparent); outline-offset:2px; }
+html body.light #app .mw-cor[aria-checked="true"]{ border-color:#101a30; }
+
+html body #app .mw-settings-em-breve{ color:var(--id-txt-3,#7b88a6) !important; }
+</style>
+
+<script id="mw-preferencias-js">
+(function(){
+  'use strict';
+  /* Preferências do app: cor de destaque, horizonte das notificações e
+     as opções da Nyc AI. Tudo mora em data.settings, dentro do mesmo
+     blob que já é salvo e sincronizado — sem chave nova no storage e sem
+     migração. */
+
+  /* Seis cores, cada uma com um par (base + segunda) para a mesma
+     gradiente que a identidade já usa. Não é uma roda de cores livre de
+     propósito: cor de destaque escolhida a esmo quebra o contraste do
+     texto branco em cima dela, e aí a "personalização" custa a leitura.
+     Estas seis foram escolhidas para funcionar nos dois temas. */
+  var CORES = [
+    { id:'indigo',  nome:'Índigo',   a:'#5b6cff', b:'#8b5cf6' },
+    { id:'ciano',   nome:'Ciano',    a:'#0ea5e9', b:'#22d3ee' },
+    { id:'violeta', nome:'Violeta',  a:'#8b5cf6', b:'#d946ef' },
+    { id:'verde',   nome:'Verde',    a:'#10b981', b:'#34d399' },
+    { id:'ambar',   nome:'Âmbar',    a:'#f59e0b', b:'#fbbf24' },
+    { id:'rosa',    nome:'Rosa',     a:'#ec4899', b:'#f472b6' }
+  ];
+  var PADRAO = { accent:'indigo', notifDias:7, notifAulas:true };
+
+  function dados(){
+    var d = window.data;
+    if (!d || typeof d !== 'object') { try { d = JSON.parse(localStorage.getItem('mateusWorkspaceV4') || '{}'); } catch (e) { d = {}; } }
+    return d;
+  }
+  function prefs(){
+    var d = dados();
+    if (!d.settings || typeof d.settings !== 'object') d.settings = {};
+    var p = d.settings;
+    if (!p.accent) p.accent = PADRAO.accent;
+    if (!(Number(p.notifDias) > 0)) p.notifDias = PADRAO.notifDias;
+    if (typeof p.notifAulas !== 'boolean') p.notifAulas = PADRAO.notifAulas;
+    return p;
+  }
+  /* Exposta porque o sino (que vive noutro bloco, escrito antes deste)
+     precisa consultar o horizonte de dias sem conhecer esta função. */
+  window.mwPrefs = prefs;
+
+  function grava(){
+    if (typeof window.save === 'function') { window.save(); return; }
+    try { localStorage.setItem('mateusWorkspaceV4', JSON.stringify(dados())); } catch (e) {}
+  }
+
+  function corDe(id){
+    for (var i = 0; i < CORES.length; i++) if (CORES[i].id === id) return CORES[i];
+    return CORES[0];
+  }
+
+  /* A cor entra por variável, no <html>, e não reescrevendo regras: toda
+     a identidade já lê --id-ac/--id-ac-2/--id-ac-grad, então uma linha
+     aqui repinta navegação, chips, links e marca de uma vez. */
+  function aplicaCor(){
+    var c = corDe(prefs().accent);
+    var raiz = document.documentElement.style;
+    raiz.setProperty('--id-ac', c.a);
+    raiz.setProperty('--id-ac-2', c.b);
+    raiz.setProperty('--id-ac-grad', 'linear-gradient(135deg,' + c.a + ' 0%,' + c.b + ' 100%)');
+    document.querySelectorAll('#mwCores .mw-cor').forEach(function(bt){
+      bt.setAttribute('aria-checked', bt.getAttribute('data-cor') === c.id ? 'true' : 'false');
+    });
+  }
+  window.mwAplicaCorDestaque = aplicaCor;
+
+  function montaCores(){
+    var caixa = document.getElementById('mwCores');
+    if (!caixa || caixa.dataset.pronto) return;
+    caixa.dataset.pronto = '1';
+    caixa.innerHTML = CORES.map(function(c){
+      return '<button type="button" class="mw-cor" role="radio" aria-checked="false" data-cor="' + c.id + '"' +
+        ' title="' + c.nome + '" aria-label="Cor de destaque ' + c.nome + '"' +
+        ' style="background:linear-gradient(135deg,' + c.a + ',' + c.b + ')"></button>';
+    }).join('');
+    caixa.addEventListener('click', function(ev){
+      var bt = ev.target.closest('.mw-cor');
+      if (!bt) return;
+      prefs().accent = bt.getAttribute('data-cor');
+      aplicaCor();
+      grava();
+      if (window.toast) window.toast('Cor de destaque: ' + corDe(prefs().accent).nome + '.');
+    });
+    // Setas do teclado dentro do grupo, como manda um radiogroup.
+    caixa.addEventListener('keydown', function(ev){
+      if (['ArrowRight','ArrowLeft','ArrowUp','ArrowDown'].indexOf(ev.key) === -1) return;
+      var botoes = [].slice.call(caixa.querySelectorAll('.mw-cor'));
+      var i = botoes.indexOf(document.activeElement);
+      if (i === -1) return;
+      ev.preventDefault();
+      var passo = (ev.key === 'ArrowRight' || ev.key === 'ArrowDown') ? 1 : -1;
+      var alvo = botoes[(i + passo + botoes.length) % botoes.length];
+      alvo.focus(); alvo.click();
+    });
+  }
+
+  function montaNotificacoes(){
+    var dias = document.getElementById('mwNotifDias');
+    var texto = document.getElementById('mwNotifDiasTexto');
+    var aulas = document.getElementById('mwNotifAulas');
+    if (!dias || dias.dataset.pronto) { sincronizaNotificacoes(); return; }
+    dias.dataset.pronto = '1';
+
+    var descreve = function(n){
+      n = Number(n) || 7;
+      if (n === 1) return 'só no dia anterior';
+      if (n >= 30) return 'até um mês antes';
+      return 'até ' + n + ' dias antes';
+    };
+    dias.addEventListener('input', function(){
+      prefs().notifDias = Number(dias.value) || 7;
+      if (texto) texto.textContent = descreve(dias.value);
+    });
+    dias.addEventListener('change', function(){
+      grava();
+      if (typeof window.mwDashRefresh === 'function') window.mwDashRefresh(dados());
+    });
+    if (aulas) aulas.addEventListener('change', function(){
+      prefs().notifAulas = aulas.checked;
+      grava();
+      if (typeof window.mwDashRefresh === 'function') window.mwDashRefresh(dados());
+    });
+    sincronizaNotificacoes();
+  }
+
+  function sincronizaNotificacoes(){
+    var p = prefs();
+    var dias = document.getElementById('mwNotifDias');
+    var texto = document.getElementById('mwNotifDiasTexto');
+    var aulas = document.getElementById('mwNotifAulas');
+    if (dias && document.activeElement !== dias) dias.value = p.notifDias;
+    if (texto) texto.textContent = (Number(p.notifDias) === 1) ? 'só no dia anterior'
+      : (Number(p.notifDias) >= 30 ? 'até um mês antes' : 'até ' + p.notifDias + ' dias antes');
+    if (aulas) aulas.checked = p.notifAulas !== false;
+  }
+
+  /* As conversas da Nyc AI não moram numa chave própria: ficam em
+     data.aiConversations, dentro do mesmo objeto que já vai para a
+     nuvem com o resto do workspace. Ler de lá (em vez de manter uma
+     segunda cópia aqui) é o que garante que esta tela e a lista da
+     própria Nyc AI nunca discordem sobre quantas conversas existem. */
+  function conversas(){
+    var c = dados().aiConversations;
+    return Array.isArray(c) ? c : [];
+  }
+
+  function montaIA(){
+    var contagem = document.getElementById('mwIaContagem');
+    var limpar = document.getElementById('mwIaLimpar');
+    var estado = document.getElementById('mwIaVozEstado');
+    var selo = document.getElementById('mwIaVozSelo');
+    if (!contagem) return;
+
+    var n = conversas().length;
+    contagem.textContent = n === 0 ? 'Nenhuma conversa ainda.'
+      : n === 1 ? '1 conversa neste navegador.' : n + ' conversas neste navegador.';
+    if (limpar) limpar.disabled = n === 0;
+
+    if (estado && !estado.dataset.pronto) {
+      estado.dataset.pronto = '1';
+      /* Resposta honesta em vez de promessa: a transcrição por voz
+         depende do navegador, não do app. Onde ela não existe, dizer
+         isso é mais útil do que um "em breve" que nunca chega. */
+      var temVoz = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+      estado.textContent = temVoz
+        ? 'Disponível neste navegador. O microfone é pedido só quando você toca no botão.'
+        : 'Este navegador não faz transcrição por voz. O campo de texto continua funcionando normalmente.';
+      if (selo) selo.hidden = temVoz;
+    }
+
+    if (limpar && !limpar.dataset.pronto) {
+      limpar.dataset.pronto = '1';
+      limpar.addEventListener('click', function(){
+        if (!conversas().length) return;
+        if (!window.confirm('Apagar todas as conversas guardadas com a Nyc AI? Não dá para desfazer.')) return;
+        dados().aiConversations = [];
+        grava();
+        montaIA();
+        if (window.toast) window.toast('Histórico da Nyc AI apagado.');
+      });
+    }
+  }
+
+  function inicia(){
+    montaCores();
+    aplicaCor();
+    montaNotificacoes();
+    montaIA();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', inicia);
+  else inicia();
+
+  var anterior = window.mwDashRefresh;
+  window.mwDashRefresh = function(d){
+    if (typeof anterior === 'function') { try { anterior(d); } catch (e) {} }
+    try { inicia(); } catch (e) {}
+  };
+})();
+</script>
 
 </body>
 </html>

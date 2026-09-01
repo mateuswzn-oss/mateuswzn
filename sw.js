@@ -1,3 +1,16 @@
+/* v59 (BETA — Configurações completas: cor de destaque, notificações e IA):
+   Duas das sete categorias eram só um aviso de "em breve" — mas as duas
+   coisas existiam. O sino já mostrava prazos; o que faltava era decidir
+   o que conta como "perto". Ele acendia por QUALQUER prazo futuro,
+   inclusive um de noventa dias: um aviso que aparece cedo demais deixa
+   de ser aviso e vira ruído. Agora o horizonte é escolhido (padrão 7
+   dias) e as aulas de hoje são opcionais.
+   A Nyc AI também já guardava conversas; a categoria IA passa a mostrar
+   quantas são, permitir apagar tudo, e dizer a verdade sobre a voz —
+   se o navegador não transcreve, ele diz isso em vez de prometer.
+   Push continua "Em breve", porque precisa de servidor que não existe.
+   Aparência ganhou cor de destaque: seis pares que repintam navegação,
+   chips, links e marca de uma vez, por variável. */
 /* v58 (BETA — o perfil passa a ser uma identidade, não um formulário):
    Tinha nome, e-mail e foto. Agora tem @usuário (com regra explicada em
    vez de correção silenciosa), bio com contador, tecnologias em chips e
@@ -579,7 +592,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v58-beta';
+const CACHE_NAME = 'mw-shell-v59-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
