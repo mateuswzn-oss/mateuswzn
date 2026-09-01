@@ -1,3 +1,16 @@
+/* v65 (BETA — os dez ícones redesenhados como um conjunto):
+   O problema não era cada desenho: era o conjunto não parecer um
+   conjunto. "Instituições" era um prédio a traço fino que virava borrão
+   a 22px; "Disciplinas" e "Projetos" eram blocos largos e pesados
+   enquanto "Arquivos" era uma folhinha estreita — na mesma barra, um
+   saltava e o outro sumia; e "Atividades" era uma caixa de seleção, o
+   mesmo desenho que o app usa para marcar coisas.
+   Agora os dez seguem três regras: massa óptica igual (~18x18 dentro do
+   quadro de 24), sólido com vazado em vez de traço fino, e um ícone
+   nomeia uma ÁREA, não um controle.
+   Junto: os ícones da navegação estavam pequenos e escuros dentro dos
+   ladrilhos coloridos — legíveis de perto, sumiam de relance, que é
+   como uma barra de navegação é lida. */
 /* v64 (BETA — auditoria de contraste medindo o pixel, não a folha):
    A medição por CSS não serve neste app: quase tudo é gradiente sobre
    vidro translúcido, e o "fundo" declarado é transparente — o medidor
@@ -694,7 +707,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v64-beta';
+const CACHE_NAME = 'mw-shell-v65-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
