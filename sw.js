@@ -1,3 +1,20 @@
+/* v57 (BETA — Instituições viram uma coleção de verdade):
+   "Instituição" era um campo de texto solto dentro de Faculdade. Quem
+   estuda em duas — graduação numa, técnico ou pós em outra — não tinha
+   onde registrar a segunda, e nenhuma disciplina sabia a que instituição
+   pertencia. Agora é uma área própria, com a mesma mecânica de
+   cadastrar/editar/excluir das outras, e três ligações novas:
+   disciplina → instituição, atividade → disciplina, projeto →
+   disciplina. Nada disso vem de lista fixa no código: os <select> são
+   montados a partir do que a pessoa cadastrou, e o campo Instituição da
+   Faculdade continua texto livre (o <datalist>, que existia vazio desde
+   sempre, passa a sugerir o que já foi registrado).
+   Projetos ganharam o quinto status do quadro (Arquivado) e
+   "Planejado" virou "Planejamento".
+   Duas correções de fundo no caminho: a fusão dos dados salvos era rasa,
+   então uma conta antiga entrava sem os campos novos do perfil; e a
+   segunda métrica de cada área repetia a mesma contagem duas vezes sob
+   o rótulo "em foco" — número certo, legenda sem sentido. */
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
 /* v56 (BETA — a página de Perfil):
@@ -542,7 +559,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v56-beta';
+const CACHE_NAME = 'v57-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

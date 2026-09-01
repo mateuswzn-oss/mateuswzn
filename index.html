@@ -2685,6 +2685,11 @@ body.light #app .calendar-card .calendar-nav button:hover{
     <rect x="3.2" y="12.9" width="7.9" height="7.9" rx="2.2"/>
     <rect x="12.9" y="12.9" width="7.9" height="7.9" rx="2.2"/>
   </symbol>
+  <symbol id="mwi-institutions" viewBox="0 0 24 24">
+    <path fill-rule="evenodd" d="M12 2.2 2.8 6.6a.9.9 0 0 0 .4 1.7h17.6a.9.9 0 0 0 .4-1.7zM12 4.2l5.3 2.5H6.7z"/>
+    <path fill-rule="evenodd" d="M5.2 9.6h2.2v7.6H5.2zM10.9 9.6h2.2v7.6h-2.2zM16.6 9.6h2.2v7.6h-2.2z"/>
+    <path d="M3.3 18.6h17.4a.9.9 0 0 1 0 1.8H3.3a.9.9 0 0 1 0-1.8z"/>
+  </symbol>
   <symbol id="mwi-college" viewBox="0 0 24 24">
     <path d="M12 3.4 21.6 8 12 12.6 2.4 8z"/>
     <path d="M6.6 10.4v4.2c0 1.8 2.4 3.2 5.4 3.2s5.4-1.4 5.4-3.2v-4.2l-5.4 2.6z"/>
@@ -3924,6 +3929,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
     <nav class="nav mw-reference-nav" id="nav">
       <button class="active" data-view="home"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-dashboard"/></svg></span><span class="label">Dashboard</span></button>
       <button data-view="college"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-college"/></svg></span><span class="label">Faculdade</span></button>
+      <button data-view="institutions"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-institutions"/></svg></span><span class="label">Instituições</span></button>
       <button data-view="subjects"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-subjects"/></svg></span><span class="label">Disciplinas</span></button>
       <button data-view="projects"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-projects"/></svg></span><span class="label">Projetos</span></button>
       <button data-view="activities"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-activities"/></svg></span><span class="label">Atividades</span></button>
@@ -3995,6 +4001,14 @@ body.light .mw-faceid-gate-card p{color:#526988}
     <section class="card liquid-card extra-panel" id="lecturesPanel"><div class="section-head"><h3>Aulas</h3><span class="aulas-sub">Suas aulas e progresso</span></div><div class="lecture-grid" id="lectureGrid"><div class="lecture-card"><strong>Nenhuma aula cadastrada</strong><div class="lecture-meta">Adicione disciplinas para começar a organizar suas aulas.</div><div class="progress-line"><i></i></div></div></div></section>
     </div>
 <section class="view" id="view-college"><section class="card section"><div class="section-head"><h3>Faculdade</h3><span>Seu contexto acadêmico</span></div><div class="section-grid grid"><div class="card section-card"><h3 id="collegeCourseLabel">Seu curso</h3><p id="collegeSemesterLabel">1º semestre</p></div><div class="card section-card"><h3>Progresso do curso</h3><p id="collegeProgress2">0% calculado a partir das suas disciplinas</p></div><div class="card section-card"><h3>Organização</h3><p>Use Disciplinas, Atividades e Projetos para montar seu Workspace.</p></div></div><div class="college-setup"><div class="form-field"><label>Instituição</label><input id="collegeInstitution" list="collegeInstitutionOptions" placeholder="Sua faculdade ou universidade" autocomplete="organization"><datalist id="collegeInstitutionOptions"></datalist></div><div class="form-field"><label>Curso</label><input id="collegeCourse" list="collegeCourseOptions" placeholder="Seu curso"><datalist id="collegeCourseOptions"></datalist></div><div class="form-field"><label>Área/Especialização (opcional)</label><input id="collegeArea" list="collegeAreaOptions" placeholder="Sua área de interesse"><datalist id="collegeAreaOptions"></datalist></div><div class="form-field"><label>Semestre atual</label><input id="collegeSemester" type="number" min="1" max="20" value="1"></div></div><button class="save-btn college-save" id="saveCollege">Salvar organização</button></section></section>
+    <!-- Instituições: até aqui "instituição" era um campo de texto solto
+         dentro de Faculdade, então quem estuda em duas (graduação numa,
+         técnico/pós em outra) não tinha onde registrar a segunda, e a
+         disciplina não tinha a que instituição pertencer. Agora é uma
+         coleção como qualquer outra do workspace, com a mesma mecânica
+         de cadastrar/editar/excluir — e nada aqui vem de lista fixa no
+         código: o nome, o tipo e o curso são digitados pela pessoa. -->
+    <section class="view" id="view-institutions"><section class="card section"><div class="section-head"><h3>Instituições</h3><button class="add-btn" data-add="institutions">+ Adicionar</button></div><div class="list" id="institutionsList"></div></section></section>
     <section class="view" id="view-subjects"><section class="card section"><div class="section-head"><h3>Disciplinas</h3><button class="add-btn" data-add="subjects">+ Adicionar</button></div><div class="list" id="subjectsList"></div></section></section>
     <section class="view" id="view-projects"><section class="card section"><div class="section-head"><h3>Projetos</h3><button class="add-btn" data-add="projects">+ Adicionar</button></div><div class="list" id="projectsList"></div></section></section>
     <section class="view" id="view-activities"><section class="card section"><div class="section-head"><h3>Atividades</h3><button class="add-btn" data-add="activities">+ Adicionar</button></div><div class="list" id="activitiesList"></div></section></section>
@@ -4798,14 +4812,33 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
 (()=>{
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const storeKey='mateusWorkspaceV4';
-const defaults={subjects:[],projects:[],activities:[],notes:[],profile:{name:'Mateus',email:'',photo:''},college:{institution:'',course:'',area:'',semester:1},theme:'dark'};
+const defaults={subjects:[],projects:[],activities:[],notes:[],institutions:[],profile:{name:'Mateus',email:'',photo:'',username:'',bio:'',skills:[],links:[],visibility:{}},college:{institution:'',course:'',area:'',semester:1},theme:'dark'};
 /* Sem "let" de propósito: alguns scripts carregados depois (autosave,
    métricas do dashboard, recarregar dados ao trocar de conta) leem/escrevem
    "data" esperando uma variável global compartilhada — várias delas já
    faziam "data = {...}" assumindo isso. Sem essa mudança cada leitura bruta
    de "data" fora deste bloco lançava ReferenceError. */
 data=load(); let lightOn=true; let dragging=false,pulled=false,pointerId=null,startY=0,lastY=384,anim=0;
-function load(){try{return {...defaults,...JSON.parse(localStorage.getItem(storeKey)||'{}')}}catch{return structuredClone(defaults)}}
+function load(){
+  /* A fusão era rasa: "profile" salvo em disco SUBSTITUÍA o profile
+     padrão inteiro, então uma conta antiga (que só tem name/email/photo)
+     entrava sem username, bio, skills, links nem visibility — e cada
+     leitura desses campos precisava de guarda em todo canto. Agora os
+     objetos aninhados que o app trata como registro (profile, college)
+     são fundidos campo a campo, e as coleções novas caem no padrão
+     quando o arquivo salvo é anterior a elas. */
+  try{
+    const salvo=JSON.parse(localStorage.getItem(storeKey)||'{}');
+    const fundido={...defaults,...salvo};
+    fundido.profile={...defaults.profile,...(salvo.profile||{})};
+    fundido.college={...defaults.college,...(salvo.college||{})};
+    if(!Array.isArray(fundido.institutions))fundido.institutions=[];
+    if(!Array.isArray(fundido.profile.skills))fundido.profile.skills=[];
+    if(!Array.isArray(fundido.profile.links))fundido.profile.links=[];
+    if(!fundido.profile.visibility||typeof fundido.profile.visibility!=='object')fundido.profile.visibility={};
+    return fundido;
+  }catch{return structuredClone(defaults)}
+}
 function persistWorkspace(){
   try{
     const serialized=JSON.stringify(data);
@@ -4993,7 +5026,7 @@ window.toast = toast;
   const getActive=()=>localStorage.getItem('mateusActiveUserV2');
   const escSafe=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
   const notify=(msg,error=false)=>{const el=q('#status');if(el){el.textContent=msg;el.classList.toggle('error',error)}};
-  const defaultData=(name,email)=>({subjects:[],projects:[],activities:[],notes:[],profile:{name,email,photo:''},theme:'dark'});
+  const defaultData=(name,email)=>({subjects:[],projects:[],activities:[],notes:[],institutions:[],profile:{name,email,photo:'',username:'',bio:'',skills:[],links:[],visibility:{}},theme:'dark'});
   const hydrateSession=(email, data)=>{localStorage.setItem('mateusActiveUserV2',email);localStorage.setItem('mateusWorkspaceV4',JSON.stringify(data||defaultData('Mateus',email)));};
   /* Esta era a única das três `enterApp` do documento que NÃO gravava
      `mwSession`. Quem entrasse por ela — o caminho do `authenticate()`,
@@ -5040,7 +5073,7 @@ window.toast = toast;
   const usersKey='mateusWorkspaceUsersV2';
   const readUsers=()=>{try{return JSON.parse(localStorage.getItem(usersKey)||'{}')}catch{return {}}};
   const writeUsers=u=>localStorage.setItem(usersKey,JSON.stringify(u));
-  const defaultData=(name,email)=>({subjects:[],projects:[],activities:[],notes:[],profile:{name,email,photo:''},theme:'dark'});
+  const defaultData=(name,email)=>({subjects:[],projects:[],activities:[],notes:[],institutions:[],profile:{name,email,photo:'',username:'',bio:'',skills:[],links:[],visibility:{}},theme:'dark'});
   const enterApp=()=>{localStorage.setItem('mwSession','1');const app=q('#app'),screen=q('#loginScreen');screen?.classList.add('hidden');if(app){app.classList.remove('hidden');app.style.display=''};window.scrollTo(0,0)};
   const hydrateSession=(email,data)=>{localStorage.setItem('mateusActiveUserV2',email);localStorage.setItem('mateusWorkspaceV4',JSON.stringify(data||defaultData('Mateus',email)));};
   const notify=(msg,error=false)=>{const el=q('#status');if(el){el.textContent=msg;el.classList.toggle('error',error)}};
@@ -6343,7 +6376,7 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
        último. Antes o `mwSession` era escrito 59ms ANTES da conta, e
        nessa janela existia uma sessão apontando para uma conta que
        ainda não existia. */
-    const data={subjects:[],projects:[],activities:[],notes:[],profile:{name:username,email,photo:''},college:{institution:'',course:'',area:'',semester:1},theme:'dark'};
+    const data={subjects:[],projects:[],activities:[],notes:[],institutions:[],profile:{name:username,email,photo:'',username:'',bio:'',skills:[],links:[],visibility:{}},college:{institution:'',course:'',area:'',semester:1},theme:'dark'};
     const nova={name:username,username,email,data};
     const contaGravada=Promise.resolve(
         window.mwSenha?window.mwSenha.grava(nova,pass):(nova.password=pass)
@@ -13317,26 +13350,54 @@ body.light #app .workspace-form input,body.light #app .workspace-form textarea,b
   applyArea(area?.value || storedArea);
   area?.addEventListener('change', () => applyArea(area.value));
 
+  /* Listas que vêm dos dados da pessoa, nunca de uma constante no
+     código: disciplinas cadastradas e instituições cadastradas. A
+     primeira opção é sempre vazia porque o vínculo é opcional — quem
+     ainda não cadastrou disciplina precisa conseguir criar a atividade
+     do mesmo jeito. */
+  const mwOpcoesDinamicas = fonte => {
+    const chave = String(fonte || '').replace('@','');
+    const lista = Array.isArray(data?.[chave]) ? data[chave] : [];
+    const nomes = lista.map(x => String((x && (x.name || x.title)) || '').trim()).filter(Boolean);
+    return [''].concat([...new Set(nomes)]);
+  };
+  window.mwOpcoesDinamicas = mwOpcoesDinamicas;
+  /* O <select> é montado uma vez só, na carga. Se a pessoa cadastrar uma
+     disciplina nova, o campo "Disciplina" do formulário de atividade
+     continuaria com a lista velha — daí o repovoamento sempre que o
+     formulário é aberto, preservando o valor já escolhido. */
+  const mwRepovoaSelects = painel => {
+    if (!painel) return;
+    painel.querySelectorAll('select[data-opcoes]').forEach(sel => {
+      const atual = sel.value;
+      const opcoes = mwOpcoesDinamicas(sel.getAttribute('data-opcoes'));
+      if (atual && !opcoes.includes(atual)) opcoes.push(atual);
+      sel.innerHTML = opcoes.map(o => `<option${o===atual?' selected':''}>${esc(o)}</option>`).join('');
+      sel.value = atual;
+    });
+  };
+  window.mwRepovoaSelects = mwRepovoaSelects;
   const configs = {
-    subjects:{ title:'Disciplinas', intro:'Planeje suas matérias, acompanhe progresso e mantenha o semestre sob controle.', action:'Nova disciplina', fields:[['name','Nome da disciplina','text','Ex.: Programação Web',true],['description','Objetivo ou descrição','text','Ex.: Front-end e aplicações',false],['progress','Progresso (%)','number','0',false],['code','Código da disciplina','text','Ex.: PWEB-2026',false]] },
-    projects:{ title:'Projetos', intro:'Centralize ideias, entregas e prazos dos projetos que importam agora.', action:'Novo projeto', fields:[['name','Nome do projeto','text','Ex.: Trabalho de conclusão',true],['description','Resumo do objetivo','textarea','O que você está construindo?',true],['tag','Área / tag','text','Ex.: Pesquisa',false],['status','Status','select','Em andamento',false,['Planejado','Em andamento','Em revisão','Concluído']],['priority','Prioridade','select','Média',false,['Baixa','Média','Alta']],['members','Integrantes','text','Ex.: você, Ana, Bruno',false],['deadline','Prazo','date','',false]] },
-    activities:{ title:'Atividades', intro:'Organize tarefas e prazos para saber exatamente o que fazer a seguir.', action:'Nova atividade', fields:[['name','Título da atividade','text','Ex.: Entregar trabalho',true],['description','Detalhes','textarea','Inclua o que precisa ser feito.',false],['date','Prazo','date','',false],['priority','Prioridade','select','Média',false,['Baixa','Média','Alta']] ] },
+    institutions:{ title:'Instituições', intro:'Registre onde você estuda. Uma pessoa pode ter mais de uma — graduação, técnico, curso livre — e cada disciplina aponta para a sua.', action:'Nova instituição', fields:[['name','Nome da instituição','text','Ex.: Universidade Federal do seu estado',true],['short','Sigla','text','Ex.: UFXX',false],['kind','Tipo','select','Universidade',false,['Universidade','Faculdade','Instituto','Centro universitário','Escola técnica','Curso livre','Outro']],['course','Curso','text','Ex.: o curso que você faz aqui',false],['city','Cidade','text','Ex.: sua cidade',false],['site','Site','text','Ex.: site oficial da instituição',false]] },
+    subjects:{ title:'Disciplinas', intro:'Planeje suas matérias, acompanhe progresso e mantenha o semestre sob controle.', action:'Nova disciplina', fields:[['name','Nome da disciplina','text','Ex.: Programação Web',true],['description','Objetivo ou descrição','text','Ex.: Front-end e aplicações',false],['progress','Progresso (%)','number','0',false],['code','Código da disciplina','text','Ex.: PWEB-2026',false],['institution','Instituição','select','',false,'@institutions'],['semester','Semestre','number','',false]] },
+    projects:{ title:'Projetos', intro:'Centralize ideias, entregas e prazos dos projetos que importam agora.', action:'Novo projeto', fields:[['name','Nome do projeto','text','Ex.: Trabalho de conclusão',true],['description','Resumo do objetivo','textarea','O que você está construindo?',true],['tag','Área / tag','text','Ex.: Pesquisa',false],['status','Status','select','Em andamento',false,['Planejamento','Em andamento','Em revisão','Concluído','Arquivado']],['priority','Prioridade','select','Média',false,['Baixa','Média','Alta']],['subject','Disciplina','select','',false,'@subjects'],['members','Integrantes','text','Ex.: você, Ana, Bruno',false],['deadline','Prazo','date','',false]] },
+    activities:{ title:'Atividades', intro:'Organize tarefas e prazos para saber exatamente o que fazer a seguir.', action:'Nova atividade', fields:[['name','Título da atividade','text','Ex.: Entregar trabalho',true],['description','Detalhes','textarea','Inclua o que precisa ser feito.',false],['date','Prazo','date','',false],['priority','Prioridade','select','Média',false,['Baixa','Média','Alta']],['subject','Disciplina','select','',false,'@subjects'] ] },
     notes:{ title:'Anotações', intro:'Registre decisões, referências e ideias sem perder o contexto do estudo.', action:'Nova anotação', fields:[['title','Título','text','Ex.: Ideias para a entrega',true],['body','Conteúdo','textarea','Escreva sua anotação...',true],['category','Categoria','select','Estudos',false,['Estudos','Projeto','Referência','Pessoal']] ] }
   };
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const label = type => ({subjects:'disciplinas',projects:'projetos',activities:'atividades',notes:'anotações'})[type];
+  const label = type => ({institutions:'instituições',subjects:'disciplinas',projects:'projetos',activities:'atividades',notes:'anotações'})[type];
   const renderWorkspace = type => {
     const view = document.getElementById(`view-${type}`), list = document.getElementById(`${type}List`), c = configs[type];
     if (!view || !list || !c || view.querySelector('.workspace-hero')) return;
     const hero = document.createElement('div'); hero.className = 'workspace-hero';
     hero.innerHTML = `<div><h4>${c.title}</h4><p>${c.intro}</p></div><div class="workspace-metrics" data-workspace-metrics="${type}"></div>`;
     const panel = document.createElement('form'); panel.className = 'workspace-form'; panel.dataset.workspaceForm = type;
-    panel.innerHTML = `<div class="workspace-form-head"><div><h4>${c.action}</h4><p>Preencha o essencial; você poderá continuar organizando depois.</p></div></div><div class="workspace-form-grid">${c.fields.map(([id,name,kind,placeholder,required,options]) => `<div class="${kind==='textarea'?'full':''}"><label for="ws-${type}-${id}">${name}</label>${kind==='textarea'?`<textarea id="ws-${type}-${id}" placeholder="${esc(placeholder)}" ${required?'required':''}></textarea>`:kind==='select'?`<select id="ws-${type}-${id}">${options.map(o=>`<option ${o===placeholder?'selected':''}>${esc(o)}</option>`).join('')}</select>`:`<input id="ws-${type}-${id}" type="${kind}" placeholder="${esc(placeholder)}" ${kind==='number'?'min="0" max="100" value="0"':''} ${required?'required':''}>`}</div>`).join('')}</div><div class="workspace-form-actions"><button type="button" class="workspace-cancel">Cancelar</button><button type="submit" class="workspace-submit">Salvar ${c.title.slice(0,-1)}</button></div>`;
+    panel.innerHTML = `<div class="workspace-form-head"><div><h4>${c.action}</h4><p>Preencha o essencial; você poderá continuar organizando depois.</p></div></div><div class="workspace-form-grid">${c.fields.map(([id,name,kind,placeholder,required,options]) => `<div class="${kind==='textarea'?'full':''}"><label for="ws-${type}-${id}">${name}</label>${kind==='textarea'?`<textarea id="ws-${type}-${id}" placeholder="${esc(placeholder)}" ${required?'required':''}></textarea>`:kind==='select'?`<select id="ws-${type}-${id}"${typeof options==='string'?` data-opcoes="${esc(options)}"`:''}>${(typeof options==='string'?mwOpcoesDinamicas(options):options).map(o=>`<option ${o===placeholder?'selected':''}>${esc(o)}</option>`).join('')}</select>`:`<input id="ws-${type}-${id}" type="${kind}" placeholder="${esc(placeholder)}" ${kind==='number'?(id==='progress'?'min="0" max="100" value="0"':'min="1" max="99" step="1"'):''} ${required?'required':''}>`}</div>`).join('')}</div><div class="workspace-form-actions"><button type="button" class="workspace-cancel">Cancelar</button><button type="submit" class="workspace-submit">Salvar ${c.title.slice(0,-1)}</button></div>`;
     list.before(hero, panel);
     panel.addEventListener('submit', event => {
       event.preventDefault();
       const item = {};
-      c.fields.forEach(([id,,kind]) => { const field = panel.querySelector(`#ws-${type}-${id}`); item[id] = kind==='number' ? Math.max(0,Math.min(100,Number(field.value)||0)) : field.value.trim(); });
+      c.fields.forEach(([id,,kind]) => { const field = panel.querySelector(`#ws-${type}-${id}`); if (kind!=='number') { item[id] = field.value.trim(); return; } if (id==='progress') { item[id] = Math.max(0,Math.min(100,Number(field.value)||0)); return; } const bruto = field.value.trim(); item[id] = bruto === '' ? '' : Math.max(1,Math.min(99,Number(bruto)||1)); });
       /* Edição in-place: até aqui só dava pra criar e excluir — corrigir
          um erro de digitação obrigava a apagar e cadastrar de novo. O
          índice em edição fica no próprio formulário; sem ele, o
@@ -13366,8 +13427,18 @@ body.light #app .workspace-form input,body.light #app .workspace-form textarea,b
   const updateMetrics = type => {
     const box = document.querySelector(`[data-workspace-metrics="${type}"]`), items = Array.isArray(data?.[type]) ? data[type] : [];
     if (!box) return;
-    const extra = type==='subjects' ? `${items.length?Math.round(items.reduce((s,x)=>s+(Number(x.progress)||0),0)/items.length):0}%` : type==='activities' ? `${items.filter(x=>x.date).length}` : `${items.length}`;
-    box.innerHTML = `<div class="workspace-metric"><b>${items.length}</b><span>${label(type)}</span></div><div class="workspace-metric"><b>${extra}</b><span>${type==='subjects'?'média':type==='activities'?'com prazo':'em foco'}</span></div>`;
+    /* A segunda métrica precisa dizer algo verdadeiro sobre CADA tipo.
+       Antes, tudo que não fosse disciplina ou atividade repetia a mesma
+       contagem duas vezes com o rótulo "em foco" — número honesto,
+       legenda sem sentido. */
+    const vinculadas = nome => (Array.isArray(data?.subjects)?data.subjects:[]).filter(x=>String(x.institution||'').trim()===String(nome||'').trim()).length;
+    const extra = type==='subjects' ? `${items.length?Math.round(items.reduce((s,x)=>s+(Number(x.progress)||0),0)/items.length):0}%`
+      : type==='activities' ? `${items.filter(x=>x.date).length}`
+      : type==='institutions' ? `${items.reduce((soma,x)=>soma+vinculadas(x.name),0)}`
+      : type==='projects' ? `${items.filter(x=>String(x.status||'')==='Em andamento').length}`
+      : `${items.filter(x=>String(x.category||'')==='Estudos').length}`;
+    const legenda = type==='subjects'?'média':type==='activities'?'com prazo':type==='institutions'?'disciplinas ligadas':type==='projects'?'em andamento':'de estudos';
+    box.innerHTML = `<div class="workspace-metric"><b>${items.length}</b><span>${label(type)}</span></div><div class="workspace-metric"><b>${extra}</b><span>${legenda}</span></div>`;
   };
   Object.keys(configs).forEach(renderWorkspace);
 
@@ -13377,6 +13448,7 @@ body.light #app .workspace-form input,body.light #app .workspace-form textarea,b
       event.preventDefault(); event.stopImmediatePropagation();
       const type = add.dataset.add; renderWorkspace(type);
       const panel = document.querySelector(`[data-workspace-form="${type}"]`);
+      mwRepovoaSelects(panel);
       panel?.classList.add('is-open'); panel?.querySelector('input,textarea,select')?.focus();
       return;
     }
@@ -16390,7 +16462,7 @@ html body #app .mw-reference-sidebar .mw-reference-profile .mw-profile-main{
      conta é revelada, sem precisar tocar em cada um desses fluxos. */
   const app=document.getElementById('app');
   if(!app) return;
-  const defaults={subjects:[],projects:[],activities:[],notes:[],profile:{name:'Mateus',email:'',photo:''},college:{institution:'',course:'',area:'',semester:1},theme:'dark'};
+  const defaults={subjects:[],projects:[],activities:[],notes:[],institutions:[],profile:{name:'Mateus',email:'',photo:'',username:'',bio:'',skills:[],links:[],visibility:{}},college:{institution:'',course:'',area:'',semester:1},theme:'dark'};
   /* Exposta porque a sincronização com o servidor também precisa dela.
      A "data" em memória é global e é regravada no localStorage quando a
      página fecha; se dados baixados do servidor entrarem no storage sem
@@ -21890,6 +21962,15 @@ body.light .eva-sugestao{background:rgba(109,40,217,.09);color:#6d28d9;border-co
       var id = campo.id.replace('ws-' + tipo + '-', '');
       if (Object.prototype.hasOwnProperty.call(item, id)) campo.value = item[id] == null ? '' : item[id];
     });
+    /* Os <select> alimentados pelos dados (disciplina, instituição) são
+       montados uma vez só na carga. Ao editar um item cadastrado depois
+       de uma disciplina nova, a lista velha não teria essa opção e o
+       valor salvo sumiria do campo. */
+    if (typeof window.mwRepovoaSelects === 'function') window.mwRepovoaSelects(painel);
+    painel.querySelectorAll('select,input,textarea').forEach(function(campo){
+      var id2 = campo.id.replace('ws-' + tipo + '-', '');
+      if (Object.prototype.hasOwnProperty.call(item, id2)) campo.value = item[id2] == null ? '' : item[id2];
+    });
     painel.dataset.editIndex = String(indice);
     var enviar = painel.querySelector('.workspace-submit');
     if (enviar) enviar.textContent = 'Salvar alterações';
@@ -23528,6 +23609,110 @@ html body #app #view-profile .save-btn{
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', pinta);
   else pinta();
+})();
+</script>
+
+<style id="mw-instituicoes">
+/* A lista de instituições usa a mesma linha (.list-item) das outras
+   áreas de propósito: quem já sabe operar Disciplinas não reaprende
+   nada aqui. O que muda é o selo do tipo, que é informação e não
+   enfeite — diz "Universidade"/"Escola técnica" num relance. */
+html body #app .mw-inst-selo{
+  display:inline-flex; align-items:center; gap:6px;
+  margin-top:7px; padding:3px 9px;
+  border-radius:999px;
+  border:1px solid var(--id-borda, rgba(140,165,220,.13));
+  background:var(--id-sup-2, rgba(19,28,49,.7));
+  color:var(--id-txt-2, #a6b2ce);
+  font-size:11px; font-weight:650; letter-spacing:.01em;
+}
+html body #app .mw-inst-selo b{ color:var(--id-txt, #e9eefb); font-weight:700; }
+html body #app .mw-inst-vinculo{
+  display:inline-flex; align-items:center; gap:5px;
+  margin-top:7px; margin-left:7px; padding:3px 9px;
+  border-radius:999px;
+  border:1px solid color-mix(in srgb, var(--id-ac, #5b6cff) 32%, transparent);
+  background:color-mix(in srgb, var(--id-ac, #5b6cff) 14%, transparent);
+  color:var(--id-txt, #e9eefb);
+  font-size:11px; font-weight:650;
+}
+html body.light #app .mw-inst-selo{ background:#eef3fc; border-color:rgba(20,40,90,.12); color:#4d5875; }
+html body.light #app .mw-inst-selo b{ color:#101a30; }
+html body.light #app .mw-inst-vinculo{ color:#101a30; }
+@media (max-width:640px){
+  html body #app .mw-inst-vinculo{ margin-left:0; }
+}
+</style>
+
+<script id="mw-instituicoes-js">
+(function(){
+  'use strict';
+  /* renderAll() pinta as listas de disciplinas/projetos/atividades/notas
+     numa única expressão gigante que já existia antes desta área. Em vez
+     de editar aquela linha (e arriscar as cinco listas de uma vez), esta
+     lista se pendura no mesmo gancho que o dashboard usa: mwDashRefresh,
+     que renderAll chama no final. É uma CORRENTE — cada bloco guarda o
+     anterior e o chama — então nunca atribuir direto por cima. */
+  function esc(v){ return String(v == null ? '' : v).replace(/[&<>'"]/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c];
+  }); }
+
+  function pinta(dados){
+    var lista = document.getElementById('institutionsList');
+    if (!lista) return;
+    var itens = (dados && Array.isArray(dados.institutions)) ? dados.institutions : [];
+    var disciplinas = (dados && Array.isArray(dados.subjects)) ? dados.subjects : [];
+    if (!itens.length){
+      lista.innerHTML = '<div class="empty-state">Nenhuma instituição cadastrada. Adicione onde você estuda para poder ligar suas disciplinas a ela.</div>';
+      return;
+    }
+    lista.innerHTML = itens.map(function(inst, i){
+      var nome = String(inst.name || '').trim() || 'Sem nome';
+      var ligadas = disciplinas.filter(function(d){
+        return String(d.institution || '').trim() === nome;
+      }).length;
+      var detalhe = [inst.course, inst.city].map(function(x){ return String(x||'').trim(); }).filter(Boolean).join(' · ');
+      var sigla = String(inst.short || '').trim();
+      return '<div class="list-item">'
+        + '<div><strong>' + esc(nome) + (sigla ? ' <small>(' + esc(sigla) + ')</small>' : '') + '</strong>'
+        + '<small>' + esc(detalhe || 'Sem curso ou cidade informados') + '</small>'
+        + '<span class="mw-inst-selo"><b>' + esc(String(inst.kind || 'Instituição')) + '</b></span>'
+        + (ligadas ? '<span class="mw-inst-vinculo">' + ligadas + ' disciplina' + (ligadas === 1 ? '' : 's') + '</span>' : '')
+        + '</div>'
+        + '<div class="mw-item-acoes">'
+        + '<button class="small-btn" data-edit="institutions" data-index="' + i + '">Editar</button>'
+        + '<button class="small-btn" data-delete="institutions" data-index="' + i + '">Excluir</button>'
+        + '</div></div>';
+    }).join('');
+  }
+
+  /* O campo "Instituição" da Faculdade já era texto livre com um
+     <datalist> — mas o datalist nunca foi preenchido, então o atalho não
+     existia na prática. Agora as sugestões são exatamente as
+     instituições que a pessoa cadastrou: continua texto livre (dá pra
+     digitar uma que não está na lista), só deixa de exigir que ela
+     redigite o nome que já registrou. */
+  function alimentaDatalist(dados){
+    var dl = document.getElementById('collegeInstitutionOptions');
+    if (!dl) return;
+    var itens = (dados && Array.isArray(dados.institutions)) ? dados.institutions : [];
+    var nomes = [];
+    itens.forEach(function(i){
+      var n = String(i.name || '').trim();
+      if (n && nomes.indexOf(n) === -1) nomes.push(n);
+    });
+    var novo = nomes.map(function(n){ return '<option value="' + esc(n) + '">'; }).join('');
+    if (dl.innerHTML !== novo) dl.innerHTML = novo;
+  }
+
+  var anterior = window.mwDashRefresh;
+  window.mwDashRefresh = function(dados){
+    if (typeof anterior === 'function') { try { anterior(dados); } catch (e) {} }
+    try { pinta(dados || window.data); } catch (e) {}
+    try { alimentaDatalist(dados || window.data); } catch (e) {}
+  };
+  pinta(window.data);
+  alimentaDatalist(window.data);
 })();
 </script>
 
