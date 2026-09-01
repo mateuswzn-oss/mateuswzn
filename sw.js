@@ -1,5 +1,20 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v50 (BETA — Fase 2, parte 3: a marca é uma só):
+   Só a tela de carregamento desenhava o símbolo de verdade (o M e o W
+   traçados, com gradiente). A sidebar, o login, o rodapé e o convite de
+   instalação escreviam a palavra "MW" numa fonte — cinco marcas
+   diferentes fingindo ser a mesma.
+   O glifo virou um <symbol> no sprite, com os MESMOS caminhos do
+   carregamento, e os quatro lugares passaram a apontar para ele. Os
+   gradientes foram redeclarados no sprite porque os do carregamento
+   morrem junto com ele: aquele bloco é removido do documento quando o
+   boot termina, e um <use> apontando para um gradiente inexistente
+   renderiza sem cor nenhuma.
+   As outras três ocorrências de "MW" NÃO foram tocadas: são iniciais do
+   usuário (avatar da sidebar, botão de perfil, prévia da foto), que só
+   por acaso mostram MW enquanto não há nome. Trocá-las pela marca
+   seria trocar a pessoa pelo produto. */
 /* v49 (BETA — Fase 2, parte 2: sistema de ícones):
    Os ícones eram 74 <svg> soltos com a geometria escrita à mão no lugar
    de uso, e todos preenchidos — não existia estado de contorno. Agora
@@ -436,7 +451,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v49-beta';
+const CACHE_NAME = 'mw-shell-v50-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

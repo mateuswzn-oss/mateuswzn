@@ -2658,6 +2658,27 @@ body.light #app .calendar-card .calendar-nav button:hover{
      O <use> herda fill e stroke do <svg> que o chama, então o mesmo
      símbolo serve à sidebar, à barra de baixo e ao topo sem cópia. -->
 <svg class="mw-sprite" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+  <!-- A MARCA. Até aqui só a tela de carregamento desenhava o símbolo
+       de verdade (o M e o W traçados, com gradiente); a sidebar, o
+       login, o rodapé e o convite de instalação escreviam a palavra
+       "MW" numa fonte qualquer. Eram cinco marcas diferentes fingindo
+       ser a mesma.
+
+       Os caminhos abaixo são EXATAMENTE os do carregamento. Os
+       gradientes foram reescritos aqui com nomes próprios porque os do
+       carregamento morrem junto com ele: aquele bloco é removido do
+       documento quando o boot termina, e um <use> apontando para um
+       gradiente que não existe mais renderiza sem cor nenhuma. -->
+  <linearGradient id="mwi-marca-m" x1="4" y1="34" x2="30" y2="10" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#2563eb"/><stop offset=".55" stop-color="#38bdf8"/><stop offset="1" stop-color="#a5f3ff"/>
+  </linearGradient>
+  <linearGradient id="mwi-marca-w" x1="34" y1="10" x2="60" y2="36" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#a5b8ff"/><stop offset=".5" stop-color="#7c5cff"/><stop offset="1" stop-color="#38bdf8"/>
+  </linearGradient>
+  <symbol id="mwi-marca" viewBox="0 0 64 44">
+    <path d="M6 34.5V11.5L17 26.5L28 11.5V34.5" fill="none" stroke="url(#mwi-marca-m)" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M36 11.5V34.5L47 19.5L58 34.5V11.5" fill="none" stroke="url(#mwi-marca-w)" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
   <symbol id="mwi-dashboard" viewBox="0 0 24 24">
     <rect x="3.2" y="3.2" width="7.9" height="7.9" rx="2.2"/>
     <rect x="12.9" y="3.2" width="7.9" height="7.9" rx="2.2"/>
@@ -3593,7 +3614,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
 
     <!-- NAV LATERAL -->
     <nav class="mwv2-nav">
-      <div class="mwv2-logo">MW</div>
+      <div class="mwv2-logo"><svg class="mw-marca" viewBox="0 0 64 44" aria-hidden="true"><use href="#mwi-marca"/></svg></div>
       <button type="button" class="mwv2-navbtn active" data-view="signin">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="19" height="19"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
         <span>Entrar</span>
@@ -3886,7 +3907,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
 <section id="app" class="hidden">
   <aside class="sidebar mw-sidebar-polished mw-reference-sidebar">
     <div class="side-brand mw-sidebar-brand">
-      <div class="mini-logo mw-logo-mark" aria-hidden="true"><span>MW</span></div>
+      <div class="mini-logo mw-logo-mark" aria-hidden="true"><svg class="mw-marca" viewBox="0 0 64 44" aria-hidden="true"><use href="#mwi-marca"/></svg></div>
       <div class="mw-brand-copy label"><strong>WORKSPACE</strong></div>
       <button type="button" class="mw-sidebar-collapse" id="mwSidebarCollapse" aria-label="Recolher barra lateral" title="Recolher barra lateral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="17" height="16" rx="3"/><path d="M9.2 4v16"/></svg></button>
     </div>
@@ -4119,7 +4140,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
 
     <footer class="mw-app-footer">
       <div class="mw-app-footer-brand">
-        <span class="mw-app-footer-logo">MW</span>
+        <span class="mw-app-footer-logo"><svg class="mw-marca" viewBox="0 0 64 44" aria-hidden="true"><use href="#mwi-marca"/></svg></span>
         <div class="mw-app-footer-copy">
           <strong>Mateus Workspace</strong>
           <small>© <span id="mwAppFooterYear">2026</span> — organize estudos, projetos e prazos em um só lugar.</small>
@@ -14513,7 +14534,7 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
 </style>
 
 <div id="mwv2InstallBanner" role="status" aria-live="polite">
-  <div class="mwv2-install-icon">MW</div>
+  <div class="mwv2-install-icon"><svg class="mw-marca" viewBox="0 0 64 44" aria-hidden="true"><use href="#mwi-marca"/></svg></div>
   <div class="mwv2-install-text">
     <strong id="mwv2InstallTitle">Instalar Mateus Workspace</strong>
     <span id="mwv2InstallDesc">Adicione à tela de início para abrir como um app.</span>
@@ -22754,6 +22775,43 @@ html body.light #app .sidebar #nav button.active .mw-ico{
 
 @media (prefers-reduced-motion: reduce){
   html body #app .sidebar .nav button .mw-ico{ transition: none; }
+}
+</style>
+
+<style id="mw-marca-unificada">
+/* A marca desenhada, agora nos quatro lugares onde antes se escrevia
+   a palavra "MW" numa fonte. Os tamanhos são por contexto porque os
+   recipientes já existem e têm medidas próprias — o glifo se encaixa
+   neles em vez de forçar um tamanho único.
+
+   `overflow:visible` importa: o traço tem ponta arredondada e
+   stroke-width 5,2 num viewBox de 64x44, então ele encosta na borda da
+   caixa e seria cortado sem isso. */
+.mw-marca{
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+/* Sidebar: o tile tem 39px; a marca ocupa a área útil com folga. */
+html body #app .sidebar .mini-logo .mw-marca{ width: 25px; }
+/* Login: o recipiente é um quadrado pequeno na coluna lateral. */
+#loginScreen .mwv2-logo .mw-marca{ width: 26px; margin: 0 auto; }
+/* Rodapé e convite de instalação: marcas menores, de assinatura. */
+html body #app .mw-app-footer-logo .mw-marca{ width: 22px; }
+#mwv2InstallBanner .mwv2-install-icon .mw-marca{ width: 24px; margin: 0 auto; }
+
+/* Os recipientes eram feitos para TEXTO: centralizavam com line-height,
+   pediam peso de fonte e espaçamento de letra. Com um desenho dentro,
+   isso vira deslocamento vertical — grid centra de verdade. */
+html body #app .sidebar .mini-logo,
+html body #app .mw-app-footer-logo,
+#loginScreen .mwv2-logo,
+#mwv2InstallBanner .mwv2-install-icon{
+  display: grid !important;
+  place-items: center !important;
+  line-height: 0 !important;
+  letter-spacing: 0 !important;
 }
 </style>
 
