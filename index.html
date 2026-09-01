@@ -4955,7 +4955,12 @@ function closeModal(){modal.classList.add('hidden');form.innerHTML=''}$('#closeM
 function applyTheme(){document.body.classList.toggle('light',data.theme==='light');const tt=$('#themeToggle');if(tt)tt.classList.toggle('is-light',data.theme==='light');$('#darkModeBtn').classList.toggle('active',data.theme==='dark');$('#lightModeBtn').classList.toggle('active',data.theme==='light')}
 function setTheme(theme){data.theme=theme;if(persistWorkspace())applyTheme();toast(theme==='light'?'Modo claro ativado':'Modo escuro ativado')}
 $('#themeToggle').onclick=()=>setTheme(data.theme==='light'?'dark':'light');$('#darkModeBtn').onclick=()=>setTheme('dark');$('#lightModeBtn').onclick=()=>setTheme('light');
-function loadProfileFields(){const p=data.profile||defaults.profile;$('#profileName').value=p.name||'';$('#profileEmail').value=p.email||'';$('#profilePhoto').value=p.photo||''}$('#saveProfile').onclick=()=>{data.profile={name:$('#profileName').value.trim()||'Mateus',email:$('#profileEmail').value.trim(),photo:$('#profilePhoto').value.trim()};save();$('.hello h2').textContent='Olá, '+data.profile.name+'! 👋';toast('Perfil salvo')};
+function loadProfileFields(){const p=data.profile||defaults.profile;$('#profileName').value=p.name||'';$('#profileEmail').value=p.email||'';$('#profilePhoto').value=p.photo||''}/* Atribuir data.profile = {name,email,photo} SUBSTITUÍA o objeto
+   inteiro: salvar o nome apagava silenciosamente @usuário, bio,
+   tecnologias, links e as escolhas de privacidade. Agora só os três
+   campos deste formulário são atualizados; o resto do perfil é
+   preservado. */
+$('#saveProfile').onclick=()=>{data.profile=Object.assign({},data.profile||{},{name:$('#profileName').value.trim()||'Mateus',email:$('#profileEmail').value.trim(),photo:$('#profilePhoto').value.trim()});save();$('.hello h2').textContent='Olá, '+data.profile.name+'! 👋';toast('Perfil salvo')};
 $('#clearAll').onclick=()=>{if(confirm('Apagar todos os dados do Workspace?')){data.subjects=[];data.projects=[];data.activities=[];data.notes=[];save();toast('Dados apagados')}};
 $('#exportBackup').onclick=()=>{
   const payload={mateusWorkspaceBackup:1,exportedAt:new Date().toISOString(),data};
@@ -22219,7 +22224,12 @@ body.light .mw-perfil-chip a{color:#1d4ed8}
        20px de distância. O perfil local é o recuo. */
     var perfil = raw.profile || {};
     var mapa = {
-      mwPerfilResumoUsuario: (conta && conta.username) || '—',
+      /* O chip lia SÓ o usuário da conta no servidor e mostrava "—"
+         mesmo com o campo @usuário preenchido logo abaixo, na mesma
+         tela. Agora o @ do perfil é a primeira resposta (é o que a
+         pessoa acabou de escrever e vê ali), o usuário da conta é o
+         recuo, e "—" fica só para quem não tem nenhum dos dois. */
+      mwPerfilResumoUsuario: (perfil.username ? '@' + perfil.username : '') || (conta && conta.username) || '—',
       mwPerfilResumoEmail: (conta && conta.email) || (perfil.email || '').trim() || '—',
       mwPerfilResumoCurso: (college.course || '').trim() || 'Seu curso',
       mwPerfilResumoInstituicao: (college.institution || '').trim() || '—',
@@ -23715,6 +23725,650 @@ html body.light #app .mw-inst-vinculo{ color:#101a30; }
   alimentaDatalist(window.data);
 })();
 </script>
+
+
+<style id="mw-perfil-publico">
+/* Identidade pública: o pedido é que a pessoa possa se apresentar —
+   @usuário, bio, tecnologias, links — e decidir campo a campo o que
+   fica visível. O visual segue os tokens da identidade em vez de cores
+   próprias, para que light/dark e a futura cor de destaque valham aqui
+   sem uma segunda paleta pra manter. */
+html body #app .mw-id-bloco{ margin-top:18px; }
+html body #app .mw-id-usuario{ display:flex; align-items:center; gap:0; }
+html body #app .mw-id-arroba{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:34px; align-self:stretch;
+  border:1px solid var(--id-borda,rgba(140,165,220,.13)); border-right:0;
+  border-radius:11px 0 0 11px;
+  background:var(--id-sup-2,rgba(19,28,49,.7));
+  color:var(--id-txt-3,#7b88a6); font-weight:700;
+}
+html body #app .mw-id-usuario input{ border-radius:0 11px 11px 0 !important; }
+html body #app .mw-id-dica{ margin:6px 0 0; font-size:12px; color:var(--id-txt-3,#7b88a6); }
+html body #app .mw-id-dica[data-estado="erro"]{ color:var(--id-perigo-txt,#ff9a9a); }
+html body #app .mw-id-dica[data-estado="ok"]{ color:var(--id-ok-txt,#7ee2b8); }
+
+html body #app .mw-id-contador{ float:right; font-size:12px; color:var(--id-txt-3,#7b88a6); font-variant-numeric:tabular-nums; }
+html body #app .mw-id-contador[data-estado="limite"]{ color:var(--id-perigo-txt,#ff9a9a); }
+
+/* Tecnologias: chips que a pessoa cria. Cada um carrega o próprio botão
+   de remover porque uma lista sem como desfazer vira lixo acumulado. */
+html body #app .mw-id-chips{ display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 0; }
+html body #app .mw-id-chip{
+  display:inline-flex; align-items:center; gap:7px;
+  padding:5px 6px 5px 12px; border-radius:999px;
+  border:1px solid color-mix(in srgb,var(--id-ac,#5b6cff) 30%,transparent);
+  background:color-mix(in srgb,var(--id-ac,#5b6cff) 13%,transparent);
+  color:var(--id-txt,#e9eefb); font-size:12.5px; font-weight:650;
+}
+html body #app .mw-id-chip button{
+  width:19px; height:19px; display:grid; place-items:center;
+  border:0; border-radius:50%; cursor:pointer; padding:0;
+  background:color-mix(in srgb,var(--id-txt,#e9eefb) 12%,transparent);
+  color:var(--id-txt-2,#a6b2ce); font-size:13px; line-height:1;
+}
+html body #app .mw-id-chip button:hover{ background:var(--id-perigo,rgba(255,99,99,.28)); color:#fff; }
+html body #app .mw-id-chips-vazio{ margin:10px 0 0; font-size:13px; color:var(--id-txt-3,#7b88a6); }
+
+/* Links sociais: ícone + nome + endereço + interruptor de exibição.
+   O interruptor é parte da linha porque a decisão "isto aparece?" é
+   sobre aquele link, não uma configuração distante em outra tela. */
+html body #app .mw-id-links{ display:grid; gap:10px; margin-top:12px; }
+html body #app .mw-id-link{
+  display:grid; grid-template-columns:34px minmax(0,1fr) auto;
+  align-items:center; gap:12px;
+  padding:11px 13px; border-radius:var(--id-r-linha,14px);
+  border:1px solid var(--id-borda,rgba(140,165,220,.13));
+  background:var(--id-sup-2,rgba(19,28,49,.7));
+}
+html body #app .mw-id-link-ico{
+  width:34px; height:34px; display:grid; place-items:center;
+  border-radius:10px; background:var(--id-sup-3,rgba(26,36,64,.9));
+  color:var(--id-txt-2,#a6b2ce);
+}
+html body #app .mw-id-link-ico svg{ width:17px; height:17px; fill:currentColor; }
+html body #app .mw-id-link-corpo{ min-width:0; }
+html body #app .mw-id-link-corpo strong{ display:block; font-size:13px; color:var(--id-txt,#e9eefb); margin-bottom:5px; }
+html body #app .mw-id-link-corpo input{
+  width:100%; box-sizing:border-box; font:inherit; font-size:13px;
+  padding:8px 10px; border-radius:9px;
+  border:1px solid var(--id-borda,rgba(140,165,220,.13));
+  background:var(--id-chao,#070b16); color:var(--id-txt,#e9eefb); outline:none;
+}
+html body #app .mw-id-link-corpo input:focus{ border-color:var(--id-ac,#5b6cff); }
+
+/* Interruptor: usa <input type=checkbox> de verdade por baixo, para que
+   Tab, Espaço e leitores de tela funcionem sem gambiarra de aria. */
+html body #app .mw-id-switch{ position:relative; display:inline-flex; align-items:center; cursor:pointer; }
+html body #app .mw-id-switch input{
+  position:absolute; inset:0; opacity:0; margin:0; cursor:pointer; width:100%; height:100%;
+}
+html body #app .mw-id-switch i{
+  /* O <i> é irmão posterior do <input>, então pintava por cima dele e
+     recebia o ponteiro. Funcionava (o <label> em volta repassa o clique),
+     mas o alvo real do toque deixava de ser o controle — e nenhuma
+     ferramenta de teste ou automação conseguia acioná-lo. */
+  pointer-events:none;
+  width:42px; height:24px; border-radius:999px; display:block;
+  background:var(--id-sup-3,rgba(26,36,64,.9));
+  border:1px solid var(--id-borda,rgba(140,165,220,.13));
+  transition:background .18s ease, border-color .18s ease;
+}
+html body #app .mw-id-switch i::after{
+  content:''; position:absolute; top:4px; left:4px;
+  width:17px; height:17px; border-radius:50%;
+  background:var(--id-txt-3,#7b88a6);
+  transition:transform .18s cubic-bezier(.34,1.4,.64,1), background .18s ease;
+}
+html body #app .mw-id-switch input:checked + i{ background:var(--id-ac,#5b6cff); border-color:transparent; }
+html body #app .mw-id-switch input:checked + i::after{ transform:translateX(18px); background:#fff; }
+html body #app .mw-id-switch input:focus-visible + i{ box-shadow:0 0 0 3px color-mix(in srgb,var(--id-ac,#5b6cff) 35%,transparent); }
+
+/* Privacidade por campo. */
+html body #app .mw-id-privacidade{ display:grid; gap:2px; margin-top:12px; }
+html body #app .mw-id-priv-linha{
+  display:flex; align-items:center; justify-content:space-between; gap:14px;
+  padding:11px 2px; border-bottom:1px solid var(--id-borda,rgba(140,165,220,.13));
+}
+html body #app .mw-id-priv-linha:last-child{ border-bottom:0; }
+html body #app .mw-id-priv-linha span{ font-size:13.5px; color:var(--id-txt,#e9eefb); }
+html body #app .mw-id-priv-linha small{ display:block; font-size:12px; color:var(--id-txt-3,#7b88a6); margin-top:2px; }
+html body #app .mw-id-privacidade[data-desligado="1"]{ opacity:.45; pointer-events:none; }
+
+/* Prévia: mostra exatamente o que sairia do aparelho se o perfil fosse
+   compartilhado. Enquanto não existe endereço público de verdade, ela
+   é o produto — não há link falso pra clicar. */
+html body #app .mw-id-previa{
+  margin-top:14px; padding:18px; border-radius:var(--id-r-card,20px);
+  border:1px dashed color-mix(in srgb,var(--id-ac,#5b6cff) 40%,transparent);
+  background:var(--id-sup,rgba(14,21,38,.75));
+}
+html body #app .mw-id-previa-topo{ display:flex; align-items:center; gap:13px; }
+html body #app .mw-id-previa-foto{
+  width:52px; height:52px; border-radius:50%; flex:0 0 52px;
+  display:grid; place-items:center; overflow:hidden;
+  background:var(--id-ac-grad,linear-gradient(135deg,#4f5bff,#8b5cf6));
+  color:#fff; font-weight:800; font-size:17px;
+}
+html body #app .mw-id-previa-foto img{ width:100%; height:100%; object-fit:cover; }
+html body #app .mw-id-previa-nome{ font-size:16px; font-weight:750; color:var(--id-txt,#e9eefb); }
+html body #app .mw-id-previa-user{ font-size:13px; color:var(--id-txt-3,#7b88a6); }
+html body #app .mw-id-previa-bio{ margin:12px 0 0; font-size:13.5px; line-height:1.55; color:var(--id-txt-2,#a6b2ce); white-space:pre-wrap; }
+html body #app .mw-id-previa-vazio{ margin:12px 0 0; font-size:13px; color:var(--id-txt-3,#7b88a6); font-style:italic; }
+html body #app .mw-id-previa .mw-id-chip button{ display:none; }
+html body #app .mw-id-previa-links{ display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+html body #app .mw-id-previa-links a{
+  display:inline-flex; align-items:center; gap:7px;
+  padding:6px 12px; border-radius:999px; text-decoration:none;
+  border:1px solid var(--id-borda,rgba(140,165,220,.13));
+  background:var(--id-sup-2,rgba(19,28,49,.7));
+  color:var(--id-txt,#e9eefb); font-size:12.5px; font-weight:650;
+}
+html body #app .mw-id-previa-links a:hover{ border-color:var(--id-ac,#5b6cff); }
+html body #app .mw-id-previa-links svg{ width:14px; height:14px; fill:currentColor; }
+html body #app .mw-id-previa-dados{ display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+
+/* Aviso honesto: o perfil ainda não tem endereço público. */
+html body #app .mw-id-embreve{
+  display:flex; gap:11px; align-items:flex-start;
+  margin-top:14px; padding:13px 15px; border-radius:var(--id-r-linha,14px);
+  border:1px solid var(--id-alerta,rgba(255,196,90,.28));
+  background:color-mix(in srgb,var(--id-alerta,#ffc45a) 9%,transparent);
+}
+html body #app .mw-id-embreve strong{ display:block; font-size:13px; color:var(--id-txt,#e9eefb); margin-bottom:3px; }
+html body #app .mw-id-embreve p{ margin:0; font-size:12.5px; line-height:1.5; color:var(--id-txt-2,#a6b2ce); }
+html body #app .mw-id-embreve-selo{
+  flex:0 0 auto; padding:3px 9px; border-radius:999px;
+  background:var(--id-alerta,rgba(255,196,90,.28)); color:#3b2a05;
+  font-size:11px; font-weight:750; letter-spacing:.02em;
+}
+
+html body.light #app .mw-id-arroba{ background:#eef3fc; border-color:rgba(20,40,90,.12); color:#5f6983; }
+html body.light #app .mw-id-link,
+html body.light #app .mw-id-previa{ background:#f6f9ff; border-color:rgba(20,40,90,.12); }
+html body.light #app .mw-id-link-ico{ background:#e7eefb; color:#4d5875; }
+html body.light #app .mw-id-link-corpo input{ background:#fff; border-color:rgba(20,40,90,.14); color:#101a30; }
+html body.light #app .mw-id-switch i{ background:#dee7f6; border-color:rgba(20,40,90,.12); }
+html body.light #app .mw-id-switch i::after{ background:#8b96ad; }
+html body.light #app .mw-id-priv-linha{ border-bottom-color:rgba(20,40,90,.10); }
+html body.light #app .mw-id-embreve-selo{ background:#ffe0a3; }
+
+@media (max-width:640px){
+  html body #app .mw-id-link{ grid-template-columns:30px minmax(0,1fr); grid-template-areas:'ico corpo' 'sw sw'; row-gap:10px; }
+  html body #app .mw-id-link-ico{ grid-area:ico; width:30px; height:30px; }
+  html body #app .mw-id-link-corpo{ grid-area:corpo; }
+  html body #app .mw-id-switch{ grid-area:sw; justify-self:flex-start; }
+}
+</style>
+
+<script id="mw-perfil-publico-js">
+(function(){
+  'use strict';
+  /* Identidade pública do perfil: @usuário, bio, tecnologias, links
+     sociais e o controle de privacidade campo a campo.
+
+     Uma decisão importante primeiro: NÃO existe endereço público de
+     verdade ainda — não há rota, servidor nem página para hospedar um
+     perfil compartilhado. Fingir que existe seria exatamente o que o
+     pedido proíbe. Então o que se entrega aqui é real: os dados são
+     guardados, as escolhas de visibilidade valem, e a prévia mostra
+     exatamente o recorte que sairia daqui. O que ainda não existe está
+     marcado como tal, uma vez só, sem link morto pra clicar. */
+
+  var REDES = [
+    { id:'instagram', nome:'Instagram', dica:'instagram.com/seuusuario',
+      caminho:'M12 2.2c-2.7 0-3 .01-4.05.06-1.06.05-1.79.22-2.42.46a4.9 4.9 0 0 0-1.77 1.15A4.9 4.9 0 0 0 2.6 5.64c-.24.63-.4 1.35-.46 2.41C2.1 9.1 2.08 9.4 2.08 12.1s.01 3 .06 4.05c.05 1.06.22 1.78.46 2.41a4.9 4.9 0 0 0 1.16 1.77 4.9 4.9 0 0 0 1.77 1.15c.63.25 1.36.41 2.42.46 1.06.05 1.4.06 4.05.06s3-.01 4.05-.06c1.06-.05 1.79-.21 2.42-.46a5.1 5.1 0 0 0 2.92-2.92c.24-.63.41-1.35.46-2.41.05-1.06.06-1.4.06-4.05s-.01-3-.06-4.05c-.05-1.06-.22-1.78-.46-2.41a4.9 4.9 0 0 0-1.16-1.77 4.9 4.9 0 0 0-1.76-1.15c-.63-.24-1.36-.41-2.42-.46C15.03 2.21 14.7 2.2 12 2.2zm0 1.8c2.6 0 2.92.01 3.95.06.95.04 1.47.2 1.81.34.46.17.78.38 1.12.72.34.34.55.66.73 1.12.13.34.29.86.33 1.81.05 1.03.06 1.34.06 3.95s-.01 2.92-.06 3.95c-.04.95-.2 1.47-.33 1.81-.18.46-.39.78-.73 1.12-.34.34-.66.55-1.12.72-.34.14-.86.3-1.81.34-1.03.05-1.34.06-3.95.06s-2.92-.01-3.95-.06c-.95-.04-1.47-.2-1.81-.34a3.02 3.02 0 0 1-1.12-.72 3.02 3.02 0 0 1-.73-1.12c-.13-.34-.29-.86-.33-1.81-.05-1.03-.06-1.34-.06-3.95s.01-2.92.06-3.95c.04-.95.2-1.47.33-1.81.18-.46.39-.78.73-1.12.34-.34.66-.55 1.12-.72.34-.14.86-.3 1.81-.34C9.08 4.01 9.4 4 12 4z M12 7.06a5.04 5.04 0 1 0 0 10.08 5.04 5.04 0 0 0 0-10.08zm0 8.31a3.27 3.27 0 1 1 0-6.54 3.27 3.27 0 0 1 0 6.54z M18.44 6.86a1.18 1.18 0 1 1-2.36 0 1.18 1.18 0 0 1 2.36 0z' },
+    { id:'github', nome:'GitHub', dica:'github.com/seuusuario',
+      caminho:'M12 2.2a9.8 9.8 0 0 0-3.1 19.1c.49.09.67-.21.67-.47l-.01-1.66c-2.72.59-3.3-1.31-3.3-1.31-.45-1.13-1.09-1.44-1.09-1.44-.89-.61.07-.6.07-.6.98.07 1.5 1.01 1.5 1.01.88 1.5 2.3 1.07 2.86.82.09-.64.34-1.07.62-1.32-2.17-.25-4.45-1.09-4.45-4.83 0-1.07.38-1.94 1-2.62-.1-.25-.44-1.24.1-2.58 0 0 .82-.26 2.7 1a9.3 9.3 0 0 1 4.9 0c1.87-1.26 2.69-1 2.69-1 .54 1.34.2 2.33.1 2.58.63.68 1 1.55 1 2.62 0 3.75-2.29 4.58-4.47 4.82.35.3.67.9.67 1.82l-.01 2.7c0 .26.18.57.68.47A9.8 9.8 0 0 0 12 2.2z' },
+    { id:'linkedin', nome:'LinkedIn', dica:'linkedin.com/in/seuusuario',
+      caminho:'M4.6 3.2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM2.9 8.9h3.4v11.9H2.9zM10 8.9h3.25v1.63h.05c.45-.86 1.56-1.76 3.21-1.76 3.43 0 4.07 2.26 4.07 5.2v6.83h-3.4v-6.06c0-1.44-.03-3.3-2.01-3.3-2.01 0-2.32 1.57-2.32 3.19v6.17H10z' },
+    { id:'x', nome:'X', dica:'x.com/seuusuario',
+      caminho:'M17.9 3.2h2.9l-6.35 7.26 7.47 9.88h-5.85l-4.58-6-5.24 6H3.35l6.79-7.77L3 3.2h6l4.14 5.47zm-1.02 15.4h1.6L7.86 4.84H6.14z' },
+    { id:'site', nome:'Site', dica:'seusite.com',
+      caminho:'M12 2.2a9.8 9.8 0 1 0 0 19.6 9.8 9.8 0 0 0 0-19.6zm6.9 6.9h-2.87a15.3 15.3 0 0 0-1.35-4.24A8.05 8.05 0 0 1 18.9 9.1zM12 4.1c.72.99 1.35 2.66 1.7 5h-3.4c.35-2.34.98-4.01 1.7-5zM4.15 13.9a8.1 8.1 0 0 1 0-3.8h3.28a19 19 0 0 0 0 3.8zm.76 1.8h2.87c.3 1.6.75 3.04 1.35 4.24a8.05 8.05 0 0 1-4.22-4.24zm2.87-7.4H4.91a8.05 8.05 0 0 1 4.22-4.24 15.3 15.3 0 0 0-1.35 4.24zM12 19.9c-.72-.99-1.35-2.66-1.7-5h3.4c-.35 2.34-.98 4.01-1.7 5zm2.02-6.8H9.98a17 17 0 0 1 0-3.8h4.04a17 17 0 0 1 0 3.8zm.86 6.34c.6-1.2 1.05-2.64 1.35-4.24h2.87a8.05 8.05 0 0 1-4.22 4.24zm1.69-6.04a19 19 0 0 0 0-3.8h3.28a8.1 8.1 0 0 1 0 3.8z' }
+  ];
+
+  /* Campos cuja exibição a pessoa controla um a um. "curso",
+     "instituição" e "semestre" moram em college, não em profile — a
+     prévia lê dos dois, mas a decisão de mostrar é sempre daqui. */
+  var CAMPOS = [
+    ['bio',        'Bio',          'O texto que você escreveu sobre si.'],
+    ['skills',     'Tecnologias',  'A lista de tecnologias e áreas do seu perfil.'],
+    ['course',     'Curso',        'O curso registrado em Faculdade.'],
+    ['institution','Instituição',  'A instituição registrada em Faculdade.'],
+    ['semester',   'Semestre',     'Em que semestre você está.'],
+    ['email',      'E-mail',       'Fica oculto por padrão: é um dado de contato direto.']
+  ];
+
+  var LIMITE_BIO = 200;
+
+  function esc(v){ return String(v == null ? '' : v).replace(/[&<>'"]/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c];
+  }); }
+
+  function lerDados(){
+    var d = window.data;
+    if (!d || typeof d !== 'object') { try { d = JSON.parse(localStorage.getItem('mateusWorkspaceV4') || '{}'); } catch (e) { d = {}; } }
+    return d;
+  }
+  function perfil(){
+    var d = lerDados();
+    d.profile = d.profile || {};
+    if (!Array.isArray(d.profile.skills)) d.profile.skills = [];
+    if (!Array.isArray(d.profile.links)) d.profile.links = [];
+    if (!d.profile.visibility || typeof d.profile.visibility !== 'object') d.profile.visibility = {};
+    return d.profile;
+  }
+  function grava(){
+    /* save() é o caminho oficial: grava no localStorage, espelha na
+       nuvem quando há conta e redesenha. Só quando ele não existe (algum
+       script ainda não carregou) é que se escreve direto. */
+    if (typeof window.save === 'function') { window.save(); return; }
+    try { localStorage.setItem('mateusWorkspaceV4', JSON.stringify(lerDados())); } catch (e) {}
+    redesenhaPrevia();
+  }
+
+  /* @usuário: minúsculas, números, ponto e sublinhado. A regra é
+     explicada no campo em vez de o valor ser silenciosamente corrigido
+     nas costas de quem digita. */
+  function normalizaUsuario(v){
+    return String(v || '').trim().toLowerCase().replace(/^@+/, '').replace(/[^a-z0-9._]/g, '');
+  }
+  function validaUsuario(v){
+    if (!v) return { estado:'', texto:'Opcional. Serve para te identificar quando o perfil for compartilhável.' };
+    if (v.length < 3) return { estado:'erro', texto:'Precisa de pelo menos 3 caracteres.' };
+    if (v.length > 24) return { estado:'erro', texto:'No máximo 24 caracteres.' };
+    if (/^[._]|[._]$/.test(v)) return { estado:'erro', texto:'Não pode começar nem terminar com ponto ou sublinhado.' };
+    return { estado:'ok', texto:'Disponível no seu aparelho. A checagem de nomes repetidos vem junto do perfil público.' };
+  }
+
+  function iconeSvg(rede){
+    return '<svg viewBox="0 0 24 24" aria-hidden="true">' +
+      rede.caminho.split(' M').map(function(pedaco, i){
+        return '<path fill-rule="evenodd" d="' + (i ? 'M' + pedaco : pedaco) + '"/>';
+      }).join('') + '</svg>';
+  }
+
+  function linkDe(id){
+    var p = perfil();
+    var achado = null;
+    p.links.forEach(function(l){ if (l && l.id === id) achado = l; });
+    if (!achado) { achado = { id:id, url:'', visible:true }; p.links.push(achado); }
+    return achado;
+  }
+
+  /* Endereço completo a partir do que a pessoa digitou: quem escreve
+     "github.com/fulano" espera que o link funcione, e um href sem
+     protocolo é tratado pelo navegador como caminho relativo. */
+  function urlCompleta(v){
+    var t = String(v || '').trim();
+    if (!t) return '';
+    if (/^https?:\/\//i.test(t)) return t;
+    return 'https://' + t.replace(/^\/+/, '');
+  }
+
+  // ---------------------------------------------------------------
+  // Marcação
+  // ---------------------------------------------------------------
+  function monta(){
+    var view = document.getElementById('view-profile');
+    if (!view || view.querySelector('#mwIdBloco')) return;
+    var cartao = view.querySelector('.card.section');
+    if (!cartao) return;
+
+    var caixa = document.createElement('div');
+    caixa.id = 'mwIdBloco';
+
+    caixa.innerHTML =
+      '<div class="settings-group mw-id-bloco">' +
+        '<h4>Como você se apresenta</h4>' +
+        '<p>Um apelido curto, um texto sobre você e as tecnologias com que trabalha. Nada aqui sai do seu aparelho sozinho.</p>' +
+        '<div class="profile-form">' +
+          '<div class="form-field"><label for="mwIdUsuario">Nome de usuário</label>' +
+            '<div class="mw-id-usuario"><span class="mw-id-arroba" aria-hidden="true">@</span>' +
+            '<input id="mwIdUsuario" type="text" inputmode="latin" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="seuusuario" maxlength="24"></div>' +
+            '<p class="mw-id-dica" id="mwIdUsuarioDica"></p>' +
+          '</div>' +
+          '<div class="form-field full"><label for="mwIdBio">Bio <span class="mw-id-contador" id="mwIdBioContador">0/' + LIMITE_BIO + '</span></label>' +
+            '<textarea id="mwIdBio" rows="3" maxlength="' + LIMITE_BIO + '" placeholder="Em duas linhas: o que você estuda e o que está construindo."></textarea>' +
+          '</div>' +
+          '<div class="form-field full"><label for="mwIdSkill">Tecnologias e áreas</label>' +
+            '<input id="mwIdSkill" type="text" placeholder="Digite e pressione Enter (ex.: Python, Anatomia, UI Design)">' +
+            '<div class="mw-id-chips" id="mwIdChips"></div>' +
+            '<p class="mw-id-chips-vazio" id="mwIdChipsVazio">Nenhuma adicionada ainda.</p>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="settings-group mw-id-bloco">' +
+        '<h4>Links</h4>' +
+        '<p>Cole o endereço do seu perfil em cada lugar. O interruptor decide se ele aparece — deixar em branco também esconde.</p>' +
+        '<div class="mw-id-links" id="mwIdLinks"></div>' +
+      '</div>' +
+
+      '<div class="settings-group mw-id-bloco">' +
+        '<h4>Perfil público</h4>' +
+        '<p>Com o perfil privado, nada é compartilhável. Com ele público, só o que estiver marcado abaixo faz parte do que sairia daqui.</p>' +
+        '<div class="mw-id-priv-linha" style="border-bottom:0;padding-top:4px">' +
+          '<span>Tornar o perfil público<small id="mwIdPublicoEstado">Privado. Ninguém além de você vê estes dados.</small></span>' +
+          '<label class="mw-id-switch"><input type="checkbox" id="mwIdPublico" aria-label="Tornar o perfil público"><i></i></label>' +
+        '</div>' +
+        '<div class="mw-id-privacidade" id="mwIdPrivacidade" data-desligado="1"></div>' +
+        '<div class="mw-id-embreve">' +
+          '<span class="mw-id-embreve-selo">Em breve</span>' +
+          '<div><strong>O endereço público ainda não existe</strong>' +
+          '<p>Não há link para compartilhar porque a página pública ainda não foi construída — e um botão que não leva a lugar nenhum seria pior do que a ausência dele. Suas escolhas ficam guardadas e passam a valer no dia em que o endereço existir.</p></div>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="settings-group mw-id-bloco">' +
+        '<h4>Prévia</h4>' +
+        '<p>Exatamente o que sairia daqui com as escolhas acima. Se um campo não aparece na prévia, ele não é compartilhado.</p>' +
+        '<div class="mw-id-previa" id="mwIdPrevia"></div>' +
+      '</div>';
+
+    cartao.appendChild(caixa);
+    liga();
+    preenche();
+  }
+
+  // ---------------------------------------------------------------
+  // Ligações
+  // ---------------------------------------------------------------
+  function liga(){
+    var usuario = document.getElementById('mwIdUsuario');
+    var dica = document.getElementById('mwIdUsuarioDica');
+    usuario.addEventListener('input', function(){
+      var limpo = normalizaUsuario(usuario.value);
+      if (usuario.value !== limpo) {
+        var pos = usuario.selectionStart;
+        usuario.value = limpo;
+        try { usuario.setSelectionRange(pos - 1, pos - 1); } catch (e) {}
+      }
+      var r = validaUsuario(limpo);
+      dica.textContent = r.texto;
+      dica.setAttribute('data-estado', r.estado);
+      perfil().username = limpo;
+      redesenhaPrevia();
+    });
+    usuario.addEventListener('change', grava);
+
+    var bio = document.getElementById('mwIdBio');
+    var contador = document.getElementById('mwIdBioContador');
+    bio.addEventListener('input', function(){
+      perfil().bio = bio.value;
+      contador.textContent = bio.value.length + '/' + LIMITE_BIO;
+      contador.setAttribute('data-estado', bio.value.length >= LIMITE_BIO ? 'limite' : '');
+      redesenhaPrevia();
+    });
+    bio.addEventListener('change', grava);
+
+    var skill = document.getElementById('mwIdSkill');
+    skill.addEventListener('keydown', function(ev){
+      if (ev.key !== 'Enter' && ev.key !== ',') return;
+      ev.preventDefault();
+      var valor = skill.value.trim().replace(/,+$/, '');
+      if (!valor) return;
+      var p = perfil();
+      var jaTem = p.skills.some(function(s){ return String(s).toLowerCase() === valor.toLowerCase(); });
+      if (jaTem) { skill.value = ''; return; }
+      if (p.skills.length >= 20) { if (window.toast) window.toast('Máximo de 20 tecnologias.'); return; }
+      p.skills.push(valor);
+      skill.value = '';
+      desenhaChips();
+      grava();
+    });
+
+    document.getElementById('mwIdChips').addEventListener('click', function(ev){
+      var botao = ev.target.closest('button[data-remover]');
+      if (!botao) return;
+      var p = perfil();
+      p.skills.splice(Number(botao.getAttribute('data-remover')), 1);
+      desenhaChips();
+      grava();
+    });
+
+    var publico = document.getElementById('mwIdPublico');
+    publico.addEventListener('change', function(){
+      perfil().public = publico.checked;
+      aplicaEstadoPublico();
+      grava();
+    });
+  }
+
+  function aplicaEstadoPublico(){
+    var p = perfil();
+    var estado = document.getElementById('mwIdPublicoEstado');
+    var grade = document.getElementById('mwIdPrivacidade');
+    if (estado) estado.textContent = p.public
+      ? 'Público. Só os campos marcados abaixo fariam parte.'
+      : 'Privado. Ninguém além de você vê estes dados.';
+    if (grade) grade.setAttribute('data-desligado', p.public ? '0' : '1');
+    redesenhaPrevia();
+  }
+
+  function desenhaChips(){
+    var caixa = document.getElementById('mwIdChips');
+    var vazio = document.getElementById('mwIdChipsVazio');
+    if (!caixa) return;
+    var lista = perfil().skills;
+    caixa.innerHTML = lista.map(function(s, i){
+      return '<span class="mw-id-chip">' + esc(s) +
+        '<button type="button" data-remover="' + i + '" aria-label="Remover ' + esc(s) + '">×</button></span>';
+    }).join('');
+    if (vazio) vazio.hidden = lista.length > 0;
+    redesenhaPrevia();
+  }
+
+  function desenhaLinks(){
+    var caixa = document.getElementById('mwIdLinks');
+    if (!caixa || caixa.dataset.pronto) { atualizaValoresLinks(); return; }
+    caixa.dataset.pronto = '1';
+    caixa.innerHTML = REDES.map(function(r){
+      return '<div class="mw-id-link" data-rede="' + r.id + '">' +
+        '<span class="mw-id-link-ico" aria-hidden="true">' + iconeSvg(r) + '</span>' +
+        '<div class="mw-id-link-corpo"><strong>' + esc(r.nome) + '</strong>' +
+        '<input type="url" inputmode="url" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="' + esc(r.dica) + '" aria-label="Endereço do seu ' + esc(r.nome) + '"></div>' +
+        '<label class="mw-id-switch"><input type="checkbox" aria-label="Exibir ' + esc(r.nome) + ' no perfil"><i></i></label>' +
+        '</div>';
+    }).join('');
+
+    caixa.addEventListener('input', function(ev){
+      var linha = ev.target.closest('.mw-id-link');
+      if (!linha || ev.target.type !== 'url') return;
+      linkDe(linha.getAttribute('data-rede')).url = ev.target.value.trim();
+      redesenhaPrevia();
+    });
+    caixa.addEventListener('change', function(ev){
+      var linha = ev.target.closest('.mw-id-link');
+      if (!linha) return;
+      if (ev.target.type === 'checkbox') linkDe(linha.getAttribute('data-rede')).visible = ev.target.checked;
+      grava();
+    });
+    atualizaValoresLinks();
+  }
+
+  function atualizaValoresLinks(){
+    document.querySelectorAll('#mwIdLinks .mw-id-link').forEach(function(linha){
+      var l = linkDe(linha.getAttribute('data-rede'));
+      var campo = linha.querySelector('input[type="url"]');
+      var chave = linha.querySelector('input[type="checkbox"]');
+      if (campo && document.activeElement !== campo) campo.value = l.url || '';
+      if (chave) chave.checked = l.visible !== false;
+    });
+  }
+
+  function desenhaPrivacidade(){
+    var caixa = document.getElementById('mwIdPrivacidade');
+    if (!caixa) return;
+    var vis = perfil().visibility;
+    if (!caixa.dataset.pronto) {
+      caixa.dataset.pronto = '1';
+      caixa.innerHTML = CAMPOS.map(function(c){
+        return '<div class="mw-id-priv-linha">' +
+          '<span>' + esc(c[1]) + '<small>' + esc(c[2]) + '</small></span>' +
+          '<label class="mw-id-switch"><input type="checkbox" data-campo="' + c[0] + '" aria-label="Exibir ' + esc(c[1]) + ' no perfil público"><i></i></label>' +
+          '</div>';
+      }).join('');
+      caixa.addEventListener('change', function(ev){
+        var alvo = ev.target.closest('input[data-campo]');
+        if (!alvo) return;
+        perfil().visibility[alvo.getAttribute('data-campo')] = alvo.checked;
+        grava();
+      });
+    }
+    caixa.querySelectorAll('input[data-campo]').forEach(function(chave){
+      var campo = chave.getAttribute('data-campo');
+      /* Padrão deliberado: e-mail nasce OCULTO. Os demais nascem
+         visíveis porque são o que a pessoa acabou de escrever para se
+         apresentar; um endereço de contato direto, não. */
+      chave.checked = campo in vis ? !!vis[campo] : campo !== 'email';
+    });
+  }
+
+  function redesenhaPrevia(){
+    var caixa = document.getElementById('mwIdPrevia');
+    if (!caixa) return;
+    var d = lerDados();
+    var p = perfil();
+    var col = d.college || {};
+    var vis = p.visibility;
+    var mostra = function(campo){
+      if (!p.public) return false;
+      return campo in vis ? !!vis[campo] : campo !== 'email';
+    };
+
+    var nome = String(p.name || 'Mateus').trim();
+    var partes = nome.split(/\s+/).filter(Boolean);
+    var iniciais = ((partes[0] || 'M')[0] + (partes.length > 1 ? partes[partes.length - 1][0] : '')).toUpperCase();
+
+    var topo = '<div class="mw-id-previa-topo">' +
+      '<div class="mw-id-previa-foto">' + (p.photo ? '<img src="' + esc(p.photo) + '" alt="">' : esc(iniciais)) + '</div>' +
+      '<div><div class="mw-id-previa-nome">' + esc(nome) + '</div>' +
+      '<div class="mw-id-previa-user">' + (p.username ? '@' + esc(p.username) : 'sem nome de usuário') + '</div></div></div>';
+
+    if (!p.public) {
+      caixa.innerHTML = topo + '<p class="mw-id-previa-vazio">Perfil privado: nada além do nome e da foto sairia daqui.</p>';
+      return;
+    }
+
+    var corpo = '';
+    var bio = String(p.bio || '').trim();
+    if (mostra('bio') && bio) corpo += '<p class="mw-id-previa-bio">' + esc(bio) + '</p>';
+
+    if (mostra('skills') && p.skills.length) {
+      corpo += '<div class="mw-id-chips">' + p.skills.map(function(s){
+        return '<span class="mw-id-chip">' + esc(s) + '</span>';
+      }).join('') + '</div>';
+    }
+
+    var dados = [];
+    if (mostra('course') && String(col.course || '').trim()) dados.push(['Curso', col.course]);
+    if (mostra('institution') && String(col.institution || '').trim()) dados.push(['Instituição', col.institution]);
+    if (mostra('semester') && Number(col.semester)) dados.push(['Semestre', Number(col.semester) + 'º']);
+    if (mostra('email') && String(p.email || '').trim()) dados.push(['E-mail', p.email]);
+    if (dados.length) {
+      corpo += '<div class="mw-id-previa-dados">' + dados.map(function(par){
+        return '<span class="mw-inst-selo">' + esc(par[0]) + ' <b>' + esc(par[1]) + '</b></span>';
+      }).join('') + '</div>';
+    }
+
+    var links = REDES.filter(function(r){
+      var l = linkDe(r.id);
+      return l.visible !== false && String(l.url || '').trim();
+    });
+    if (links.length) {
+      corpo += '<div class="mw-id-previa-links">' + links.map(function(r){
+        var alvo = urlCompleta(linkDe(r.id).url);
+        return '<a href="' + esc(alvo) + '" target="_blank" rel="noopener noreferrer nofollow">' +
+          iconeSvg(r) + esc(r.nome) + '</a>';
+      }).join('') + '</div>';
+    }
+
+    caixa.innerHTML = topo + (corpo || '<p class="mw-id-previa-vazio">Tudo está oculto: só o nome e a foto sairiam daqui.</p>');
+  }
+
+  function preenche(){
+    var p = perfil();
+    var usuario = document.getElementById('mwIdUsuario');
+    var dica = document.getElementById('mwIdUsuarioDica');
+    var bio = document.getElementById('mwIdBio');
+    var contador = document.getElementById('mwIdBioContador');
+    var publico = document.getElementById('mwIdPublico');
+    if (!usuario) return;
+
+    if (document.activeElement !== usuario) usuario.value = p.username || '';
+    var r = validaUsuario(usuario.value);
+    dica.textContent = r.texto;
+    dica.setAttribute('data-estado', r.estado);
+
+    if (document.activeElement !== bio) bio.value = p.bio || '';
+    contador.textContent = (bio.value || '').length + '/' + LIMITE_BIO;
+
+    publico.checked = !!p.public;
+
+    desenhaChips();
+    desenhaLinks();
+    desenhaPrivacidade();
+    aplicaEstadoPublico();
+  }
+
+  function inicia(){
+    monta();
+    if (document.getElementById('mwIdBloco')) preenche();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', inicia);
+  else inicia();
+
+  /* renderAll() termina chamando mwDashRefresh — é o único ponto que
+     avisa "os dados mudaram". A corrente precisa ser preservada: cinco
+     blocos dependem dela, e sobrescrever por cima já matou o sino de
+     notificações uma vez. */
+  var anterior = window.mwDashRefresh;
+  window.mwDashRefresh = function(dados){
+    if (typeof anterior === 'function') { try { anterior(dados); } catch (e) {} }
+    try { inicia(); } catch (e) {}
+  };
+})();
+</script>
+
+
+<style id="mw-identidade-superficies">
+/* Duas correções que valem para todas as telas de formulário (Perfil,
+   Faculdade, Configurações, Suporte), não só para os campos novos:
+
+   (1) O painel .settings-group ainda era pintado por uma camada antiga
+   de bege (#f7f5f0) no tema claro. Dentro de um cartão branco, o bege
+   lê como "seção desativada" — e ao lado dos blocos novos, que seguem
+   os tokens, a página passava a ter dois brancos diferentes.
+
+   (2) O rótulo dos campos era #9ec4ea em QUALQUER tema. Num fundo
+   escuro isso é um azul claro legível; num fundo claro dá pouco mais de
+   2:1, abaixo de qualquer critério de leitura. Aqui ele passa a sair da
+   mesma escala de texto do resto da identidade. */
+html body #app .settings-group{
+  background:var(--id-sup, rgba(14,21,38,.75)) !important;
+  border:1px solid var(--id-borda, rgba(140,165,220,.13)) !important;
+  border-radius:var(--id-r-card, 20px) !important;
+  padding:18px !important;
+}
+html body.light #app .settings-group{
+  background:#f6f9ff !important;
+  border-color:rgba(20,40,90,.12) !important;
+  color:var(--id-txt, #101a30) !important;
+}
+html body #app .settings-group h4{ color:var(--id-txt, #e9eefb) !important; font-size:13px !important; }
+html body #app .settings-group > p{ color:var(--id-txt-2, #a6b2ce) !important; font-size:12.5px !important; line-height:1.55 !important; }
+html body.light #app .settings-group h4{ color:#101a30 !important; }
+html body.light #app .settings-group > p{ color:#4d5875 !important; }
+
+html body.light #app .form-field label,
+html body.light #app .profile-form label,
+html body.light #app #view-college .college-setup label{ color:#4d5875 !important; font-weight:650 !important; }
+html body #app .form-field label,
+html body #app .profile-form label{ font-size:12px !important; }
+</style>
 
 </body>
 </html>

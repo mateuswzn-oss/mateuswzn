@@ -1,3 +1,23 @@
+/* v58 (BETA — o perfil passa a ser uma identidade, não um formulário):
+   Tinha nome, e-mail e foto. Agora tem @usuário (com regra explicada em
+   vez de correção silenciosa), bio com contador, tecnologias em chips e
+   cinco links (Instagram, GitHub, LinkedIn, X, site), cada um com o
+   próprio interruptor de exibição.
+   O controle de privacidade é campo a campo, e o e-mail nasce OCULTO:
+   é um contato direto, não uma apresentação. A prévia mostra exatamente
+   o recorte que sairia daqui — se um campo não aparece nela, ele não é
+   compartilhado.
+   O que NÃO existe está dito uma vez, sem link morto: o endereço público
+   ainda não foi construído, então não há nada para compartilhar hoje.
+   Três correções que vieram junto:
+   (1) "Salvar perfil" atribuía data.profile = {nome,email,foto} e
+   apagava em silêncio tudo o que foi listado acima.
+   (2) O chip "Usuário" mostrava "—" mesmo com o @ preenchido no campo
+   logo abaixo, na mesma tela.
+   (3) No tema claro, os painéis de configuração ainda eram pintados de
+   bege por uma camada antiga, e o rótulo dos campos era o mesmo azul
+   claro do tema escuro — pouco mais de 2:1 sobre fundo claro. Agora
+   medem 5,7 a 6,7:1. */
 /* v57 (BETA — Instituições viram uma coleção de verdade):
    "Instituição" era um campo de texto solto dentro de Faculdade. Quem
    estuda em duas — graduação numa, técnico ou pós em outra — não tinha
@@ -559,7 +579,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v57-beta';
+const CACHE_NAME = 'mw-shell-v58-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
