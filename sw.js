@@ -1,3 +1,13 @@
+/* v70 (BETA — Calendário e Foco alcançáveis no telefone):
+   As duas áreas novas existiam e funcionavam, mas no celular só se
+   chegava nelas abrindo a gaveta: a barra de baixo tem cinco lugares e
+   já estava cheia, e a lista completa mora na barra lateral, que no
+   telefone fica escondida. Área que só se alcança por um menu escondido
+   é área que não existe para quem usa o app no celular — foi por isso
+   que "não estou vendo o calendário" era uma leitura correta da tela.
+   Agora as duas estão no acesso rápido do painel inicial, que é a
+   primeira coisa que aparece ao abrir. A barra de baixo continua com
+   cinco lugares: ela é para o que se usa o tempo todo, não um índice. */
 /* v69 (BETA — a prévia deixa de ser servida do cache):
    "Publiquei e não atualizou" tinha uma causa concreta. Este worker é
    registrado pela página da raiz e o escopo dele cobre o site inteiro,
@@ -771,7 +781,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v69-beta';
+const CACHE_NAME = 'mw-shell-v70-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
