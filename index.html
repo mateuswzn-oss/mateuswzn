@@ -4068,6 +4068,17 @@ body.light .mw-faceid-gate-card p{color:#526988}
       </section>
     </section>
     <section class="view" id="view-profile"><section class="card section"><div class="section-head"><h3>Perfil</h3><span>Como você aparece no Workspace</span></div>
+      <!-- Cabeçalho de identidade. A página abria direto numa fileira de
+           chips e o avatar ficava enterrado no meio do formulário, três
+           blocos abaixo — numa página que é justamente sobre "quem é
+           você", a pessoa aparecia por último. -->
+      <div class="mw-perfil-cabecalho">
+        <div class="mw-perfil-foto" id="mwPerfilFoto" aria-hidden="true"><span id="mwPerfilIniciais">M</span></div>
+        <div class="mw-perfil-id">
+          <strong id="mwPerfilNome">Mateus</strong>
+          <span id="mwPerfilLinha"></span>
+        </div>
+      </div>
       <div class="mw-perfil-resumo">
         <div class="mw-perfil-chip"><span>Usuário</span><strong id="mwPerfilResumoUsuario">—</strong><a href="javascript:void(0)" data-ir-config>Alterar em Configurações</a></div>
         <div class="mw-perfil-chip"><span>E-mail</span><strong id="mwPerfilResumoEmail">—</strong><a href="javascript:void(0)" data-ir-config>Alterar em Configurações</a></div>
@@ -22120,9 +22131,15 @@ body.light .mw-perfil-chip a{color:#1d4ed8}
     var raw = {};
     try { raw = JSON.parse(localStorage.getItem('mateusWorkspaceV4') || '{}'); } catch (e) {}
     var college = raw.college || {};
+    /* O e-mail vinha SÓ da conta do servidor. Quem usa o app sem conta
+       na nuvem — ou está sem rede — via um "—" no chip enquanto o
+       formulário logo abaixo, na mesma tela, mostrava o e-mail
+       preenchido. Duas respostas diferentes para a mesma pergunta, a
+       20px de distância. O perfil local é o recuo. */
+    var perfil = raw.profile || {};
     var mapa = {
       mwPerfilResumoUsuario: (conta && conta.username) || '—',
-      mwPerfilResumoEmail: (conta && conta.email) || '—',
+      mwPerfilResumoEmail: (conta && conta.email) || (perfil.email || '').trim() || '—',
       mwPerfilResumoCurso: (college.course || '').trim() || 'Seu curso',
       mwPerfilResumoInstituicao: (college.institution || '').trim() || '—',
       mwPerfilResumoSemestre: (Number(college.semester) || 1) + 'º',
@@ -23364,6 +23381,153 @@ html body.light #mateusAiTitle .mw-id-beta{
   /* Rolar fecha em vez de reancorar: a barra do topo comprime durante o
      scroll, então perseguir a posição faria o painel tremer. */
   window.addEventListener('scroll', function(){ if (!painel.hidden) fecha(); }, true);
+})();
+</script>
+
+<style id="mw-perfil-polido">
+/* Cabeçalho de identidade: foto grande, nome e a linha do curso. É o
+   que a página deveria dizer primeiro. */
+.mw-perfil-cabecalho{
+  display: flex; align-items: center; gap: 16px;
+  padding: 4px 2px 18px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--id-borda, rgba(140,165,220,.13));
+}
+.mw-perfil-foto{
+  width: 68px; height: 68px; flex: none;
+  border-radius: 20px;
+  display: grid; place-items: center;
+  background: var(--id-ac-grad, linear-gradient(135deg,#4f5bff,#8b5cf6));
+  color: #fff; font-size: 25px; font-weight: 700; letter-spacing: -.02em;
+  overflow: hidden;
+}
+.mw-perfil-foto img{ width: 100%; height: 100%; object-fit: cover; display: block; }
+.mw-perfil-id strong{
+  display: block; font-size: 20px; font-weight: 700;
+  color: var(--id-txt, #e9eefb); letter-spacing: -.02em;
+}
+.mw-perfil-id span{
+  display: block; margin-top: 4px; font-size: 12.5px;
+  color: var(--id-txt-3, #7b88a6);
+}
+
+/* Os chips cortavam o valor ("Engenharia de Sof...", "Universidade
+   Fede...") porque eram cinco colunas de largura fixa. auto-fit com
+   mínimo maior deixa quebrar em duas linhas em vez de truncar — o
+   valor importa mais que a fileira caber numa linha só. */
+html body #app .mw-perfil-resumo{
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)) !important;
+  gap: 10px !important;
+}
+html body #app .mw-perfil-chip{
+  background: var(--id-sup-2) !important;
+  border: 1px solid var(--id-borda) !important;
+  border-radius: var(--id-r-linha, 14px) !important;
+  padding: 12px 14px !important;
+}
+html body #app .mw-perfil-chip span{
+  font-size: 10px !important; font-weight: 600 !important;
+  letter-spacing: .09em !important; text-transform: uppercase;
+  color: var(--id-txt-3) !important;
+}
+html body #app .mw-perfil-chip strong{
+  display: block; margin: 5px 0 6px;
+  font-size: 14px !important; font-weight: 600 !important;
+  color: var(--id-txt) !important;
+  white-space: normal !important; overflow: visible !important; text-overflow: clip !important;
+  overflow-wrap: anywhere;
+}
+html body #app .mw-perfil-chip a{
+  font-size: 11.5px !important;
+  color: var(--id-ac-txt) !important;
+  text-decoration: none;
+}
+html body #app .mw-perfil-chip a:hover{ text-decoration: underline; }
+
+/* O cartão da foto ocupava metade da largura e deixava um vazio à
+   direita; o formulário acima é de duas colunas e ele não acompanhava. */
+html body #app #view-profile .profile-form{ align-items: start; }
+html body #app #view-profile .profile-photo-card,
+html body #app #view-profile #profilePhotoCard{
+  width: 100% !important;
+  max-width: none !important;
+  box-sizing: border-box;
+}
+html body #app #view-profile .save-btn{
+  background: var(--id-ac-grad) !important;
+  color: #fff !important;
+  border: 0 !important;
+}
+@media (max-width: 560px){
+  .mw-perfil-cabecalho{ gap: 13px; }
+  .mw-perfil-foto{ width: 56px; height: 56px; border-radius: 17px; font-size: 21px; }
+  .mw-perfil-id strong{ font-size: 17px; }
+}
+</style>
+
+<script id="mw-perfil-cabecalho-js">
+(function(){
+  'use strict';
+  /* Preenche o cabeçalho de identidade. Lê das MESMAS fontes que o
+     resto da tela já usa (data.profile e data.college), então não há
+     um segundo lugar guardando nome ou foto — se divergisse do
+     formulário logo abaixo, seria pior que não existir. */
+  function pinta(){
+    var d = window.data || {};
+    var perfil = d.profile || {};
+    var col = d.college || {};
+    var nome = String(perfil.name || '').trim() || 'Seu nome';
+    var alvoNome = document.getElementById('mwPerfilNome');
+    var alvoLinha = document.getElementById('mwPerfilLinha');
+    var foto = document.getElementById('mwPerfilFoto');
+    var iniciais = document.getElementById('mwPerfilIniciais');
+    if (alvoNome) alvoNome.textContent = nome;
+    if (alvoLinha) {
+      var partes = [];
+      if (col.course) partes.push(col.course);
+      if (col.institution) partes.push(col.institution);
+      if (col.semester) partes.push(col.semester + 'º semestre');
+      alvoLinha.textContent = partes.length ? partes.join(' • ') : 'Complete seus dados em Faculdade';
+    }
+    if (foto) {
+      var url = String(perfil.photo || '').trim();
+      if (url) {
+        foto.innerHTML = '<img alt="" src="' + url.replace(/"/g, '&quot;') + '">';
+      } else {
+        /* Iniciais a partir do nome real: primeira letra do primeiro e
+           do último nome, como qualquer app faz. Nada de "MW" fixo, que
+           é a marca e não a pessoa. */
+        var ps = nome.split(/\s+/).filter(Boolean);
+        var letras = ps.length > 1 ? (ps[0][0] + ps[ps.length - 1][0]) : (ps[0] || 'S')[0];
+        foto.innerHTML = '<span id="mwPerfilIniciais">' + letras.toUpperCase() + '</span>';
+        /* O avatar pequeno do seletor de foto mostrava só a primeira
+           letra: "M" no cartão e "MA" no topo, duas iniciais diferentes
+           para a mesma pessoa na mesma tela. Mesmo cálculo nos dois. */
+        var pequeno = document.getElementById('profileAvatarInitials');
+        if (pequeno && !pequeno.querySelector('img')) pequeno.textContent = letras.toUpperCase();
+      }
+    }
+  }
+
+  var anterior = window.mwDashRefresh;
+  window.mwDashRefresh = function(d){
+    if (typeof anterior === 'function') { try { anterior(d); } catch (e) {} }
+    try { pinta(); } catch (e) {}
+  };
+
+  /* Também repinta ao ENTRAR na tela: o cabeçalho depende de dados que
+     podem ter mudado noutra área (Faculdade, Configurações) sem passar
+     por um save() do painel. */
+  var app = document.getElementById('app');
+  if (app) {
+    new MutationObserver(function(){
+      var ativa = app.querySelector('.view.active');
+      if (ativa && ativa.id === 'view-profile') pinta();
+    }).observe(app, { subtree: true, attributes: true, attributeFilter: ['class'] });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', pinta);
+  else pinta();
 })();
 </script>
 

@@ -1,5 +1,21 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v56 (BETA — a página de Perfil):
+   Era a última pendência visual, e tinha quatro problemas de uma vez.
+   (1) Abria numa fileira de chips e o avatar ficava enterrado três
+   blocos abaixo, no meio do formulário: numa página sobre "quem é
+   você", a pessoa aparecia por último. Agora há um cabeçalho com foto
+   grande, nome e a linha curso • instituição • semestre.
+   (2) Os chips CORTAVAM o valor — "Engenharia de Sof...",
+   "Universidade Fede..." — porque eram cinco colunas de largura fixa.
+   Passaram a quebrar em linha nova: o valor importa mais do que caber
+   numa fileira só.
+   (3) O chip de e-mail lia SÓ da conta do servidor e mostrava "—" para
+   quem usa sem nuvem ou está sem rede, enquanto o formulário logo
+   abaixo, na mesma tela, exibia o e-mail preenchido. Duas respostas
+   diferentes a 20px de distância; agora o perfil local é o recuo.
+   (4) O avatar do seletor de foto mostrava só a primeira letra ("M")
+   enquanto o do topo mostra duas ("MA") — mesmo cálculo nos dois. */
 /* v55 (BETA — página de Segurança + o modal que não fechava):
    (1) Segurança era a única das seis páginas do pedido original que
    faltava. Escrita a partir do que o código REALMENTE faz — conferi
@@ -526,7 +542,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v55-beta';
+const CACHE_NAME = 'mw-shell-v56-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
