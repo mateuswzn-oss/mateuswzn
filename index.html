@@ -14952,6 +14952,16 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
     animate();
   }
 
+  /* O canvas guarda cores, não regras de CSS: ele é PINTADO uma vez com
+     as cores do tema vigente e nunca mais. Ao trocar para o claro, os
+     rótulos continuavam com a cor pensada para fundo escuro — pareciam
+     um erro de contraste, mas eram tinta velha. Um redesenho na troca de
+     tema resolve; observar a classe do <body> pega todos os caminhos
+     (o botão do topo, o da barra lateral e o que segue a preferência do
+     sistema) sem precisar encontrar cada um deles. */
+  new MutationObserver(function(){ try { draw(); } catch (e) {} })
+    .observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
   /* PRESERVA a cadeia. Esta linha atribuía direto, sem guardar o que já
      estava em window.mwDashRefresh — e apagava, de uma vez, tudo que
      tinha sido encadeado antes: o sino de notificações, o calendário
@@ -25152,6 +25162,611 @@ html body #app .search-wrap input{
 html body #app .search-wrap input::placeholder{ color: var(--ds-txt-3) !important; }
 </style>
 
+
+
+<style id="mw-ds-painel">
+/* =====================================================================
+   §5 DASHBOARD — grade em vez de pilha
+   =====================================================================
+   O dashboard era uma coluna: cartões de largura cheia, um embaixo do
+   outro, todos com o mesmo peso visual. Isso não é um painel, é uma
+   lista — e obriga a pessoa a ler tudo para descobrir o que importa.
+
+   A grade abaixo dá tamanhos diferentes a coisas de importância
+   diferente: o anel do semestre e a carga de estudos ocupam a faixa
+   larga porque respondem "como estou indo"; os números ocupam ladrilhos
+   pequenos porque são consulta rápida. Doze colunas no desktop, seis no
+   tablet, uma no telefone — três layouts, não um encolhido.
+   ===================================================================== */
+html body #app #mwPainel{
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0 0 16px;
+}
+html body #app #mwPainel > *{ min-width: 0; }
+html body #app .mw-p-foco{ grid-column: span 5; }
+html body #app .mw-p-carga{ grid-column: span 7; }
+
+@media (max-width: 1180px){
+  html body #app #mwPainel{ grid-template-columns: repeat(6, minmax(0,1fr)); }
+  html body #app .mw-p-foco,
+  html body #app .mw-p-carga{ grid-column: span 6; }
+}
+@media (max-width: 640px){
+  html body #app #mwPainel{ grid-template-columns: 1fr; gap: 13px; }
+  html body #app .mw-p-foco,
+  html body #app .mw-p-carga{ grid-column: 1 / -1; }
+}
+
+html body #app .mw-p-cartao{
+  padding: 20px !important;
+  display: flex; flex-direction: column;
+}
+html body #app .mw-p-topo{
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 12px; margin-bottom: 4px;
+}
+html body #app .mw-p-topo h3{
+  margin: 0; font-size: 14.5px; font-weight: 700;
+  letter-spacing: -.01em; color: var(--ds-txt);
+}
+html body #app .mw-p-topo span{ font-size: 11.5px; color: var(--ds-txt-3); }
+
+/* --- Anel do semestre ------------------------------------------------
+   Um anel em vez de uma barra porque a pergunta aqui é "quanto do todo",
+   não "onde estou na régua" — e porque o centro do anel é espaço útil
+   para o número, em vez de mais uma linha de texto. */
+html body #app .mw-anel-caixa{
+  display: flex; align-items: center; gap: 20px; margin-top: 14px;
+}
+html body #app .mw-anel{ position: relative; flex: 0 0 132px; width: 132px; height: 132px; }
+html body #app .mw-anel svg{ width: 100%; height: 100%; transform: rotate(-90deg); }
+html body #app .mw-anel-trilho{ fill: none; stroke: rgba(255,255,255,.08); stroke-width: 11; }
+html body.light #app .mw-anel-trilho{ stroke: rgba(19,38,84,.09); }
+html body #app .mw-anel-arco{
+  fill: none; stroke: url(#mwAnelGrad); stroke-width: 11; stroke-linecap: round;
+  transition: stroke-dashoffset 1.1s var(--ds-suave);
+}
+html body #app .mw-anel-centro{
+  position: absolute; inset: 0; display: grid; place-content: center; text-align: center;
+}
+html body #app .mw-anel-centro b{
+  display: block; font-size: 30px; font-weight: 750; letter-spacing: -.03em;
+  color: var(--ds-txt); font-variant-numeric: tabular-nums; line-height: 1;
+}
+html body #app .mw-anel-centro small{ display: block; font-size: 10.5px; color: var(--ds-txt-3); margin-top: 5px; }
+
+html body #app .mw-anel-legenda{ display: grid; gap: 9px; min-width: 0; flex: 1; }
+html body #app .mw-anel-linha{
+  display: grid; grid-template-columns: 8px minmax(0,1fr) auto;
+  align-items: center; gap: 9px; font-size: 12.5px;
+}
+html body #app .mw-anel-ponto{ width: 8px; height: 8px; border-radius: 50%; background: var(--ds-ac); }
+html body #app .mw-anel-linha em{
+  font-style: normal; color: var(--ds-txt-2);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+html body #app .mw-anel-linha b{ color: var(--ds-txt); font-variant-numeric: tabular-nums; font-weight: 650; }
+
+/* --- Carga de estudos ------------------------------------------------
+   Área + linha, e não barras: a pergunta é como a carga SOBE e DESCE ao
+   longo das semanas, e a forma da curva responde isso de relance. */
+html body #app .mw-carga-tela{
+  position: relative; margin-top: 14px;
+  height: 168px;
+}
+html body #app .mw-carga-tela svg{ width: 100%; height: 100%; display: block; overflow: visible; }
+html body #app .mw-carga-grade{ stroke: rgba(255,255,255,.055); stroke-width: 1; }
+html body.light #app .mw-carga-grade{ stroke: rgba(19,38,84,.075); }
+html body #app .mw-carga-area{ fill: url(#mwCargaGrad); }
+html body #app .mw-carga-linha{
+  fill: none; stroke: var(--ds-ac); stroke-width: 2.4;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+html body #app .mw-carga-ponto{
+  fill: var(--ds-chao); stroke: var(--ds-ac); stroke-width: 2.4;
+  transition: r .18s var(--ds-mola);
+}
+html body.light #app .mw-carga-ponto{ fill: #fff; }
+html body #app .mw-carga-ponto.is-ativo{ r: 6; }
+html body #app .mw-carga-rotulo{
+  fill: var(--ds-txt-3); font-size: 10.5px; font-family: inherit;
+}
+html body #app .mw-carga-alvo{ fill: transparent; cursor: pointer; }
+
+html body #app .mw-carga-dica{
+  position: absolute; pointer-events: none; z-index: 5;
+  padding: 8px 11px; border-radius: 11px;
+  background: var(--ds-vidro-1);
+  box-shadow: var(--ds-fio-forte), var(--ds-alt-2);
+  backdrop-filter: var(--ds-desfoque-2);
+  -webkit-backdrop-filter: var(--ds-desfoque-2);
+  color: var(--ds-txt); font-size: 12px; white-space: nowrap;
+  opacity: 0; transform: translate(-50%, -6px) scale(.94);
+  transition: opacity .16s var(--ds-suave), transform .18s var(--ds-mola);
+}
+html body #app .mw-carga-dica.is-vis{ opacity: 1; transform: translate(-50%, -10px) scale(1); }
+html body #app .mw-carga-dica b{ display: block; font-size: 13px; font-weight: 700; }
+html body #app .mw-carga-dica small{ color: var(--ds-txt-3); }
+
+html body #app .mw-p-vazio{
+  margin-top: 16px; padding: 26px 18px; text-align: center;
+  border-radius: var(--ds-r-2);
+  border: 1px dashed color-mix(in srgb, var(--ds-ac) 34%, transparent);
+  color: var(--ds-txt-3); font-size: 13px; line-height: 1.55;
+}
+html body #app .mw-p-vazio strong{ display: block; color: var(--ds-txt-2); margin-bottom: 4px; font-size: 13.5px; }
+
+@media (prefers-reduced-motion: reduce){
+  html body #app .mw-anel-arco{ transition: none; }
+}
+</style>
+
+<script id="mw-ds-painel-js">
+(function(){
+  'use strict';
+  /* Dois gráficos que respondem perguntas, não que enchem espaço.
+
+     "Não colocar gráficos apenas como decoração" foi um pedido
+     explícito, e a régua que usei para cada um foi: se a resposta já
+     está escrita em texto ao lado, o gráfico não precisa existir.
+
+     - O ANEL responde "quanto do semestre eu já andei", que é uma
+       fração do todo — e a legenda ao lado abre a média por disciplina,
+       que é o que a pessoa faz em seguida ("onde estou pior?").
+     - A CARGA responde "as entregas estão se acumulando?", que é uma
+       forma ao longo do tempo. Barras dariam a contagem por semana; a
+       área dá a subida e a descida, que é a pergunta real.
+
+     Os dois leem data.subjects e data.activities. Sem dados, não
+     desenham nada: mostram o que fazer para que existam. */
+
+  var SEMANAS = 8;   // 8 semanas ≈ metade de um semestre: longe o bastante
+                     // para haver forma, perto o bastante para ser ação.
+
+  function dados(){
+    var d = window.data;
+    if (!d || typeof d !== 'object') { try { d = JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}'); } catch(e){ d = {}; } }
+    return d;
+  }
+  function esc(v){ return String(v==null?'':v).replace(/[&<>'"]/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]; }); }
+
+  /* Datas em ISO viram Date local, e nunca "new Date('2026-09-05')" —
+     essa forma é lida como meia-noite UTC e, em UTC-3, cai no dia
+     anterior. Já custou um bug de "vence hoje" aparecendo um dia cedo. */
+  function deIso(iso){
+    var m = String(iso||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    return m ? new Date(+m[1], +m[2]-1, +m[3]) : null;
+  }
+  function segundaDe(d){
+    var x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    var dow = (x.getDay() + 6) % 7;          // segunda = 0
+    x.setDate(x.getDate() - dow);
+    return x;
+  }
+
+  // ---------------------------------------------------------------
+  // Marcação
+  // ---------------------------------------------------------------
+  function monta(){
+    var casa = document.getElementById('view-home');
+    if (!casa || document.getElementById('mwPainel')) return true;
+    var ancora = document.getElementById('mwAtalhos') || casa.querySelector('.grid.stats');
+    if (!ancora) return false;
+
+    var painel = document.createElement('section');
+    painel.id = 'mwPainel';
+    painel.innerHTML =
+      '<section class="card mw-p-cartao mw-p-foco">' +
+        '<div class="mw-p-topo"><h3>Foco do semestre</h3><span id="mwFocoNota"></span></div>' +
+        '<div class="mw-anel-caixa" id="mwFocoCorpo">' +
+          '<div class="mw-anel">' +
+            '<svg viewBox="0 0 120 120" aria-hidden="true">' +
+              '<defs><linearGradient id="mwAnelGrad" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">' +
+                '<stop stop-color="var(--ds-ac, #5b6cff)"/><stop offset="1" stop-color="var(--ds-ac-2, #8b5cf6)"/>' +
+              '</linearGradient></defs>' +
+              '<circle class="mw-anel-trilho" cx="60" cy="60" r="52"/>' +
+              '<circle class="mw-anel-arco" id="mwAnelArco" cx="60" cy="60" r="52"/>' +
+            '</svg>' +
+            '<div class="mw-anel-centro"><b id="mwAnelPct">0%</b><small id="mwAnelSub">do semestre</small></div>' +
+          '</div>' +
+          '<div class="mw-anel-legenda" id="mwAnelLegenda"></div>' +
+        '</div>' +
+        '<div class="mw-p-vazio" id="mwFocoVazio" hidden><strong>Sem disciplinas ainda</strong>Cadastre suas matérias e marque o progresso de cada uma para o semestre aparecer aqui.</div>' +
+      '</section>' +
+      '<section class="card mw-p-cartao mw-p-carga">' +
+        '<div class="mw-p-topo"><h3>Carga de estudos</h3><span id="mwCargaNota"></span></div>' +
+        '<div class="mw-carga-tela" id="mwCargaTela">' +
+          '<svg id="mwCargaSvg" viewBox="0 0 640 168" preserveAspectRatio="none" role="img" aria-label="Entregas por semana"></svg>' +
+          '<div class="mw-carga-dica" id="mwCargaDica" role="status"></div>' +
+        '</div>' +
+        '<div class="mw-p-vazio" id="mwCargaVazio" hidden><strong>Nenhuma entrega com data</strong>Coloque prazo nas atividades para ver como a carga se distribui pelas próximas semanas.</div>' +
+      '</section>';
+
+    ancora.insertAdjacentElement('afterend', painel);
+    return true;
+  }
+
+  // ---------------------------------------------------------------
+  // Anel do semestre
+  // ---------------------------------------------------------------
+  function pintaFoco(d){
+    var disciplinas = Array.isArray(d.subjects) ? d.subjects : [];
+    var corpo = document.getElementById('mwFocoCorpo');
+    var vazio = document.getElementById('mwFocoVazio');
+    var nota  = document.getElementById('mwFocoNota');
+    if (!corpo) return;
+
+    if (!disciplinas.length){
+      corpo.hidden = true; vazio.hidden = false;
+      if (nota) nota.textContent = '';
+      return;
+    }
+    corpo.hidden = false; vazio.hidden = true;
+
+    var soma = disciplinas.reduce(function(a,x){ return a + (Number(x.progress)||0); }, 0);
+    var media = Math.round(soma / disciplinas.length);
+
+    var arco = document.getElementById('mwAnelArco');
+    var volta = 2 * Math.PI * 52;                    // 326,7
+    arco.style.strokeDasharray = volta.toFixed(1);
+    arco.style.strokeDashoffset = (volta * (1 - media/100)).toFixed(1);
+
+    document.getElementById('mwAnelPct').textContent = media + '%';
+    document.getElementById('mwAnelSub').textContent = disciplinas.length === 1
+      ? 'de 1 disciplina' : 'de ' + disciplinas.length + ' disciplinas';
+    if (nota) nota.textContent = 'média das disciplinas';
+
+    /* A legenda mostra as três MENORES, não as três primeiras: a
+       informação útil aqui é onde a pessoa está atrasada, e a ordem de
+       cadastro não diz nada sobre isso. */
+    var ordenadas = disciplinas.slice().sort(function(a,b){
+      return (Number(a.progress)||0) - (Number(b.progress)||0);
+    }).slice(0, 3);
+
+    document.getElementById('mwAnelLegenda').innerHTML = ordenadas.map(function(s, i){
+      var p = Math.max(0, Math.min(100, Number(s.progress)||0));
+      var tom = ['var(--ds-ac)','var(--ds-ac-2)','color-mix(in srgb, var(--ds-ac) 45%, transparent)'][i];
+      return '<div class="mw-anel-linha">' +
+        '<span class="mw-anel-ponto" style="background:' + tom + '"></span>' +
+        '<em title="' + esc(s.name||'') + '">' + esc(s.name || 'Sem nome') + '</em>' +
+        '<b>' + p + '%</b></div>';
+    }).join('');
+  }
+
+  // ---------------------------------------------------------------
+  // Carga de estudos
+  // ---------------------------------------------------------------
+  function pintaCarga(d){
+    var svg = document.getElementById('mwCargaSvg');
+    var tela = document.getElementById('mwCargaTela');
+    var vazio = document.getElementById('mwCargaVazio');
+    var nota = document.getElementById('mwCargaNota');
+    if (!svg) return;
+
+    var comData = (Array.isArray(d.activities) ? d.activities : []).filter(function(a){ return deIso(a.date); });
+    if (!comData.length){
+      tela.hidden = true; vazio.hidden = false;
+      if (nota) nota.textContent = '';
+      return;
+    }
+    tela.hidden = false; vazio.hidden = true;
+
+    /* Janela: da semana atual para a frente. Olhar para trás não muda
+       o que a pessoa vai fazer hoje. */
+    var inicio = segundaDe(new Date());
+    var baldes = [];
+    for (var i = 0; i < SEMANAS; i++){
+      var ini = new Date(inicio); ini.setDate(ini.getDate() + i*7);
+      var fim = new Date(ini);    fim.setDate(fim.getDate() + 6);
+      baldes.push({ ini: ini, fim: fim, itens: [] });
+    }
+    comData.forEach(function(a){
+      var dt = deIso(a.date);
+      var semanas = Math.floor((segundaDe(dt) - inicio) / (7*86400000));
+      if (semanas >= 0 && semanas < SEMANAS) baldes[semanas].itens.push(a);
+    });
+
+    var pico = Math.max(1, baldes.reduce(function(m,b){ return Math.max(m, b.itens.length); }, 0));
+    var total = baldes.reduce(function(a,b){ return a + b.itens.length; }, 0);
+    if (nota) nota.textContent = total
+      ? total + (total === 1 ? ' entrega' : ' entregas') + ' nas próximas ' + SEMANAS + ' semanas'
+      : 'nada nas próximas ' + SEMANAS + ' semanas';
+
+    var L = 30, R = 618, T = 14, B = 138;            // área útil do desenho
+    var passo = (R - L) / (SEMANAS - 1);
+    var y = function(n){ return B - (n / pico) * (B - T); };
+    var pts = baldes.map(function(b, i){ return { x: L + i*passo, y: y(b.itens.length), b: b }; });
+
+    /* Curva suave por Catmull-Rom convertida em Bézier: com poucos
+       pontos, segmentos retos fazem a carga parecer uma serra. A tensão
+       é baixa (0,18) para a curva não inventar picos entre as semanas —
+       um gráfico que exagera o que os dados dizem é pior que nenhum. */
+    function suave(p){
+      if (p.length < 2) return '';
+      var d = 'M' + p[0].x.toFixed(1) + ' ' + p[0].y.toFixed(1);
+      for (var i = 0; i < p.length - 1; i++){
+        var p0 = p[i-1] || p[i], p1 = p[i], p2 = p[i+1], p3 = p[i+2] || p2;
+        var t = 0.18;
+        d += ' C' + (p1.x + (p2.x-p0.x)*t).toFixed(1) + ' ' + (p1.y + (p2.y-p0.y)*t).toFixed(1) +
+             ' ' + (p2.x - (p3.x-p1.x)*t).toFixed(1) + ' ' + (p2.y - (p3.y-p1.y)*t).toFixed(1) +
+             ' ' + p2.x.toFixed(1) + ' ' + p2.y.toFixed(1);
+      }
+      return d;
+    }
+    var linha = suave(pts);
+    var area = linha + ' L' + R.toFixed(1) + ' ' + B + ' L' + L.toFixed(1) + ' ' + B + ' Z';
+
+    var MES = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+    var rotulo = function(b, i){
+      return i === 0 ? 'esta' : (b.ini.getDate() + '/' + MES[b.ini.getMonth()]);
+    };
+
+    svg.innerHTML =
+      '<defs><linearGradient id="mwCargaGrad" x1="0" y1="0" x2="0" y2="1">' +
+        '<stop offset="0" stop-color="var(--ds-ac, #5b6cff)" stop-opacity=".34"/>' +
+        '<stop offset="1" stop-color="var(--ds-ac, #5b6cff)" stop-opacity="0"/>' +
+      '</linearGradient></defs>' +
+      [0,.5,1].map(function(f){
+        var yy = T + (B-T)*f;
+        return '<line class="mw-carga-grade" x1="' + L + '" y1="' + yy.toFixed(1) + '" x2="' + R + '" y2="' + yy.toFixed(1) + '"/>';
+      }).join('') +
+      '<path class="mw-carga-area" d="' + area + '"/>' +
+      '<path class="mw-carga-linha" d="' + linha + '"/>' +
+      pts.map(function(p,i){
+        return '<circle class="mw-carga-ponto" data-i="' + i + '" cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="3.6"/>';
+      }).join('') +
+      pts.map(function(p,i){
+        return '<text class="mw-carga-rotulo" x="' + p.x.toFixed(1) + '" y="158" text-anchor="middle">' + rotulo(p.b, i) + '</text>';
+      }).join('') +
+      // Alvos largos para o ponteiro: acertar um círculo de 3,6px com o
+      // dedo é impossível, e a faixa inteira da semana é o alvo natural.
+      pts.map(function(p,i){
+        return '<rect class="mw-carga-alvo" data-i="' + i + '" x="' + (p.x - passo/2).toFixed(1) + '" y="0" width="' + passo.toFixed(1) + '" height="168"/>';
+      }).join('');
+
+    ligaDica(pts, baldes);
+    animaEntrada(svg);
+  }
+
+  function ligaDica(pts, baldes){
+    var tela = document.getElementById('mwCargaTela');
+    var svg  = document.getElementById('mwCargaSvg');
+    var dica = document.getElementById('mwCargaDica');
+    if (!tela || !dica) return;
+
+    function mostra(i){
+      var b = baldes[i], p = pts[i];
+      var n = b.itens.length;
+      var caixa = svg.getBoundingClientRect();
+      // O SVG é esticado (preserveAspectRatio="none"), então a coordenada
+      // interna precisa ser convertida pela largura real, não pela do
+      // viewBox — senão a dica fica cada vez mais fora de lugar conforme
+      // a janela muda de tamanho.
+      var px = (p.x / 640) * caixa.width;
+      var py = (p.y / 168) * caixa.height;
+
+      var nomes = b.itens.slice(0,2).map(function(a){ return a.name || 'Atividade'; }).join(' · ');
+      dica.innerHTML = '<b>' + n + (n === 1 ? ' entrega' : ' entregas') + '</b>' +
+        '<small>' + (n ? esc(nomes) + (n > 2 ? ' +' + (n-2) : '') : 'semana livre') + '</small>';
+      dica.classList.add('is-vis');
+
+      /* A dica é centrada no ponto (translate(-50%)), então nas semanas
+         das pontas metade dela caía fora do cartão e o texto aparecia
+         cortado — "ntregas" em vez de "2 entregas". Só dá para prender
+         DEPOIS de escrever o conteúdo, porque é ele que define a
+         largura. Se nem centrada nem encostada couber, ela fica no meio
+         do cartão: melhor deslocada do ponto do que ilegível. */
+      var meia = dica.offsetWidth / 2;
+      var limite = tela.clientWidth;
+      var alvo = meia * 2 <= limite
+        ? Math.max(meia + 4, Math.min(px, limite - meia - 4))
+        : limite / 2;
+      dica.style.left = alvo.toFixed(0) + 'px';
+      dica.style.top  = py.toFixed(0) + 'px';
+      svg.querySelectorAll('.mw-carga-ponto').forEach(function(c){
+        c.classList.toggle('is-ativo', c.getAttribute('data-i') === String(i));
+      });
+    }
+    function esconde(){
+      dica.classList.remove('is-vis');
+      svg.querySelectorAll('.mw-carga-ponto.is-ativo').forEach(function(c){ c.classList.remove('is-ativo'); });
+    }
+
+    svg.querySelectorAll('.mw-carga-alvo').forEach(function(alvo){
+      var i = Number(alvo.getAttribute('data-i'));
+      alvo.addEventListener('mouseenter', function(){ mostra(i); });
+      alvo.addEventListener('click', function(){ mostra(i); });
+      alvo.addEventListener('touchstart', function(){ mostra(i); }, { passive: true });
+    });
+    tela.addEventListener('mouseleave', esconde);
+  }
+
+  /* A curva entra sendo desenhada da esquerda para a direita. Não é
+     enfeite: o olho segue o traço e chega no fim já tendo lido a forma,
+     que é a informação. */
+  function animaEntrada(svg){
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var linha = svg.querySelector('.mw-carga-linha');
+    var area = svg.querySelector('.mw-carga-area');
+    if (!linha) return;
+    var comp;
+    try { comp = linha.getTotalLength(); } catch (e) { return; }
+    linha.style.strokeDasharray = comp;
+    linha.style.strokeDashoffset = comp;
+    linha.getBoundingClientRect();   // força o quadro antes de animar
+    linha.style.transition = 'stroke-dashoffset 1.05s cubic-bezier(.32,.72,0,1)';
+    linha.style.strokeDashoffset = '0';
+    if (area){
+      area.style.opacity = '0';
+      area.getBoundingClientRect();
+      area.style.transition = 'opacity .8s ease .25s';
+      area.style.opacity = '1';
+    }
+  }
+
+  function atualiza(d){
+    if (!monta()) return;
+    var dd = d && typeof d === 'object' ? d : dados();
+    try { pintaFoco(dd); } catch (e) {}
+    try { pintaCarga(dd); } catch (e) {}
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ atualiza(); });
+  else atualiza();
+
+  var anterior = window.mwDashRefresh;
+  window.mwDashRefresh = function(d){
+    if (typeof anterior === 'function') { try { anterior(d); } catch (e) {} }
+    try { atualiza(d); } catch (e) {}
+  };
+
+  // A dica é posicionada em pixels a partir do tamanho real do SVG;
+  // ao mudar a janela ela precisa ser recalculada ou fica órfã.
+  var t;
+  window.addEventListener('resize', function(){
+    clearTimeout(t);
+    t = setTimeout(function(){ try { pintaCarga(dados()); } catch (e) {} }, 180);
+  });
+})();
+</script>
+
+
+<style id="mw-ds-mobile">
+/* =====================================================================
+   §6 TELEFONE — cabeçalho próprio, não o do desktop espremido
+   =====================================================================
+   No desktop a barra superior abre com "Olá, Mateus Souza!" porque há
+   largura sobrando. No telefone essa mesma linha disputa espaço com
+   quatro botões e o resultado media "Olá, Mat…" — uma saudação cortada
+   no meio do nome, que é pior do que não saudar.
+
+   A saudação não sumiu: ela desceu para o topo do conteúdo, onde tem a
+   largura inteira. A barra superior fica com o que precisa estar sempre
+   ao alcance do polegar — menu, marca e ações — que é como um aplicativo
+   de telefone se organiza, e não como um site encolhe.
+   ===================================================================== */
+html body #app .mw-topo-marca{ display: none; }
+
+@media (max-width: 760px){
+  html body #app .topbar .hello{ display: none !important; }
+
+  html body #app .mw-topo-marca{
+    display: flex; align-items: center; gap: 9px;
+    min-width: 0; flex: 1;
+  }
+  html body #app .mw-topo-marca svg{ width: 34px; height: 23px; flex: 0 0 auto; }
+  html body #app .mw-topo-marca span{
+    font-size: 13px; font-weight: 700; letter-spacing: .01em;
+    color: var(--ds-txt);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  html body #app .topbar{
+    padding: 10px 13px !important;
+    gap: 10px !important;
+  }
+  html body #app .top-actions{ gap: 7px !important; }
+
+  /* A saudação, agora com a largura toda. */
+  html body #app .mw-ola{
+    margin: 0 0 14px;
+    display: block;
+  }
+  html body #app .mw-ola b{
+    display: block;
+    font-size: 25px; font-weight: 750; letter-spacing: -.03em;
+    color: var(--ds-txt); line-height: 1.15;
+  }
+  html body #app .mw-ola small{
+    display: block; margin-top: 5px;
+    font-size: 12.5px; color: var(--ds-txt-3);
+  }
+}
+@media (min-width: 761px){
+  html body #app .mw-ola{ display: none !important; }
+}
+
+/* O cartão da carga fica estreito no telefone e o título brigava com a
+   nota ao lado, quebrando os dois em duas linhas cada. Empilhados, cada
+   um fica com a largura inteira da sua linha. */
+@media (max-width: 640px){
+  html body #app .mw-p-topo{
+    flex-direction: column; align-items: flex-start; gap: 2px;
+  }
+  html body #app .mw-carga-tela{ height: 150px; }
+  html body #app .mw-anel-caixa{ gap: 16px; }
+  html body #app .mw-anel{ flex-basis: 112px; width: 112px; height: 112px; }
+  html body #app .mw-anel-centro b{ font-size: 26px; }
+}
+</style>
+
+<script id="mw-ds-mobile-js">
+(function(){
+  'use strict';
+  /* Duas peças que só existem no telefone: a marca na barra superior
+     (que ali substitui a saudação) e a saudação no topo do conteúdo.
+     As duas são criadas sempre e escondidas por CSS na largura errada —
+     criar e destruir conforme o tamanho da janela daria trabalho e
+     piscada a cada rotação de tela. */
+
+  function nomeAtual(){
+    var d = window.data;
+    if (!d) { try { d = JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}'); } catch(e){ d = {}; } }
+    return String(((d.profile||{}).name) || 'Mateus').trim() || 'Mateus';
+  }
+  function primeiroNome(){ return nomeAtual().split(/\s+/)[0]; }
+
+  function montaMarca(){
+    var barra = document.querySelector('#app .topbar');
+    if (!barra || barra.querySelector('.mw-topo-marca')) return;
+    var hello = barra.querySelector('.hello');
+    var el = document.createElement('div');
+    el.className = 'mw-topo-marca';
+    el.innerHTML = '<svg viewBox="0 0 64 44" aria-hidden="true"><use href="#mwi-marca"/></svg>' +
+                   '<span>Workspace</span>';
+    if (hello) hello.insertAdjacentElement('afterend', el); else barra.prepend(el);
+  }
+
+  function montaOla(){
+    var casa = document.getElementById('view-home');
+    if (!casa) return;
+    var el = document.getElementById('mwOla');
+    if (!el){
+      el = document.createElement('div');
+      el.id = 'mwOla';
+      el.className = 'mw-ola';
+      el.innerHTML = '<b></b><small></small>';
+      casa.prepend(el);
+    }
+    /* Só o primeiro nome: é a largura de uma tela de telefone que manda
+       aqui, e "Olá, Mateus!" cabe onde "Olá, Mateus Souza!" não cabia. */
+    el.querySelector('b').textContent = 'Olá, ' + primeiroNome() + '!';
+    var sub = document.querySelector('#app .topbar .hello p');
+    el.querySelector('small').textContent = sub ? sub.textContent : '';
+  }
+
+  function inicia(){ montaMarca(); montaOla(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', inicia);
+  else inicia();
+
+  var anterior = window.mwDashRefresh;
+  window.mwDashRefresh = function(d){
+    if (typeof anterior === 'function') { try { anterior(d); } catch (e) {} }
+    try { inicia(); } catch (e) {}
+  };
+
+  /* A saudação e o subtítulo do topo são reescritos por outros blocos
+     (ao salvar o perfil, ao trocar de conta). Observar o próprio topo é
+     o que mantém a versão do telefone em dia sem ter que descobrir e
+     alterar cada um desses pontos. */
+  var alvo = document.querySelector('#app .topbar .hello');
+  if (alvo) new MutationObserver(function(){ try { montaOla(); } catch (e) {} })
+    .observe(alvo, { childList: true, subtree: true, characterData: true });
+})();
+</script>
 
 </body>
 </html>

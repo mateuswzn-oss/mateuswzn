@@ -1,3 +1,22 @@
+/* v61 (BETA — dashboard vira painel, e o telefone ganha layout próprio):
+   O dashboard era uma coluna de cartões de largura cheia, todos com o
+   mesmo peso: uma lista, não um painel. Agora é uma grade de doze
+   colunas (seis no tablet, uma no telefone) onde o tamanho corresponde
+   à importância.
+   Dois gráficos entraram, e nenhum é enfeite — a régua foi: se a
+   resposta já está escrita em texto ao lado, o gráfico não precisa
+   existir. O ANEL responde "quanto do semestre eu andei" (fração do
+   todo) e abre, na legenda, as três disciplinas com MENOR progresso,
+   que é a pergunta seguinte. A CARGA responde "as entregas estão se
+   acumulando?" com a forma da curva ao longo de oito semanas, e cada
+   semana tem dica com as entregas reais daquele intervalo.
+   No telefone, "Olá, Mateus Souza!" na barra superior media "Olá, Mat…"
+   — saudação cortada no meio do nome. Ela desceu para o topo do
+   conteúdo, com a largura toda e só o primeiro nome, e a barra ficou
+   com marca e ações, como um aplicativo e não como um site encolhido.
+   Correção junto: o gráfico em canvas nunca era repintado ao trocar de
+   tema, então no claro ficava com as cores pensadas para o escuro —
+   parecia falha de contraste, era tinta velha. */
 /* v60 (BETA — design system novo: o vidro passa a existir de verdade):
    O app não parecia de vidro porque havia regras ATIVAS desligando o
    vidro: backdrop-filter:none!important, box-shadow:none!important (213
@@ -609,7 +628,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v60-beta';
+const CACHE_NAME = 'mw-shell-v61-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
