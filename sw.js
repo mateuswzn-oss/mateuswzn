@@ -1,5 +1,18 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v47 (BETA — o botão de criar conta agora mostra que está trabalhando):
+   O botão de ENTRAR já mostrava "ENTRANDO..." com giro enquanto falava
+   com o servidor; o de CRIAR CONTA não mostrava nada. E a espera ali é
+   a maior do app: a checagem de nome de usuário tem prazo de 7s e o
+   cadastro mais alguns — numa rede ruim são quase dez segundos de botão
+   parado, sem nenhum sinal. A pessoa conclui que não funcionou e clica
+   de novo.
+   Ao contrário do botão de entrar, o rótulo NÃO é trocado por texto:
+   este botão guarda dentro de si a animação do carrinho, e reescrever o
+   innerHTML destruiria esses elementos. O miolo some de vista e um giro
+   entra por cima, então a animação volta inteira quando o botão volta.
+   O botão é devolvido em todas as saídas: sucesso, nome de usuário já
+   em uso, e-mail já cadastrado, senha curta e queda de rede. */
 /* v46 (BETA — datas legíveis + um bug antigo dos filtros):
    (1) As datas apareciam cruas na tela ("2026-09-22"), que é o formato
    de armazenamento, não de leitura. Agora saem como "22 de setembro",
@@ -401,7 +414,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v46-beta';
+const CACHE_NAME = 'mw-shell-v47-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

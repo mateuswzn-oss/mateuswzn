@@ -20441,7 +20441,34 @@ window.MW_TURNSTILE_SITE_KEY = '';
     e.stopPropagation();
     if (err) err.textContent = 'Verificando...';
 
+    /* O botão de entrar já mostrava "ENTRANDO..." com giro enquanto
+       falava com o servidor; o de criar conta não mostrava nada. E a
+       espera aqui é a MAIOR do app: a checagem de nome de usuário tem
+       prazo de 7s e o cadastro mais alguns — numa rede ruim são quase
+       dez segundos de botão parado. Sem sinal, a pessoa conclui que não
+       funcionou e clica de novo.
+
+       O rótulo NÃO é trocado por texto, ao contrário do botão de entrar:
+       este aqui guarda dentro de si a animação do carrinho, e reescrever
+       o innerHTML destruiria esses elementos. Em vez disso o miolo some
+       e um giro entra por cima, preservando a animação intacta. */
+    var botaoCriar = form.querySelector('.mw-original-car-btn');
+    function ocupa(){
+      if (!botaoCriar) return;
+      botaoCriar.dataset.mwCriando = '1';
+      botaoCriar.disabled = true;
+      botaoCriar.setAttribute('aria-busy', 'true');
+    }
+    function devolve(){
+      if (!botaoCriar) return;
+      delete botaoCriar.dataset.mwCriando;
+      botaoCriar.disabled = false;
+      botaoCriar.setAttribute('aria-busy', 'false');
+    }
+    ocupa();
+
     function segue(){
+      devolve();
       if (err) err.textContent = '';
       form.dataset.mwNuvemPassa = '1';
       form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
@@ -20458,6 +20485,7 @@ window.MW_TURNSTILE_SITE_KEY = '';
 
     window.mwNuvem.usuarioLivre(usuario).then(function(livre){
       if (livre === false) {
+        devolve();
         if (err) err.textContent = 'Esse nome de usuário já está em uso. Escolha outro.';
         return null;
       }
@@ -20483,10 +20511,12 @@ window.MW_TURNSTILE_SITE_KEY = '';
     }).catch(function(erro){
       var msg = String((erro && erro.message) || erro || '');
       if (/already registered|already been registered|User already/i.test(msg)) {
+        devolve();
         if (err) err.textContent = 'Este e-mail já possui uma conta.';
         return;
       }
       if (/Password should be|at least 6/i.test(msg)) {
+        devolve();
         if (err) err.textContent = 'A senha precisa ter pelo menos 6 caracteres.';
         return;
       }
@@ -22548,6 +22578,37 @@ html body #app .main select:focus-visible{
   else pinta();
 })();
 </script>
+
+<style id="mw-criar-conta-ocupado">
+/* Estado "criando" do botão de criar conta. O miolo (com a animação do
+   carrinho) só desaparece de vista — nada é removido do DOM, então a
+   animação continua inteira quando o botão volta. mwSpin é a mesma
+   rotação já usada pelo giro do botão de entrar. */
+#inlineCreateForm .mw-original-car-btn[data-mw-criando="1"]{
+  pointer-events: none;
+  cursor: wait;
+}
+#inlineCreateForm .mw-original-car-btn[data-mw-criando="1"] .mw-btn-inner{
+  opacity: 0;
+  transition: opacity .18s ease;
+}
+#inlineCreateForm .mw-original-car-btn[data-mw-criando="1"]::after{
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 22px;
+  height: 22px;
+  border: 2px solid rgba(238,242,255,.32);
+  border-top-color: #eef2ff;
+  border-radius: 50%;
+  animation: mwSpin .6s linear infinite;
+  z-index: 6;
+}
+@media (prefers-reduced-motion: reduce){
+  #inlineCreateForm .mw-original-car-btn[data-mw-criando="1"]::after{ animation-duration: 2.2s; }
+}
+</style>
 
 </body>
 </html>
