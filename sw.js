@@ -1,3 +1,19 @@
+/* v71 (BETA — Relatórios):
+   A tentação de uma tela de relatórios é preencher o espaço. A regra
+   aqui é a oposta: só entra número que possa ser MEDIDO nos dados que
+   já existem, e onde o dado não existe o bloco diz que não existe.
+   Dá para medir com data de verdade as sessões do Foco (guardam o
+   instante em que terminaram) e os prazos de atividades e projetos.
+   NÃO dá para medir quando uma atividade foi concluída — o app nunca
+   registrou isso — nem quando cada item foi cadastrado, porque não há
+   data de criação. Por isso existe um bloco chamado "o que este
+   relatório ainda não sabe", e por isso o seletor de período só governa
+   o tempo de estudo: nos outros blocos ele seria decorativo, e um
+   controle que não faz nada é pior do que controle nenhum.
+   Projeto concluído ou arquivado não conta como prazo vencido: cobrar
+   uma coisa que já acabou seria alarme falso.
+   Relatórios também entra no acesso rápido do painel, pelo mesmo motivo
+   que Calendário e Foco entraram — no telefone, é a porta visível. */
 /* v70 (BETA — Calendário e Foco alcançáveis no telefone):
    As duas áreas novas existiam e funcionavam, mas no celular só se
    chegava nelas abrindo a gaveta: a barra de baixo tem cinco lugares e
@@ -781,7 +797,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v70-beta';
+const CACHE_NAME = 'mw-shell-v71-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
