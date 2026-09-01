@@ -3959,6 +3959,18 @@ body.light .mw-faceid-gate-card p{color:#526988}
   <main class="main">
     <header class="topbar"><button type="button" class="mw-mobile-menu" id="mwMobileMenu" aria-label="Abrir menu"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><button type="button" class="mw-back-btn" id="mwBackBtn" aria-label="Voltar ao início" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg></button><div class="hello"><h2>Olá, Mateus!</h2><p>1º semestre • Seu curso</p></div><div class="top-actions"><div class="search-wrap" id="searchWrap"><button type="button" class="search-icon icon-btn" id="searchToggle" aria-label="Pesquisar" title="Pesquisar (Ctrl+K)"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="m16.2 16.2 3.6 3.6"/></svg></button><input id="globalSearch" type="search" placeholder="Pesquisar..."></div><div class="mw-bell-wrap" style="position:relative"><button class="icon-btn bell-btn" id="notificationBtn" title="Notificações"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 2a6.5 6.5 0 0 0-6.5 6.5c0 4.6-1.8 6.6-2.4 7.2A1 1 0 0 0 4 17.8h16a1 1 0 0 0 .9-1.6c-.6-.6-2.4-2.6-2.4-7.2A6.5 6.5 0 0 0 12 2zm-1.6 18a1.6 1.6 0 0 0 3.2 0z"/></svg><span class="bell-dot"></span></button><div class="notification-menu hidden" id="notificationMenu"><strong>Notificações</strong><div id="notificationList"><div class="notification-item">Nada novo por agora.</div></div></div></div><button class="icon-btn mwv2-theme-btn" id="themeToggle" title="Alternar tema"><svg class="mwv2-icon-sun" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.5v2.4M12 19.1v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/></svg><span class="mwv2-moon-glow" aria-hidden="true"></span><svg class="mwv2-icon-moon" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z"/></svg><span class="mwv2-star s1" aria-hidden="true"></span><span class="mwv2-star s2" aria-hidden="true"></span></button><button class="icon-btn" id="quickAdd" title="Adicionar">＋</button><button class="mateus-ai-btn" id="mateusAiBtn" type="button" title="Abrir Nyc AI"><span>✦</span><span class="eva-label">Nyc AI</span></button><button class="profile-btn" id="profileBtn" title="Configurações do perfil">MW</button></div></header>
     <section class="view active" id="view-home">
+      <!-- Resumo do dia e atalhos: inseridos aqui na marcação, e não por
+           script, para existirem no primeiro quadro em vez de aparecerem
+           depois com um salto de layout. O conteúdo é preenchido pelo
+           mw-comando-js; enquanto não há dado, ambos ficam ocultos. -->
+      <section class="mw-resumo" id="mwResumoDia" hidden>
+        <div class="mw-resumo-data">
+          <strong id="mwResumoDataTexto"></strong>
+          <span id="mwResumoSemestre"></span>
+        </div>
+        <div class="mw-resumo-chips" id="mwResumoChips"></div>
+      </section>
+      <nav class="mw-atalhos" id="mwAtalhos" aria-label="Acesso rápido" hidden></nav>
       <div class="grid stats"><div class="card stat"><div class="kicker">Disciplinas</div><strong id="statSubjects">0</strong><span id="statSubjectsHint">Nenhuma cadastrada</span></div><div class="card stat"><div class="kicker">Atividades</div><strong id="statActivities">0</strong><span id="statActivitiesHint">Nenhuma cadastrada</span></div><div class="card stat"><div class="kicker">Projetos</div><strong id="statProjects">0</strong><span id="statProjectsHint">Nenhum cadastrado</span></div><div class="card stat"><div class="kicker">Progresso</div><strong id="statProgress">0%</strong><span id="statProgressHint">Sem dados ainda</span></div></div>
       <section class="card section mwv2-chart-card" id="mwv2ChartCard">
         <div class="section-head"><h3>Progresso por disciplina</h3><span id="mwv2ChartHint">Ao vivo, com seus dados</span></div>
@@ -22845,6 +22857,233 @@ html body.light #mateusAiTitle .mw-id-beta{
   color: #4338ca;
 }
 </style>
+
+<style id="mw-comando">
+/* Resumo do dia: uma faixa, não um cartão. A ideia é ser a primeira
+   linha que a pessoa lê, e não mais uma caixa competindo com as de
+   baixo — por isso fundo discreto e sem sombra. */
+.mw-resumo{
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+  padding: 14px 18px; margin-bottom: 16px;
+  border-radius: var(--id-r-linha, 14px);
+  background: var(--id-sup-2, rgba(255,255,255,.04));
+  border: 1px solid var(--id-borda, rgba(140,165,220,.13));
+}
+.mw-resumo-data strong{
+  display: block; font-size: 14.5px; font-weight: 650;
+  color: var(--id-txt, #e9eefb); letter-spacing: -.01em;
+}
+.mw-resumo-data span{
+  display: block; margin-top: 2px; font-size: 11.5px;
+  color: var(--id-txt-3, #7b88a6);
+}
+.mw-resumo-chips{ display: flex; flex-wrap: wrap; gap: 8px; }
+.mw-resumo-chip{
+  all: unset; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 7px 13px; border-radius: 999px;
+  font-size: 12px; font-weight: 600; line-height: 1.4;
+  border: 1px solid transparent;
+  transition: filter .16s ease, transform .12s ease;
+}
+.mw-resumo-chip:hover{ filter: brightness(1.12); }
+.mw-resumo-chip:active{ transform: translateY(1px); }
+.mw-resumo-chip:focus-visible{ outline: 2px solid var(--id-ac, #5b6cff); outline-offset: 2px; }
+.mw-resumo-chip b{ font-weight: 750; font-variant-numeric: tabular-nums; }
+.mw-resumo-chip[data-tom="perigo"]{ background: var(--id-perigo-bg); color: var(--id-perigo); border-color: var(--id-perigo-bd); }
+.mw-resumo-chip[data-tom="info"]{ background: var(--id-info-bg); color: var(--id-info); border-color: var(--id-info-bd); }
+.mw-resumo-chip[data-tom="neutro"]{ background: var(--id-neutro-bg); color: var(--id-neutro); border-color: var(--id-neutro-bd); }
+/* O nome da próxima entrega pode ser longo; corta em vez de esticar a
+   faixa e empurrar os outros chips para outra linha. */
+.mw-resumo-chip .mw-resumo-nome{
+  max-width: 22ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* Acesso rápido: alvos grandes, como nas referências. auto-fit em vez
+   de número fixo de colunas para não quebrar em telas estreitas. */
+.mw-atalhos{
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 10px; margin-bottom: 16px;
+}
+.mw-atalho{
+  all: unset; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 14px 10px; border-radius: var(--id-r-linha, 14px);
+  background: var(--id-sup, #0e1526);
+  border: 1px solid var(--id-borda, rgba(140,165,220,.13));
+  color: var(--id-txt-2, #a6b2ce);
+  font-size: 11.5px; font-weight: 600; text-align: center;
+  transition: background .16s ease, border-color .16s ease, transform .12s ease;
+}
+.mw-atalho:hover{ background: var(--id-sup-3); border-color: var(--id-borda-forte); color: var(--id-txt); }
+.mw-atalho:active{ transform: translateY(1px); }
+.mw-atalho:focus-visible{ outline: 2px solid var(--id-ac); outline-offset: 2px; }
+.mw-atalho .mw-atalho-tile{
+  width: 34px; height: 34px; border-radius: var(--id-r-tile, 11px);
+  display: grid; place-items: center;
+  background: var(--id-ac-suave); color: var(--id-ac-txt);
+}
+.mw-atalho .mw-atalho-tile svg{ width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.mw-atalho[data-acao="adicionar"] .mw-atalho-tile{ background: var(--id-ac-grad); color: #fff; }
+
+@media (max-width: 560px){
+  .mw-resumo{ flex-direction: column; align-items: flex-start; }
+  .mw-atalhos{ grid-template-columns: repeat(3, 1fr); }
+}
+@media (prefers-reduced-motion: reduce){
+  .mw-resumo-chip, .mw-atalho{ transition: none; }
+}
+</style>
+
+<script id="mw-comando-js">
+(function(){
+  'use strict';
+  /* CENTRO DE COMANDO DO DASHBOARD
+     ================================================================
+     Duas peças, ambas derivadas SÓ do que já existe em data: o resumo
+     do dia e os atalhos. Nada aqui inventa número — quando não há
+     atividade cadastrada a faixa some inteira, em vez de mostrar uma
+     fileira de zeros, que é pior que não mostrar nada.
+
+     A ligação com o resto é o mwDashRefresh, que o renderAll já chama
+     no fim de todo save(). Encadear nele (em vez de criar um segundo
+     caminho de atualização) mantém um ponto só de verdade: se o dado
+     muda, isto reflete junto com o resto da tela. */
+
+  var DIAS = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+  var MESES = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+
+  function hojeIso(){
+    var d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function porExtenso(){
+    var d = new Date();
+    return DIAS[d.getDay()] + ', ' + d.getDate() + ' de ' + MESES[d.getMonth()];
+  }
+  function humana(iso){
+    return typeof window.mwDataHumana === 'function' ? window.mwDataHumana(iso) : (iso || 'Sem data');
+  }
+  function vaiPara(view){
+    if (typeof window.showView === 'function') window.showView(view);
+    else document.querySelector('#nav [data-view="' + view + '"]')?.click();
+  }
+  function esc(v){
+    return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  function pintaResumo(d){
+    var faixa = document.getElementById('mwResumoDia');
+    var chips = document.getElementById('mwResumoChips');
+    if (!faixa || !chips) return;
+    var ativs = (d && Array.isArray(d.activities)) ? d.activities : [];
+    var comData = ativs.filter(function(a){ return a && a.date; });
+
+    /* Sem nenhuma atividade com prazo não há resumo possível. A faixa
+       some — mostrar "0 atrasadas, 0 para hoje" ocuparia o topo do
+       painel dizendo nada. */
+    if (!comData.length) { faixa.hidden = true; return; }
+    faixa.hidden = false;
+
+    var hoje = hojeIso();
+    var atrasadas = comData.filter(function(a){ return a.date < hoje; });
+    var deHoje = comData.filter(function(a){ return a.date === hoje; });
+    var futuras = comData.filter(function(a){ return a.date > hoje; })
+                         .sort(function(a,b){ return String(a.date).localeCompare(String(b.date)); });
+
+    var partes = [];
+    if (atrasadas.length) {
+      partes.push('<button type="button" class="mw-resumo-chip" data-tom="perigo" data-ir="activities">' +
+        '<b>' + atrasadas.length + '</b> ' + (atrasadas.length === 1 ? 'atrasada' : 'atrasadas') + '</button>');
+    }
+    if (deHoje.length) {
+      partes.push('<button type="button" class="mw-resumo-chip" data-tom="info" data-ir="activities">' +
+        '<b>' + deHoje.length + '</b> para hoje</button>');
+    }
+    if (futuras.length) {
+      var prox = futuras[0];
+      partes.push('<button type="button" class="mw-resumo-chip" data-tom="neutro" data-ir="activities">' +
+        'Próxima: <span class="mw-resumo-nome">' + esc(prox.name || 'Atividade') + '</span> · ' + esc(humana(prox.date)) + '</button>');
+    }
+    if (!partes.length) {
+      partes.push('<span class="mw-resumo-chip" data-tom="neutro">Nenhum prazo pendente</span>');
+    }
+    chips.innerHTML = partes.join('');
+
+    var texto = document.getElementById('mwResumoDataTexto');
+    var sub = document.getElementById('mwResumoSemestre');
+    if (texto) texto.textContent = porExtenso();
+    /* A subliña chegou a repetir "Nº semestre • curso", que a saudação
+       logo acima já mostra — duas vezes a mesma informação a 40px de
+       distância. Agora ela conta o que mais nada conta: quantas
+       atividades estão com prazo em aberto daqui pra frente. */
+    if (sub) {
+      var pendentes = deHoje.length + futuras.length;
+      sub.textContent = pendentes
+        ? pendentes + (pendentes === 1 ? ' entrega pela frente' : ' entregas pela frente')
+        : 'Nada com prazo pela frente';
+    }
+  }
+
+  var ATALHOS = [
+    ['subjects',  'Disciplinas', '<path d="M12 6.5C10.4 5 8.3 4.3 6.1 4.3c-1 0-2 .2-2.9.5v13.1c.9-.3 1.9-.5 2.9-.5 2.2 0 4.3.7 5.9 2.2z"/><path d="M12 6.5c1.6-1.5 3.7-2.2 5.9-2.2 1 0 2 .2 2.9.5v13.1c-.9-.3-1.9-.5-2.9-.5-2.2 0-4.3.7-5.9 2.2z"/>'],
+    ['projects',  'Projetos',    '<path d="M3.2 6.6a2.3 2.3 0 0 1 2.3-2.3h3.3l2.1 2.5h8a2.3 2.3 0 0 1 2.3 2.3v8.3a2.3 2.3 0 0 1-2.3 2.3H5.5a2.3 2.3 0 0 1-2.3-2.3z"/>'],
+    ['activities','Atividades',  '<rect x="3.6" y="3.6" width="16.8" height="16.8" rx="4"/><path d="M8.2 12.2l2.6 2.6 5-5"/>'],
+    ['files',     'Arquivos',    '<path d="M6.6 3.4h6.3l5.5 5.5v10.7a1.7 1.7 0 0 1-1.7 1.7H6.6a1.7 1.7 0 0 1-1.7-1.7V5.1a1.7 1.7 0 0 1 1.7-1.7z"/><path d="M13.2 3.6v4.4a.9.9 0 0 0 .9.9h4.4"/>'],
+    ['notes',     'Anotações',   '<rect x="4.4" y="3.4" width="15.2" height="17.2" rx="2.4"/><path d="M8 9h8M8 12.7h8M8 16.4h5"/>']
+  ];
+
+  function montaAtalhos(){
+    var caixa = document.getElementById('mwAtalhos');
+    if (!caixa || caixa.dataset.pronto === '1') return;
+    var html = ATALHOS.map(function(a){
+      return '<button type="button" class="mw-atalho" data-ir="' + a[0] + '">' +
+             '<span class="mw-atalho-tile" aria-hidden="true"><svg viewBox="0 0 24 24">' + a[2] + '</svg></span>' +
+             '<span>' + a[1] + '</span></button>';
+    }).join('');
+    /* O botão de adicionar reaproveita o #quickAdd que já existe na
+       barra do topo — o fluxo de criação é dele, não um novo. */
+    html += '<button type="button" class="mw-atalho" data-acao="adicionar">' +
+            '<span class="mw-atalho-tile" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5.5v13M5.5 12h13"/></svg></span>' +
+            '<span>Adicionar</span></button>';
+    caixa.innerHTML = html;
+    caixa.hidden = false;
+    caixa.dataset.pronto = '1';
+  }
+
+  document.addEventListener('click', function(e){
+    var botao = e.target.closest && e.target.closest('[data-ir],[data-acao="adicionar"]');
+    if (!botao || !botao.closest('#mwResumoDia, #mwAtalhos')) return;
+    e.preventDefault();
+    if (botao.dataset.acao === 'adicionar') { document.getElementById('quickAdd')?.click(); return; }
+    vaiPara(botao.dataset.ir);
+  });
+
+  function atualiza(d){
+    montaAtalhos();
+    pintaResumo(d || window.data || {});
+  }
+
+  /* Encadeia no ponto de atualização que já existe, preservando quem
+     estiver lá — este arquivo tem vários blocos que fazem o mesmo, e
+     sobrescrever apagaria os anteriores em silêncio. */
+  var anterior = window.mwDashRefresh;
+  window.mwDashRefresh = function(d){
+    if (typeof anterior === 'function') { try { anterior(d); } catch (e) {} }
+    try { atualiza(d); } catch (e) {}
+  };
+
+  function inicia(){ atualiza(window.data); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', inicia);
+  else inicia();
+  /* O boot monta o app depois; uma segunda passada garante que a faixa
+     apareça mesmo se os dados chegarem depois do primeiro quadro. */
+  document.addEventListener('mw:boot-fim', function(){ setTimeout(inicia, 300); });
+})();
+</script>
 
 </body>
 </html>
