@@ -2750,6 +2750,13 @@ body.light #app .calendar-card .calendar-nav button:hover{
     <path d="M12.42 2.72a1 1 0 0 0-.84 0L1.9 7.32a.95.95 0 0 0 0 1.72l2.0.94v.02L12 13.72l8.1-3.72v4.36a1.1 1.1 0 0 0 2.2 0V8.98l-.2-.09a.95.95 0 0 0 .0-1.57z"/>
     <path d="M6.3 12.06 12 14.68l5.7-2.62v3.02c0 2.1-2.55 3.72-5.7 3.72s-5.7-1.62-5.7-3.72z"/>
   </symbol>
+  <symbol id="mwi-calendar" viewBox="0 0 24 24">
+    <path fill-rule="evenodd" d="M7.6 2.4a1.2 1.2 0 0 1 1.2 1.2v1.0h6.4v-1.0a1.2 1.2 0 1 1 2.4 0v1.0h.9a2.7 2.7 0 0 1 2.7 2.7v11a2.7 2.7 0 0 1-2.7 2.7H5.5a2.7 2.7 0 0 1-2.7-2.7v-11a2.7 2.7 0 0 1 2.7-2.7h.9v-1.0a1.2 1.2 0 0 1 1.2-1.2zM5.0 10.6v7.7c0 .28.22.5.5.5h13c.28 0 .5-.22.5-.5v-7.7z"/>
+    <rect x="6.9" y="12.4" width="3.0" height="2.6" rx=".8"/>
+    <rect x="11.6" y="12.4" width="3.0" height="2.6" rx=".8"/>
+    <rect x="6.9" y="16.0" width="3.0" height="2.0" rx=".7"/>
+    <rect x="11.6" y="16.0" width="3.0" height="2.0" rx=".7"/>
+  </symbol>
   <symbol id="mwi-institutions" viewBox="0 0 24 24">
     <path fill-rule="evenodd" d="M12.44 2.62a1 1 0 0 0-.88 0L2.2 7.2a1 1 0 0 0 .44 1.9h18.72a1 1 0 0 0 .44-1.9zM12 4.86l4.35 2.14h-8.7z"/>
     <!-- Colunas grossas com vãos estreitos, e não o contrário: a 22px
@@ -4009,6 +4016,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
       <button data-view="subjects"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-subjects"/></svg></span><span class="label">Disciplinas</span></button>
       <button data-view="projects"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-projects"/></svg></span><span class="label">Projetos</span></button>
       <button data-view="activities"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-activities"/></svg></span><span class="label">Atividades</span></button>
+      <button data-view="calendar"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-calendar"/></svg></span><span class="label">Calendário</span></button>
       <button data-view="notes"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-notes"/></svg></span><span class="label">Anotações</span></button>
       <button data-view="files"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-files"/></svg></span><span class="label">Arquivos</span></button>
       <button data-view="support" id="mwNavSupport"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-support"/></svg></span><span class="label">Suporte</span></button>
@@ -4088,6 +4096,13 @@ body.light .mw-faceid-gate-card p{color:#526988}
     <section class="view" id="view-subjects"><section class="card section"><div class="section-head"><h3>Disciplinas</h3><button class="add-btn" data-add="subjects">+ Adicionar</button></div><div class="list" id="subjectsList"></div></section></section>
     <section class="view" id="view-projects"><section class="card section"><div class="section-head"><h3>Projetos</h3><button class="add-btn" data-add="projects">+ Adicionar</button></div><div class="list" id="projectsList"></div></section></section>
     <section class="view" id="view-activities"><section class="card section"><div class="section-head"><h3>Atividades</h3><button class="add-btn" data-add="activities">+ Adicionar</button></div><div class="list" id="activitiesList"></div></section></section>
+    <!-- Calendário: o mês já existia como painel no dashboard e
+         funcionava. Em vez de escrever um segundo calendário, ele foi
+         PROMOVIDO a área própria (o script abaixo o move para cá) e
+         ganhou a visão de semana ao lado. Duplicar teria criado dois
+         calendários para manter em dia, que é como se chega a dois que
+         discordam. -->
+    <section class="view" id="view-calendar"></section>
     <section class="view" id="view-notes"><section class="card section"><div class="section-head"><h3>Anotações</h3><button class="add-btn" data-add="notes">+ Nova anotação</button></div><div class="list" id="notesList"></div></section></section>
     <section class="view" id="view-files"><section class="card section"><div class="section-head"><h3>Arquivos</h3><span>Área preparada para seus materiais</span></div><div class="empty"><strong>Nenhum arquivo adicionado</strong><span>Os arquivos ainda não fazem parte dos dados locais deste protótipo.</span></div></section></section>
     <section class="view" id="view-support">
@@ -26965,6 +26980,301 @@ html body #app .mw-kan-dica{
   window.mwDashRefresh = function(d){
     if (typeof anterior === 'function') { try { anterior(d); } catch (e) {} }
     try { inicia(); } catch (e) {}
+  };
+})();
+</script>
+
+
+<style id="mw-calendario">
+/* =====================================================================
+   §11 CALENDÁRIO
+   =====================================================================
+   O mês responde "como está o período"; a semana responde "o que tenho
+   pela frente". São perguntas diferentes e por isso são duas visões, e
+   não uma só com zoom.
+   ===================================================================== */
+/* O painel do mês é escondido por uma camada antiga com
+   "#app #academicCalendarPanel{display:none!important}", e só revelado
+   sob "#app:has(#view-home.active)". Fora do dashboard ele nunca
+   aparece — foi por isso que, movido para cá, ele sumia mesmo com
+   display:block inline (regra !important vence estilo inline sem
+   !important). Aqui a exceção é declarada para a área nova, e a troca
+   mês/semana passa a ser feita por atributo, não por display inline. */
+html body #app #view-calendar #academicCalendarPanel{
+  display: block !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 20px !important;
+  border-radius: var(--ds-r-3) !important;
+}
+/* Com a largura toda da área, as células do mês esticaram e viraram
+   elipses — um calendário se lê pela grade, e uma grade de elipses
+   deixa de parecer uma grade. Altura mínima e raio moderado devolvem a
+   proporção de célula. */
+html body #app #view-calendar .calendar-day{
+  min-height: 52px !important;
+  border-radius: 12px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 3px !important;
+}
+html body #app #view-calendar .calendar-grid{ gap: 7px !important; }
+html body #app #view-calendar .cal-wd{
+  padding-bottom: 4px; font-size: 11px; font-weight: 700;
+  letter-spacing: .05em; text-transform: uppercase; color: var(--ds-txt-3);
+}
+@media (max-width: 640px){
+  html body #app #view-calendar .calendar-day{ min-height: 42px !important; border-radius: 10px !important; }
+  html body #app #view-calendar .calendar-grid{ gap: 5px !important; }
+}
+
+html body #app #view-calendar #academicCalendarPanel[data-mw-oculto="1"],
+html body #app #view-calendar #mwSemanaCard[data-mw-oculto="1"]{ display: none !important; }
+
+html body #app #view-calendar .mw-cal-modos{
+  display: inline-flex; gap: 3px; padding: 3px; margin-bottom: 14px;
+  border-radius: 999px; background: var(--ds-vidro-3); box-shadow: var(--ds-fio);
+}
+html body #app #view-calendar .mw-cal-modos button{
+  border: 0; cursor: pointer; padding: 7px 15px; border-radius: 999px;
+  background: transparent; color: var(--ds-txt-2);
+  font: inherit; font-size: 12.5px; font-weight: 650;
+  transition: color .18s var(--ds-suave), background .18s var(--ds-suave);
+}
+html body #app #view-calendar .mw-cal-modos button[aria-pressed="true"]{
+  background: var(--ds-ac-grad); color: #fff;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--ds-ac) 38%, transparent);
+}
+
+/* --- Semana -----------------------------------------------------------
+   Sete colunas no desktop; no telefone, sete LINHAS. Não é o mesmo
+   desenho encolhido: numa coluna de 45px não cabe o nome de uma entrega,
+   e a semana existe justamente para ler os nomes. */
+html body #app .mw-sem-topo{
+  display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+}
+html body #app .mw-sem-topo strong{ font-size: 15px; color: var(--ds-txt); }
+html body #app .mw-sem-nav{
+  border: 0; cursor: pointer; width: 34px; height: 34px; border-radius: 11px;
+  background: var(--ds-vidro-2); box-shadow: var(--ds-fio);
+  color: var(--ds-txt-2); font-size: 17px; line-height: 1;
+}
+html body #app .mw-sem-nav:hover{ color: var(--ds-txt); box-shadow: var(--ds-fio-forte); }
+html body #app .mw-sem-hoje{
+  margin-left: auto; border: 0; cursor: pointer;
+  padding: 8px 14px; border-radius: 999px;
+  background: var(--ds-vidro-2); box-shadow: var(--ds-fio);
+  color: var(--ds-txt-2); font: inherit; font-size: 12.5px; font-weight: 650;
+}
+html body #app .mw-sem-hoje:hover{ color: var(--ds-txt); }
+
+html body #app .mw-semana{ display: grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap: 10px; }
+html body #app .mw-sem-dia{
+  min-width: 0; padding: 11px 10px 12px;
+  border-radius: var(--ds-r-2);
+  background: var(--ds-vidro-3);
+  box-shadow: var(--ds-fio);
+}
+html body #app .mw-sem-dia.is-hoje{
+  background: color-mix(in srgb, var(--ds-ac) 15%, transparent);
+  box-shadow: var(--ds-fio-forte), inset 0 0 0 2px color-mix(in srgb, var(--ds-ac) 50%, transparent);
+}
+html body #app .mw-sem-dia.is-passado{ opacity: .62; }
+html body #app .mw-sem-cab{ display: flex; align-items: baseline; gap: 6px; margin-bottom: 9px; }
+html body #app .mw-sem-cab em{
+  font-style: normal; font-size: 11px; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--ds-txt-3);
+}
+html body #app .mw-sem-cab b{ font-size: 17px; font-weight: 750; color: var(--ds-txt); font-variant-numeric: tabular-nums; }
+html body #app .mw-sem-itens{ display: grid; gap: 6px; }
+html body #app .mw-sem-item{
+  padding: 7px 9px; border-radius: 10px;
+  background: var(--ds-vidro-1); box-shadow: var(--ds-fio);
+  font-size: 12px; line-height: 1.35; color: var(--ds-txt);
+  cursor: pointer; text-align: left; border: 0; width: 100%;
+}
+html body #app .mw-sem-item small{ display: block; color: var(--ds-txt-3); font-size: 11px; margin-top: 2px; }
+html body #app .mw-sem-item[data-tipo="atividade"]{ box-shadow: var(--ds-fio), inset 3px 0 0 var(--ds-ac); }
+html body #app .mw-sem-item[data-tipo="marca"]{ box-shadow: var(--ds-fio), inset 3px 0 0 #f0b429; }
+html body #app .mw-sem-nada{ font-size: 11.5px; color: var(--ds-txt-3); padding: 2px; }
+
+@media (max-width: 900px){
+  html body #app .mw-semana{ grid-template-columns: 1fr; gap: 8px; }
+  html body #app .mw-sem-dia{ display: grid; grid-template-columns: 66px minmax(0,1fr); gap: 12px; align-items: start; }
+  html body #app .mw-sem-cab{ flex-direction: column; gap: 0; margin-bottom: 0; }
+  html body #app .mw-sem-dia.is-passado{ display: none; }
+}
+</style>
+
+<script id="mw-calendario-js">
+(function(){
+  'use strict';
+  /* A área de Calendário.
+
+     Ela não desenha um segundo mês: MOVE para cá o painel de mês que já
+     existia no dashboard e funcionava. Um bloco antigo o devolve para o
+     dashboard a cada redesenho ("if(cal.parentElement!==home) home.
+     appendChild(cal)"), então este bloco precisa rodar depois — e roda,
+     por estar no fim da corrente do mwDashRefresh.
+
+     A visão de semana é nova e lê o mesmo que o mês: prazos de
+     atividades e as marcações que a pessoa fez no próprio calendário.
+     Nada é inventado; um dia sem nada diz que não tem nada. */
+
+  var DIAS = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  var MESES = ['janeiro','fevereiro','março','abril','maio','junho',
+               'julho','agosto','setembro','outubro','novembro','dezembro'];
+  var CHAVE_MODO = 'mwCalendarioModo';
+  var deslocamento = 0;   // semanas a partir da atual
+
+  function esc(v){ return String(v==null?'':v).replace(/[&<>'"]/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]; }); }
+  function dados(){
+    var d = window.data;
+    if (!d || typeof d !== 'object') { try { d = JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}'); } catch(e){ d={}; } }
+    return d;
+  }
+  /* Data local, nunca new Date('2026-09-05'): essa forma é lida como
+     meia-noite UTC e, em UTC-3, cai no dia anterior. */
+  function iso(d){
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function domingoDe(d){
+    var x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    x.setDate(x.getDate() - x.getDay());
+    return x;
+  }
+  function modo(){
+    try { return localStorage.getItem(CHAVE_MODO) === 'semana' ? 'semana' : 'mes'; } catch(e){ return 'mes'; }
+  }
+  function defineModo(m){
+    try { localStorage.setItem(CHAVE_MODO, m); } catch(e){}
+    aplica();
+  }
+
+  function itensDe(chave){
+    var d = dados(), out = [];
+    (Array.isArray(d.activities) ? d.activities : []).forEach(function(a){
+      if (a.date === chave) out.push({ tipo:'atividade', titulo: a.name || 'Atividade',
+        meta: [a.subject, a.priority].filter(Boolean).join(' · ') || 'Entrega', ir:'activities' });
+    });
+    var marcas = (d.calMarks && d.calMarks[chave]) || [];
+    marcas.forEach(function(t){ out.push({ tipo:'marca', titulo: t, meta:'Marcado por você', ir:'calendar' }); });
+    return out;
+  }
+
+  function monta(){
+    var view = document.getElementById('view-calendar');
+    if (!view) return false;
+    if (!document.getElementById('mwCalModos')){
+      var modos = document.createElement('div');
+      modos.className = 'mw-cal-modos';
+      modos.id = 'mwCalModos';
+      modos.setAttribute('role','group');
+      modos.setAttribute('aria-label','Como ver o calendário');
+      modos.innerHTML = '<button type="button" data-cal="mes" aria-pressed="true">Mês</button>' +
+                        '<button type="button" data-cal="semana" aria-pressed="false">Semana</button>';
+      modos.addEventListener('click', function(ev){
+        var b = ev.target.closest('button[data-cal]');
+        if (b) { deslocamento = 0; defineModo(b.getAttribute('data-cal')); }
+      });
+      view.appendChild(modos);
+    }
+    if (!document.getElementById('mwSemana')){
+      var caixa = document.createElement('section');
+      caixa.className = 'card section';
+      caixa.id = 'mwSemanaCard';
+      caixa.innerHTML =
+        '<div class="mw-sem-topo">' +
+          '<button type="button" class="mw-sem-nav" id="mwSemAnt" aria-label="Semana anterior">‹</button>' +
+          '<strong id="mwSemRotulo"></strong>' +
+          '<button type="button" class="mw-sem-nav" id="mwSemProx" aria-label="Próxima semana">›</button>' +
+          '<button type="button" class="mw-sem-hoje" id="mwSemHoje">Esta semana</button>' +
+        '</div>' +
+        '<div class="mw-semana" id="mwSemana"></div>';
+      view.appendChild(caixa);
+      caixa.querySelector('#mwSemAnt').addEventListener('click', function(){ deslocamento--; pintaSemana(); });
+      caixa.querySelector('#mwSemProx').addEventListener('click', function(){ deslocamento++; pintaSemana(); });
+      caixa.querySelector('#mwSemHoje').addEventListener('click', function(){ deslocamento = 0; pintaSemana(); });
+      caixa.querySelector('#mwSemana').addEventListener('click', function(ev){
+        var b = ev.target.closest('.mw-sem-item');
+        if (b && window.showView) window.showView(b.getAttribute('data-ir') || 'activities');
+      });
+    }
+    return true;
+  }
+
+  function traz(){
+    var view = document.getElementById('view-calendar');
+    var painel = document.getElementById('academicCalendarPanel');
+    var modos = document.getElementById('mwCalModos');
+    if (!view || !painel || !modos) return;
+    if (painel.parentElement !== view || painel.previousElementSibling !== modos){
+      modos.insertAdjacentElement('afterend', painel);
+    }
+  }
+
+  function pintaSemana(){
+    var grade = document.getElementById('mwSemana');
+    var rotulo = document.getElementById('mwSemRotulo');
+    if (!grade) return;
+    var hoje = new Date(); hoje.setHours(0,0,0,0);
+    var base = domingoDe(hoje);
+    base.setDate(base.getDate() + deslocamento * 7);
+
+    var fim = new Date(base); fim.setDate(fim.getDate() + 6);
+    if (rotulo) rotulo.textContent = base.getMonth() === fim.getMonth()
+      ? base.getDate() + ' a ' + fim.getDate() + ' de ' + MESES[fim.getMonth()]
+      : base.getDate() + ' de ' + MESES[base.getMonth()] + ' a ' + fim.getDate() + ' de ' + MESES[fim.getMonth()];
+
+    var html = '';
+    for (var i = 0; i < 7; i++){
+      var d = new Date(base); d.setDate(d.getDate() + i);
+      var chave = iso(d);
+      var eHoje = d.getTime() === hoje.getTime();
+      var passado = d < hoje;
+      var itens = itensDe(chave);
+      html += '<div class="mw-sem-dia' + (eHoje ? ' is-hoje' : '') + (passado ? ' is-passado' : '') + '">' +
+        '<div class="mw-sem-cab"><em>' + DIAS[d.getDay()] + '</em><b>' + d.getDate() + '</b></div>' +
+        '<div class="mw-sem-itens">' +
+        (itens.length ? itens.map(function(it){
+          return '<button type="button" class="mw-sem-item" data-tipo="' + it.tipo + '" data-ir="' + esc(it.ir) + '">' +
+            esc(it.titulo) + '<small>' + esc(it.meta) + '</small></button>';
+        }).join('') : '<div class="mw-sem-nada">—</div>') +
+        '</div></div>';
+    }
+    grade.innerHTML = html;
+  }
+
+  function aplica(){
+    if (!monta()) return;
+    traz();
+    var m = modo();
+    var painel = document.getElementById('academicCalendarPanel');
+    var semana = document.getElementById('mwSemanaCard');
+    /* display, e não o atributo hidden: os dois têm display de autor,
+       que vence o [hidden] do navegador. */
+    /* Atributo, e não display inline: a regra que esconde este painel
+       fora do dashboard é !important, e !important de folha vence estilo
+       inline sem !important. Marcar o atributo deixa a decisão no CSS,
+       onde a exceção desta área está declarada. */
+    if (painel) { if (m === 'mes') painel.removeAttribute('data-mw-oculto'); else painel.setAttribute('data-mw-oculto','1'); }
+    if (semana) { if (m === 'semana') semana.removeAttribute('data-mw-oculto'); else semana.setAttribute('data-mw-oculto','1'); }
+    document.querySelectorAll('#mwCalModos button[data-cal]').forEach(function(b){
+      b.setAttribute('aria-pressed', b.getAttribute('data-cal') === m ? 'true' : 'false');
+    });
+    if (m === 'semana') pintaSemana();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', aplica);
+  else aplica();
+
+  var anterior = window.mwDashRefresh;
+  window.mwDashRefresh = function(d){
+    if (typeof anterior === 'function') { try { anterior(d); } catch(e){} }
+    try { aplica(); } catch(e){}
   };
 })();
 </script>

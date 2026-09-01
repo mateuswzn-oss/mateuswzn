@@ -1,3 +1,17 @@
+/* v67 (BETA — Calendário vira área própria):
+   O calendário do mês já existia e funcionava; estava escondido dentro
+   do painel inicial, competindo por espaço com o resto do dashboard.
+   Em vez de escrever um segundo calendário, este passou a morar numa
+   área com nome próprio na navegação — o mesmo painel, promovido, com
+   os mesmos dados e as mesmas marcações.
+   O que é novo é a visão de semana: sete dias lado a lado lendo os
+   prazos das atividades e as marcações do mês, porque "o que tenho
+   esta semana" é uma pergunta diferente de "como está o mês".
+   A visão escolhida fica guardada.
+   A troca entre mês e semana não usa display inline: uma regra antiga
+   com !important esconde o painel do mês fora da tela inicial, e regra
+   com !important ganha de estilo inline. Então a visibilidade é
+   controlada por atributo, com exceção declarada no CSS da área. */
 /* v66 (BETA — Projetos ganham quadro):
    As cinco situações já existiam no cadastro; o que faltava era a tela
    em que elas significam alguma coisa. A lista responde "quais projetos
@@ -723,7 +737,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v66-beta';
+const CACHE_NAME = 'mw-shell-v67-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
