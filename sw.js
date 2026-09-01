@@ -1,3 +1,19 @@
+/* v66 (BETA — Projetos ganham quadro):
+   As cinco situações já existiam no cadastro; o que faltava era a tela
+   em que elas significam alguma coisa. A lista responde "quais projetos
+   existem"; o quadro responde "onde cada um está".
+   A lista não foi removida — quem tem quinze projetos lê melhor nela.
+   O modo escolhido fica guardado.
+   O arrasto usa Pointer Events e não a API nativa de arrastar-e-soltar,
+   porque a nativa não funciona com o dedo: um quadro que só se opera com
+   mouse não serve para metade dos aparelhos em que este app roda. E há
+   caminho pelo teclado — setas movem o cartão em foco de coluna,
+   devolvendo o foco ao mesmo projeto no destino.
+   O quadro não tem dados próprios: move um cartão é editar o mesmo campo
+   "status" de sempre, então a mudança aparece na lista, no filtro e nas
+   métricas sem nenhuma sincronização entre eles.
+   Projeto sem status, ou com "Planejado" de uma versão anterior, cai na
+   primeira coluna em vez de sumir do quadro. */
 /* v65 (BETA — os dez ícones redesenhados como um conjunto):
    O problema não era cada desenho: era o conjunto não parecer um
    conjunto. "Instituições" era um prédio a traço fino que virava borrão
@@ -707,7 +723,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v65-beta';
+const CACHE_NAME = 'mw-shell-v66-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
