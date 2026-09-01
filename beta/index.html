@@ -23085,5 +23085,230 @@ html body.light #mateusAiTitle .mw-id-beta{
 })();
 </script>
 
+<style id="mw-busca">
+/* O painel de resultados fica ancorado no campo, que já é position
+   relative dentro do .search-wrap. Largura própria e maior que o campo
+   porque um resultado é "título + onde está", e não cabe na largura de
+   um input de topo. */
+.mw-busca-painel{
+  /* FIXED, e pendurado no <body>. O .search-wrap tem overflow:hidden
+     por causa da animação de abrir o campo, e isso CORTAVA o painel:
+     ele existia, tinha 420x160, e não aparecia um pixel. Sair do
+     envolucro resolve sem mexer naquela animação. As coordenadas são
+     calculadas a cada abertura, a partir da posição real do campo. */
+  position: fixed; z-index: 240;
+  width: min(420px, calc(100vw - 32px));
+  max-height: min(60vh, 460px); overflow: auto;
+  padding: 6px;
+  border-radius: 16px;
+  background: var(--id-sup, #0e1526);
+  border: 1px solid var(--id-borda, rgba(140,165,220,.13));
+  box-shadow: var(--id-sombra-alta, 0 20px 48px rgba(2,6,20,.44));
+}
+.mw-busca-painel[hidden]{ display: none !important; }
+.mw-busca-grupo{
+  padding: 10px 12px 4px;
+  font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--id-txt-3, #7b88a6);
+}
+.mw-busca-item{
+  all: unset; box-sizing: border-box; cursor: pointer;
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 9px 12px; border-radius: 11px;
+}
+.mw-busca-item:hover,
+.mw-busca-item:focus-visible,
+.mw-busca-item[aria-selected="true"]{ background: var(--id-sup-3, rgba(255,255,255,.06)); }
+.mw-busca-item:focus-visible{ outline: 2px solid var(--id-ac, #5b6cff); outline-offset: -2px; }
+.mw-busca-item .mw-busca-txt{ flex: 1; min-width: 0; }
+.mw-busca-item strong{
+  display: block; font-size: 13px; font-weight: 600;
+  color: var(--id-txt, #e9eefb);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.mw-busca-item small{
+  display: block; margin-top: 2px; font-size: 11px;
+  color: var(--id-txt-3, #7b88a6);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.mw-busca-item mark{
+  background: var(--id-ac-suave, rgba(91,108,255,.18));
+  color: inherit; border-radius: 3px; padding: 0 1px;
+}
+.mw-busca-vazio{
+  padding: 18px 14px; text-align: center;
+  font-size: 12.5px; color: var(--id-txt-3, #7b88a6);
+}
+.mw-busca-dica{
+  padding: 8px 12px 10px; border-top: 1px solid var(--id-borda, rgba(140,165,220,.13));
+  margin-top: 4px; font-size: 10.5px; color: var(--id-txt-3, #7b88a6);
+}
+@media (max-width: 560px){
+  .mw-busca-painel{ width: calc(100vw - 28px); }
+}
+</style>
+
+<script id="mw-busca-global-js">
+(function(){
+  'use strict';
+  /* BUSCA GLOBAL
+     ================================================================
+     O que existia antes NÃO era busca global: um listener de 'input'
+     percorria `.card, .lecture-card, .sem-item` da tela atual e escondia
+     com style.display quem não batesse com o texto. Três problemas:
+     só enxergava a tela aberta, escondia cartões inteiros em vez de
+     apontar itens, e o estado ESCAPAVA — quem digitasse e navegasse
+     sem limpar o campo continuava com cartões sumidos em outra área,
+     sem nenhuma pista do motivo.
+
+     Aquele listener continua registrado; não dá pra removê-lo sem
+     também derrubar os outros que compartilham o mesmo campo (abrir e
+     fechar a gaveta, Escape). Como este bloco entra DEPOIS, o handler
+     daqui roda depois dele no mesmo evento e desfaz o que ele escondeu.
+     É proposital e está comentado dos dois lados. */
+
+  var campo = document.getElementById('globalSearch');
+  var envolucro = document.getElementById('searchWrap');
+  if (!campo || !envolucro) return;
+
+  var painel = document.createElement('div');
+  painel.className = 'mw-busca-painel';
+  painel.id = 'mwBuscaResultados';
+  painel.setAttribute('role', 'listbox');
+  painel.hidden = true;
+  document.body.appendChild(painel);
+
+  /* Ancora o painel na posição atual do campo. Recalculado a cada
+     abertura porque a barra do topo se move: ela comprime no scroll e
+     o campo cresce ao abrir. */
+  function ancora(){
+    var r = envolucro.getBoundingClientRect();
+    var largura = Math.min(420, window.innerWidth - 32);
+    var esquerda = Math.min(Math.max(12, r.right - largura), window.innerWidth - largura - 12);
+    painel.style.top = Math.round(r.bottom + 8) + 'px';
+    painel.style.left = Math.round(esquerda) + 'px';
+  }
+
+  var AREAS = [
+    ['subjects',   'Disciplinas', 'subjects',   function(x){ return [x.name, x.description]; }],
+    ['activities', 'Atividades',  'activities', function(x){ return [x.name, x.description, x.date]; }],
+    ['projects',   'Projetos',    'projects',   function(x){ return [x.name, x.description, x.tag]; }],
+    ['notes',      'Anotações',   'notes',      function(x){ return [x.title, x.body]; }]
+  ];
+
+  function esc(v){
+    return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+  function semAcento(v){
+    return String(v == null ? '' : v).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  }
+  /* Destaca o trecho encontrado no TEXTO ORIGINAL, usando a posição
+     achada na versão sem acento. As duas versões têm o mesmo
+     comprimento porque normalize('NFD') separa o acento e o replace o
+     remove, então os índices continuam válidos — é isso que permite
+     procurar "calculo" e destacar "Cálculo". */
+  function destaca(texto, termo){
+    var original = String(texto == null ? '' : texto);
+    var i = semAcento(original).indexOf(termo);
+    if (i < 0) return esc(original);
+    return esc(original.slice(0, i)) + '<mark>' + esc(original.slice(i, i + termo.length)) + '</mark>' + esc(original.slice(i + termo.length));
+  }
+  function humana(iso){
+    return typeof window.mwDataHumana === 'function' ? window.mwDataHumana(iso) : (iso || '');
+  }
+
+  function procura(termo){
+    var d = window.data || {};
+    var achados = [];
+    AREAS.forEach(function(area){
+      var lista = Array.isArray(d[area[0]]) ? d[area[0]] : [];
+      lista.forEach(function(item, indice){
+        var campos = area[3](item) || [];
+        var casa = campos.some(function(c){ return semAcento(c).indexOf(termo) >= 0; });
+        if (!casa) return;
+        var titulo = item.name || item.title || 'Sem título';
+        var apoio = item.description || item.body || '';
+        if (area[0] === 'activities' && item.date) apoio = (apoio ? apoio + ' · ' : '') + humana(item.date);
+        achados.push({ grupo: area[1], view: area[2], titulo: titulo, apoio: apoio, indice: indice });
+      });
+    });
+    return achados;
+  }
+
+  function pinta(termo){
+    if (!termo) { painel.hidden = true; painel.innerHTML = ''; return; }
+    var achados = procura(termo);
+    if (!achados.length) {
+      painel.innerHTML = '<div class="mw-busca-vazio">Nada encontrado para “' + esc(campo.value.trim()) + '”.</div>';
+      ancora();
+      painel.hidden = false;
+      return;
+    }
+    /* Teto de 24 para o painel não virar uma lista infinita; o rodapé
+       diz quantos ficaram de fora, em vez de fingir que são só esses. */
+    var mostrados = achados.slice(0, 24);
+    var html = '', grupoAtual = '';
+    mostrados.forEach(function(a){
+      if (a.grupo !== grupoAtual) { grupoAtual = a.grupo; html += '<div class="mw-busca-grupo">' + esc(a.grupo) + '</div>'; }
+      html += '<button type="button" class="mw-busca-item" role="option" data-view="' + esc(a.view) + '">' +
+              '<span class="mw-busca-txt"><strong>' + destaca(a.titulo, termo) + '</strong>' +
+              (a.apoio ? '<small>' + destaca(a.apoio, termo) + '</small>' : '') +
+              '</span></button>';
+    });
+    if (achados.length > mostrados.length) {
+      html += '<div class="mw-busca-dica">Mostrando ' + mostrados.length + ' de ' + achados.length + ' resultados.</div>';
+    }
+    painel.innerHTML = html;
+    ancora();
+    painel.hidden = false;
+  }
+
+  function fecha(){ painel.hidden = true; painel.innerHTML = ''; }
+
+  campo.addEventListener('input', function(){
+    /* Desfaz o esconde-cartões do listener antigo (ver o comentário no
+       topo). Ele roda antes deste, no mesmo evento. */
+    document.querySelectorAll('#app .card, #app .lecture-card, #app .sem-item').forEach(function(el){
+      if (el.style.display === 'none') el.style.removeProperty('display');
+    });
+    pinta(semAcento(campo.value.trim()));
+  });
+
+  painel.addEventListener('click', function(e){
+    var item = e.target.closest('.mw-busca-item');
+    if (!item) return;
+    if (typeof window.showView === 'function') window.showView(item.dataset.view);
+    else document.querySelector('#nav [data-view="' + item.dataset.view + '"]')?.click();
+    campo.value = '';
+    fecha();
+    envolucro.classList.remove('open');
+  });
+
+  campo.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') { fecha(); return; }
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp' && e.key !== 'Enter') return;
+    var itens = [...painel.querySelectorAll('.mw-busca-item')];
+    if (!itens.length) return;
+    var atual = itens.findIndex(function(x){ return x.getAttribute('aria-selected') === 'true'; });
+    if (e.key === 'Enter') { e.preventDefault(); (itens[atual] || itens[0]).click(); return; }
+    e.preventDefault();
+    var novo = e.key === 'ArrowDown' ? (atual + 1) % itens.length : (atual <= 0 ? itens.length - 1 : atual - 1);
+    itens.forEach(function(x){ x.removeAttribute('aria-selected'); });
+    itens[novo].setAttribute('aria-selected', 'true');
+    itens[novo].scrollIntoView({ block: 'nearest' });
+  });
+
+  document.addEventListener('click', function(e){
+    if (!envolucro.contains(e.target) && !painel.contains(e.target)) fecha();
+  });
+  window.addEventListener('resize', function(){ if (!painel.hidden) ancora(); });
+  /* Rolar fecha em vez de reancorar: a barra do topo comprime durante o
+     scroll, então perseguir a posição faria o painel tremer. */
+  window.addEventListener('scroll', function(){ if (!painel.hidden) fecha(); }, true);
+})();
+</script>
+
 </body>
 </html>
