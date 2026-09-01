@@ -22009,5 +22009,499 @@ html body.light .eva-voice[data-mw-voz="leitura"][aria-pressed="true"]{
 })();
 </script>
 
+<style id="mw-identidade-2026">
+/* ====================================================================
+   IDENTIDADE — Fase 2 da reformulação
+   ====================================================================
+   Esta folha é a ÚLTIMA a falar sobre cor de superfície, e é de
+   propósito. O arquivo acumulou camadas de pele ao longo do tempo
+   (bege, grafite, ciano, "liquid glass"), cada uma com !important e
+   especificidade maior que a anterior. Tentar editar cada uma delas
+   seria mexer em dezenas de regras que hoje funcionam. Em vez disso,
+   tudo o que a identidade nova define mora aqui, derivado de tokens,
+   num ponto só — e as camadas antigas continuam intactas por baixo,
+   prontas pra voltar a valer se esta folha for removida inteira.
+
+   As cores vêm das imagens de referência: chão azul-marinho quase
+   preto, cartões um degrau acima com borda de 1px, e um acento que
+   sai do azul e chega no violeta. O claro NÃO é a inversão do escuro
+   — foi reequilibrado pra ter o mesmo peso com a luz vindo de cima.
+   ==================================================================== */
+
+html:root{
+  /* superfícies */
+  --id-chao:#070b16;
+  --id-sup:#0e1526;
+  --id-sup-2:#131c31;
+  --id-sup-3:#1a2440;
+  --id-borda:rgba(140,165,220,.13);
+  --id-borda-forte:rgba(140,165,220,.26);
+  /* texto */
+  --id-txt:#e9eefb;
+  --id-txt-2:#a6b2ce;
+  --id-txt-3:#7b88a6;
+  /* acento: azul que caminha pro violeta */
+  --id-ac:#5b6cff;
+  --id-ac-2:#8b5cf6;
+  --id-ac-grad:linear-gradient(135deg,#4f5bff 0%,#8b5cf6 100%);
+  --id-ac-suave:rgba(91,108,255,.16);
+  --id-ac-txt:#93a3ff;
+  /* semânticas — cada uma com o par cor/fundo já resolvido */
+  --id-ok:#34d399;      --id-ok-bg:rgba(16,185,129,.15);   --id-ok-bd:rgba(16,185,129,.26);
+  --id-alerta:#fbbf24;  --id-alerta-bg:rgba(245,158,11,.15); --id-alerta-bd:rgba(245,158,11,.26);
+  --id-perigo:#f87171;  --id-perigo-bg:rgba(239,68,68,.15);  --id-perigo-bd:rgba(239,68,68,.28);
+  --id-info:#60a5fa;    --id-info-bg:rgba(59,130,246,.16);   --id-info-bd:rgba(59,130,246,.28);
+  --id-neutro:#94a3b8;  --id-neutro-bg:rgba(148,163,184,.13);--id-neutro-bd:rgba(148,163,184,.22);
+  /* raios e sombra */
+  --id-r-card:20px;
+  --id-r-linha:14px;
+  --id-r-tile:11px;
+  --id-sombra:0 1px 2px rgba(2,6,20,.28),0 12px 32px rgba(2,6,20,.34);
+  --id-sombra-alta:0 2px 4px rgba(2,6,20,.32),0 20px 48px rgba(2,6,20,.44);
+}
+
+html body.light{
+  --id-chao:#f1f4fc;
+  --id-sup:#ffffff;
+  --id-sup-2:#f7f9fe;
+  --id-sup-3:#eef2fb;
+  --id-borda:rgba(18,38,80,.10);
+  --id-borda-forte:rgba(18,38,80,.20);
+  --id-txt:#101a2e;
+  /* Medido: o par anterior (#55617d / #78849e) dava 3,3–3,6:1 sobre as
+     superfícies claras — abaixo do mínimo AA de 4,5. Escurecidos até
+     7,1 e 5,0, que mantêm a hierarquia entre os dois níveis em vez de
+     achatar os dois no mesmo tom só pra passar. */
+  --id-txt-2:#4d5875;
+  --id-txt-3:#5f6983;
+  --id-ac:#4f5bff;
+  --id-ac-2:#7c3aed;
+  --id-ac-grad:linear-gradient(135deg,#4f5bff 0%,#7c3aed 100%);
+  --id-ac-suave:rgba(79,91,255,.10);
+  --id-ac-txt:#4338ca;
+  /* no claro o texto da cor precisa escurecer pra manter AA sobre o
+     fundo tonalizado — não basta reusar o tom do escuro */
+  --id-ok:#047857;      --id-ok-bg:rgba(5,150,105,.11);    --id-ok-bd:rgba(5,150,105,.24);
+  --id-alerta:#b45309;  --id-alerta-bg:rgba(217,119,6,.11); --id-alerta-bd:rgba(217,119,6,.24);
+  --id-perigo:#be123c;  --id-perigo-bg:rgba(225,29,72,.10); --id-perigo-bd:rgba(225,29,72,.24);
+  --id-info:#1d4ed8;    --id-info-bg:rgba(37,99,235,.10);   --id-info-bd:rgba(37,99,235,.24);
+  --id-neutro:#475569;  --id-neutro-bg:rgba(71,85,105,.09); --id-neutro-bd:rgba(71,85,105,.18);
+  --id-sombra:0 1px 2px rgba(20,40,90,.06),0 10px 28px rgba(20,40,90,.08);
+  --id-sombra-alta:0 2px 4px rgba(20,40,90,.08),0 18px 44px rgba(20,40,90,.12);
+}
+</style>
+
+<style id="mw-identidade-superficies">
+/* ---- CARTÕES -------------------------------------------------------
+   A pele ciano anterior pintava os cartões com um gradiente esverdeado
+   e um brilho radial no canto. A referência é mais sóbria: uma
+   superfície só, borda de 1px e raio generoso. O ::before radial da
+   folha antiga é neutralizado aqui em vez de removido lá. */
+html body #app .main .card,
+html body #app .main .card.section,
+html body #app .main .activity-card,
+html body #app .main .section-card{
+  background: var(--id-sup) !important;
+  border: 1px solid var(--id-borda) !important;
+  border-radius: var(--id-r-card) !important;
+  box-shadow: var(--id-sombra) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+html body #app .main .card::before{ background: none !important; opacity: 0 !important; }
+
+/* Linhas internas: um degrau acima do cartão, nunca mais escuras que
+   ele — no claro isso se inverte sozinho porque vem do token. */
+html body #app .main .course,
+html body #app .main .project,
+html body #app .main .list-item,
+html body #app .main .lecture-card{
+  background: var(--id-sup-2) !important;
+  border: 1px solid var(--id-borda) !important;
+  border-radius: var(--id-r-linha) !important;
+  box-shadow: none !important;
+}
+html body #app .main .course:hover,
+html body #app .main .project:hover,
+html body #app .main .list-item:hover,
+html body #app .main .lecture-card:hover{
+  background: var(--id-sup-3) !important;
+  border-color: var(--id-borda-forte) !important;
+  transform: none !important;
+}
+
+/* Tipografia dos cartões: a referência usa rótulo pequeno em caixa
+   alta, número grande e sub-rótulo discreto. */
+html body #app .main .kicker{
+  color: var(--id-txt-3) !important;
+  font-size: 10.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: .09em !important;
+}
+html body #app .main .stat strong{
+  color: var(--id-txt) !important;
+  font-size: 32px !important;
+  font-weight: 700 !important;
+  letter-spacing: -.02em !important;
+  font-variant-numeric: tabular-nums;
+  margin-top: 10px !important;
+}
+html body #app .main .stat span{
+  color: var(--id-txt-3) !important;
+  font-size: 11px !important;
+}
+html body #app .main .section-head h3{ color: var(--id-txt) !important; font-size: 15.5px !important; }
+html body #app .main .section-head span{ color: var(--id-txt-3) !important; }
+html body #app .main .course small,
+html body #app .main .list-item small,
+html body #app .main .project p,
+html body #app .main .activity-card p{ color: var(--id-txt-2) !important; }
+html body #app .main .course b,
+html body #app .main .list-item strong,
+html body #app .main .project b,
+html body #app .main .activity-card h4{ color: var(--id-txt) !important; }
+
+/* O cartão de número ganha espaço à direita pro tile de ícone, que é
+   inserido por script (mw-identidade-js) só onde existe de verdade. */
+html body #app .main .card.stat{
+  position: relative;
+  padding: 20px !important;
+}
+html body #app .main .card.stat:has(.mw-id-tile){ padding-right: 74px !important; }
+/* A pele antiga tem um `#app .main .card > *{position:relative}` que
+   ganhava daqui e jogava o tile pro fim do fluxo, no rodapé do cartão.
+   Especificidade maior resolve sem mexer naquela regra. */
+html body #app .main .card.stat .mw-id-tile{
+  position: absolute !important;
+  top: 20px; right: 20px;
+  width: 38px; height: 38px;
+  border-radius: var(--id-r-tile);
+  display: grid; place-items: center;
+  pointer-events: none;
+}
+.mw-id-tile svg{ width: 19px; height: 19px; }
+.mw-id-tile[data-tom="info"]{ background: var(--id-info-bg); color: var(--id-info); }
+.mw-id-tile[data-tom="ok"]{ background: var(--id-ok-bg); color: var(--id-ok); }
+.mw-id-tile[data-tom="alerta"]{ background: var(--id-alerta-bg); color: var(--id-alerta); }
+.mw-id-tile[data-tom="acento"]{ background: var(--id-ac-suave); color: var(--id-ac-txt); }
+/* No claro os fundos dos chips (alpha ~.10) são propositalmente
+   discretos, mas num quadrado de 38px sem texto por perto esse mesmo
+   tom lê como cinza, não como cor. O tile ganha tinta própria, mais
+   forte, sem mexer no chip. */
+html body.light .mw-id-tile[data-tom="info"]{   background: rgba(37,99,235,.14); }
+html body.light .mw-id-tile[data-tom="ok"]{     background: rgba(5,150,105,.15); }
+html body.light .mw-id-tile[data-tom="alerta"]{ background: rgba(217,119,6,.15); }
+html body.light .mw-id-tile[data-tom="acento"]{ background: rgba(79,91,255,.14); }
+
+/* A barrinha colorida no topo de cada cartão de número era da pele
+   antiga; a referência não tem. Sai sem tocar na folha que a criou. */
+html body #app .main .card.stat::before,
+html body #app .main .card.stat::after{ display: none !important; }
+
+/* Barra de progresso no acento da marca */
+html body #app .main .progress{ background: var(--id-sup-3) !important; }
+html body #app .main .progress i{ background: var(--id-ac-grad) !important; }
+
+/* Vazios: tracejado discreto, sem competir com o conteúdo real */
+html body #app .main .empty{
+  border: 1px dashed var(--id-borda-forte) !important;
+  border-radius: var(--id-r-linha) !important;
+  color: var(--id-txt-3) !important;
+  background: transparent !important;
+}
+html body #app .main .empty strong{ color: var(--id-txt-2) !important; }
+</style>
+
+<style id="mw-identidade-navegacao">
+/* ---- SIDEBAR -------------------------------------------------------
+   Nas referências o item ativo é uma pílula PREENCHIDA no acento, não
+   um vidro sutil. Só a pele muda: o mecanismo de estado derivado
+   (MutationObserver em .view.active) continua sendo quem decide quem
+   está aceso — nada aqui guarda estado paralelo.
+
+   Escopo em .sidebar de propósito: a barra de baixo do mobile tem uma
+   lente com física própria, afinada em várias rodadas, e não é isto. */
+html body #app .sidebar{
+  background: var(--id-chao) !important;
+  border-right: 1px solid var(--id-borda) !important;
+}
+html body #app .sidebar .nav button{
+  color: var(--id-txt-2) !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 12px !important;
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: background .18s ease, color .18s ease !important;
+}
+html body #app .sidebar .nav button:hover:not(.active){
+  background: var(--id-sup-2) !important;
+  color: var(--id-txt) !important;
+}
+html body #app .sidebar .nav button.active{
+  background: var(--id-ac-grad) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  border-color: transparent !important;
+  box-shadow: 0 6px 18px rgba(79,91,255,.28) !important;
+}
+html body #app .sidebar .nav button.active *{ color: #fff !important; }
+/* No ativo o tile do ícone vira translúcido sobre o preenchido, como
+   nas imagens — em vez de manter a cor própria e brigar com o fundo. */
+html body #app .sidebar .nav button.active .nav-icon{
+  background: rgba(255,255,255,.18) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+}
+html body #app .sidebar .nav button.active .nav-icon svg{ color: #fff !important; }
+/* A barrinha lateral da pele antiga não existe na referência */
+html body #app .sidebar .nav button.active::before,
+html body #app .sidebar .nav button.active::after{ display: none !important; }
+html body #app .sidebar .nav-title{
+  color: var(--id-txt-3) !important;
+  font-size: 9.5px !important;
+  letter-spacing: .14em !important;
+}
+
+/* No CLARO existe uma regra antiga `html body.light #app #nav
+   button.active` que pinta a pílula de azul-claro. Ela tem DOIS ids
+   (#app e #nav) contra um só do bloco acima, então ganhava e o ativo
+   ficava pálido enquanto no escuro já estava certo. Repetimos os dois
+   ids aqui para o claro receber a mesma pílula preenchida. */
+html body.light #app .sidebar #nav button.active{
+  background: var(--id-ac-grad) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+  box-shadow: 0 6px 18px rgba(79,91,255,.24) !important;
+}
+html body.light #app .sidebar #nav button.active *{ color: #fff !important; }
+html body.light #app .sidebar #nav button.active .nav-icon{
+  background: rgba(255,255,255,.22) !important;
+  border-color: transparent !important;
+}
+html body.light #app .sidebar #nav button:hover:not(.active){
+  background: var(--id-sup-3) !important;
+  color: var(--id-txt) !important;
+}
+</style>
+
+<style id="mw-identidade-chips-botoes">
+/* ---- CHIPS ---------------------------------------------------------
+   Um chip só, com o tom escolhido por atributo. Os valores vêm do que
+   os dados realmente têm (o mwSelos da Fase 1 e o selo de prazo do
+   renderAll) — nenhum status foi inventado pra encher a tela. */
+html body #app .mw-selo,
+html body #app .mw-due-badge,
+html body #app .main .tag{
+  display: inline-flex; align-items: center;
+  padding: 4px 10px !important;
+  border-radius: 999px !important;
+  font-size: 10.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: .015em !important;
+  line-height: 1.5 !important;
+  background: var(--id-neutro-bg) !important;
+  color: var(--id-neutro) !important;
+  border: 1px solid var(--id-neutro-bd) !important;
+}
+html body #app .mw-selo-status[data-v="Concluído"]{ background:var(--id-ok-bg)!important;     color:var(--id-ok)!important;     border-color:var(--id-ok-bd)!important; }
+html body #app .mw-selo-status[data-v="Em andamento"]{ background:var(--id-info-bg)!important; color:var(--id-info)!important;   border-color:var(--id-info-bd)!important; }
+html body #app .mw-selo-status[data-v="Em revisão"]{ background:var(--id-alerta-bg)!important; color:var(--id-alerta)!important; border-color:var(--id-alerta-bd)!important; }
+html body #app .mw-selo-prio[data-v="Alta"]{  background:var(--id-perigo-bg)!important; color:var(--id-perigo)!important; border-color:var(--id-perigo-bd)!important; }
+html body #app .mw-selo-prio[data-v="Média"]{ background:var(--id-alerta-bg)!important; color:var(--id-alerta)!important; border-color:var(--id-alerta-bd)!important; }
+html body #app .mw-due-badge.overdue{ background:var(--id-perigo-bg)!important; color:var(--id-perigo)!important; border-color:var(--id-perigo-bd)!important; }
+html body #app .mw-due-badge.today{   background:var(--id-info-bg)!important;   color:var(--id-info)!important;   border-color:var(--id-info-bd)!important; }
+/* O selo de prazo vinha em CAIXA ALTA de uma folha antiga enquanto os
+   selos de status e prioridade vinham em caixa normal — dois pesos
+   diferentes lado a lado na mesma linha. Um padrão só. */
+html body #app .mw-due-badge{ text-transform: none !important; }
+/* O selo de prazo é um <span> solto e os demais vêm dentro de um <div>;
+   com o div em bloco, "Atrasada" ficava numa linha e "Alta" na de
+   baixo. Ambos em nível de linha resolvem sem mexer na marcação, que é
+   escrita dentro do renderAll. */
+html body #app .mw-due-badge{ margin-right: 6px !important; vertical-align: middle; }
+html body #app .mw-selos{
+  display: inline-flex !important;
+  vertical-align: middle;
+  margin-top: 8px !important;
+  gap: 6px !important;
+}
+html body #app .main .tag{ background:var(--id-ac-suave)!important; color:var(--id-ac-txt)!important; border-color:var(--id-borda-forte)!important; }
+
+/* Contadores do cabeçalho de cada área (".workspace-metric"). Estavam
+   com fundo ESCURO fixo — rgba(4,14,29,.42) — sem variante clara: no
+   tema claro viravam duas caixas cinza-escuro com número ciano em cima
+   de um cartão branco, ilegíveis. Derivando dos tokens, seguem o tema
+   sozinhos. */
+html body #app .workspace-metric{
+  background: var(--id-sup-2) !important;
+  border: 1px solid var(--id-borda) !important;
+  border-radius: 12px !important;
+}
+html body #app .workspace-metric b{ color: var(--id-txt) !important; font-variant-numeric: tabular-nums; }
+html body #app .workspace-metric span{ color: var(--id-txt-3) !important; }
+html body #app .workspace-hero h4{ color: var(--id-txt) !important; }
+html body #app .workspace-hero p{ color: var(--id-txt-2) !important; }
+
+/* Rótulo "Beta"/"Em breve": mesma família, tom do acento. Existe pra
+   marcar o que ainda não é real — nunca pra decorar. */
+.mw-id-beta{
+  display: inline-flex; align-items: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 9.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  background: var(--id-ac-suave); color: var(--id-ac-txt);
+  border: 1px solid var(--id-borda-forte);
+}
+
+/* ---- BOTÕES --------------------------------------------------------
+   Os estados estavam incompletos: existia hover, faltavam pressionado,
+   desabilitado com aparência própria, carregando e foco visível pelo
+   teclado. Foco visível é requisito de acessibilidade, não enfeite. */
+html body #app .main .save-btn,
+html body #app .main .modal-submit,
+html body #app .main .workspace-submit,
+html body #app .main .primary{
+  background: var(--id-ac-grad) !important;
+  color: #fff !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+  font-weight: 650 !important;
+  transition: filter .16s ease, transform .12s ease, box-shadow .16s ease !important;
+}
+html body #app .main .save-btn:hover:not(:disabled),
+html body #app .main .modal-submit:hover:not(:disabled),
+html body #app .main .workspace-submit:hover:not(:disabled){
+  filter: brightness(1.08);
+  box-shadow: 0 8px 22px rgba(79,91,255,.32) !important;
+}
+html body #app .main .save-btn:active:not(:disabled),
+html body #app .main .modal-submit:active:not(:disabled),
+html body #app .main .workspace-submit:active:not(:disabled){
+  transform: translateY(1px) scale(.995);
+  filter: brightness(.94);
+  box-shadow: none !important;
+}
+html body #app .main .small-btn,
+html body #app .main .add-btn,
+html body #app .main .theme-btn{
+  background: var(--id-sup-3) !important;
+  color: var(--id-txt-2) !important;
+  border: 1px solid var(--id-borda) !important;
+  border-radius: 10px !important;
+  transition: background .16s ease, color .16s ease, border-color .16s ease, transform .12s ease !important;
+}
+html body #app .main .small-btn:hover:not(:disabled),
+html body #app .main .add-btn:hover:not(:disabled),
+html body #app .main .theme-btn:hover:not(:disabled){
+  background: var(--id-ac-suave) !important;
+  color: var(--id-ac-txt) !important;
+  border-color: var(--id-borda-forte) !important;
+}
+html body #app .main .small-btn:active:not(:disabled),
+html body #app .main .add-btn:active:not(:disabled){ transform: translateY(1px); }
+html body #app .main .small-btn.danger{ color: var(--id-perigo) !important; border-color: var(--id-perigo-bd) !important; }
+html body #app .main .small-btn.danger:hover:not(:disabled){ background: var(--id-perigo-bg) !important; color: var(--id-perigo) !important; }
+html body #app .main .theme-btn.active{ background: var(--id-ac-grad) !important; color: #fff !important; border-color: transparent !important; }
+
+/* Desabilitado precisa PARECER desabilitado, não só recusar o clique */
+html body #app .main button:disabled,
+html body #app .main button[aria-disabled="true"]{
+  opacity: .45 !important;
+  cursor: not-allowed !important;
+  filter: grayscale(.35);
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* Carregando: o botão guarda a largura e troca o rótulo por um giro,
+   pra linha não pular quando o texto sai. */
+html body #app .main button[data-carregando="1"]{
+  color: transparent !important;
+  pointer-events: none;
+  position: relative;
+}
+html body #app .main button[data-carregando="1"]::after{
+  content: '';
+  position: absolute; inset: 0; margin: auto;
+  width: 15px; height: 15px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.35);
+  border-top-color: #fff;
+  animation: mwIdGira .6s linear infinite;
+}
+@keyframes mwIdGira{ to{ transform: rotate(360deg); } }
+
+/* Foco visível: só no teclado, pra não acender a cada clique de mouse */
+html body #app .main button:focus-visible,
+html body #app #nav button:focus-visible,
+html body #app .main input:focus-visible,
+html body #app .main textarea:focus-visible,
+html body #app .main select:focus-visible{
+  outline: 2px solid var(--id-ac) !important;
+  outline-offset: 2px !important;
+}
+
+/* No celular a linha de item é um flex com o texto de um lado e os
+   botões do outro. Medido em 390px: sobravam 133px para o texto, então
+   o título quebrava, a data quebrava e os chips caíam em duas linhas —
+   e ficou pior depois que a Fase 1 acrescentou o botão Editar. Empilhar
+   devolve a largura inteira ao conteúdo e põe as ações embaixo. */
+@media (max-width: 640px){
+  html body #app .main .list-item{
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+  html body #app .main .list-item .mw-item-acoes{
+    display: flex !important;
+    gap: 8px !important;
+  }
+  html body #app .main .list-item .mw-item-acoes .small-btn{ flex: 1; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  html body #app .main button[data-carregando="1"]::after{ animation-duration: 2.4s; }
+  html body #app .main .save-btn,
+  html body #app .main .small-btn,
+  html body #app .main .add-btn{ transition: none !important; }
+}
+</style>
+
+<script id="mw-identidade-js">
+(function(){
+  'use strict';
+  /* Tiles de ícone nos cartões de número, como nas referências.
+     Feito por script e não na marcação porque os cartões são escritos
+     em três lugares diferentes do arquivo; aqui é um ponto só, e se
+     este script sumir os cartões voltam ao que eram — o tile é
+     puramente decorativo, nenhum dado depende dele. */
+  var ICONES = {
+    statSubjects: ['info',   '<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H19v14.5a1.5 1.5 0 0 1-1.5 1.5H5.5A1.5 1.5 0 0 1 4 18.5z"/><path d="M8 8h7M8 12h7"/>'],
+    statActivities:['ok',    '<path d="M9 11.5l2.2 2.2L15.5 9"/><rect x="4" y="4" width="16" height="16" rx="4"/>'],
+    statProjects: ['acento', '<path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h3l2 2.5h6A2.5 2.5 0 0 1 20 11v6a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17z"/>'],
+    statProgress: ['alerta', '<path d="M4 16.5l4.5-5 3.5 3.2 5-6.7"/><path d="M13.5 8h3.5v3.5"/>']
+  };
+  function pinta(){
+    Object.keys(ICONES).forEach(function(id){
+      var alvo = document.getElementById(id);
+      var cartao = alvo && alvo.closest('.stat');
+      if (!cartao || cartao.querySelector('.mw-id-tile')) return;
+      var par = ICONES[id];
+      var tile = document.createElement('span');
+      tile.className = 'mw-id-tile';
+      tile.setAttribute('data-tom', par[0]);
+      tile.setAttribute('aria-hidden', 'true');
+      tile.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + par[1] + '</svg>';
+      cartao.appendChild(tile);
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', pinta);
+  else pinta();
+})();
+</script>
+
 </body>
 </html>

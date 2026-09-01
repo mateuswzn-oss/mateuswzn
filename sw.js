@@ -1,5 +1,34 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v45 (BETA — Fase 2, parte 1: identidade visual das referências):
+   O arquivo acumulou camadas de pele ao longo do tempo (bege, grafite,
+   ciano, "liquid glass"), cada uma com !important e especificidade
+   maior que a anterior. Em vez de editar dezenas de regras que hoje
+   funcionam, a identidade nova mora numa folha só, no fim do arquivo,
+   derivada de tokens — as camadas antigas seguem intactas por baixo e
+   voltam a valer se esta folha for removida inteira.
+   (1) Tokens de superfície, texto, acento (azul → violeta), raios e
+   cores semânticas, definidos nos dois temas. O claro não é a inversão
+   do escuro: foi reequilibrado.
+   (2) Sidebar com o item ativo em pílula preenchida, como nas imagens.
+   Só a pele mudou — quem decide o que está aceso continua sendo o
+   estado derivado de .view.active.
+   (3) Chips de status/prioridade/prazo num sistema só. Nenhum status
+   foi inventado: são os que os dados já têm.
+   (4) Cartões de número com tile de ícone, e estados completos de
+   botão (hover, pressionado, desabilitado com aparência própria,
+   carregando e foco visível pelo teclado).
+   Bugs reais encontrados e corrigidos no caminho:
+   - os contadores do cabeçalho de área (.workspace-metric) tinham fundo
+     escuro fixo, sem variante clara: no tema claro viravam caixas
+     cinza-escuro com número ciano sobre cartão branco, ilegíveis;
+   - os tons de texto do tema claro davam 3,3–3,6:1, abaixo do mínimo
+     AA de 4,5 — reescalonados mantendo a hierarquia entre os níveis;
+   - no celular a linha de item deixava só 133px para o texto porque as
+     ações dividiam a linha (pior ainda depois que a Fase 1 acrescentou
+     o botão Editar): título, data e chips quebravam. Agora empilha;
+   - o selo de prazo vinha em caixa alta e em linha separada dos selos
+     de status e prioridade, dois pesos diferentes lado a lado. */
 /* v44 (BETA — Fase 3 da reformulação, ainda não é a versão estável):
    (1) A Nyc AI passou a guardar as conversas de verdade. Antes cada
    conversa vivia só num array em memória e sumia ao fechar o card.
@@ -353,7 +382,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v44-beta';
+const CACHE_NAME = 'mw-shell-v45-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
