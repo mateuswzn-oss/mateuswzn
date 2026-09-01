@@ -2640,6 +2640,78 @@ body.light #app .calendar-card .calendar-nav button:hover{
     </div>
   </div>
 </noscript>
+
+<!-- ====================================================================
+     SPRITE DE ÍCONES
+     ====================================================================
+     Até aqui eram 74 <svg> soltos pelo arquivo, cada um com a geometria
+     escrita à mão no lugar onde é usado. Trocar a linguagem visual
+     significava caçar um por um — e esquecer alguns.
+
+     Cada símbolo é desenhado com UMA geometria só, sem fill nem stroke
+     próprios. Quem decide é o CSS de quem usa: contorno quando inativo
+     (stroke, sem preenchimento) e sólido quando ativo (preenchimento,
+     sem contorno). Por isso todo caminho é FECHADO e os detalhes
+     internos usam fill-rule="evenodd", para virarem furos no estado
+     sólido em vez de sumirem dentro da mancha.
+
+     O <use> herda fill e stroke do <svg> que o chama, então o mesmo
+     símbolo serve à sidebar, à barra de baixo e ao topo sem cópia. -->
+<svg class="mw-sprite" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+  <!-- A MARCA. Até aqui só a tela de carregamento desenhava o símbolo
+       de verdade (o M e o W traçados, com gradiente); a sidebar, o
+       login, o rodapé e o convite de instalação escreviam a palavra
+       "MW" numa fonte qualquer. Eram cinco marcas diferentes fingindo
+       ser a mesma.
+
+       Os caminhos abaixo são EXATAMENTE os do carregamento. Os
+       gradientes foram reescritos aqui com nomes próprios porque os do
+       carregamento morrem junto com ele: aquele bloco é removido do
+       documento quando o boot termina, e um <use> apontando para um
+       gradiente que não existe mais renderiza sem cor nenhuma. -->
+  <linearGradient id="mwi-marca-m" x1="4" y1="34" x2="30" y2="10" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#2563eb"/><stop offset=".55" stop-color="#38bdf8"/><stop offset="1" stop-color="#a5f3ff"/>
+  </linearGradient>
+  <linearGradient id="mwi-marca-w" x1="34" y1="10" x2="60" y2="36" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#a5b8ff"/><stop offset=".5" stop-color="#7c5cff"/><stop offset="1" stop-color="#38bdf8"/>
+  </linearGradient>
+  <symbol id="mwi-marca" viewBox="0 0 64 44">
+    <path d="M6 34.5V11.5L17 26.5L28 11.5V34.5" fill="none" stroke="url(#mwi-marca-m)" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M36 11.5V34.5L47 19.5L58 34.5V11.5" fill="none" stroke="url(#mwi-marca-w)" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="mwi-dashboard" viewBox="0 0 24 24">
+    <rect x="3.2" y="3.2" width="7.9" height="7.9" rx="2.2"/>
+    <rect x="12.9" y="3.2" width="7.9" height="7.9" rx="2.2"/>
+    <rect x="3.2" y="12.9" width="7.9" height="7.9" rx="2.2"/>
+    <rect x="12.9" y="12.9" width="7.9" height="7.9" rx="2.2"/>
+  </symbol>
+  <symbol id="mwi-college" viewBox="0 0 24 24">
+    <path d="M12 3.4 21.6 8 12 12.6 2.4 8z"/>
+    <path d="M6.6 10.4v4.2c0 1.8 2.4 3.2 5.4 3.2s5.4-1.4 5.4-3.2v-4.2l-5.4 2.6z"/>
+  </symbol>
+  <symbol id="mwi-subjects" viewBox="0 0 24 24">
+    <path d="M12 6.5C10.4 5 8.3 4.3 6.1 4.3c-1 0-2 .2-2.9.5v13.1c.9-.3 1.9-.5 2.9-.5 2.2 0 4.3.7 5.9 2.2z"/>
+    <path d="M12 6.5c1.6-1.5 3.7-2.2 5.9-2.2 1 0 2 .2 2.9.5v13.1c-.9-.3-1.9-.5-2.9-.5-2.2 0-4.3.7-5.9 2.2z"/>
+  </symbol>
+  <symbol id="mwi-projects" viewBox="0 0 24 24">
+    <path d="M3.2 6.6a2.3 2.3 0 0 1 2.3-2.3h3.3l2.1 2.5h8a2.3 2.3 0 0 1 2.3 2.3v8.3a2.3 2.3 0 0 1-2.3 2.3H5.5a2.3 2.3 0 0 1-2.3-2.3z"/>
+  </symbol>
+  <symbol id="mwi-activities" viewBox="0 0 24 24" fill-rule="evenodd">
+    <path d="M7.2 3.4h9.6a3.8 3.8 0 0 1 3.8 3.8v9.6a3.8 3.8 0 0 1-3.8 3.8H7.2a3.8 3.8 0 0 1-3.8-3.8V7.2a3.8 3.8 0 0 1 3.8-3.8zm9 6.2-1.5-1.5-4 4-1.7-1.7-1.5 1.5 3.2 3.2z"/>
+  </symbol>
+  <symbol id="mwi-notes" viewBox="0 0 24 24" fill-rule="evenodd">
+    <path d="M6.4 3.4h11.2a2 2 0 0 1 2 2v13.2a2 2 0 0 1-2 2H6.4a2 2 0 0 1-2-2V5.4a2 2 0 0 1 2-2zm1.4 5.1h8.4v1.7H7.8zm0 3.7h8.4v1.7H7.8zm0 3.7h5.4v1.7H7.8z"/>
+  </symbol>
+  <symbol id="mwi-files" viewBox="0 0 24 24" fill-rule="evenodd">
+    <path d="M6.6 3.4h6.3l5.5 5.5v10.7a1.7 1.7 0 0 1-1.7 1.7H6.6a1.7 1.7 0 0 1-1.7-1.7V5.1a1.7 1.7 0 0 1 1.7-1.7zm6.6 1.9v3.1a.9.9 0 0 0 .9.9h3.1z"/>
+  </symbol>
+  <symbol id="mwi-support" viewBox="0 0 24 24">
+    <path d="M12 3.6c-4.8 0-8.7 3.3-8.7 7.4 0 2.3 1.2 4.3 3.1 5.7v3.7l3.5-2c.7.1 1.4.2 2.1.2 4.8 0 8.7-3.3 8.7-7.6S16.8 3.6 12 3.6z"/>
+  </symbol>
+  <symbol id="mwi-admin" viewBox="0 0 24 24">
+    <path d="M12 3.2 4.7 5.9v5.7c0 4.1 3 7.8 7.3 9.4 4.3-1.6 7.3-5.3 7.3-9.4V5.9z"/>
+  </symbol>
+</svg>
 <style id="mw-boot-loader-style">
 /* ============================================================
    CARREGAMENTO — a identidade MW sendo CONSTRUÍDA
@@ -3542,7 +3614,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
 
     <!-- NAV LATERAL -->
     <nav class="mwv2-nav">
-      <div class="mwv2-logo">MW</div>
+      <div class="mwv2-logo"><svg class="mw-marca" viewBox="0 0 64 44" aria-hidden="true"><use href="#mwi-marca"/></svg></div>
       <button type="button" class="mwv2-navbtn active" data-view="signin">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="19" height="19"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
         <span>Entrar</span>
@@ -3835,7 +3907,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
 <section id="app" class="hidden">
   <aside class="sidebar mw-sidebar-polished mw-reference-sidebar">
     <div class="side-brand mw-sidebar-brand">
-      <div class="mini-logo mw-logo-mark" aria-hidden="true"><span>MW</span></div>
+      <div class="mini-logo mw-logo-mark" aria-hidden="true"><svg class="mw-marca" viewBox="0 0 64 44" aria-hidden="true"><use href="#mwi-marca"/></svg></div>
       <div class="mw-brand-copy label"><strong>WORKSPACE</strong></div>
       <button type="button" class="mw-sidebar-collapse" id="mwSidebarCollapse" aria-label="Recolher barra lateral" title="Recolher barra lateral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="17" height="16" rx="3"/><path d="M9.2 4v16"/></svg></button>
     </div>
@@ -3850,15 +3922,15 @@ body.light .mw-faceid-gate-card p{color:#526988}
     <div class="mw-reference-divider" aria-hidden="true"></div>
 
     <nav class="nav mw-reference-nav" id="nav">
-      <button class="active" data-view="home"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="8.2" height="8.2" rx="2.2"/><rect x="12.8" y="3" width="8.2" height="8.2" rx="2.2"/><rect x="3" y="12.8" width="8.2" height="8.2" rx="2.2"/><rect x="12.8" y="12.8" width="8.2" height="8.2" rx="2.2"/></svg></span><span class="label">Dashboard</span></button>
-      <button data-view="college"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3.2 1.8 8.6c-.5.3-.5 1 0 1.3L12 15.3l10.2-5.4c.5-.3.5-1 0-1.3L12 3.2z"/><path d="M6.2 13.2v3.1c0 1.5 2.4 3.2 5.8 3.2s5.8-1.7 5.8-3.2v-3.1l-5.4 2.8c-.25.14-.55.14-.8 0l-5.4-2.8z"/><path d="M20.4 11.2v5.6c0 .4.3.8.8.9 1.1.2 1.8-.6 1.8-1.6v-5.4l-2.6.5z"/></svg></span><span class="label">Faculdade</span></button>
-      <button data-view="subjects"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 5.2c1.4-1 3.3-1.6 5.3-1.6 1.3 0 2.5.3 3.5.7.5.2.8.7.8 1.2v11.1c0 .8-.8 1.3-1.5 1.1-1-.3-2-.4-2.8-.4-1.6 0-3.2.5-4.3 1.4V5.2zm0 0C10.6 4.2 8.7 3.6 6.7 3.6c-1.3 0-2.5.3-3.5.7-.5.2-.8.7-.8 1.2v11.1c0 .8.8 1.3 1.5 1.1 1-.3 2-.4 2.8-.4 1.6 0 3.2.5 4.3 1.4V5.2z"/></svg></span><span class="label">Disciplinas</span></button>
-      <button data-view="projects"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10.2 6.1 8.7 4.4A2.2 2.2 0 0 0 7.1 3.8H5.4A2.6 2.6 0 0 0 2.8 6.4v11.2A2.6 2.6 0 0 0 5.4 20.2h13.2a2.6 2.6 0 0 0 2.6-2.6V8.7a2.6 2.6 0 0 0-2.6-2.6H10.2z"/></svg></span><span class="label">Projetos</span></button>
-      <button data-view="activities"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd"><path d="M7.2 3h9.6A4.2 4.2 0 0 1 21 7.2v9.6A4.2 4.2 0 0 1 16.8 21H7.2A4.2 4.2 0 0 1 3 16.8V7.2A4.2 4.2 0 0 1 7.2 3zm8.55 6.18a.95.95 0 0 0-1.34-.08l-3.86 3.6-1.5-1.44a.95.95 0 1 0-1.32 1.37l2.16 2.08c.37.35.94.34 1.3-.03l4.52-4.22a.95.95 0 0 0 .04-1.28z"/></svg></span><span class="label">Atividades</span></button>
-      <button data-view="notes"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 2.8h7.4c.4 0 .8.16 1.1.44l3.26 3.26c.28.28.44.66.44 1.06V17.8A3.2 3.2 0 0 1 16 21H7A3.2 3.2 0 0 1 3.8 17.8V6A3.2 3.2 0 0 1 7 2.8zm7.6 1.5v2.7c0 .5.4.9.9.9h2.7l-3.6-3.6z"/><path d="M15.05 11.2 9.2 17.05c-.14.14-.32.24-.52.28l-2.12.42a.55.55 0 0 1-.65-.65l.42-2.12c.04-.2.14-.38.28-.52l5.85-5.85a1.55 1.55 0 0 1 2.19 2.19z"/><path d="M8.2 11.6h4.4a.7.7 0 1 0 0-1.4H8.2a.7.7 0 1 0 0 1.4z" opacity=".35"/></svg></span><span class="label">Anotações</span></button>
-      <button data-view="files"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.2 2.8h6.2c.4 0 .8.16 1.1.44l4.26 4.26c.28.28.44.66.44 1.06v9.24A4.2 4.2 0 0 1 15 22H7.2A4.2 4.2 0 0 1 3 17.8V7A4.2 4.2 0 0 1 7.2 2.8zm6.4 1.6v3.4c0 .6.5 1.1 1.1 1.1h3.4l-4.5-4.5z"/></svg></span><span class="label">Arquivos</span></button>
-      <button data-view="support" id="mwNavSupport"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.4"/><path d="M5.2 5.2l3.6 3.6M18.8 5.2l-3.6 3.6M5.2 18.8l3.6-3.6M18.8 18.8l-3.6-3.6"/></svg></span><span class="label">Suporte</span></button>
-      <button data-view="admin" id="mwNavAdmin"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd"><path d="M12 2.4c.22 0 .44.04.65.13l6.6 2.75c.72.3 1.15.99 1.15 1.77v6.15c0 4.62-3.2 8.06-7.62 9.98a1.9 1.9 0 0 1-1.56 0C6.8 21.3 3.6 17.86 3.6 13.24V7.05c0-.78.43-1.47 1.15-1.77l6.6-2.75c.21-.09.43-.13.65-.13zm3.68 6.53a.95.95 0 0 0-1.34-.06l-3.5 3.28-1.28-1.26a.95.95 0 1 0-1.34 1.35l1.94 1.9a.95.95 0 0 0 1.32.01l4.16-3.9a.95.95 0 0 0 .04-1.32z"/></svg></span><span class="label">Painel Admin</span></button>
+      <button class="active" data-view="home"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-dashboard"/></svg></span><span class="label">Dashboard</span></button>
+      <button data-view="college"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-college"/></svg></span><span class="label">Faculdade</span></button>
+      <button data-view="subjects"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-subjects"/></svg></span><span class="label">Disciplinas</span></button>
+      <button data-view="projects"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-projects"/></svg></span><span class="label">Projetos</span></button>
+      <button data-view="activities"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-activities"/></svg></span><span class="label">Atividades</span></button>
+      <button data-view="notes"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-notes"/></svg></span><span class="label">Anotações</span></button>
+      <button data-view="files"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-files"/></svg></span><span class="label">Arquivos</span></button>
+      <button data-view="support" id="mwNavSupport"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-support"/></svg></span><span class="label">Suporte</span></button>
+      <button data-view="admin" id="mwNavAdmin"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-admin"/></svg></span><span class="label">Painel Admin</span></button>
     </nav>
 
     <div class="mw-reference-spacer"></div>
@@ -4068,7 +4140,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
 
     <footer class="mw-app-footer">
       <div class="mw-app-footer-brand">
-        <span class="mw-app-footer-logo">MW</span>
+        <span class="mw-app-footer-logo"><svg class="mw-marca" viewBox="0 0 64 44" aria-hidden="true"><use href="#mwi-marca"/></svg></span>
         <div class="mw-app-footer-copy">
           <strong>Mateus Workspace</strong>
           <small>© <span id="mwAppFooterYear">2026</span> — organize estudos, projetos e prazos em um só lugar.</small>
@@ -10982,15 +11054,22 @@ body.light #app .bell-btn{
   const qa = s => [...document.querySelectorAll(s)];
 
   /* Restore filled nav SVGs if any old script wiped them */
-  const svgs = {
-    home: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="8.2" height="8.2" rx="2.2"/><rect x="12.8" y="3" width="8.2" height="8.2" rx="2.2"/><rect x="3" y="12.8" width="8.2" height="8.2" rx="2.2"/><rect x="12.8" y="12.8" width="8.2" height="8.2" rx="2.2"/></svg>',
-    college: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3.2 1.8 8.6c-.5.3-.5 1 0 1.3L12 15.3l10.2-5.4c.5-.3.5-1 0-1.3L12 3.2z"/><path d="M6.2 13.2v3.1c0 1.5 2.4 3.2 5.8 3.2s5.8-1.7 5.8-3.2v-3.1l-5.4 2.8c-.25.14-.55.14-.8 0l-5.4-2.8z"/><path d="M20.4 11.2v5.6c0 .4.3.8.8.9 1.1.2 1.8-.6 1.8-1.6v-5.4l-2.6.5z"/></svg>',
-    subjects: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 5.2c1.4-1 3.3-1.6 5.3-1.6 1.3 0 2.5.3 3.5.7.5.2.8.7.8 1.2v11.1c0 .8-.8 1.3-1.5 1.1-1-.3-2-.4-2.8-.4-1.6 0-3.2.5-4.3 1.4V5.2zm0 0C10.6 4.2 8.7 3.6 6.7 3.6c-1.3 0-2.5.3-3.5.7-.5.2-.8.7-.8 1.2v11.1c0 .8.8 1.3 1.5 1.1 1-.3 2-.4 2.8-.4 1.6 0 3.2.5 4.3 1.4V5.2z"/></svg>',
-    projects: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M10.2 6.1 8.7 4.4A2.2 2.2 0 0 0 7.1 3.8H5.4A2.6 2.6 0 0 0 2.8 6.4v11.2A2.6 2.6 0 0 0 5.4 20.2h13.2a2.6 2.6 0 0 0 2.6-2.6V8.7a2.6 2.6 0 0 0-2.6-2.6H10.2z"/></svg>',
-    activities: '<svg viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd"><path d="M7.2 3h9.6A4.2 4.2 0 0 1 21 7.2v9.6A4.2 4.2 0 0 1 16.8 21H7.2A4.2 4.2 0 0 1 3 16.8V7.2A4.2 4.2 0 0 1 7.2 3zm8.55 6.18a.95.95 0 0 0-1.34-.08l-3.86 3.6-1.5-1.44a.95.95 0 1 0-1.32 1.37l2.16 2.08c.37.35.94.34 1.3-.03l4.52-4.22a.95.95 0 0 0 .04-1.28z"/></svg>',
-    notes: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 2.8h7.4c.4 0 .8.16 1.1.44l3.26 3.26c.28.28.44.66.44 1.06V17.8A3.2 3.2 0 0 1 16 21H7A3.2 3.2 0 0 1 3.8 17.8V6A3.2 3.2 0 0 1 7 2.8zm7.6 1.5v2.7c0 .5.4.9.9.9h2.7l-3.6-3.6z"/><path d="M15.05 11.2 9.2 17.05c-.14.14-.32.24-.52.28l-2.12.42a.55.55 0 0 1-.65-.65l.42-2.12c.04-.2.14-.38.28-.52l5.85-5.85a1.55 1.55 0 0 1 2.19 2.19z"/></svg>',
-    files: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.2 2.8h6.2c.4 0 .8.16 1.1.44l4.26 4.26c.28.28.44.66.44 1.06v9.24A4.2 4.2 0 0 1 15 22H7.2A4.2 4.2 0 0 1 3 17.8V7A4.2 4.2 0 0 1 7.2 2.8zm6.4 1.6v3.4c0 .6.5 1.1 1.1 1.1h3.4l-4.5-4.5z"/></svg>'
-  };
+  /* Este bloco é o dono dos ícones da sidebar em tempo de execução:
+     ele reescreve o innerHTML de cada .nav-icon depois que a página
+     monta. Antes trazia a geometria inteira aqui dentro, então
+     qualquer troca de linguagem visual tinha que ser feita nos dois
+     lugares — na marcação e aqui — e a marcação sempre perdia.
+
+     Agora aponta para o sprite (ver <svg class="mw-sprite"> no topo do
+     body). A geometria mora num lugar só, e os estados de contorno e
+     preenchido são decididos por CSS, não por atributo. */
+  const svgs = {};
+  ['home','college','subjects','projects','activities','notes','files','support','admin'].forEach(function(chave){
+    const simbolo = { home:'dashboard', college:'college', subjects:'subjects', projects:'projects',
+                      activities:'activities', notes:'notes', files:'files',
+                      support:'support', admin:'admin' }[chave];
+    svgs[chave] = '<svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-' + simbolo + '"/></svg>';
+  });
   qa('#nav button').forEach(btn => {
     const key = btn.dataset.view;
     const icon = btn.querySelector('.nav-icon');
@@ -14455,7 +14534,7 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
 </style>
 
 <div id="mwv2InstallBanner" role="status" aria-live="polite">
-  <div class="mwv2-install-icon">MW</div>
+  <div class="mwv2-install-icon"><svg class="mw-marca" viewBox="0 0 64 44" aria-hidden="true"><use href="#mwi-marca"/></svg></div>
   <div class="mwv2-install-text">
     <strong id="mwv2InstallTitle">Instalar Mateus Workspace</strong>
     <span id="mwv2InstallDesc">Adicione à tela de início para abrir como um app.</span>
@@ -14470,12 +14549,9 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
   // recusa o registro silenciosamente, então isso é seguro em qualquer caso.
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
     window.addEventListener('load', () => {
-      /* PRÉVIA: service worker DESLIGADO de propósito.
-         Cache numa prévia é armadilha — eu corrijo, publico, e continua
-         aparecendo o erro antigo. E a raiz do site roda um worker de
-         desligamento (a manutenção), que apaga caches e se desregistra;
-         sem worker aqui embaixo os dois não se atrapalham.
-         Só nesta cópia. A branch beta segue com o registro normal. */
+      /* PRÉVIA: service worker DESLIGADO de propósito, para cada
+         visita trazer a versão recém-publicada e não uma guardada. A
+         branch beta segue com o registro normal. */
       void 0;
     });
   }
@@ -22643,6 +22719,102 @@ html body #app .main select:focus-visible{
 }
 @media (prefers-reduced-motion: reduce){
   #inlineCreateForm .mw-original-car-btn[data-mw-criando="1"]::after{ animation-duration: 2.2s; }
+}
+</style>
+
+<style id="mw-icones-estados">
+/* Os dois estados do ícone saem da MESMA geometria: contorno quando
+   inativo, sólido quando ativo. Quem manda é este par de regras — o
+   <use> herda fill e stroke do <svg> que o chama, e os símbolos foram
+   desenhados sem fill nem stroke próprios justamente para isso.
+
+   As folhas antigas pintam `.nav-icon svg` com fill de várias formas e
+   com !important. Como aqui o fill precisa alternar entre "none" e
+   "currentColor", estas regras também usam !important — senão o estado
+   de contorno nunca apareceria. */
+html body #app .sidebar .nav button .mw-ico{
+  width: 20px;
+  height: 20px;
+  display: block;
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 1.7;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  transition: fill .18s ease, stroke .18s ease;
+}
+html body #app .sidebar .nav button.active .mw-ico{
+  fill: currentColor !important;
+  stroke: none !important;
+}
+/* Traço um pouco mais fino no claro: sobre fundo branco a mesma
+   espessura pesa mais do que sobre fundo escuro. */
+html body.light #app .sidebar .nav button:not(.active) .mw-ico{
+  stroke-width: 1.6;
+}
+/* Duas regras antigas ganhavam daqui por terem DOIS ids (#app e #nav)
+   contra um só:
+     - `html body.light #app #nav button svg{fill:currentColor!important}`
+       deixava o ícone inativo PREENCHIDO no tema claro, ou seja, o
+       estado de contorno simplesmente não existia na luz;
+     - o dimensionamento herdado saía 22x16 em vez de quadrado, porque
+       a largura vinha do .nav-icon e a altura do viewBox.
+   Repetindo os dois ids aqui, o par contorno/sólido volta a valer nos
+   dois temas e o ícone fica quadrado de verdade. */
+html body #app .sidebar #nav button .mw-ico{
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px;
+  flex: none;
+}
+html body.light #app .sidebar #nav button:not(.active) .mw-ico{
+  fill: none !important;
+  stroke: currentColor !important;
+}
+html body.light #app .sidebar #nav button.active .mw-ico{
+  fill: currentColor !important;
+  stroke: none !important;
+}
+
+@media (prefers-reduced-motion: reduce){
+  html body #app .sidebar .nav button .mw-ico{ transition: none; }
+}
+</style>
+
+<style id="mw-marca-unificada">
+/* A marca desenhada, agora nos quatro lugares onde antes se escrevia
+   a palavra "MW" numa fonte. Os tamanhos são por contexto porque os
+   recipientes já existem e têm medidas próprias — o glifo se encaixa
+   neles em vez de forçar um tamanho único.
+
+   `overflow:visible` importa: o traço tem ponta arredondada e
+   stroke-width 5,2 num viewBox de 64x44, então ele encosta na borda da
+   caixa e seria cortado sem isso. */
+.mw-marca{
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+/* Sidebar: o tile tem 39px; a marca ocupa a área útil com folga. */
+html body #app .sidebar .mini-logo .mw-marca{ width: 25px; }
+/* Login: o recipiente é um quadrado pequeno na coluna lateral. */
+#loginScreen .mwv2-logo .mw-marca{ width: 26px; margin: 0 auto; }
+/* Rodapé e convite de instalação: marcas menores, de assinatura. */
+html body #app .mw-app-footer-logo .mw-marca{ width: 22px; }
+#mwv2InstallBanner .mwv2-install-icon .mw-marca{ width: 24px; margin: 0 auto; }
+
+/* Os recipientes eram feitos para TEXTO: centralizavam com line-height,
+   pediam peso de fonte e espaçamento de letra. Com um desenho dentro,
+   isso vira deslocamento vertical — grid centra de verdade. */
+html body #app .sidebar .mini-logo,
+html body #app .mw-app-footer-logo,
+#loginScreen .mwv2-logo,
+#mwv2InstallBanner .mwv2-install-icon{
+  display: grid !important;
+  place-items: center !important;
+  line-height: 0 !important;
+  letter-spacing: 0 !important;
 }
 </style>
 
