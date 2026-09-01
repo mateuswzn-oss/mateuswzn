@@ -1,5 +1,17 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v49 (BETA — Fase 2, parte 2: sistema de ícones):
+   Os ícones eram 74 <svg> soltos com a geometria escrita à mão no lugar
+   de uso, e todos preenchidos — não existia estado de contorno. Agora
+   há um sprite de <symbol> no topo do body: uma geometria só por ícone,
+   sem fill nem stroke próprios, e o CSS decide o estado (contorno no
+   inativo, sólido no ativo). Os detalhes internos usam evenodd para
+   virarem furos no estado sólido em vez de sumirem na mancha.
+   O mapa de ícones do mw-video-audio-js, que já era o dono da sidebar
+   em tempo de execução, passou a apontar para o sprite — antes a
+   geometria existia em dois lugares e a marcação sempre perdia para
+   ele. Uma regra antiga com dois ids deixava o ícone PREENCHIDO no tema
+   claro, ou seja, o contorno não existia na luz; corrigida. */
 /* v48 (BETA — sem JavaScript o app explicava nada e parecia travado):
    A tela de carregamento é HTML e CSS puros de propósito, para o fundo
    escuro aparecer já no primeiro quadro. O efeito colateral é que ela
@@ -424,7 +436,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v48-beta';
+const CACHE_NAME = 'mw-shell-v49-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
