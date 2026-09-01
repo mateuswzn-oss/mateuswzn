@@ -4161,6 +4161,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
       <nav class="mw-app-footer-links">
         <button type="button" data-footer-link="privacidade">Privacidade</button>
         <button type="button" data-footer-link="termos">Termos</button>
+        <button type="button" data-footer-link="seguranca">Segurança</button>
         <button type="button" data-footer-link="ajuda">Ajuda</button>
         <button type="button" data-footer-link="sobre">Sobre</button>
         <button type="button" id="mwAppFooterSupport">Suporte</button>
@@ -18843,6 +18844,28 @@ body.light .mw-transfere-nota b{color:#0b1830}
      este projeto, sem inventar garantia, certificação ou promessa de
      disponibilidade que não existe. */
   var PAGINAS = {
+    /* SEGURANÇA. Escrita a partir do que o código REALMENTE faz — fui
+       conferir cada afirmação antes de escrever, inclusive o schema do
+       banco. Nenhuma certificação, selo ou garantia inventada: o que
+       não existe está dito como não existindo, na seção final. */
+    seguranca: {
+      titulo: 'Segurança',
+      html:
+        '<p>Esta página descreve o que o Workspace faz hoje para proteger sua conta e seus dados. É uma descrição do que está no código, não uma promessa comercial.</p>' +
+        '<p><strong>Sua senha:</strong> o app nunca guarda sua senha. Quem cuida do cadastro e da entrada é o serviço de autenticação do Supabase, que armazena apenas um resumo criptográfico dela. Nem eu consigo ver sua senha.</p>' +
+        '<p><strong>Separação entre contas:</strong> as tabelas do banco têm segurança em nível de linha ativada, com regra que amarra cada linha ao dono. Na prática: um pedido feito com a sua sessão só alcança as suas linhas — não é uma checagem feita na tela, é o banco recusando.</p>' +
+        '<p><strong>Contra tentativa de invasão:</strong> a tela de entrar tem um freio que aumenta a espera depois de senhas erradas seguidas, para inviabilizar tentativa em massa. O cadastro tem verificação anti-robô e um campo-armadilha invisível, que só um preenchimento automático completa.</p>' +
+        '<p><strong>Desbloqueio pelo aparelho:</strong> no iPhone dá para ativar Face ID e um PIN em Configurações › Segurança. Essa checagem é do aparelho e serve para proteger o app aberto de quem pegar o celular — ela não substitui a senha da conta nem viaja pela rede.</p>' +
+        '<p><strong>Onde seus dados ficam:</strong> uma cópia no seu aparelho, para o app abrir e funcionar sem internet, e uma cópia no servidor, para você abrir de outro lugar. Você pode exportar tudo em Configurações › Privacidade e apagar tudo quando quiser.</p>' +
+        '<p><strong>O que este app NÃO tem — e é importante dizer:</strong></p>' +
+        '<ul>' +
+        '<li>Não há criptografia ponta a ponta. Seus dados são protegidos por senha e pelas regras do banco, mas tecnicamente são legíveis no servidor. Não guarde aqui nada que você não escreveria num e-mail.</li>' +
+        '<li>Não há certificação de segurança de nenhum tipo. É um projeto pessoal, não uma empresa auditada, e seria desonesto exibir selo que não existe.</li>' +
+        '<li>Não há autenticação em duas etapas por enquanto.</li>' +
+        '<li>O painel de administração é apenas visual: ele não dá acesso a dado de ninguém, e a proteção dele é de fachada — está marcado assim dentro dele.</li>' +
+        '</ul>' +
+        '<p><strong>Achou uma falha?</strong> Me avise pelo Suporte. Prefiro saber por você do que descobrir depois.</p>'
+    },
     termos: {
       titulo: 'Termos de uso',
       html:
@@ -18892,6 +18915,29 @@ body.light .mw-transfere-nota b{color:#0b1830}
     m.classList.remove('hidden');
     function fecha(){ m.classList.add('hidden'); }
     m.querySelector('[data-close]').onclick = fecha;
+
+    /* Só o × fechava. Escape e clique no fundo não faziam nada — e são
+       justamente os dois gestos que a pessoa tenta primeiro num modal,
+       principalmente quem já está acostumado com os outros diálogos
+       DESTE mesmo app, que fecham assim. O efeito era pior que só
+       incômodo: quem apertava Escape achava que tinha fechado, clicava
+       noutro link do rodapé e continuava vendo a página anterior.
+       O listener de teclado se remove sozinho ao fechar, para não
+       acumular um por abertura. */
+    function porTecla(ev){
+      if (ev.key !== 'Escape') return;
+      fecha();
+      document.removeEventListener('keydown', porTecla);
+    }
+    document.addEventListener('keydown', porTecla);
+    m.addEventListener('click', function(ev){
+      /* Só o fundo. Clique dentro da caixa não pode fechar, senão
+         selecionar um trecho do texto fecharia a página. */
+      if (ev.target === m) { fecha(); document.removeEventListener('keydown', porTecla); }
+    });
+    m.querySelector('[data-close]').addEventListener('click', function(){
+      document.removeEventListener('keydown', porTecla);
+    });
     var suporte = m.querySelector('[data-abre-suporte]');
     if (suporte) suporte.addEventListener('click', function(){
       fecha();

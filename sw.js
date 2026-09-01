@@ -1,5 +1,21 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v55 (BETA — página de Segurança + o modal que não fechava):
+   (1) Segurança era a única das seis páginas do pedido original que
+   faltava. Escrita a partir do que o código REALMENTE faz — conferi
+   cada afirmação, inclusive o schema do banco: senha nunca guardada
+   pelo app, segurança em nível de linha amarrando cada linha ao dono,
+   freio contra tentativa em massa, verificação anti-robô, campo
+   armadilha, Face ID e PIN do aparelho. E uma seção dizendo o que NÃO
+   existe: sem criptografia ponta a ponta, sem certificação de tipo
+   nenhum, sem duas etapas, e o painel de administração é visual.
+   (2) BUG da Fase 1: o modal de Termos/Ajuda/Sobre (e agora Segurança)
+   só fechava no ×. Escape e clique no fundo não faziam nada — os dois
+   gestos que a pessoa tenta primeiro, e que funcionam nos outros
+   diálogos DESTE mesmo app. O efeito ia além do incômodo: quem apertava
+   Escape achava que tinha fechado, clicava noutro link do rodapé e
+   continuava vendo a página anterior. Clique DENTRO da caixa não fecha,
+   senão selecionar um trecho do texto fecharia a página. */
 /* v54 (BETA — o sino nunca acendia, e não era só o sino):
    Auditoria das notificações. O conteúdo é honesto: sai de aula de hoje
    e de prazo de atividade reais, e o estado vazio diz exatamente isso.
@@ -510,7 +526,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v54-beta';
+const CACHE_NAME = 'mw-shell-v55-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
