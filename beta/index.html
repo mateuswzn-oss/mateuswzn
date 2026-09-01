@@ -4082,12 +4082,12 @@ body.light .mw-faceid-gate-card p{color:#526988}
       <div class="settings-group"><h4>Sessão</h4><p>Sua conta fica guardada neste navegador. Ao sair, será preciso entrar de novo com seu usuário e senha.</p><div class="profile-actions"><button class="small-btn mw-logout-btn" id="logout">Sair</button><button class="small-btn" id="mwSairOutrosAparelhos">Sair de todos os outros aparelhos</button></div><p class="form-error" id="mwSairOutrosStatus" hidden></p></div>
       <h3 class="mw-settings-categoria">Aparência</h3>
       <div class="settings-group" id="legacyThemeGroup"><h4>Tema</h4><p>Escolha entre escuro e claro — o mesmo alternador do topo, aqui também.</p><div class="theme-row"><button class="theme-btn" id="darkModeBtn">Modo Escuro</button><button class="theme-btn" id="lightModeBtn">Modo Claro</button></div></div>
-      <h3 class="mw-settings-categoria">Notificações</h3>
+      <h3 class="mw-settings-categoria">Notificações <span class="mw-id-beta">Em breve</span></h3>
       <div class="settings-group"><h4>Lembretes e prazos</h4><p class="mw-settings-em-breve">Notificações de atividades e prazos ainda não existem neste navegador — em breve.</p></div>
       <h3 class="mw-settings-categoria">Segurança</h3>
       <div class="settings-group" id="mwFaceIdGroup" hidden><h4>Face ID</h4><p>Use o Face ID deste iPhone/iPad para entrar no Workspace sem digitar nada.</p><div class="mw-faceid-row"><span class="mw-faceid-row-label">Entrar com Face ID</span><button type="button" class="mw-faceid-switch" id="mwFaceIdToggle" role="switch" aria-checked="false" aria-label="Entrar com Face ID"><i></i></button></div><p class="mw-faceid-limite">Atalho só deste aparelho: agiliza a entrada sem precisar de senha aqui. A proteção da sua conta continua sendo a senha (e a recuperação por e-mail), não o Face ID.</p><p class="form-error" id="mwFaceIdStatus" hidden></p></div>
         <div class="settings-group" id="mwPinGroup"><h4>Código de acesso</h4><p>Um código de 6 dígitos para destravar o Workspace ao reabrir. Funciona em qualquer aparelho, com ou sem Face ID.</p><div class="mw-pin-row"><span class="mw-pin-estado" id="mwPinEstado">Nenhum código definido.</span><div class="mw-pin-acoes"><button type="button" class="small-btn" id="mwPinDefinir">Definir código</button><button type="button" class="small-btn mw-pin-remover" id="mwPinRemover" hidden>Remover</button></div></div><p class="form-error" id="mwPinStatus" hidden></p></div>
-      <h3 class="mw-settings-categoria">IA</h3>
+      <h3 class="mw-settings-categoria">IA <span class="mw-id-beta">Em breve</span></h3>
       <div class="settings-group"><h4>Nyc AI</h4><p class="mw-settings-em-breve">Preferências de voz, histórico e comportamento da Nyc AI ainda não existem — em breve.</p></div>
       <h3 class="mw-settings-categoria">Privacidade</h3>
       <div class="settings-group"><h4>Backup</h4><p>Seus dados ficam salvos só neste navegador. Exporte um arquivo de backup pra não perder nada ao trocar de aparelho ou limpar os dados do navegador.</p><div class="profile-actions"><button class="small-btn" id="exportBackup">Exportar backup</button><button class="small-btn" id="importBackupBtn">Importar backup</button><input type="file" id="importBackupFile" accept="application/json" hidden></div><div class="form-error" id="importBackupError"></div></div>
@@ -5783,7 +5783,7 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
         <span class="eva-orb" aria-hidden="true"></span>
         <div>
           <span class="mateus-ai-eyebrow">ASSISTENTE ACADÊMICO</span>
-          <h3 id="mateusAiTitle">Nyc AI</h3>
+          <h3 id="mateusAiTitle">Nyc AI <span class="mw-id-beta">Beta</span></h3>
         </div>
       </div>
       <div class="eva-head-actions">
@@ -14549,9 +14549,8 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
   // recusa o registro silenciosamente, então isso é seguro em qualquer caso.
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
     window.addEventListener('load', () => {
-      /* PRÉVIA: service worker DESLIGADO de propósito, para cada
-         visita trazer a versão recém-publicada e não uma guardada. A
-         branch beta segue com o registro normal. */
+      /* PRÉVIA: service worker desligado, para cada visita trazer a
+         versão publicada agora. A branch beta segue com o registro. */
       void 0;
     });
   }
@@ -22815,6 +22814,35 @@ html body #app .mw-app-footer-logo,
   place-items: center !important;
   line-height: 0 !important;
   letter-spacing: 0 !important;
+}
+</style>
+
+<style id="mw-selo-beta-posicao">
+/* O selo vive dentro de títulos, que têm tamanho, peso e espaçamento
+   próprios. Sem reancorar, ele herdaria o tamanho do <h3> e viraria um
+   segundo título em vez de uma etiqueta. */
+.mw-id-beta{
+  vertical-align: middle;
+  margin-left: 8px;
+  font-size: 9.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: .06em !important;
+  line-height: 1.6 !important;
+  text-transform: uppercase;
+  white-space: nowrap;
+  position: relative;
+  top: -1px;
+}
+/* Na Nyc AI o título é claro sobre fundo escuro; o selo acompanha o
+   acento em vez de virar mais um bloco de texto branco. */
+#mateusAiTitle .mw-id-beta{
+  background: var(--id-ac-suave);
+  color: var(--id-ac-txt);
+  border-color: var(--id-borda-forte);
+}
+html body.light #mateusAiTitle .mw-id-beta{
+  background: rgba(79,91,255,.12);
+  color: #4338ca;
 }
 </style>
 
