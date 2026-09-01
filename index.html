@@ -14785,7 +14785,20 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
     animate();
   }
 
-  window.mwDashRefresh = (data) => update(data && data.subjects);
+  /* PRESERVA a cadeia. Esta linha atribuía direto, sem guardar o que já
+     estava em window.mwDashRefresh — e apagava, de uma vez, tudo que
+     tinha sido encadeado antes: o sino de notificações, o calendário
+     acadêmico, o painel de aulas e os cartões de resumo do início.
+     Todos continuavam na tela, com a marcação intacta, e simplesmente
+     nunca mais atualizavam depois de um save(). Nenhum erro no console,
+     nenhum sintoma além de "o sino não acende nunca".
+     Os outros quatro blocos que mexem aqui já encadeiam corretamente;
+     era só este fora do padrão. */
+  const mwDashAnterior = window.mwDashRefresh;
+  window.mwDashRefresh = (data) => {
+    if (typeof mwDashAnterior === 'function') { try { mwDashAnterior(data); } catch (e) {} }
+    update(data && data.subjects);
+  };
   window.addEventListener('resize', () => draw());
 
   function hideTooltip(){

@@ -1,5 +1,17 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v54 (BETA — o sino nunca acendia, e não era só o sino):
+   Auditoria das notificações. O conteúdo é honesto: sai de aula de hoje
+   e de prazo de atividade reais, e o estado vazio diz exatamente isso.
+   Mas o sino NUNCA acendia, nem com entrega marcada para hoje.
+   A causa não estava nas notificações. window.mwDashRefresh é uma
+   cadeia: cinco blocos diferentes se penduram nele para atualizar o
+   painel a cada save(). Quatro encadeavam certo, guardando o anterior.
+   Um atribuía direto — e apagava de uma vez tudo que tinha sido
+   encadeado antes: sino, calendário acadêmico, painel de aulas e
+   cartões de resumo do início. Todos continuavam na tela, com a
+   marcação intacta, e nunca mais atualizavam. Nenhum erro no console.
+   Corrigido para preservar, como os outros quatro já faziam. */
 /* v53 (BETA — Fase 4, parte 2: busca global de verdade):
    O que existia NÃO era busca global. Um listener de 'input' percorria
    os cartões da TELA ATUAL e escondia com style.display quem não
@@ -498,7 +510,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v53-beta';
+const CACHE_NAME = 'mw-shell-v54-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
