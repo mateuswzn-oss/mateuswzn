@@ -1,5 +1,24 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v46 (BETA — datas legíveis + um bug antigo dos filtros):
+   (1) As datas apareciam cruas na tela ("2026-09-22"), que é o formato
+   de armazenamento, não de leitura. Agora saem como "22 de setembro",
+   com atalho para Hoje, Amanhã e Ontem, nos cinco lugares onde
+   apareciam: lista de atividades, prazo dos projetos, próximas
+   atividades do painel, notificações e resumo do dashboard.
+   A data é montada com new Date(ano, mes-1, dia) e NUNCA com
+   new Date('2026-09-22'): a segunda forma é lida como meia-noite UTC e,
+   no Brasil (UTC-3), volta um dia atrás. Erro clássico e silencioso,
+   que só aparece a oeste de Greenwich.
+   O texto "Sem data" foi mantido palavra por palavra porque o filtro
+   "Com prazo" procura exatamente por ele.
+   (2) BUG ANTIGO, da Fase 1: os filtros de Atividades e Projetos
+   escondem itens com el.hidden, mas .list-item tem `display:flex`
+   escrito por autor — e regra de autor vence o `[hidden]{display:none}`
+   do navegador. O atributo era marcado e o item continuava na tela, sem
+   nenhum erro no console: "Atrasadas", "Com prazo", "Em andamento" e
+   "Concluídos" nunca filtraram nada desde que foram criados. É a mesma
+   armadilha que já tinha aparecido no painel de conversas da Nyc AI. */
 /* v45 (BETA — Fase 2, parte 1: identidade visual das referências):
    O arquivo acumulou camadas de pele ao longo do tempo (bege, grafite,
    ciano, "liquid glass"), cada uma com !important e especificidade
@@ -382,7 +401,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v45-beta';
+const CACHE_NAME = 'mw-shell-v46-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

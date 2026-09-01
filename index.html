@@ -4739,19 +4739,55 @@ function progress(){if(!data.subjects.length)return 0;return Math.round(data.sub
    salvos mas nunca apareciam na lista — quem preenchia não via
    diferença nenhuma. Itens antigos, salvos antes desses campos, caem no
    `if` de cada bloco e simplesmente não ganham selo. */
+function mwDataHumana(iso){
+  /* As datas apareciam cruas na tela ("2026-09-22"), que é o formato de
+     ARMAZENAMENTO, não de leitura. Aqui vira "22 de setembro", com
+     atalho pros três dias que a pessoa mais consulta.
+
+     Duas decisões que importam:
+
+     1) A data é montada com new Date(ano, mes-1, dia), NUNCA com
+        new Date('2026-09-22'). A segunda forma é interpretada como
+        meia-noite UTC; no Brasil (UTC-3) isso volta como 21 de setembro
+        às 21h, e a data aparece um dia atrás. É um erro clássico e
+        silencioso — só aparece pra quem está a oeste de Greenwich.
+
+     2) Qualquer coisa fora do formato esperado volta como veio, e a
+        ausência de data continua devolvendo exatamente "Sem data" — o
+        filtro "Com prazo" da lista de atividades procura esse texto, e
+        mudar a frase quebraria o filtro sem nenhum erro no console. */
+  if (!iso) return 'Sem data';
+  const partes = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!partes) return String(iso);
+  const d = new Date(Number(partes[1]), Number(partes[2]) - 1, Number(partes[3]));
+  if (isNaN(d.getTime())) return String(iso);
+  const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+  const dias = Math.round((d - hoje) / 86400000);
+  if (dias === 0) return 'Hoje';
+  if (dias === 1) return 'Amanhã';
+  if (dias === -1) return 'Ontem';
+  const MESES = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  const base = d.getDate() + ' de ' + MESES[d.getMonth()];
+  return d.getFullYear() === hoje.getFullYear() ? base : base + ' de ' + d.getFullYear();
+}
+/* Este bloco inteiro é uma IIFE, então a função acima é invisível pros
+   outros <script> do arquivo — e três deles também mostram datas. Sem
+   esta linha, aqueles blocos levantariam ReferenceError bem no meio de
+   um render, apagando o painel em vez de mostrar uma data feia. */
+window.mwDataHumana = mwDataHumana;
 function mwSelos(tipo, item){
   const selos = [];
   const esc2 = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   if (item.status) selos.push(`<span class="mw-selo mw-selo-status" data-v="${esc2(item.status)}">${esc2(item.status)}</span>`);
   if (item.priority) selos.push(`<span class="mw-selo mw-selo-prio" data-v="${esc2(item.priority)}">${esc2(item.priority)}</span>`);
-  if (tipo === 'projects' && item.deadline) selos.push(`<span class="mw-selo">Prazo: ${esc2(item.deadline)}</span>`);
+  if (tipo === 'projects' && item.deadline) selos.push(`<span class="mw-selo">Prazo: ${esc2(mwDataHumana(item.deadline))}</span>`);
   if (item.members) selos.push(`<span class="mw-selo">${esc2(item.members)}</span>`);
   if (item.tag) selos.push(`<span class="mw-selo">${esc2(item.tag)}</span>`);
   return selos.length ? `<div class="mw-selos">${selos.join('')}</div>` : '';
 }
 function empty(text){return `<div class="empty"><strong>${esc(text)}</strong><span>Use o botão + para começar.</span></div>`}
 function projectHtml(p){return `<div class="project"><b>${esc(p.name)}</b><p>${esc(p.description||'Projeto acadêmico ou pessoal.')}</p><div class="tags"><span class="tag">${esc(p.tag||'Projeto')}</span></div></div>`}
-function renderAll(){const p=progress();$('#statSubjects').textContent=data.subjects.length;$('#statActivities').textContent=data.activities.length;$('#statProjects').textContent=data.projects.length;$('#statProgress').textContent=p+'%';$('#statSubjectsHint').textContent=data.subjects.length?'cadastradas no semestre':'Nenhuma cadastrada';$('#statActivitiesHint').textContent=data.activities.length?'registradas':'Nenhuma cadastrada';$('#statProjectsHint').textContent=data.projects.length?'cadastrados':'Nenhum cadastrado';$('#statProgressHint').textContent=data.subjects.length?'média das disciplinas':'Sem dados ainda';$('#subjectsCountLabel').textContent=`${data.subjects.length} cadastrada${data.subjects.length===1?'':'s'}`;$('#projectsCountLabel').textContent=`${data.projects.length} cadastrado${data.projects.length===1?'':'s'}`;$('#collegeProgress').textContent=p+'% — calculado automaticamente com seus registros.';$('#collegeProgress2').textContent=p+'% calculado a partir das suas disciplinas';$('#homeSubjects').innerHTML=data.subjects.length?data.subjects.slice(0,5).map(s=>`<div class="course"><div class="course-dot">${esc((s.name||'DS').slice(0,2).toUpperCase())}</div><div><b>${esc(s.name)}</b><small>${esc(s.description||'Disciplina do semestre')}</small></div><div class="progress"><i style="width:${Math.max(0,Math.min(100,Number(s.progress)||0))}%"></i></div></div>`).join(''):empty('Nenhuma disciplina cadastrada.');$('#homeProjects').innerHTML=data.projects.length?data.projects.slice(0,4).map(projectHtml).join(''):empty('Nenhum projeto cadastrado.');$('#subjectsList').innerHTML=data.subjects.length?data.subjects.map((s,i)=>`<div class="list-item"><div><strong>${esc(s.name)}</strong><small>${esc(s.description||'Sem descrição')} · ${Number(s.progress)||0}%</small></div><button class="small-btn" data-delete="subjects" data-index="${i}">Excluir</button></div>`).join(''):empty('Nenhuma disciplina cadastrada.');$('#projectsList').innerHTML=data.projects.length?data.projects.map((p,i)=>`<div class="list-item"><div><strong>${esc(p.name)}</strong><small>${esc(p.description||'Sem descrição')}</small>${mwSelos('projects',p)}</div><div class="mw-item-acoes"><button class="small-btn" data-edit="projects" data-index="${i}">Editar</button><button class="small-btn" data-delete="projects" data-index="${i}">Excluir</button></div></div>`).join(''):empty('Nenhum projeto cadastrado.');$('#activitiesList').innerHTML=data.activities.length?data.activities.map((a,i)=>{const today=new Date();today.setHours(0,0,0,0);const due=a.date?new Date(a.date+'T00:00:00'):null;const overdue=!!(due&&due<today);const isToday=!!(due&&due.getTime()===today.getTime());const badge=overdue?'<span class="mw-due-badge overdue">Atrasada</span>':isToday?'<span class="mw-due-badge today">Hoje</span>':'';return `<div class="list-item${overdue?' mw-overdue':''}"><div><strong>${esc(a.name)}</strong><small>${esc(a.description||'Sem descrição')} · ${esc(a.date||'Sem data')}</small>${badge}${mwSelos('activities',a)}</div><div class="mw-item-acoes"><button class="small-btn" data-edit="activities" data-index="${i}">Editar</button><button class="small-btn" data-delete="activities" data-index="${i}">Excluir</button></div></div>`}).join(''):empty('Nenhuma atividade cadastrada.');$('#notesList').innerHTML=data.notes.length?data.notes.map((n,i)=>`<div class="list-item"><div><strong>${esc(n.title)}</strong><small>${esc(n.body||'')}</small></div><button class="small-btn" data-delete="notes" data-index="${i}">Excluir</button></div>`).join(''):empty('Nenhuma anotação criada.');$$('[data-delete]').forEach(b=>b.onclick=()=>{data[b.dataset.delete].splice(Number(b.dataset.index),1);save();toast('Item removido')});if(typeof window.mwDashRefresh==='function')window.mwDashRefresh(data)}
+function renderAll(){const p=progress();$('#statSubjects').textContent=data.subjects.length;$('#statActivities').textContent=data.activities.length;$('#statProjects').textContent=data.projects.length;$('#statProgress').textContent=p+'%';$('#statSubjectsHint').textContent=data.subjects.length?'cadastradas no semestre':'Nenhuma cadastrada';$('#statActivitiesHint').textContent=data.activities.length?'registradas':'Nenhuma cadastrada';$('#statProjectsHint').textContent=data.projects.length?'cadastrados':'Nenhum cadastrado';$('#statProgressHint').textContent=data.subjects.length?'média das disciplinas':'Sem dados ainda';$('#subjectsCountLabel').textContent=`${data.subjects.length} cadastrada${data.subjects.length===1?'':'s'}`;$('#projectsCountLabel').textContent=`${data.projects.length} cadastrado${data.projects.length===1?'':'s'}`;$('#collegeProgress').textContent=p+'% — calculado automaticamente com seus registros.';$('#collegeProgress2').textContent=p+'% calculado a partir das suas disciplinas';$('#homeSubjects').innerHTML=data.subjects.length?data.subjects.slice(0,5).map(s=>`<div class="course"><div class="course-dot">${esc((s.name||'DS').slice(0,2).toUpperCase())}</div><div><b>${esc(s.name)}</b><small>${esc(s.description||'Disciplina do semestre')}</small></div><div class="progress"><i style="width:${Math.max(0,Math.min(100,Number(s.progress)||0))}%"></i></div></div>`).join(''):empty('Nenhuma disciplina cadastrada.');$('#homeProjects').innerHTML=data.projects.length?data.projects.slice(0,4).map(projectHtml).join(''):empty('Nenhum projeto cadastrado.');$('#subjectsList').innerHTML=data.subjects.length?data.subjects.map((s,i)=>`<div class="list-item"><div><strong>${esc(s.name)}</strong><small>${esc(s.description||'Sem descrição')} · ${Number(s.progress)||0}%</small></div><button class="small-btn" data-delete="subjects" data-index="${i}">Excluir</button></div>`).join(''):empty('Nenhuma disciplina cadastrada.');$('#projectsList').innerHTML=data.projects.length?data.projects.map((p,i)=>`<div class="list-item"><div><strong>${esc(p.name)}</strong><small>${esc(p.description||'Sem descrição')}</small>${mwSelos('projects',p)}</div><div class="mw-item-acoes"><button class="small-btn" data-edit="projects" data-index="${i}">Editar</button><button class="small-btn" data-delete="projects" data-index="${i}">Excluir</button></div></div>`).join(''):empty('Nenhum projeto cadastrado.');$('#activitiesList').innerHTML=data.activities.length?data.activities.map((a,i)=>{const today=new Date();today.setHours(0,0,0,0);const due=a.date?new Date(a.date+'T00:00:00'):null;const overdue=!!(due&&due<today);const isToday=!!(due&&due.getTime()===today.getTime());const badge=overdue?'<span class="mw-due-badge overdue">Atrasada</span>':isToday?'<span class="mw-due-badge today">Hoje</span>':'';return `<div class="list-item${overdue?' mw-overdue':''}"><div><strong>${esc(a.name)}</strong><small>${esc(a.description||'Sem descrição')} · ${esc(mwDataHumana(a.date))}</small>${badge}${mwSelos('activities',a)}</div><div class="mw-item-acoes"><button class="small-btn" data-edit="activities" data-index="${i}">Editar</button><button class="small-btn" data-delete="activities" data-index="${i}">Excluir</button></div></div>`}).join(''):empty('Nenhuma atividade cadastrada.');$('#notesList').innerHTML=data.notes.length?data.notes.map((n,i)=>`<div class="list-item"><div><strong>${esc(n.title)}</strong><small>${esc(n.body||'')}</small></div><button class="small-btn" data-delete="notes" data-index="${i}">Excluir</button></div>`).join(''):empty('Nenhuma anotação criada.');$$('[data-delete]').forEach(b=>b.onclick=()=>{data[b.dataset.delete].splice(Number(b.dataset.index),1);save();toast('Item removido')});if(typeof window.mwDashRefresh==='function')window.mwDashRefresh(data)}
 /* Forms */
 const modal=$('#modal'),form=$('#modalForm');
 function openModal(type){const configs={subjects:{title:'Nova disciplina',fields:[['name','Nome da disciplina','text','Ex.: Programação Web'],['description','Descrição','text','Ex.: Front-end e aplicações'],['progress','Progresso (%)','number','0']]},projects:{title:'Novo projeto',fields:[['name','Nome do projeto','text','Ex.: Mateus Workspace'],['description','Descrição','text','O que você está construindo?'],['tag','Tecnologia / tag','text','Ex.: JavaScript']]},activities:{title:'Nova atividade',fields:[['name','Nome da atividade','text','Ex.: Entregar trabalho'],['description','Descrição','text','Detalhes da tarefa'],['date','Data','date','']]},notes:{title:'Nova anotação',fields:[['title','Título','text','Ex.: Ideias'],['body','Conteúdo','textarea','Escreva sua anotação...']]}};const c=configs[type];if(!c)return;$('#modalTitle').textContent=c.title;form.innerHTML=c.fields.map(([id,label,t,ph])=>`<div class="form-field"><label for="f-${id}">${label}</label>${t==='textarea'?`<textarea id="f-${id}" placeholder="${ph}"></textarea>`:`<input id="f-${id}" type="${t}" placeholder="${ph}" ${t==='number'?'min="0" max="100" value="0"':''}>`}</div>`).join('')+`<button class="modal-submit" type="submit">Salvar</button>`;modal.classList.remove('hidden');form.onsubmit=e=>{e.preventDefault();const obj={};c.fields.forEach(([id])=>obj[id]=$('#f-'+id).value.trim());if(type==='subjects')obj.progress=Math.max(0,Math.min(100,Number(obj.progress)||0));data[type].push(obj);save();closeModal();toast('Salvo com sucesso')};setTimeout(()=>$('#f-'+c.fields[0][0])?.focus(),40)}
@@ -11874,7 +11910,7 @@ body.light #app .mw-aula-empty strong{ color:#152033 !important; }
     if (actBody) {
       const upcoming = activities.slice().sort((a,b) => String(a.date||'9999').localeCompare(String(b.date||'9999'))).slice(0,3);
       if (!upcoming.length) actBody.innerHTML = '<p class="mw-promo-empty">Nenhuma atividade com prazo ainda.</p>';
-      else actBody.innerHTML = upcoming.map(a => '<div class="mw-promo-row"><b>'+esc(a.name||'Atividade')+'</b><span>'+esc(a.date||'Sem data')+'</span></div>').join('');
+      else actBody.innerHTML = upcoming.map(a => '<div class="mw-promo-row"><b>'+esc(a.name||'Atividade')+'</b><span>'+esc(typeof window.mwDataHumana==='function'?window.mwDataHumana(a.date):(a.date||'Sem data'))+'</span></div>').join('');
     }
     const projBody = q('#promoProjectsBody');
     if (projBody) {
@@ -11968,8 +12004,9 @@ body.light #app .mw-aula-empty strong{ color:#152033 !important; }
     });
     (data.activities || []).forEach(a => {
       if (!a.date) return;
-      if (a.date === tIso) items.push({ title: 'Entrega hoje · ' + (a.name || 'Atividade'), meta: a.description || a.date, go: 'activities' });
-      else if (a.date > tIso) items.push({ title: 'Prazo · ' + (a.name || 'Atividade'), meta: a.date, go: 'activities' });
+      const humana = typeof window.mwDataHumana === 'function' ? window.mwDataHumana(a.date) : a.date;
+      if (a.date === tIso) items.push({ title: 'Entrega hoje · ' + (a.name || 'Atividade'), meta: a.description || humana, go: 'activities' });
+      else if (a.date > tIso) items.push({ title: 'Prazo · ' + (a.name || 'Atividade'), meta: humana, go: 'activities' });
     });
     const alerts = items.slice(0, 6);
     if (btn) btn.classList.toggle('has-alerts', alerts.length > 0);
@@ -13449,7 +13486,7 @@ body.light #app .mw-focus-list div { background:rgba(255,255,255,.67); color:#24
     const now=new Date(), today=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
     const items=(Array.isArray(d.activities)?d.activities:[]).filter(a=>a.date).sort((a,b)=>String(a.date).localeCompare(String(b.date))).slice(0,3);
     if(!items.length){box.innerHTML='<div><span>Nenhuma atividade com prazo</span><em>Disponível</em></div>';return;}
-    box.innerHTML=items.map(a=>{const state=a.date<today?'Atrasada':a.date===today?'Hoje':a.date;return `<div><span>${esc(a.name||'Atividade')}</span><em>${esc(state)}</em></div>`}).join('');
+    box.innerHTML=items.map(a=>{const state=a.date<today?'Atrasada':a.date===today?'Hoje':(typeof window.mwDataHumana==='function'?window.mwDataHumana(a.date):a.date);return `<div><span>${esc(a.name||'Atividade')}</span><em>${esc(state)}</em></div>`}).join('');
   };
   const existing=window.mwDashRefresh;
   window.mwDashRefresh=(d)=>{if(typeof existing==='function')existing(d);refreshFocus(d);};
@@ -22121,6 +22158,15 @@ html body #app .main .lecture-card{
   border-radius: var(--id-r-linha) !important;
   box-shadow: none !important;
 }
+/* Os filtros de Atividades e Projetos escondem itens com el.hidden.
+   Só que .list-item tem `display:flex` escrito por autor, e regra de
+   autor vence o `[hidden]{display:none}` que o navegador aplica — o
+   atributo era marcado e o item continuava na tela. Ou seja: desde a
+   Fase 1, "Atrasadas" e "Com prazo" não filtravam nada, sem nenhum
+   erro no console. É a mesma armadilha que já tinha aparecido no
+   painel de conversas da Nyc AI. */
+html body #app .main .list-item[hidden]{ display: none !important; }
+
 html body #app .main .course:hover,
 html body #app .main .project:hover,
 html body #app .main .list-item:hover,
