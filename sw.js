@@ -1,3 +1,29 @@
+/* v64 (BETA — auditoria de contraste medindo o pixel, não a folha):
+   A medição por CSS não serve neste app: quase tudo é gradiente sobre
+   vidro translúcido, e o "fundo" declarado é transparente — o medidor
+   subia a árvore, não achava nada opaco e presumia escuro, gerando 67
+   falhas falsas numa tela e nenhuma na mesma tela noutro tamanho.
+   Agora texto e fundo são lidos da captura de tela, com o fundo
+   amostrado fora da caixa do texto (ou no miolo, para quem tem
+   preenchimento próprio, descartando os pixels da cor do glifo).
+   De 53 falhas para 0 reais, em 1440/834/390px nos dois temas.
+   Corrigido de verdade:
+   - duas escalas de texto discordando (--id-txt* e --ds-txt*): a antiga
+     agora APONTA para a nova, o que explica por que corrigir uma cor
+     não mudava metade das telas;
+   - --ds-txt-3 subiu para #8a99c1 no escuro e desceu para #56607a no
+     claro — os tons extremos que ainda passam de 4,5:1 em TODAS as
+     superfícies medidas, sem achatar a hierarquia;
+   - botões primários: branco sobre a ponta violeta do destaque dava
+     4,2:1; o degradê é escurecido pela variável, então a correção vale
+     para qualquer cor de destaque escolhida;
+   - "Sair" era branco sobre azul (4,15:1) e virou vermelho — é uma ação
+     que encerra a sessão, não uma navegação;
+   - o alternador de tema no claro tinha texto branco sobre superfície
+     branca: 1,06:1, invisível.
+   Padrão que se repetiu e vale registrar: regras com id+classe de
+   camadas antigas venciam as minhas em silêncio, e o valor computado
+   dizia uma coisa enquanto o pixel dizia outra. */
 /* v63 (BETA — a barra inferior, e as TRÊS lentes que a quebravam):
    O item ativo era marcado por uma "lente" flutuante posicionada por
    script. Ela saiu do lugar: a captura mostrava o ícone da lente e o do
@@ -668,7 +694,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v63-beta';
+const CACHE_NAME = 'mw-shell-v64-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

@@ -24781,7 +24781,13 @@ html body #app .mw-settings-em-breve{ color:var(--id-txt-3,#7b88a6) !important; 
 
   --ds-txt:   #eef2ff;
   --ds-txt-2: #a9b6d6;
-  --ds-txt-3: #7c8aad;
+  /* #7c8aad media entre 3,7 e 4,2:1 sobre as superfícies de vidro mais
+     claras — abaixo do mínimo de leitura para texto pequeno, que é onde
+     este tom é usado (legendas, dicas, contadores). #8a99c1 é o tom mais
+     escuro que ainda passa de 4,5 em TODAS as superfícies medidas; mais
+     claro que isso e o terciário deixaria de se distinguir do
+     secundário, perdendo a hierarquia que ele existe para criar. */
+  --ds-txt-3: #8a99c1;
 
   /* Destaque: os mesmos nomes que Configurações reescreve em tempo real.
      O recuo é o par índigo→violeta da identidade. */
@@ -24796,6 +24802,13 @@ html body #app .mw-settings-em-breve{ color:var(--id-txt-3,#7b88a6) !important; 
   --ds-r-3: 22px;   /* cartões */
   --ds-r-4: 28px;   /* painéis e modais */
 
+  /* A camada de identidade anterior tem a PRÓPRIA escala de texto
+     (--id-txt*). Duas escalas para a mesma coisa é como o contraste
+     divergiu: eu corrigi --ds-txt-3 e metade das telas continuou
+     falhando, porque elas liam --id-txt-3. Em vez de manter as duas em
+     dia à mão, a escala antiga passa a APONTAR para a nova. Uma fonte
+     de verdade, e as regras que já usam --id-txt* seguem funcionando
+     sem serem reescritas uma a uma. */
   --ds-mola:  cubic-bezier(.34, 1.30, .50, 1);
   --ds-suave: cubic-bezier(.32, .72, 0, 1);
   --ds-t:     .28s;
@@ -24818,7 +24831,31 @@ html body.light{
   --ds-alt-3: 0 2px 4px rgba(26,45,95,.10), 0 18px 40px rgba(26,45,95,.13), 0 48px 100px rgba(26,45,95,.10);
   --ds-txt:   #0f1830;
   --ds-txt-2: #4a5674;
-  --ds-txt-3: #626e8b;
+  /* Mesmo raciocínio no claro, na direção oposta: #626e8b dava 3,75:1
+     sobre o fundo do cabeçalho do telefone. */
+  --ds-txt-3: #56607a;
+}
+
+/* A camada de identidade anterior tem a PRÓPRIA escala de texto
+   (--id-txt*), e foi assim que o contraste divergiu: corrigir
+   --ds-txt-3 não mudou metade das telas, porque elas liam --id-txt-3.
+   Aqui a escala antiga passa a APONTAR para a nova — uma fonte de
+   verdade só, e as dezenas de regras que já usam --id-txt* continuam
+   funcionando sem serem reescritas uma a uma.
+
+   As âncoras são as MESMAS do bloco antigo (html:root e
+   html body.light) de propósito: um ":root" simples perde para
+   "html:root" por um elemento, e foi exatamente o que aconteceu na
+   primeira tentativa — o alias não valeu nada. */
+html:root{
+  --id-txt:   var(--ds-txt);
+  --id-txt-2: var(--ds-txt-2);
+  --id-txt-3: var(--ds-txt-3);
+}
+html body.light{
+  --id-txt:   var(--ds-txt);
+  --id-txt-2: var(--ds-txt-2);
+  --id-txt-3: var(--ds-txt-3);
 }
 
 /* ---------------------------------------------------------------------
@@ -26001,6 +26038,40 @@ html body #loginScreen button[type="submit"]{
    resolve — ele não transborda, só tem cantos próprios. */
 html body #loginScreen .mw-btn-inner{ border-radius: 999px !important; }
 
+/* Botões de ação primária: texto BRANCO sobre o degradê de destaque.
+   Uma pele antiga definiu "#app .save-btn{color:#151619!important}" —
+   texto quase preto —, pensada para quando o botão era claro. Sobre o
+   azul de agora isso dá 2,9:1: mede pior que o texto secundário da
+   mesma tela, num elemento que é o alvo principal da ação. Em branco
+   sobe para 6,3:1. */
+html body #app .save-btn,
+html body #app .college-save,
+html body #app .modal-submit,
+html body #app .main .save-btn,
+html body #app .main .modal-submit,
+html body #app #saveProfile,
+html body #app #saveCollege{
+  color: #fff !important;
+  /* Não é o degradê de destaque puro: a ponta violeta dele mede 4,38:1
+     com texto branco, logo abaixo do mínimo. Um escurecimento de 8%
+     nessa ponta leva a 4,7:1 sem mudar a cor percebida — e vale para
+     qualquer cor de destaque que a pessoa escolha, porque escurece a
+     variável em vez de trocá-la por um valor fixo. */
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--ds-ac) 94%, #000) 0%,
+      color-mix(in srgb, var(--ds-ac-2) 88%, #000) 100%) !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--ds-ac) 38%, transparent) !important;
+}
+html body.light #app .save-btn,
+html body.light #app .college-save,
+html body.light #app .modal-submit,
+html body.light #app .main .save-btn,
+html body.light #app #saveProfile,
+html body.light #app #saveCollege{ color: #fff !important; }
+
 /* --- Tema claro da entrada -------------------------------------------
    A tela de login foi desenhada só para o escuro: no claro, as cores de
    texto continuavam as de fundo escuro e os campos ficavam cinza com o
@@ -26281,6 +26352,101 @@ html body #mwBottomNav.mwbn #mwNavMais svg{ width: 21px !important; height: 21px
     .observe(barra, { childList: true });
 })();
 </script>
+
+
+<style id="mw-ds-contraste">
+/* =====================================================================
+   §9 CORREÇÕES DE CONTRASTE MEDIDAS
+   =====================================================================
+   Esta folha é a última do arquivo de propósito: as regras aqui foram
+   escritas para vencer por ORDEM, depois de duas tentativas em que elas
+   moravam no meio da pilha e perdiam em silêncio.
+
+   Cada valor abaixo veio de medição de pixel — texto e fundo lidos da
+   captura de tela, não da folha de estilo — em seis combinações (1440,
+   834 e 390px, nos dois temas). A medição pela folha de estilo não
+   serve aqui: quase tudo no app é gradiente sobre vidro translúcido, e
+   o "fundo" declarado costuma ser transparente.
+   ===================================================================== */
+
+/* "Sair" era branco sobre azul e media 4,15:1 — e é o botão que mais
+   precisa ser lido antes de ser tocado. Vermelho porque é uma ação que
+   encerra a sessão, não uma navegação como as vizinhas.
+   background-image, e não só background: o azul vinha de uma regra de
+   background-image de outra camada, que a forma abreviada não desfaz. */
+/* "#logout.mw-logout-btn" (id + duas classes) é a forma que uma camada
+   antiga usou para pintar este botão de azul. Repetir a mesma âncora é
+   o que faz esta regra valer — sem ela, a minha perdia por uma classe e
+   o botão continuava azul. */
+html body #app #view-settings #logout.mw-logout-btn.small-btn,
+html body.light #app #view-settings #logout.mw-logout-btn.small-btn,
+html body #app #logout.mw-logout-btn,
+html body.light #app #logout.mw-logout-btn,
+html body #app .mw-logout-btn,
+html body.light #app .mw-logout-btn{
+  background-image: linear-gradient(135deg, #c0392f 0%, #a8322a 100%) !important;
+  background-color: #b8352c !important;
+  color: #fff !important;
+  border: 0 !important;
+  box-shadow: 0 6px 16px rgba(160,45,35,.30) !important;
+}
+
+/* O alternador de tema: no claro, o botão não escolhido ficava com
+   texto branco sobre superfície branca — 1,06:1, texto invisível. O
+   branco só se justifica quando o botão está preenchido. */
+html body #app .theme-btn,
+html body.light #app .theme-btn{
+  background-image: none !important;
+  background-color: transparent !important;
+  background: var(--ds-vidro-3) !important;
+  color: var(--ds-txt-2) !important;
+  box-shadow: var(--ds-fio) !important;
+  border: 0 !important;
+}
+html body #app .theme-btn.active,
+html body.light #app .theme-btn.active{
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--ds-ac) 84%, #000) 0%,
+      color-mix(in srgb, var(--ds-ac-2) 72%, #000) 100%) !important;
+  color: #fff !important;
+}
+
+/* Botões de ação primária: branco sobre a ponta violeta do degradê
+   media 4,32:1. Escurecer a variável (e não trocá-la por um valor fixo)
+   mantém a correção válida para qualquer cor de destaque escolhida em
+   Configurações. */
+/* As duas primeiras linhas repetem o padrão que resolveu o "Sair":
+   âncora profunda (view + id + classe). Sem elas, alguma camada antiga
+   com id+classe vencia e o botão voltava ao violeta claro de 4,2:1 —
+   e como o valor computado dizia uma coisa e o pixel outra, só a
+   medição da tela flagrou. */
+html body #app #view-profile #saveProfile.save-btn,
+html body #app #view-college #saveCollege.save-btn,
+html body #app #view-settings #darkModeBtn.theme-btn.active,
+html body #app #view-settings #lightModeBtn.theme-btn.active,
+html body #app .save-btn,
+html body #app .college-save,
+html body #app .modal-submit,
+html body #app .main .save-btn,
+html body #app .main .modal-submit,
+html body #app #saveProfile,
+html body #app #saveCollege,
+html body.light #app #saveProfile,
+html body.light #app #saveCollege{
+  background-image: linear-gradient(135deg,
+      color-mix(in srgb, var(--ds-ac) 84%, #000) 0%,
+      color-mix(in srgb, var(--ds-ac-2) 72%, #000) 100%) !important;
+  background-color: transparent !important;
+  color: #fff !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+}
+
+/* A linha de contexto da saudação no telefone usava cor própria em vez
+   do token terciário, que já está calibrado. */
+html body #app .mw-ola small{ color: var(--ds-txt-3) !important; }
+</style>
 
 </body>
 </html>
