@@ -1,3 +1,17 @@
+/* v69 (BETA — a prévia deixa de ser servida do cache):
+   "Publiquei e não atualizou" tinha uma causa concreta. Este worker é
+   registrado pela página da raiz e o escopo dele cobre o site inteiro,
+   /beta/ incluído. Tirar o registro da cópia da prévia não a tira do
+   escopo: um worker já instalado atende qualquer página abaixo dele.
+   E a estratégia daqui é stale-while-revalidate — responde do cache na
+   hora e atualiza atrás. Para o app instalado é o comportamento certo;
+   para a prévia é o errado, porque depois da primeira visita ela passava
+   a mostrar a versão daquele dia até uma segunda abertura.
+   Agora /beta/ não passa pelo worker: vai sempre à rede.
+   Ressalva honesta: esta correção só vale para quem já tiver a versão
+   nova do worker instalada, o que acontece ao abrir o app da raiz uma
+   vez. Antes disso, abrir a prévia com uma consulta no fim do endereço
+   (?v=algo) força a rede, porque endereço diferente é cache diferente. */
 /* v68 (BETA — Foco com sessões reais):
    O que faz um cronômetro de estudo prestar não é a animação: é ele
    sobreviver a você sair da tela. Por isso não existe contador guardado.
@@ -757,7 +771,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v68-beta';
+const CACHE_NAME = 'mw-shell-v69-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
@@ -815,12 +829,27 @@ self.addEventListener('activate', (event) => {
    startsWith('/api/') anterior nunca casava e as respostas da IA
    estavam sendo cacheadas junto com o resto. */
 const ehApi = (url) => url.pathname.includes('/api/');
+/* A PRÉVIA NÃO PASSA POR AQUI.
+
+   O registro deste service worker é feito pela página da raiz, e o
+   escopo que ele ganha cobre TODO o site — inclusive /beta/. A cópia da
+   prévia até tem o registro removido, mas isso não a tira do escopo: um
+   worker já instalado atende qualquer página abaixo dele.
+
+   E a estratégia daqui é stale-while-revalidate: responde do cache na
+   hora e atualiza atrás. Para o app instalado isso é o certo (abre
+   rápido, funciona sem internet). Para a prévia é exatamente o errado:
+   depois de aberta uma vez, ela passava a mostrar a versão daquele dia
+   até uma segunda visita — que é como se chega em "publiquei e não
+   atualizou". A prévia existe para mostrar o que ACABOU de ser feito,
+   então ela vai sempre à rede. */
+const ehPrevia = (url) => url.pathname.includes('/beta/');
 
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  if (ehApi(url)) return;
+  if (ehApi(url) || ehPrevia(url)) return;
   // Só mexe no que é do próprio site.
   if (url.origin !== self.location.origin) return;
 
