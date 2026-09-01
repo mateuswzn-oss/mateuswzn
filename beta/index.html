@@ -23,7 +23,7 @@ try {
      porque esse fundo so existe depois de o CSS ser lido. Com
      color-scheme:dark a canvas ja nasce escura. -->
 <meta name="color-scheme" content="dark">
-<link rel="manifest" href="manifest.json" data-previa="1">
+<link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2750,6 +2750,13 @@ body.light #app .calendar-card .calendar-nav button:hover{
     <path d="M12.42 2.72a1 1 0 0 0-.84 0L1.9 7.32a.95.95 0 0 0 0 1.72l2.0.94v.02L12 13.72l8.1-3.72v4.36a1.1 1.1 0 0 0 2.2 0V8.98l-.2-.09a.95.95 0 0 0 .0-1.57z"/>
     <path d="M6.3 12.06 12 14.68l5.7-2.62v3.02c0 2.1-2.55 3.72-5.7 3.72s-5.7-1.62-5.7-3.72z"/>
   </symbol>
+  <symbol id="mwi-calendar" viewBox="0 0 24 24">
+    <path fill-rule="evenodd" d="M7.6 2.4a1.2 1.2 0 0 1 1.2 1.2v1.0h6.4v-1.0a1.2 1.2 0 1 1 2.4 0v1.0h.9a2.7 2.7 0 0 1 2.7 2.7v11a2.7 2.7 0 0 1-2.7 2.7H5.5a2.7 2.7 0 0 1-2.7-2.7v-11a2.7 2.7 0 0 1 2.7-2.7h.9v-1.0a1.2 1.2 0 0 1 1.2-1.2zM5.0 10.6v7.7c0 .28.22.5.5.5h13c.28 0 .5-.22.5-.5v-7.7z"/>
+    <rect x="6.9" y="12.4" width="3.0" height="2.6" rx=".8"/>
+    <rect x="11.6" y="12.4" width="3.0" height="2.6" rx=".8"/>
+    <rect x="6.9" y="16.0" width="3.0" height="2.0" rx=".7"/>
+    <rect x="11.6" y="16.0" width="3.0" height="2.0" rx=".7"/>
+  </symbol>
   <symbol id="mwi-institutions" viewBox="0 0 24 24">
     <path fill-rule="evenodd" d="M12.44 2.62a1 1 0 0 0-.88 0L2.2 7.2a1 1 0 0 0 .44 1.9h18.72a1 1 0 0 0 .44-1.9zM12 4.86l4.35 2.14h-8.7z"/>
     <!-- Colunas grossas com vãos estreitos, e não o contrário: a 22px
@@ -4009,6 +4016,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
       <button data-view="subjects"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-subjects"/></svg></span><span class="label">Disciplinas</span></button>
       <button data-view="projects"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-projects"/></svg></span><span class="label">Projetos</span></button>
       <button data-view="activities"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-activities"/></svg></span><span class="label">Atividades</span></button>
+      <button data-view="calendar"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-calendar"/></svg></span><span class="label">Calendário</span></button>
       <button data-view="notes"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-notes"/></svg></span><span class="label">Anotações</span></button>
       <button data-view="files"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-files"/></svg></span><span class="label">Arquivos</span></button>
       <button data-view="support" id="mwNavSupport"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-support"/></svg></span><span class="label">Suporte</span></button>
@@ -4088,6 +4096,13 @@ body.light .mw-faceid-gate-card p{color:#526988}
     <section class="view" id="view-subjects"><section class="card section"><div class="section-head"><h3>Disciplinas</h3><button class="add-btn" data-add="subjects">+ Adicionar</button></div><div class="list" id="subjectsList"></div></section></section>
     <section class="view" id="view-projects"><section class="card section"><div class="section-head"><h3>Projetos</h3><button class="add-btn" data-add="projects">+ Adicionar</button></div><div class="list" id="projectsList"></div></section></section>
     <section class="view" id="view-activities"><section class="card section"><div class="section-head"><h3>Atividades</h3><button class="add-btn" data-add="activities">+ Adicionar</button></div><div class="list" id="activitiesList"></div></section></section>
+    <!-- Calendário: o mês já existia como painel no dashboard e
+         funcionava. Em vez de escrever um segundo calendário, ele foi
+         PROMOVIDO a área própria (o script abaixo o move para cá) e
+         ganhou a visão de semana ao lado. Duplicar teria criado dois
+         calendários para manter em dia, que é como se chega a dois que
+         discordam. -->
+    <section class="view" id="view-calendar"></section>
     <section class="view" id="view-notes"><section class="card section"><div class="section-head"><h3>Anotações</h3><button class="add-btn" data-add="notes">+ Nova anotação</button></div><div class="list" id="notesList"></div></section></section>
     <section class="view" id="view-files"><section class="card section"><div class="section-head"><h3>Arquivos</h3><span>Área preparada para seus materiais</span></div><div class="empty"><strong>Nenhum arquivo adicionado</strong><span>Os arquivos ainda não fazem parte dos dados locais deste protótipo.</span></div></section></section>
     <section class="view" id="view-support">
@@ -14760,9 +14775,7 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
   // recusa o registro silenciosamente, então isso é seguro em qualquer caso.
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
     window.addEventListener('load', () => {
-      /* prévia: sem service worker de propósito — o SW da raiz (página de
-   manutenção) e o desta pasta disputariam o mesmo escopo do domínio. */
-      void 0;
+      void 0; /* prévia: sem service worker, para não competir com o app instalado */
     });
   }
 
@@ -26527,6 +26540,744 @@ html body #app .sidebar #nav button.active .nav-icon svg{ color: #fff !important
 html body.light #app .sidebar #nav button .nav-icon svg{ color: #0f1830 !important; }
 html body.light #app .sidebar #nav button.active .nav-icon svg{ color: #fff !important; }
 </style>
+
+
+<style id="mw-kanban">
+/* =====================================================================
+   §10 PROJETOS COMO QUADRO
+   =====================================================================
+   A lista respondia "quais projetos existem". O quadro responde "onde
+   cada um está" — que é a pergunta que se faz sobre projeto, e a razão
+   de as cinco situações existirem no cadastro desde antes.
+
+   A lista NÃO foi removida: quem tem quinze projetos lê melhor em lista,
+   e quem tem cinco lê melhor no quadro. O modo escolhido fica guardado.
+   ===================================================================== */
+
+html body #app .mw-proj-modos{
+  display: inline-flex; gap: 3px; padding: 3px;
+  border-radius: 999px;
+  background: var(--ds-vidro-3);
+  box-shadow: var(--ds-fio);
+}
+html body #app .mw-proj-modos button{
+  border: 0; cursor: pointer;
+  padding: 7px 15px; border-radius: 999px;
+  background: transparent; color: var(--ds-txt-2);
+  font: inherit; font-size: 12.5px; font-weight: 650;
+  transition: color .18s var(--ds-suave), background .18s var(--ds-suave);
+}
+html body #app .mw-proj-modos button[aria-pressed="true"]{
+  background: var(--ds-ac-grad); color: #fff;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--ds-ac) 38%, transparent);
+}
+
+/* --- O quadro ---------------------------------------------------------
+   Rolagem horizontal com encaixe, e não colunas espremidas: cinco
+   colunas em 390px dariam 70px cada, onde não cabe o nome de um projeto.
+   Rolar é o comportamento certo — é o que um quadro faz. */
+html body #app .mw-kanban{
+  display: grid;
+  grid-auto-flow: column;
+  /* 210px é o menor valor em que o nome de um projeto ainda cabe em
+     duas linhas — e é o que faz as cinco colunas caberem juntas num
+     desktop de 1440. Abaixo disso o cartão vira uma tira. Em telas
+     estreitas a rolagem horizontal assume, que é o comportamento certo
+     de um quadro. */
+  grid-auto-columns: minmax(210px, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  padding-bottom: 6px;
+}
+html body #app .mw-kan-col{
+  display: flex; flex-direction: column;
+  min-width: 0;
+  scroll-snap-align: start;
+  border-radius: var(--ds-r-3);
+  background: var(--ds-vidro-3);
+  box-shadow: var(--ds-fio);
+  padding: 12px 10px 10px;
+  transition: background .18s var(--ds-suave), box-shadow .18s var(--ds-suave);
+}
+html body #app .mw-kan-col.is-alvo{
+  background: color-mix(in srgb, var(--ds-ac) 14%, transparent);
+  box-shadow: var(--ds-fio-forte), inset 0 0 0 2px color-mix(in srgb, var(--ds-ac) 55%, transparent);
+}
+html body #app .mw-kan-topo{
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 4px 10px;
+}
+html body #app .mw-kan-ponto{ width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; }
+html body #app .mw-kan-topo strong{
+  font-size: 12.5px; font-weight: 700; color: var(--ds-txt);
+  letter-spacing: .01em; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+html body #app .mw-kan-conta{
+  margin-left: auto; flex: 0 0 auto;
+  min-width: 22px; text-align: center;
+  padding: 2px 7px; border-radius: 999px;
+  background: var(--ds-vidro-1);
+  color: var(--ds-txt-2); font-size: 11.5px; font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+html body #app .mw-kan-pilha{ display: grid; gap: 8px; min-height: 54px; align-content: start; }
+
+/* --- O cartão --------------------------------------------------------- */
+html body #app .mw-kan-card{
+  position: relative;
+  padding: 12px 13px;
+  border-radius: var(--ds-r-2);
+  background: var(--ds-vidro-1);
+  box-shadow: var(--ds-fio), var(--ds-alt-1);
+  cursor: grab;
+  touch-action: none;          /* o arrasto é nosso, não do scroll */
+  transition: box-shadow .18s var(--ds-suave), transform .18s var(--ds-mola);
+}
+html body #app .mw-kan-card:focus-visible{
+  outline: 3px solid color-mix(in srgb, var(--ds-ac) 55%, transparent);
+  outline-offset: 2px;
+}
+@media (hover: hover){
+  html body #app .mw-kan-card:hover{ box-shadow: var(--ds-fio-forte), var(--ds-alt-2); transform: translateY(-1px); }
+}
+html body #app .mw-kan-card.is-arrastando{
+  position: fixed; z-index: 999; margin: 0; pointer-events: none;
+  cursor: grabbing;
+  box-shadow: var(--ds-fio-forte), var(--ds-alt-3);
+  transform: rotate(-1.6deg) scale(1.03);
+  opacity: .96;
+}
+html body #app .mw-kan-fantasma{
+  border-radius: var(--ds-r-2);
+  border: 1px dashed color-mix(in srgb, var(--ds-ac) 45%, transparent);
+  background: color-mix(in srgb, var(--ds-ac) 7%, transparent);
+}
+html body #app .mw-kan-card b{
+  display: block; font-size: 13.5px; font-weight: 700;
+  color: var(--ds-txt); line-height: 1.3;
+}
+html body #app .mw-kan-card small{
+  display: block; margin-top: 5px;
+  font-size: 12px; line-height: 1.45; color: var(--ds-txt-3);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+html body #app .mw-kan-selos{ display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
+html body #app .mw-kan-selo{
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 8px; border-radius: 999px;
+  font-size: 11px; font-weight: 650;
+  background: var(--ds-vidro-3); color: var(--ds-txt-2);
+  box-shadow: var(--ds-fio);
+}
+html body #app .mw-kan-selo[data-p="Alta"]{ color: #ffb4a8; }
+html body.light #app .mw-kan-selo[data-p="Alta"]{ color: #a3312a; }
+html body #app .mw-kan-vazio{
+  padding: 16px 10px; text-align: center;
+  font-size: 12px; color: var(--ds-txt-3);
+  border-radius: var(--ds-r-2);
+  border: 1px dashed var(--ds-borda, rgba(140,165,220,.16));
+}
+html body #app .mw-kan-dica{
+  margin: 10px 2px 0; font-size: 12px; color: var(--ds-txt-3);
+}
+
+@media (prefers-reduced-motion: reduce){
+  html body #app .mw-kan-card,
+  html body #app .mw-kan-col{ transition: none !important; }
+  html body #app .mw-kan-card.is-arrastando{ transform: none; }
+}
+</style>
+
+<script id="mw-kanban-js">
+(function(){
+  'use strict';
+  /* O quadro de projetos.
+
+     Ele NÃO tem dados próprios: lê e escreve o mesmo campo "status" que o
+     formulário de projetos já usava, com os mesmos cinco valores. Mover
+     um cartão de coluna é exatamente editar esse campo — por isso a
+     mudança aparece na lista, no filtro e no relatório sem nenhuma
+     sincronização entre eles.
+
+     Sobre o arrasto: é feito com Pointer Events, e não com a API de
+     arrastar-e-soltar do HTML. A razão é simples e é a que importa: a
+     API nativa não funciona com o dedo. Um quadro que só se opera com
+     mouse não serve para metade dos aparelhos em que este app roda. */
+
+  var COLUNAS = [
+    { id:'Planejamento', rotulo:'Planejamento', cor:'var(--ds-txt-3)' },
+    { id:'Em andamento', rotulo:'Em andamento', cor:'var(--ds-ac)' },
+    { id:'Em revisão',   rotulo:'Em revisão',   cor:'#f0b429' },
+    { id:'Concluído',    rotulo:'Concluído',    cor:'#2fb37a' },
+    { id:'Arquivado',    rotulo:'Arquivado',    cor:'#7b8296' }
+  ];
+  var CHAVE_MODO = 'mwProjetosModo';
+
+  function esc(v){ return String(v==null?'':v).replace(/[&<>'"]/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]; }); }
+
+  function dados(){
+    var d = window.data;
+    if (!d || typeof d !== 'object') { try { d = JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}'); } catch(e){ d={}; } }
+    return d;
+  }
+  function projetos(){ var p = dados().projects; return Array.isArray(p) ? p : []; }
+  function grava(){ if (typeof window.save === 'function') window.save(); }
+
+  /* Um projeto sem status, ou com um status de uma versão anterior do
+     app ("Planejado"), pertence à primeira coluna — nunca some do
+     quadro por não casar com nenhuma. */
+  function colunaDe(p){
+    var s = String((p && p.status) || '').trim();
+    for (var i = 0; i < COLUNAS.length; i++) if (COLUNAS[i].id === s) return s;
+    if (/planejad/i.test(s)) return 'Planejamento';
+    return COLUNAS[0].id;
+  }
+
+  function modo(){
+    try { return localStorage.getItem(CHAVE_MODO) === 'lista' ? 'lista' : 'quadro'; } catch (e) { return 'quadro'; }
+  }
+  function defineModo(m){
+    try { localStorage.setItem(CHAVE_MODO, m); } catch (e) {}
+    aplicaModo();
+  }
+
+  // ---------------------------------------------------------------
+  function monta(){
+    var view = document.getElementById('view-projects');
+    if (!view || document.getElementById('mwKanban')) return true;
+    var lista = document.getElementById('projectsList');
+    var cabeca = view.querySelector('.section-head');
+    if (!lista || !cabeca) return false;
+
+    var modos = document.createElement('div');
+    modos.className = 'mw-proj-modos';
+    modos.setAttribute('role', 'group');
+    modos.setAttribute('aria-label', 'Como ver os projetos');
+    modos.innerHTML =
+      '<button type="button" data-modo="quadro" aria-pressed="true">Quadro</button>' +
+      '<button type="button" data-modo="lista" aria-pressed="false">Lista</button>';
+    modos.addEventListener('click', function(ev){
+      var b = ev.target.closest('button[data-modo]');
+      if (b) defineModo(b.getAttribute('data-modo'));
+    });
+    /* Antes do #projectsList, e não logo abaixo do cabeçalho: o cartão
+       de introdução da área é inserido por outro bloco imediatamente
+       antes da lista, e ancorar no cabeçalho deixava o quadro ACIMA
+       dele — a introdução da seção aparecia depois do conteúdo dela. */
+    lista.before(modos);
+
+    var quadro = document.createElement('div');
+    quadro.className = 'mw-kanban';
+    quadro.id = 'mwKanban';
+    modos.insertAdjacentElement('afterend', quadro);
+
+    var dica = document.createElement('p');
+    dica.className = 'mw-kan-dica';
+    dica.id = 'mwKanDica';
+    dica.textContent = 'Arraste um projeto para outra coluna, ou selecione um cartão e use as setas ← →.';
+    quadro.insertAdjacentElement('afterend', dica);
+
+    return true;
+  }
+
+  function aplicaModo(){
+    var m = modo();
+    var quadro = document.getElementById('mwKanban');
+    var dica = document.getElementById('mwKanDica');
+    var lista = document.getElementById('projectsList');
+    var filtros = document.querySelector('[data-filtros="projects"]');
+    if (!quadro || !lista) return;
+    quadro.hidden = m !== 'quadro';
+    if (dica) dica.hidden = m !== 'quadro';
+    /* display, e não só o atributo hidden: a lista tem display:grid
+       declarado pelo autor, e display de autor vence o [hidden] do
+       navegador. Já custou caro antes neste mesmo arquivo. */
+    lista.style.display = m === 'quadro' ? 'none' : '';
+    /* Os filtros são da lista. No quadro, as colunas SÃO o filtro —
+       deixá-los ali daria dois controles para a mesma coisa. */
+    if (filtros) filtros.style.display = m === 'quadro' ? 'none' : '';
+    document.querySelectorAll('.mw-proj-modos button[data-modo]').forEach(function(b){
+      b.setAttribute('aria-pressed', b.getAttribute('data-modo') === m ? 'true' : 'false');
+    });
+    if (m === 'quadro') pinta();
+  }
+
+  function cartaoHtml(p, i){
+    var selos = [];
+    if (p.priority) selos.push('<span class="mw-kan-selo" data-p="' + esc(p.priority) + '">' + esc(p.priority) + '</span>');
+    if (p.subject)  selos.push('<span class="mw-kan-selo">' + esc(p.subject) + '</span>');
+    if (p.tag)      selos.push('<span class="mw-kan-selo">' + esc(p.tag) + '</span>');
+    if (p.deadline) {
+      var quando = (typeof window.mwDataHumana === 'function') ? window.mwDataHumana(p.deadline) : p.deadline;
+      selos.push('<span class="mw-kan-selo">' + esc(quando) + '</span>');
+    }
+    return '<article class="mw-kan-card" tabindex="0" role="listitem" data-i="' + i + '"' +
+      ' aria-label="' + esc(p.name || 'Projeto') + ', em ' + esc(colunaDe(p)) + '. Use as setas para mover de coluna.">' +
+      '<b>' + esc(p.name || 'Sem nome') + '</b>' +
+      (p.description ? '<small>' + esc(p.description) + '</small>' : '') +
+      (selos.length ? '<div class="mw-kan-selos">' + selos.join('') + '</div>' : '') +
+      '</article>';
+  }
+
+  function pinta(){
+    var quadro = document.getElementById('mwKanban');
+    if (!quadro || quadro.hidden) return;
+    var lista = projetos();
+    quadro.innerHTML = COLUNAS.map(function(c){
+      var meus = [];
+      lista.forEach(function(p, i){ if (colunaDe(p) === c.id) meus.push(cartaoHtml(p, i)); });
+      return '<section class="mw-kan-col" data-col="' + esc(c.id) + '">' +
+        '<header class="mw-kan-topo">' +
+          '<span class="mw-kan-ponto" style="background:' + c.cor + '"></span>' +
+          '<strong>' + esc(c.rotulo) + '</strong>' +
+          '<span class="mw-kan-conta">' + meus.length + '</span>' +
+        '</header>' +
+        '<div class="mw-kan-pilha" role="list" aria-label="' + esc(c.rotulo) + '">' +
+          (meus.length ? meus.join('') : '<div class="mw-kan-vazio">Nada aqui</div>') +
+        '</div></section>';
+    }).join('');
+  }
+
+  function move(indice, passo){
+    var lista = projetos();
+    var p = lista[indice];
+    if (!p) return;
+    var atual = COLUNAS.findIndex(function(c){ return c.id === colunaDe(p); });
+    var alvo = Math.max(0, Math.min(COLUNAS.length - 1, atual + passo));
+    if (alvo === atual) return;
+    p.status = COLUNAS[alvo].id;
+    grava();
+    pinta();
+    // Devolve o foco ao mesmo projeto na coluna nova: sem isso o teclado
+    // perde o lugar a cada movimento e a operação vira inútil.
+    var novo = document.querySelector('.mw-kan-card[data-i="' + indice + '"]');
+    if (novo) novo.focus();
+    if (window.toast) window.toast('“' + (p.name || 'Projeto') + '” → ' + COLUNAS[alvo].id);
+  }
+
+  // ---------------------------------------------------------------
+  // Arrasto com ponteiro (mouse e dedo pelo mesmo caminho)
+  // ---------------------------------------------------------------
+  var arrasto = null;
+
+  function aoDescer(ev){
+    var card = ev.target.closest('.mw-kan-card');
+    if (!card || ev.button > 0) return;
+    var quadro = document.getElementById('mwKanban');
+    if (!quadro || !quadro.contains(card)) return;
+
+    var caixa = card.getBoundingClientRect();
+    arrasto = {
+      card: card,
+      indice: Number(card.getAttribute('data-i')),
+      dx: ev.clientX - caixa.left,
+      dy: ev.clientY - caixa.top,
+      larg: caixa.width,
+      alt: caixa.height,
+      moveu: false,
+      origem: card.parentElement,
+      antes: card.nextElementSibling
+    };
+    card.setPointerCapture(ev.pointerId);
+  }
+
+  function aoMover(ev){
+    if (!arrasto) return;
+    if (!arrasto.moveu){
+      // Só vira arrasto depois de alguns pixels: sem isso um toque
+      // simples (ou um clique para focar) já arrancaria o cartão.
+      var caixa = arrasto.card.getBoundingClientRect();
+      if (Math.abs(ev.clientX - (caixa.left + arrasto.dx)) < 5 &&
+          Math.abs(ev.clientY - (caixa.top + arrasto.dy)) < 5) return;
+      arrasto.moveu = true;
+
+      var fantasma = document.createElement('div');
+      fantasma.className = 'mw-kan-fantasma';
+      fantasma.style.height = arrasto.alt + 'px';
+      arrasto.fantasma = fantasma;
+      arrasto.origem.insertBefore(fantasma, arrasto.card);
+
+      arrasto.card.classList.add('is-arrastando');
+      arrasto.card.style.width = arrasto.larg + 'px';
+      document.body.appendChild(arrasto.card);
+    }
+    arrasto.card.style.left = (ev.clientX - arrasto.dx) + 'px';
+    arrasto.card.style.top  = (ev.clientY - arrasto.dy) + 'px';
+
+    var col = colunaSob(ev.clientX, ev.clientY);
+    document.querySelectorAll('.mw-kan-col.is-alvo').forEach(function(c){ c.classList.remove('is-alvo'); });
+    if (col) col.classList.add('is-alvo');
+  }
+
+  /* elementFromPoint não serve: o cartão arrastado está sob o ponteiro e
+     seria sempre o achado. Comparar com as caixas das colunas é direto e
+     não depende da ordem de pintura. */
+  function colunaSob(x, y){
+    var achada = null;
+    document.querySelectorAll('#mwKanban .mw-kan-col').forEach(function(c){
+      var r = c.getBoundingClientRect();
+      if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) achada = c;
+    });
+    return achada;
+  }
+
+  function aoSoltar(ev){
+    if (!arrasto) return;
+    var a = arrasto; arrasto = null;
+    document.querySelectorAll('.mw-kan-col.is-alvo').forEach(function(c){ c.classList.remove('is-alvo'); });
+
+    if (!a.moveu){ a.card.focus(); return; }
+
+    var col = colunaSob(ev.clientX, ev.clientY);
+    a.card.classList.remove('is-arrastando');
+    a.card.style.cssText = '';
+    if (a.fantasma) a.fantasma.remove();
+    // Devolve o cartão ao lugar antes de repintar: se o destino for
+    // inválido, nada muda e o cartão não fica órfão no <body>.
+    a.origem.insertBefore(a.card, a.antes);
+
+    var destino = col && col.getAttribute('data-col');
+    var lista = projetos();
+    var p = lista[a.indice];
+    if (p && destino && destino !== colunaDe(p)){
+      p.status = destino;
+      grava();
+      if (window.toast) window.toast('“' + (p.name || 'Projeto') + '” → ' + destino);
+    }
+    pinta();
+  }
+
+  function aoTeclar(ev){
+    var card = ev.target.closest && ev.target.closest('.mw-kan-card');
+    if (!card) return;
+    if (ev.key === 'ArrowRight'){ ev.preventDefault(); move(Number(card.getAttribute('data-i')), 1); }
+    else if (ev.key === 'ArrowLeft'){ ev.preventDefault(); move(Number(card.getAttribute('data-i')), -1); }
+    else if (ev.key === 'Enter' || ev.key === ' '){
+      // Enter abre a edição, reaproveitando o formulário que já existe.
+      ev.preventDefault();
+      var b = document.querySelector('[data-edit="projects"][data-index="' + card.getAttribute('data-i') + '"]');
+      if (b) b.click();
+      else defineModo('lista');
+    }
+  }
+
+  document.addEventListener('pointerdown', aoDescer);
+  document.addEventListener('pointermove', aoMover);
+  document.addEventListener('pointerup', aoSoltar);
+  document.addEventListener('pointercancel', aoSoltar);
+  document.addEventListener('keydown', aoTeclar);
+
+  function inicia(){ if (monta()) aplicaModo(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', inicia);
+  else inicia();
+
+  var anterior = window.mwDashRefresh;
+  window.mwDashRefresh = function(d){
+    if (typeof anterior === 'function') { try { anterior(d); } catch (e) {} }
+    try { inicia(); } catch (e) {}
+  };
+})();
+</script>
+
+
+<style id="mw-calendario">
+/* =====================================================================
+   §11 CALENDÁRIO
+   =====================================================================
+   O mês responde "como está o período"; a semana responde "o que tenho
+   pela frente". São perguntas diferentes e por isso são duas visões, e
+   não uma só com zoom.
+   ===================================================================== */
+/* O painel do mês é escondido por uma camada antiga com
+   "#app #academicCalendarPanel{display:none!important}", e só revelado
+   sob "#app:has(#view-home.active)". Fora do dashboard ele nunca
+   aparece — foi por isso que, movido para cá, ele sumia mesmo com
+   display:block inline (regra !important vence estilo inline sem
+   !important). Aqui a exceção é declarada para a área nova, e a troca
+   mês/semana passa a ser feita por atributo, não por display inline. */
+html body #app #view-calendar #academicCalendarPanel{
+  display: block !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 20px !important;
+  border-radius: var(--ds-r-3) !important;
+}
+/* Com a largura toda da área, as células do mês esticaram e viraram
+   elipses — um calendário se lê pela grade, e uma grade de elipses
+   deixa de parecer uma grade. Altura mínima e raio moderado devolvem a
+   proporção de célula. */
+html body #app #view-calendar .calendar-day{
+  min-height: 52px !important;
+  border-radius: 12px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 3px !important;
+}
+html body #app #view-calendar .calendar-grid{ gap: 7px !important; }
+html body #app #view-calendar .cal-wd{
+  padding-bottom: 4px; font-size: 11px; font-weight: 700;
+  letter-spacing: .05em; text-transform: uppercase; color: var(--ds-txt-3);
+}
+@media (max-width: 640px){
+  html body #app #view-calendar .calendar-day{ min-height: 42px !important; border-radius: 10px !important; }
+  html body #app #view-calendar .calendar-grid{ gap: 5px !important; }
+}
+
+html body #app #view-calendar #academicCalendarPanel[data-mw-oculto="1"],
+html body #app #view-calendar #mwSemanaCard[data-mw-oculto="1"]{ display: none !important; }
+
+html body #app #view-calendar .mw-cal-modos{
+  display: inline-flex; gap: 3px; padding: 3px; margin-bottom: 14px;
+  border-radius: 999px; background: var(--ds-vidro-3); box-shadow: var(--ds-fio);
+}
+html body #app #view-calendar .mw-cal-modos button{
+  border: 0; cursor: pointer; padding: 7px 15px; border-radius: 999px;
+  background: transparent; color: var(--ds-txt-2);
+  font: inherit; font-size: 12.5px; font-weight: 650;
+  transition: color .18s var(--ds-suave), background .18s var(--ds-suave);
+}
+html body #app #view-calendar .mw-cal-modos button[aria-pressed="true"]{
+  background: var(--ds-ac-grad); color: #fff;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--ds-ac) 38%, transparent);
+}
+
+/* --- Semana -----------------------------------------------------------
+   Sete colunas no desktop; no telefone, sete LINHAS. Não é o mesmo
+   desenho encolhido: numa coluna de 45px não cabe o nome de uma entrega,
+   e a semana existe justamente para ler os nomes. */
+html body #app .mw-sem-topo{
+  display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+}
+html body #app .mw-sem-topo strong{ font-size: 15px; color: var(--ds-txt); }
+html body #app .mw-sem-nav{
+  border: 0; cursor: pointer; width: 34px; height: 34px; border-radius: 11px;
+  background: var(--ds-vidro-2); box-shadow: var(--ds-fio);
+  color: var(--ds-txt-2); font-size: 17px; line-height: 1;
+}
+html body #app .mw-sem-nav:hover{ color: var(--ds-txt); box-shadow: var(--ds-fio-forte); }
+html body #app .mw-sem-hoje{
+  margin-left: auto; border: 0; cursor: pointer;
+  padding: 8px 14px; border-radius: 999px;
+  background: var(--ds-vidro-2); box-shadow: var(--ds-fio);
+  color: var(--ds-txt-2); font: inherit; font-size: 12.5px; font-weight: 650;
+}
+html body #app .mw-sem-hoje:hover{ color: var(--ds-txt); }
+
+html body #app .mw-semana{ display: grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap: 10px; }
+html body #app .mw-sem-dia{
+  min-width: 0; padding: 11px 10px 12px;
+  border-radius: var(--ds-r-2);
+  background: var(--ds-vidro-3);
+  box-shadow: var(--ds-fio);
+}
+html body #app .mw-sem-dia.is-hoje{
+  background: color-mix(in srgb, var(--ds-ac) 15%, transparent);
+  box-shadow: var(--ds-fio-forte), inset 0 0 0 2px color-mix(in srgb, var(--ds-ac) 50%, transparent);
+}
+html body #app .mw-sem-dia.is-passado{ opacity: .62; }
+html body #app .mw-sem-cab{ display: flex; align-items: baseline; gap: 6px; margin-bottom: 9px; }
+html body #app .mw-sem-cab em{
+  font-style: normal; font-size: 11px; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--ds-txt-3);
+}
+html body #app .mw-sem-cab b{ font-size: 17px; font-weight: 750; color: var(--ds-txt); font-variant-numeric: tabular-nums; }
+html body #app .mw-sem-itens{ display: grid; gap: 6px; }
+html body #app .mw-sem-item{
+  padding: 7px 9px; border-radius: 10px;
+  background: var(--ds-vidro-1); box-shadow: var(--ds-fio);
+  font-size: 12px; line-height: 1.35; color: var(--ds-txt);
+  cursor: pointer; text-align: left; border: 0; width: 100%;
+}
+html body #app .mw-sem-item small{ display: block; color: var(--ds-txt-3); font-size: 11px; margin-top: 2px; }
+html body #app .mw-sem-item[data-tipo="atividade"]{ box-shadow: var(--ds-fio), inset 3px 0 0 var(--ds-ac); }
+html body #app .mw-sem-item[data-tipo="marca"]{ box-shadow: var(--ds-fio), inset 3px 0 0 #f0b429; }
+html body #app .mw-sem-nada{ font-size: 11.5px; color: var(--ds-txt-3); padding: 2px; }
+
+@media (max-width: 900px){
+  html body #app .mw-semana{ grid-template-columns: 1fr; gap: 8px; }
+  html body #app .mw-sem-dia{ display: grid; grid-template-columns: 66px minmax(0,1fr); gap: 12px; align-items: start; }
+  html body #app .mw-sem-cab{ flex-direction: column; gap: 0; margin-bottom: 0; }
+  html body #app .mw-sem-dia.is-passado{ display: none; }
+}
+</style>
+
+<script id="mw-calendario-js">
+(function(){
+  'use strict';
+  /* A área de Calendário.
+
+     Ela não desenha um segundo mês: MOVE para cá o painel de mês que já
+     existia no dashboard e funcionava. Um bloco antigo o devolve para o
+     dashboard a cada redesenho ("if(cal.parentElement!==home) home.
+     appendChild(cal)"), então este bloco precisa rodar depois — e roda,
+     por estar no fim da corrente do mwDashRefresh.
+
+     A visão de semana é nova e lê o mesmo que o mês: prazos de
+     atividades e as marcações que a pessoa fez no próprio calendário.
+     Nada é inventado; um dia sem nada diz que não tem nada. */
+
+  var DIAS = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  var MESES = ['janeiro','fevereiro','março','abril','maio','junho',
+               'julho','agosto','setembro','outubro','novembro','dezembro'];
+  var CHAVE_MODO = 'mwCalendarioModo';
+  var deslocamento = 0;   // semanas a partir da atual
+
+  function esc(v){ return String(v==null?'':v).replace(/[&<>'"]/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]; }); }
+  function dados(){
+    var d = window.data;
+    if (!d || typeof d !== 'object') { try { d = JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}'); } catch(e){ d={}; } }
+    return d;
+  }
+  /* Data local, nunca new Date('2026-09-05'): essa forma é lida como
+     meia-noite UTC e, em UTC-3, cai no dia anterior. */
+  function iso(d){
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function domingoDe(d){
+    var x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    x.setDate(x.getDate() - x.getDay());
+    return x;
+  }
+  function modo(){
+    try { return localStorage.getItem(CHAVE_MODO) === 'semana' ? 'semana' : 'mes'; } catch(e){ return 'mes'; }
+  }
+  function defineModo(m){
+    try { localStorage.setItem(CHAVE_MODO, m); } catch(e){}
+    aplica();
+  }
+
+  function itensDe(chave){
+    var d = dados(), out = [];
+    (Array.isArray(d.activities) ? d.activities : []).forEach(function(a){
+      if (a.date === chave) out.push({ tipo:'atividade', titulo: a.name || 'Atividade',
+        meta: [a.subject, a.priority].filter(Boolean).join(' · ') || 'Entrega', ir:'activities' });
+    });
+    var marcas = (d.calMarks && d.calMarks[chave]) || [];
+    marcas.forEach(function(t){ out.push({ tipo:'marca', titulo: t, meta:'Marcado por você', ir:'calendar' }); });
+    return out;
+  }
+
+  function monta(){
+    var view = document.getElementById('view-calendar');
+    if (!view) return false;
+    if (!document.getElementById('mwCalModos')){
+      var modos = document.createElement('div');
+      modos.className = 'mw-cal-modos';
+      modos.id = 'mwCalModos';
+      modos.setAttribute('role','group');
+      modos.setAttribute('aria-label','Como ver o calendário');
+      modos.innerHTML = '<button type="button" data-cal="mes" aria-pressed="true">Mês</button>' +
+                        '<button type="button" data-cal="semana" aria-pressed="false">Semana</button>';
+      modos.addEventListener('click', function(ev){
+        var b = ev.target.closest('button[data-cal]');
+        if (b) { deslocamento = 0; defineModo(b.getAttribute('data-cal')); }
+      });
+      view.appendChild(modos);
+    }
+    if (!document.getElementById('mwSemana')){
+      var caixa = document.createElement('section');
+      caixa.className = 'card section';
+      caixa.id = 'mwSemanaCard';
+      caixa.innerHTML =
+        '<div class="mw-sem-topo">' +
+          '<button type="button" class="mw-sem-nav" id="mwSemAnt" aria-label="Semana anterior">‹</button>' +
+          '<strong id="mwSemRotulo"></strong>' +
+          '<button type="button" class="mw-sem-nav" id="mwSemProx" aria-label="Próxima semana">›</button>' +
+          '<button type="button" class="mw-sem-hoje" id="mwSemHoje">Esta semana</button>' +
+        '</div>' +
+        '<div class="mw-semana" id="mwSemana"></div>';
+      view.appendChild(caixa);
+      caixa.querySelector('#mwSemAnt').addEventListener('click', function(){ deslocamento--; pintaSemana(); });
+      caixa.querySelector('#mwSemProx').addEventListener('click', function(){ deslocamento++; pintaSemana(); });
+      caixa.querySelector('#mwSemHoje').addEventListener('click', function(){ deslocamento = 0; pintaSemana(); });
+      caixa.querySelector('#mwSemana').addEventListener('click', function(ev){
+        var b = ev.target.closest('.mw-sem-item');
+        if (b && window.showView) window.showView(b.getAttribute('data-ir') || 'activities');
+      });
+    }
+    return true;
+  }
+
+  function traz(){
+    var view = document.getElementById('view-calendar');
+    var painel = document.getElementById('academicCalendarPanel');
+    var modos = document.getElementById('mwCalModos');
+    if (!view || !painel || !modos) return;
+    if (painel.parentElement !== view || painel.previousElementSibling !== modos){
+      modos.insertAdjacentElement('afterend', painel);
+    }
+  }
+
+  function pintaSemana(){
+    var grade = document.getElementById('mwSemana');
+    var rotulo = document.getElementById('mwSemRotulo');
+    if (!grade) return;
+    var hoje = new Date(); hoje.setHours(0,0,0,0);
+    var base = domingoDe(hoje);
+    base.setDate(base.getDate() + deslocamento * 7);
+
+    var fim = new Date(base); fim.setDate(fim.getDate() + 6);
+    if (rotulo) rotulo.textContent = base.getMonth() === fim.getMonth()
+      ? base.getDate() + ' a ' + fim.getDate() + ' de ' + MESES[fim.getMonth()]
+      : base.getDate() + ' de ' + MESES[base.getMonth()] + ' a ' + fim.getDate() + ' de ' + MESES[fim.getMonth()];
+
+    var html = '';
+    for (var i = 0; i < 7; i++){
+      var d = new Date(base); d.setDate(d.getDate() + i);
+      var chave = iso(d);
+      var eHoje = d.getTime() === hoje.getTime();
+      var passado = d < hoje;
+      var itens = itensDe(chave);
+      html += '<div class="mw-sem-dia' + (eHoje ? ' is-hoje' : '') + (passado ? ' is-passado' : '') + '">' +
+        '<div class="mw-sem-cab"><em>' + DIAS[d.getDay()] + '</em><b>' + d.getDate() + '</b></div>' +
+        '<div class="mw-sem-itens">' +
+        (itens.length ? itens.map(function(it){
+          return '<button type="button" class="mw-sem-item" data-tipo="' + it.tipo + '" data-ir="' + esc(it.ir) + '">' +
+            esc(it.titulo) + '<small>' + esc(it.meta) + '</small></button>';
+        }).join('') : '<div class="mw-sem-nada">—</div>') +
+        '</div></div>';
+    }
+    grade.innerHTML = html;
+  }
+
+  function aplica(){
+    if (!monta()) return;
+    traz();
+    var m = modo();
+    var painel = document.getElementById('academicCalendarPanel');
+    var semana = document.getElementById('mwSemanaCard');
+    /* display, e não o atributo hidden: os dois têm display de autor,
+       que vence o [hidden] do navegador. */
+    /* Atributo, e não display inline: a regra que esconde este painel
+       fora do dashboard é !important, e !important de folha vence estilo
+       inline sem !important. Marcar o atributo deixa a decisão no CSS,
+       onde a exceção desta área está declarada. */
+    if (painel) { if (m === 'mes') painel.removeAttribute('data-mw-oculto'); else painel.setAttribute('data-mw-oculto','1'); }
+    if (semana) { if (m === 'semana') semana.removeAttribute('data-mw-oculto'); else semana.setAttribute('data-mw-oculto','1'); }
+    document.querySelectorAll('#mwCalModos button[data-cal]').forEach(function(b){
+      b.setAttribute('aria-pressed', b.getAttribute('data-cal') === m ? 'true' : 'false');
+    });
+    if (m === 'semana') pintaSemana();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', aplica);
+  else aplica();
+
+  var anterior = window.mwDashRefresh;
+  window.mwDashRefresh = function(d){
+    if (typeof anterior === 'function') { try { anterior(d); } catch(e){} }
+    try { aplica(); } catch(e){}
+  };
+})();
+</script>
 
 </body>
 </html>
