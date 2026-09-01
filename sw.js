@@ -1,5 +1,37 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v44 (BETA — Fase 3 da reformulação, ainda não é a versão estável):
+   (1) A Nyc AI passou a guardar as conversas de verdade. Antes cada
+   conversa vivia só num array em memória e sumia ao fechar o card.
+   Agora ficam em data.aiConversations — o mesmo objeto que já sincroniza
+   com o servidor, então não precisou de tabela nova — com lista de
+   conversas recentes, nova conversa, renomear e excluir.
+   (2) Sugestões clicáveis acima do campo: o placeholder rotativo já
+   existia, mas era só decoração e não dava pra usar.
+   (3) O estado de "pensando" (os três pontinhos) passou a nascer no
+   instante do envio. Antes ele só era criado dentro do typeAnswer, ou
+   seja, com a resposta já em mãos — numa rede lenta a conversa ficava
+   parada, sem sinal nenhum de que a pergunta tinha saído. A lista de
+   mensagens também ganhou aria-busy real.
+   (4) Auditoria de voz/microfone. Achados e o que mudou:
+     - a transcrição de fala é real (Web Speech API) e continua intacta,
+       mas os erros agora dizem o que de fato aconteceu — permissão
+       negada, sem microfone, silêncio, sem internet — em vez de sempre
+       "permita o microfone";
+     - havia um estado "ouvindo" FALSO: o botão pulsava por 8 segundos
+       fixos a cada clique, sem gravação nenhuma acontecendo. Removido;
+     - em navegador sem transcrição, três scripts diferentes respondiam
+       ao mesmo clique com mensagens contraditórias. Agora o botão tem um
+       dono só, com rótulo honesto: onde não dá pra ditar, ele assume a
+       leitura das respostas em voz alta (que é real) e a barra de status
+       explica a limitação;
+     - o rótulo "ASSISTENTE DE VOZ" virou "ASSISTENTE ACADÊMICO", que é
+       verdade em qualquer navegador.
+   (5) O painel de conversas usava opacidade .97 e parecia opaco no
+   papel, mas 3% de um texto quase branco sobre fundo quase preto ainda
+   lê como fantasma — a conversa aparecia por trás da lista. Virou vidro
+   de verdade, com backdrop-filter, e fundo sólido onde o navegador não
+   suporta o borrão. */
 /* v43 (BETA — Fase 1 da reformulação, ainda não é a versão estável):
    (1) Faculdade deixou de ser presa a graduações de TI — curso, área e
    instituição (campo novo) viraram texto livre com sugestões, e o
@@ -321,7 +353,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v43-beta';
+const CACHE_NAME = 'mw-shell-v44-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

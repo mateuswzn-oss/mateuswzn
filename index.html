@@ -5644,11 +5644,17 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
       <div class="eva-id">
         <span class="eva-orb" aria-hidden="true"></span>
         <div>
-          <span class="mateus-ai-eyebrow">ASSISTENTE DE VOZ</span>
+          <span class="mateus-ai-eyebrow">ASSISTENTE ACADÊMICO</span>
           <h3 id="mateusAiTitle">Nyc AI</h3>
         </div>
       </div>
       <div class="eva-head-actions">
+        <button type="button" class="eva-conversas" id="evaConversasBtn" aria-label="Conversas" title="Conversas" aria-expanded="false">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.3-.6L3 21l1.9-5a8.3 8.3 0 0 1-.9-3.8A8.4 8.4 0 0 1 12.5 3 8.4 8.4 0 0 1 21 11.5z"/></svg>
+        </button>
+        <button type="button" class="eva-nova" id="evaNovaBtn" aria-label="Nova conversa" title="Nova conversa">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
         <button type="button" class="eva-fullscreen" id="evaFullscreenBtn" aria-label="Expandir tela cheia" title="Expandir tela cheia">
           <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
         </button>
@@ -5658,9 +5664,14 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
         <button class="mateus-ai-close" id="mateusAiClose" type="button" aria-label="Fechar">×</button>
       </div>
     </div>
+    <div class="eva-conversas-painel" id="evaConversasPainel" hidden>
+      <div class="eva-conversas-topo"><strong>Conversas recentes</strong><button type="button" id="evaConversasFechar" aria-label="Fechar conversas">×</button></div>
+      <div class="eva-conversas-lista" id="evaConversasLista"></div>
+    </div>
     <div class="mateus-ai-messages" id="mateusAiMessages">
       <div class="mateus-ai-msg assistant" id="evaWelcomeMsg">Oi, Mateus — tudo pronto para começar.</div>
     </div>
+    <div class="eva-sugestoes" id="evaSugestoes"></div>
     <form class="mateus-ai-form" id="mateusAiForm">
       <button type="button" class="eva-attach" id="evaAttachBtn" aria-label="Anexar arquivo" title="Anexar arquivo">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21.44 11.05l-8.49 8.49a5.25 5.25 0 0 1-7.43-7.43l8.49-8.49a3.5 3.5 0 0 1 4.95 4.95l-8.49 8.49a1.75 1.75 0 1 1-2.47-2.47l7.78-7.78"/></svg>
@@ -5695,11 +5706,22 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
     const el=document.createElement('div'); el.className='mateus-ai-msg '+kind; el.textContent=text;
     messages.appendChild(el); messages.scrollTop=messages.scrollHeight; return el;
   };
-  const typeAnswer=async(text)=>{
-    const el=document.createElement('div'); el.className='mateus-ai-msg assistant';
+  /* Bolha de "pensando": os tres pontinhos precisam aparecer no instante
+     do envio, nao depois que a resposta chega. Antes eles so nasciam
+     dentro do typeAnswer -- ou seja, com o texto ja em maos --, entao
+     numa rede lenta a conversa ficava parada, sem sinal nenhum de que a
+     pergunta tinha saido. Agora quem chama cria a bolha antes do fetch e
+     passa ela adiante; sem argumento o comportamento e o mesmo de antes. */
+  const pensando=()=>{
+    const el=document.createElement('div'); el.className='mateus-ai-msg assistant is-pensando';
     const dots=document.createElement('span'); dots.className='eva-typing'; dots.innerHTML='<i></i><i></i><i></i>';
     el.appendChild(dots); messages.appendChild(el); messages.scrollTop=messages.scrollHeight;
-    await new Promise(r=>setTimeout(r, 520));
+    return el;
+  };
+  const typeAnswer=async(text, bolha)=>{
+    const el=bolha||pensando();
+    if(!bolha) await new Promise(r=>setTimeout(r, 520));
+    el.classList.remove('is-pensando');
     el.textContent='';
     for(let i=0;i<text.length;i++){
       el.textContent+=text[i];
@@ -5779,6 +5801,7 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
   };
   const ask=async(text)=>{
     status.textContent='Digitando...';
+    const bolha=pensando();
     let answer;
     try{
       const endpoint=localStorage.getItem('mwAiApiEndpoint')||'/api/ai';
@@ -5792,17 +5815,45 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
     }
     convoHistory.push({role:'user',content:text},{role:'assistant',content:answer});
     if(convoHistory.length>20) convoHistory=convoHistory.slice(-20);
-    await typeAnswer(answer);
+    /* Gancho de persistência: quem guarda a conversa é o
+       mw-nyc-conversas-js (em data.aiConversations, o mesmo objeto que
+       já sincroniza). Aqui só avisamos o par pergunta/resposta — o chat
+       continua funcionando igual se aquele script não existir. */
+    if (typeof window.mwNycRegistra === 'function') window.mwNycRegistra(text, answer);
+    await typeAnswer(answer, bolha);
     if(modal.dataset.voice==='1') speak(answer);
+  };
+  /* Ponte para o gerenciador de conversas: ele precisa conseguir trocar
+     o conteúdo do chat (abrir outra conversa) e zerar (nova conversa),
+     e convoHistory/add vivem só aqui dentro. */
+  window.mwNycConversa = {
+    abre(mensagens){
+      messages.innerHTML = '';
+      convoHistory = [];
+      (mensagens || []).forEach(m => {
+        add(m.content, m.role === 'user' ? 'user' : 'assistant');
+        convoHistory.push({ role: m.role, content: m.content });
+      });
+      messages.scrollTop = messages.scrollHeight;
+    },
+    limpa(){
+      messages.innerHTML = '';
+      convoHistory = [];
+    }
   };
   const queue=[]; let processing=false;
   const processQueue=async()=>{
     if(processing)return; processing=true;
+    /* aria-busy de verdade: leitores de tela anunciam que a resposta esta
+       sendo produzida. O botao de enviar NAO e desabilitado de proposito --
+       a fila de perguntas ja existe e continuar digitando e um recurso. */
+    messages.setAttribute('aria-busy','true');
     while(queue.length){
       const next=queue.shift(); add(next,'user');
       status.textContent=queue.length?'Respondendo · '+queue.length+' mensagem(ns) na fila':'Respondendo...';
       await ask(next);
     }
+    messages.setAttribute('aria-busy','false');
     processing=false;
   };
   const send=(t)=>{
@@ -11592,14 +11643,12 @@ html body.light .eva-voice{
       if (st) st.textContent = 'Não deu para copiar';
     }
   });
-  const voice = q('#evaVoiceBtn');
-  if (voice) {
-    const mark = on => voice.classList.toggle('listening', on);
-    voice.addEventListener('click', () => {
-      mark(true);
-      setTimeout(() => mark(false), 8000);
-    });
-  }
+  /* Aqui existia um estado "ouvindo" puramente decorativo: o botao pulsava
+     por 8 segundos fixos a cada clique, sem nenhuma gravacao acontecendo.
+     Quando o navegador suporta transcricao, o mw-video-2308-js clona o
+     botao e essa animacao sumia; quando NAO suporta, ela ficava -- ou
+     seja, aparecia justamente onde nada estava sendo ouvido. Removido:
+     quem acende e apaga o .listening agora e so o reconhecedor real. */
 
   /* Recolher continua igual — só garante avatar sem virar bloco azul */
   const avatar = q('#mwSidebarAvatar');
@@ -12331,10 +12380,22 @@ html body.light .eva-id{ color:#2563eb !important; }
       if (input) input.value = text;
       if (status) status.textContent = live ? 'Transcrevendo: ' + live : 'Ouvindo…';
     };
-    rec.onerror = () => {
+    /* Cada motivo de falha pede uma acao diferente da pessoa: permissao
+       negada, nenhum microfone no aparelho, silencio, ou o servico de
+       transcricao do navegador fora do ar. Antes tudo caia na mesma frase
+       "permita o microfone", que so ajudava num dos casos. */
+    const MOTIVOS = {
+      'not-allowed': 'Permissão do microfone negada. Libere o microfone para este site nas configurações do navegador.',
+      'service-not-allowed': 'O navegador bloqueou a transcrição de voz. Libere o microfone nas configurações do sistema.',
+      'audio-capture': 'Nenhum microfone encontrado neste aparelho.',
+      'no-speech': 'Não ouvi nada. Toque no microfone e fale mais perto.',
+      'network': 'A transcrição de voz precisa de internet e não conseguiu conectar agora.',
+      'aborted': 'Gravação interrompida.'
+    };
+    rec.onerror = (e) => {
       on = false;
       btn.classList.remove('listening');
-      if (status) status.textContent = 'Não consegui ouvir. Permita o microfone e tente de novo.';
+      if (status) status.textContent = MOTIVOS[e && e.error] || 'Não consegui ouvir. Tente de novo ou escreva no campo.';
     };
     rec.onend = () => {
       btn.classList.remove('listening');
@@ -21317,6 +21378,240 @@ body.light #app .mw-reference-nav button[data-view="admin"] .nav-icon{background
 })();
 </script>
 
+<style id="mw-nyc-conversas">
+/* Painel de conversas: desliza por cima da área de mensagens, dentro do
+   próprio card — nada de segunda janela flutuante. */
+.eva-conversas-painel{
+  position:absolute;left:0;right:0;top:0;bottom:0;z-index:5;
+  display:flex;flex-direction:column;
+  border-radius:inherit;
+  /* .97 de opacidade parecia opaco no papel, mas 3% de um texto quase
+     branco sobre um fundo quase preto ainda le como fantasma -- a
+     conversa aparecia por tras da lista. Borrar o que esta atras resolve
+     sem abrir mao do vidro: o que passa vira luz difusa, nao texto. */
+  background:rgba(8,17,33,.80);
+  -webkit-backdrop-filter:blur(26px) saturate(150%);
+  backdrop-filter:blur(26px) saturate(150%);
+}
+/* Sem backdrop-filter (Firefox antigo, alguns Android) nao ha borrao pra
+   esconder o texto de tras -- entao o painel fica solido de verdade. */
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .eva-conversas-painel{background:#0a1524}
+  body.light .eva-conversas-painel{background:#f7faff}
+}
+/* Sem isto, o display:flex acima vence o [hidden]{display:none} do
+   navegador e o painel "escondido" continua capturando os cliques dos
+   botões do cabeçalho por cima. */
+.eva-conversas-painel[hidden]{display:none}
+body.light .eva-conversas-painel{background:rgba(247,250,255,.78)}
+.eva-conversas-topo{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 18px 10px;font-size:13.5px;color:var(--text,#eaf1ff);
+}
+.eva-conversas-topo button{
+  all:unset;cursor:pointer;font-size:20px;line-height:1;padding:2px 8px;border-radius:8px;
+  color:rgba(226,235,255,.6);
+}
+body.light .eva-conversas-topo button{color:rgba(15,35,70,.55)}
+.eva-conversas-lista{flex:1;overflow:auto;padding:4px 12px 14px;display:flex;flex-direction:column;gap:6px}
+.eva-conversa-item{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;
+  background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);cursor:pointer;
+}
+.eva-conversa-item[aria-current="true"]{background:rgba(59,130,246,.16);border-color:rgba(59,130,246,.26)}
+.eva-conversa-item .eva-conversa-txt{flex:1;min-width:0}
+.eva-conversa-item strong{display:block;font-size:13px;font-weight:600;color:var(--text,#eaf1ff);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.eva-conversa-item small{display:block;font-size:11px;color:rgba(214,226,248,.6);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.eva-conversa-acao{
+  all:unset;cursor:pointer;flex:none;padding:4px 6px;border-radius:8px;
+  font-size:11px;font-weight:600;color:rgba(214,226,248,.66);
+}
+.eva-conversa-acao:hover{color:#93c5fd}
+.eva-conversa-acao.perigo:hover{color:#fda4af}
+body.light .eva-conversa-item{background:rgba(15,35,70,.04);border-color:rgba(15,35,70,.10)}
+body.light .eva-conversa-item small,body.light .eva-conversa-acao{color:rgba(15,35,70,.6)}
+.eva-conversas-vazio{padding:18px 6px;font-size:12.5px;color:rgba(214,226,248,.55);text-align:center}
+body.light .eva-conversas-vazio{color:rgba(15,35,70,.55)}
+/* Sugestões clicáveis logo acima do campo. */
+.eva-sugestoes{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 8px}
+.eva-sugestao{
+  all:unset;cursor:pointer;font-size:11.5px;font-weight:600;
+  padding:6px 11px;border-radius:99px;
+  background:rgba(124,92,255,.14);color:#c9b8ff;border:1px solid rgba(124,92,255,.22);
+}
+.eva-sugestao:hover{background:rgba(124,92,255,.22)}
+body.light .eva-sugestao{background:rgba(109,40,217,.09);color:#6d28d9;border-color:rgba(109,40,217,.18)}
+</style>
+<script id="mw-nyc-conversas-js">
+(function(){
+  'use strict';
+  /* Antes desta camada, a Nyc AI tinha UMA conversa que vivia só na
+     memória: fechar o modal ou recarregar a página apagava tudo. Agora
+     as conversas ficam em data.aiConversations — o mesmo objeto que já
+     vai pro Supabase junto com o resto do Workspace, então não precisou
+     de tabela nova nem de mudança no backend. */
+  var painel = document.getElementById('evaConversasPainel');
+  var lista = document.getElementById('evaConversasLista');
+  var btnConversas = document.getElementById('evaConversasBtn');
+  var btnNova = document.getElementById('evaNovaBtn');
+  var btnFechar = document.getElementById('evaConversasFechar');
+  var caixaSugestoes = document.getElementById('evaSugestoes');
+  var input = document.getElementById('mateusAiInput');
+  var form = document.getElementById('mateusAiForm');
+  if (!painel || !lista || !btnConversas) return;
+
+  var atualId = null;
+
+  function base(){
+    if (!window.data) return null;
+    if (!Array.isArray(window.data.aiConversations)) window.data.aiConversations = [];
+    return window.data.aiConversations;
+  }
+  function grava(){ if (typeof window.save === 'function') window.save(); }
+  function agora(){ return new Date().toISOString(); }
+  function tituloDe(texto){
+    var t = String(texto || '').trim().replace(/\s+/g, ' ');
+    return t.length > 42 ? t.slice(0, 42) + '…' : (t || 'Nova conversa');
+  }
+  function quando(iso){
+    try {
+      var d = new Date(iso), hoje = new Date();
+      var mesmoDia = d.toDateString() === hoje.toDateString();
+      return mesmoDia
+        ? d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+        : d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    } catch (e) { return ''; }
+  }
+
+  // Chamado pelo chat a cada par pergunta/resposta.
+  window.mwNycRegistra = function(pergunta, resposta){
+    var todas = base();
+    if (!todas) return;
+    var conversa = todas.find(function(c){ return c.id === atualId; });
+    if (!conversa) {
+      conversa = { id: 'c' + Date.now(), titulo: tituloDe(pergunta), mensagens: [], criadaEm: agora(), atualizadaEm: agora() };
+      todas.unshift(conversa);
+      atualId = conversa.id;
+    }
+    conversa.mensagens.push({ role: 'user', content: pergunta }, { role: 'assistant', content: resposta });
+    conversa.atualizadaEm = agora();
+    /* Teto por conversa: o histórico inteiro vai pro mesmo blob que
+       sincroniza o Workspace, e localStorage tem limite real. 60
+       mensagens (~30 trocas) por conversa e 30 conversas seguram um uso
+       normal sem estourar. */
+    if (conversa.mensagens.length > 60) conversa.mensagens = conversa.mensagens.slice(-60);
+    if (todas.length > 30) todas.length = 30;
+    grava();
+    pinta();
+  };
+
+  function abre(id){
+    var todas = base(); if (!todas) return;
+    var c = todas.find(function(x){ return x.id === id; });
+    if (!c) return;
+    atualId = id;
+    window.mwNycConversa?.abre(c.mensagens);
+    painel.hidden = true;
+    btnConversas.setAttribute('aria-expanded', 'false');
+    pinta();
+  }
+
+  function nova(){
+    atualId = null;
+    window.mwNycConversa?.limpa();
+    painel.hidden = true;
+    btnConversas.setAttribute('aria-expanded', 'false');
+    pinta();
+    input?.focus();
+  }
+
+  function pinta(){
+    var todas = base() || [];
+    lista.innerHTML = '';
+    if (!todas.length) {
+      var vazio = document.createElement('div');
+      vazio.className = 'eva-conversas-vazio';
+      vazio.textContent = 'Nenhuma conversa ainda. Pergunte algo e ela aparece aqui.';
+      lista.appendChild(vazio);
+      return;
+    }
+    todas.forEach(function(c){
+      var item = document.createElement('div');
+      item.className = 'eva-conversa-item';
+      item.setAttribute('aria-current', c.id === atualId ? 'true' : 'false');
+
+      var txt = document.createElement('div');
+      txt.className = 'eva-conversa-txt';
+      var t = document.createElement('strong'); t.textContent = c.titulo || 'Conversa';
+      var s = document.createElement('small');
+      s.textContent = (Math.floor((c.mensagens || []).length / 2) || 0) + ' troca(s) · ' + quando(c.atualizadaEm);
+      txt.appendChild(t); txt.appendChild(s);
+      txt.addEventListener('click', function(){ abre(c.id); });
+
+      var renomear = document.createElement('button');
+      renomear.type = 'button'; renomear.className = 'eva-conversa-acao';
+      renomear.textContent = 'Renomear';
+      renomear.addEventListener('click', function(e){
+        e.stopPropagation();
+        var novo = window.prompt('Novo nome da conversa:', c.titulo || '');
+        if (novo === null) return;
+        c.titulo = tituloDe(novo);
+        grava(); pinta();
+      });
+
+      var excluir = document.createElement('button');
+      excluir.type = 'button'; excluir.className = 'eva-conversa-acao perigo';
+      excluir.textContent = 'Excluir';
+      excluir.addEventListener('click', function(e){
+        e.stopPropagation();
+        var todasAgora = base(); if (!todasAgora) return;
+        var i = todasAgora.findIndex(function(x){ return x.id === c.id; });
+        if (i >= 0) todasAgora.splice(i, 1);
+        if (atualId === c.id) { atualId = null; window.mwNycConversa?.limpa(); }
+        grava(); pinta();
+      });
+
+      item.appendChild(txt); item.appendChild(renomear); item.appendChild(excluir);
+      lista.appendChild(item);
+    });
+  }
+
+  btnConversas.addEventListener('click', function(){
+    var abrindo = painel.hidden;
+    painel.hidden = !abrindo;
+    btnConversas.setAttribute('aria-expanded', abrindo ? 'true' : 'false');
+    if (abrindo) pinta();
+  });
+  btnFechar?.addEventListener('click', function(){
+    painel.hidden = true;
+    btnConversas.setAttribute('aria-expanded', 'false');
+  });
+  btnNova?.addEventListener('click', nova);
+
+  /* Sugestões clicáveis: o placeholder rotativo já existia, mas era só
+     decoração — não dava pra usar. Estas preenchem o campo e enviam. */
+  var SUGESTOES = [
+    'Monte um plano de estudos para esta semana',
+    'Quais atividades estão atrasadas?',
+    'Como organizo as disciplinas deste semestre?',
+    'Explique um conceito da minha área'
+  ];
+  if (caixaSugestoes) {
+    SUGESTOES.forEach(function(s){
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'eva-sugestao'; b.textContent = s;
+      b.addEventListener('click', function(){
+        if (!input) return;
+        input.value = s;
+        form?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+      });
+      caixaSugestoes.appendChild(b);
+    });
+  }
+
+  pinta();
+})();
+</script>
 <script id="mw-editar-e-filtrar-js">
 (function(){
   'use strict';
@@ -21611,6 +21906,106 @@ body.light .mw-perfil-chip a{color:#1d4ed8}
   }
   window.addEventListener('storage', pintarResumoPerfil);
   pintarResumoPerfil();
+})();
+</script>
+
+<style id="mw-nyc-voz">
+/* Estados honestos do botao de microfone da Nyc AI. Nada aqui inventa
+   atividade: o pulso de "ouvindo" continua sendo aceso apenas pelo
+   reconhecedor de voz real. */
+.eva-voice[data-mw-voz="leitura"][aria-pressed="true"]{
+  border-color: rgba(103,232,249,.42) !important;
+  color:#67e8f9 !important;
+  box-shadow: 0 0 0 1px rgba(103,232,249,.18), 0 0 16px rgba(34,211,238,.22);
+}
+.eva-voice[data-mw-voz="indisponivel"]{
+  opacity:.45;
+  cursor:not-allowed;
+}
+html body.light .eva-voice[data-mw-voz="leitura"][aria-pressed="true"]{
+  border-color:#2563eb !important;
+  color:#1d4ed8 !important;
+  box-shadow: 0 0 0 1px rgba(37,99,235,.18);
+}
+</style>
+<script id="mw-nyc-voz-js">
+(function(){
+  /* AUDITORIA DE VOZ (dono unico do #evaVoiceBtn quando nao ha transcricao).
+     O que e real neste app, verificado no ambiente:
+       - Transcricao de fala -> Web Speech API (SpeechRecognition). Existe
+         em Chrome/Edge/Safari recente e depende de internet + permissao de
+         microfone. Quem implementa e o mw-video-2308-js; nao mexemos nele.
+       - Leitura das respostas em voz alta -> speechSynthesis. Real e
+         disponivel em praticamente todo navegador, inclusive onde a
+         transcricao nao existe.
+       - Gravar audio e transcrever no servidor -> NAO existe: nao ha
+         storage nem endpoint de transcricao. Por isso nada aqui finge
+         gravar.
+     Sem transcricao, tres scripts diferentes reagiam ao mesmo clique com
+     mensagens que se contradiziam. Aqui o botao passa a ter um dono so. */
+  function inicia(){
+    var btn = document.getElementById('evaVoiceBtn');
+    if (!btn || btn.dataset.mwVozPronto === '1') return;
+    var Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    var temTranscricao = !!Rec && window.isSecureContext;
+    if (temTranscricao) {
+      /* Caminho real: so descreve melhor o que o botao faz. */
+      btn.dataset.mwVoz = 'ditar';
+      btn.dataset.mwVozPronto = '1';
+      btn.setAttribute('aria-label', 'Falar com a Nyc AI');
+      btn.title = 'Falar com a Nyc AI';
+      return;
+    }
+    /* Sem transcricao: troca o botao por um clone para ficar com um unico
+       ouvinte. E seguro justamente porque, neste ramo, nenhum dos ouvintes
+       anteriores fazia transcricao de verdade. */
+    var limpo = btn.cloneNode(true);
+    btn.replaceWith(limpo);
+    btn = document.getElementById('evaVoiceBtn');
+    btn.dataset.mwVozPronto = '1';
+    var status = document.getElementById('mateusAiStatus');
+    var modal = document.getElementById('mateusAiModal');
+    var temLeitura = 'speechSynthesis' in window;
+    if (temLeitura) {
+      /* Leitura em voz alta e um recurso real e ja existia aqui (o
+         speak() do chat le a resposta quando modal.dataset.voice === '1').
+         Mantido, agora com rotulo que diz exatamente isso. */
+      btn.dataset.mwVoz = 'leitura';
+      btn.setAttribute('aria-pressed', modal && modal.dataset.voice === '1' ? 'true' : 'false');
+      btn.setAttribute('aria-label', 'Ler as respostas em voz alta');
+      btn.title = 'Ler as respostas em voz alta — ditar por voz só funciona no Chrome ou no Edge';
+      btn.addEventListener('click', function(){
+        if (!modal) return;
+        var ligado = modal.dataset.voice !== '1';
+        modal.dataset.voice = ligado ? '1' : '';
+        btn.setAttribute('aria-pressed', ligado ? 'true' : 'false');
+        if (!ligado) { try { window.speechSynthesis.cancel(); } catch (e) {} }
+        if (status) status.textContent = ligado
+          ? 'Vou ler as respostas em voz alta'
+          : 'Leitura em voz alta desligada';
+      });
+    } else {
+      btn.dataset.mwVoz = 'indisponivel';
+      btn.setAttribute('aria-disabled', 'true');
+      btn.setAttribute('aria-label', 'Recursos de voz indisponíveis neste navegador');
+      btn.title = 'Recursos de voz indisponíveis neste navegador';
+      btn.addEventListener('click', function(){
+        if (status) status.textContent = 'Este navegador não tem recursos de voz. Escreva no campo abaixo.';
+      });
+    }
+    /* O aviso vai na propria barra de status, nao num elemento novo: o
+       card da Nyc AI tem altura fixa e o status e o ultimo item dele --
+       qualquer linha extra embaixo vaza para fora do card. Escrever no
+       status aproveita o espaco que ja existe e some naturalmente assim
+       que a conversa comeca. */
+    if (status && /Pronta para ouvir/i.test(status.textContent || '')) {
+      status.textContent = temLeitura
+        ? 'Ditar por voz não funciona neste navegador'
+        : 'Sem recursos de voz neste navegador';
+    }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', inicia);
+  else inicia();
 })();
 </script>
 
