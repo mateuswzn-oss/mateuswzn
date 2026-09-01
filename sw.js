@@ -1,5 +1,24 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v53 (BETA — Fase 4, parte 2: busca global de verdade):
+   O que existia NÃO era busca global. Um listener de 'input' percorria
+   os cartões da TELA ATUAL e escondia com style.display quem não
+   batesse com o texto. Três problemas: só enxergava a tela aberta,
+   escondia cartões inteiros em vez de apontar itens, e o estado
+   ESCAPAVA — quem digitasse e navegasse sem limpar o campo continuava
+   com cartões sumidos em outra área, sem pista do motivo.
+   Agora procura de verdade em disciplinas, atividades, projetos e
+   anotações, agrupa por área, destaca o trecho encontrado e navega ao
+   clicar ou com as setas e Enter. A busca ignora acento nos dois
+   sentidos: "calculo" acha "Cálculo".
+   O listener antigo não foi removido — não dá pra removê-lo sem
+   derrubar os outros que dividem o mesmo campo (abrir/fechar a gaveta,
+   Escape). Como o bloco novo entra depois, o handler dele roda depois
+   no mesmo evento e desfaz o que o antigo escondeu.
+   O painel é fixed e pendurado no body: o .search-wrap tem
+   overflow:hidden por causa da animação de abrir o campo, e isso
+   CORTAVA o painel inteiro — ele existia, media 420x160, e não
+   aparecia um pixel. */
 /* v52 (BETA — Fase 4, parte 1: o dashboard vira centro de comando):
    Duas peças novas no topo do painel, ambas derivadas SÓ do que já
    existe em data — nenhuma inventa número.
@@ -479,7 +498,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v52-beta';
+const CACHE_NAME = 'mw-shell-v53-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
