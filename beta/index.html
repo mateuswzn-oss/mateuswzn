@@ -2757,6 +2757,17 @@ body.light #app .calendar-card .calendar-nav button:hover{
     <rect x="6.9" y="16.0" width="3.0" height="2.0" rx=".7"/>
     <rect x="11.6" y="16.0" width="3.0" height="2.0" rx=".7"/>
   </symbol>
+  <!-- Foco: cronômetro. O anel é grosso (2,9 de 24) porque a 22px, o
+       tamanho da barra lateral, um anel fino vira uma linha cinza sem
+       forma. A coroa em cima é o que separa "cronômetro" de "relógio"
+       — e é ela, não o ponteiro, que faz o ícone ser reconhecido antes
+       de ser lido. -->
+  <symbol id="mwi-focus" viewBox="0 0 24 24">
+    <rect x="9.2" y="1.6" width="5.6" height="2.3" rx="1.15"/>
+    <rect x="10.85" y="3.4" width="2.3" height="2.2" rx=".9"/>
+    <path fill-rule="evenodd" d="M12 5.0a8.7 8.7 0 1 0 0 17.4 8.7 8.7 0 0 0 0-17.4zm0 2.9a5.8 5.8 0 1 1 0 11.6 5.8 5.8 0 0 1 0-11.6z"/>
+    <rect x="11.05" y="9.4" width="1.9" height="5.3" rx=".95"/>
+  </symbol>
   <symbol id="mwi-institutions" viewBox="0 0 24 24">
     <path fill-rule="evenodd" d="M12.44 2.62a1 1 0 0 0-.88 0L2.2 7.2a1 1 0 0 0 .44 1.9h18.72a1 1 0 0 0 .44-1.9zM12 4.86l4.35 2.14h-8.7z"/>
     <!-- Colunas grossas com vãos estreitos, e não o contrário: a 22px
@@ -4017,6 +4028,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
       <button data-view="projects"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-projects"/></svg></span><span class="label">Projetos</span></button>
       <button data-view="activities"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-activities"/></svg></span><span class="label">Atividades</span></button>
       <button data-view="calendar"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-calendar"/></svg></span><span class="label">Calendário</span></button>
+      <button data-view="focus"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-focus"/></svg></span><span class="label">Foco</span></button>
       <button data-view="notes"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-notes"/></svg></span><span class="label">Anotações</span></button>
       <button data-view="files"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-files"/></svg></span><span class="label">Arquivos</span></button>
       <button data-view="support" id="mwNavSupport"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-support"/></svg></span><span class="label">Suporte</span></button>
@@ -4103,6 +4115,67 @@ body.light .mw-faceid-gate-card p{color:#526988}
          calendários para manter em dia, que é como se chega a dois que
          discordam. -->
     <section class="view" id="view-calendar"></section>
+    <!-- Foco. O relógio não é um contador de quadros: o que fica
+         guardado é o instante em que a sessão começou, e o tempo que
+         falta é sempre calculado a partir do relógio do aparelho. É por
+         isso que trocar de tela, minimizar o app ou recarregar a página
+         não perde a sessão — e é por isso que uma sessão que terminou
+         enquanto o app estava fechado entra no histórico assim mesmo,
+         em vez de ser descartada. -->
+    <section class="view" id="view-focus">
+      <section class="card section mw-foco-palco">
+        <div class="section-head">
+          <h3>Foco</h3>
+          <div class="mw-foco-tipos" role="group" aria-label="Tipo de sessão">
+            <button type="button" data-foco-tipo="foco" aria-pressed="true">Foco</button>
+            <button type="button" data-foco-tipo="pausa" aria-pressed="false">Pausa</button>
+            <button type="button" data-foco-tipo="longa" aria-pressed="false">Pausa longa</button>
+          </div>
+        </div>
+
+        <div class="mw-foco-relogio">
+          <svg class="mw-foco-anel" viewBox="0 0 240 240" aria-hidden="true">
+            <circle class="mw-foco-trilho" cx="120" cy="120" r="106"/>
+            <circle class="mw-foco-arco" id="mwFocoArco" cx="120" cy="120" r="106"/>
+          </svg>
+          <div class="mw-foco-centro">
+            <strong id="mwFocoTempo" role="timer" aria-live="off">25:00</strong>
+            <span id="mwFocoLegenda">Sessão de foco</span>
+          </div>
+        </div>
+
+        <div class="mw-foco-disciplina">
+          <label for="mwFocoDisciplina">Disciplina</label>
+          <select id="mwFocoDisciplina"><option value="">Sem disciplina</option></select>
+        </div>
+
+        <div class="mw-foco-acoes">
+          <button type="button" class="mw-foco-btn" id="mwFocoPrincipal">Iniciar</button>
+          <button type="button" class="mw-foco-btn-sec" id="mwFocoConcluir" hidden>Concluir agora</button>
+          <button type="button" class="mw-foco-btn-sec" id="mwFocoDescartar" hidden>Descartar</button>
+        </div>
+
+        <details class="mw-foco-ajustes">
+          <summary>Duração das sessões</summary>
+          <div class="mw-foco-ajustes-grade">
+            <label>Foco (min)<input type="number" id="mwFocoMinFoco" min="1" max="180" step="1" inputmode="numeric"></label>
+            <label>Pausa (min)<input type="number" id="mwFocoMinPausa" min="1" max="60" step="1" inputmode="numeric"></label>
+            <label>Pausa longa (min)<input type="number" id="mwFocoMinLonga" min="1" max="120" step="1" inputmode="numeric"></label>
+          </div>
+        </details>
+      </section>
+
+      <section class="card section mw-foco-resumo">
+        <div class="section-head"><h3>Seu tempo</h3></div>
+        <div class="mw-foco-numeros" id="mwFocoNumeros"></div>
+        <div class="mw-foco-barras" id="mwFocoBarras"></div>
+      </section>
+
+      <section class="card section mw-foco-historico">
+        <div class="section-head"><h3>Sessões</h3><span id="mwFocoContagem"></span></div>
+        <div class="list" id="mwFocoLista"></div>
+      </section>
+    </section>
     <section class="view" id="view-notes"><section class="card section"><div class="section-head"><h3>Anotações</h3><button class="add-btn" data-add="notes">+ Nova anotação</button></div><div class="list" id="notesList"></div></section></section>
     <section class="view" id="view-files"><section class="card section"><div class="section-head"><h3>Arquivos</h3><span>Área preparada para seus materiais</span></div><div class="empty"><strong>Nenhum arquivo adicionado</strong><span>Os arquivos ainda não fazem parte dos dados locais deste protótipo.</span></div></section></section>
     <section class="view" id="view-support">
@@ -4925,7 +4998,7 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
 (()=>{
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const storeKey='mateusWorkspaceV4';
-const defaults={subjects:[],projects:[],activities:[],notes:[],institutions:[],profile:{name:'Mateus',email:'',photo:'',username:'',bio:'',skills:[],links:[],visibility:{}},college:{institution:'',course:'',area:'',semester:1},theme:'dark'};
+const defaults={subjects:[],projects:[],activities:[],notes:[],institutions:[],focus:{config:{foco:25,pausa:5,longa:15},atual:null,sessoes:[]},profile:{name:'Mateus',email:'',photo:'',username:'',bio:'',skills:[],links:[],visibility:{}},college:{institution:'',course:'',area:'',semester:1},theme:'dark'};
 /* Sem "let" de propósito: alguns scripts carregados depois (autosave,
    métricas do dashboard, recarregar dados ao trocar de conta) leem/escrevem
    "data" esperando uma variável global compartilhada — várias delas já
@@ -16602,7 +16675,7 @@ html body #app .mw-reference-sidebar .mw-reference-profile .mw-profile-main{
      conta é revelada, sem precisar tocar em cada um desses fluxos. */
   const app=document.getElementById('app');
   if(!app) return;
-  const defaults={subjects:[],projects:[],activities:[],notes:[],institutions:[],profile:{name:'Mateus',email:'',photo:'',username:'',bio:'',skills:[],links:[],visibility:{}},college:{institution:'',course:'',area:'',semester:1},theme:'dark'};
+  const defaults={subjects:[],projects:[],activities:[],notes:[],institutions:[],focus:{config:{foco:25,pausa:5,longa:15},atual:null,sessoes:[]},profile:{name:'Mateus',email:'',photo:'',username:'',bio:'',skills:[],links:[],visibility:{}},college:{institution:'',course:'',area:'',semester:1},theme:'dark'};
   /* Exposta porque a sincronização com o servidor também precisa dela.
      A "data" em memória é global e é regravada no localStorage quando a
      página fecha; se dados baixados do servidor entrarem no storage sem
@@ -24841,6 +24914,12 @@ html body #app .mw-settings-em-breve{ color:var(--id-txt-3,#7b88a6) !important; 
   --ds-ac:      var(--id-ac, #5b6cff);
   --ds-ac-2:    var(--id-ac-2, #8b5cf6);
   --ds-ac-grad: var(--id-ac-grad, linear-gradient(135deg,#5b6cff 0%,#8b5cf6 100%));
+  /* O mesmo gradiente, escurecido em 16%, para as superfícies que levam
+     TEXTO BRANCO por cima (pílula ativa, botão principal). Medido em
+     pixel na tela, o gradiente puro entregava 4,0–4,4:1 com branco — logo
+     abaixo dos 4,5:1 do AA. Escurecer a camada é o que corrige sem
+     mudar a cor de destaque do app nem o resto das superfícies. */
+  --ds-ac-grad-forte: linear-gradient(rgba(0,0,0,.16), rgba(0,0,0,.16)), var(--ds-ac-grad);
 
   /* Raios: escala curta e reconhecível. Suave o bastante para parecer
      orgânico, firme o bastante para não virar cápsula. */
@@ -26568,7 +26647,7 @@ html body #app .mw-proj-modos button{
   transition: color .18s var(--ds-suave), background .18s var(--ds-suave);
 }
 html body #app .mw-proj-modos button[aria-pressed="true"]{
-  background: var(--ds-ac-grad); color: #fff;
+  background: var(--ds-ac-grad-forte); color: #fff;
   box-shadow: 0 4px 12px color-mix(in srgb, var(--ds-ac) 38%, transparent);
 }
 
@@ -27044,7 +27123,7 @@ html body #app #view-calendar .mw-cal-modos button{
   transition: color .18s var(--ds-suave), background .18s var(--ds-suave);
 }
 html body #app #view-calendar .mw-cal-modos button[aria-pressed="true"]{
-  background: var(--ds-ac-grad); color: #fff;
+  background: var(--ds-ac-grad-forte); color: #fff;
   box-shadow: 0 4px 12px color-mix(in srgb, var(--ds-ac) 38%, transparent);
 }
 
@@ -27275,6 +27354,671 @@ html body #app .mw-sem-nada{ font-size: 11.5px; color: var(--ds-txt-3); padding:
   window.mwDashRefresh = function(d){
     if (typeof anterior === 'function') { try { anterior(d); } catch(e){} }
     try { aplica(); } catch(e){}
+  };
+})();
+</script>
+
+<style id="mw-foco">
+/* =====================================================================
+   §12 FOCO
+   =====================================================================
+   Um cronômetro de estudo só serve se a pessoa puder sair da tela. Por
+   isso o desenho aqui é subordinado a uma decisão de dados: o estado
+   guardado é o INSTANTE em que a sessão começou, nunca um contador que
+   decrementa. A tela só traduz esse instante em minutos.
+   ===================================================================== */
+/* "auto 1fr" nas linhas, e não "auto auto": o palco atravessa as duas
+   linhas e é o cartão mais alto, então com duas linhas automáticas a
+   sobra de altura dele era dividida entre as duas e abria um buraco
+   entre "Seu tempo" e "Sessões". Com a segunda linha elástica, a sobra
+   fica toda embaixo e os dois cartões da direita encostam um no outro. */
+html body #app #view-focus.active{
+  display: grid;
+  grid-template-columns: minmax(0, 1.02fr) minmax(0, .98fr);
+  grid-template-rows: auto 1fr;
+  gap: 16px;
+  align-items: start;
+}
+html body #app #view-focus .mw-foco-palco{ grid-column: 1; grid-row: 1 / span 2; }
+html body #app #view-focus .mw-foco-resumo{ grid-column: 2; grid-row: 1; align-self: start; }
+html body #app #view-focus .mw-foco-historico{ grid-column: 2; grid-row: 2; align-self: start; }
+
+/* --- Seletor de tipo --------------------------------------------------- */
+html body #app #view-focus .mw-foco-tipos{
+  display: inline-flex; gap: 3px; padding: 3px;
+  border-radius: 999px; background: var(--ds-vidro-3); box-shadow: var(--ds-fio);
+}
+html body #app #view-focus .mw-foco-tipos button{
+  border: 0; cursor: pointer; padding: 7px 13px; border-radius: 999px;
+  background: transparent; color: var(--ds-txt-2);
+  font: inherit; font-size: 12px; font-weight: 650;
+  transition: color .18s var(--ds-suave), background .18s var(--ds-suave);
+}
+html body #app #view-focus .mw-foco-tipos button[aria-pressed="true"]{
+  background: var(--ds-ac-grad-forte); color: #fff;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--ds-ac) 38%, transparent);
+}
+/* Durante uma sessão o seletor trava, mas o tipo ESCOLHIDO continua
+   legível: apagar os três de uma vez esconderia justamente a informação
+   de qual sessão está rodando. */
+html body #app #view-focus .mw-foco-tipos button:disabled{ cursor: default; }
+html body #app #view-focus .mw-foco-tipos button:disabled[aria-pressed="false"]{ opacity: .34; }
+
+/* --- Relógio -----------------------------------------------------------
+   O anel é o único elemento grande da tela, de propósito: durante uma
+   sessão, ele é a única coisa que precisa ser lida de longe. */
+html body #app #view-focus .mw-foco-relogio{
+  position: relative; width: min(280px, 74vw); aspect-ratio: 1;
+  margin: 6px auto 20px; display: grid; place-items: center;
+}
+html body #app #view-focus .mw-foco-anel{
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  transform: rotate(-90deg);
+}
+/* O trilho NÃO pode usar var(--ds-vidro-1): esse token é um
+   linear-gradient (serve de fundo de superfície), e gradiente não é
+   valor válido para "stroke" — a propriedade caía no inicial, que é
+   "none", e o anel simplesmente não existia na tela. Uma cor derivada
+   do texto terciário funciona nos dois temas. */
+html body #app #view-focus .mw-foco-trilho{
+  fill: none; stroke-width: 13;
+  stroke: color-mix(in srgb, var(--ds-txt-3) 30%, transparent);
+}
+html body #app #view-focus .mw-foco-arco{
+  fill: none; stroke: var(--ds-ac); stroke-width: 13; stroke-linecap: round;
+  stroke-dasharray: 666; stroke-dashoffset: 666;
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--ds-ac) 45%, transparent));
+  transition: stroke-dashoffset .4s linear, stroke .3s var(--ds-suave);
+}
+html body #app #view-focus .mw-foco-relogio.is-pausa .mw-foco-arco{
+  stroke: #34d399;
+  filter: drop-shadow(0 0 10px rgba(52,211,153,.42));
+}
+html body #app #view-focus .mw-foco-centro{ text-align: center; z-index: 1; }
+html body #app #view-focus .mw-foco-centro strong{
+  display: block; font-size: clamp(40px, 9vw, 58px); font-weight: 700;
+  letter-spacing: -.02em; color: var(--ds-txt);
+  font-variant-numeric: tabular-nums;
+}
+html body #app #view-focus .mw-foco-centro span{
+  display: block; margin-top: 6px; font-size: 12px; color: var(--ds-txt-3);
+}
+/* A pulsação marca "rodando" sem depender de olhar os segundos mudarem.
+   Some para quem pediu menos movimento. */
+html body #app #view-focus .mw-foco-relogio.is-rodando .mw-foco-centro strong{
+  animation: mwFocoPulso 2.6s ease-in-out infinite;
+}
+@keyframes mwFocoPulso{ 0%,100%{ opacity:1 } 50%{ opacity:.72 } }
+@media (prefers-reduced-motion: reduce){
+  html body #app #view-focus .mw-foco-relogio.is-rodando .mw-foco-centro strong{ animation: none; }
+  html body #app #view-focus .mw-foco-arco{ transition: none; }
+}
+
+/* --- Disciplina e ações ------------------------------------------------ */
+html body #app #view-focus .mw-foco-disciplina{
+  display: grid; gap: 6px; max-width: 340px; margin: 0 auto 16px;
+}
+html body #app #view-focus .mw-foco-disciplina label{
+  font-size: 11px; font-weight: 700; letter-spacing: .05em;
+  text-transform: uppercase; color: var(--ds-txt-3);
+}
+html body #app #view-focus .mw-foco-disciplina select{
+  width: 100%; padding: 11px 13px; border: 0; border-radius: var(--ds-r-1);
+  background: var(--ds-vidro-2); box-shadow: var(--ds-fio);
+  color: var(--ds-txt); font: inherit; font-size: 13px;
+}
+html body #app #view-focus .mw-foco-acoes{
+  display: flex; flex-wrap: wrap; gap: 9px; justify-content: center;
+}
+/* Classes próprias em vez de .primary/.small-btn: existe uma regra
+   antiga em "html body #app .main .primary" com !important que repinta
+   fundo e raio de QUALQUER botão .primary dentro da área principal —
+   ela apagava tanto a cápsula quanto o véu escuro que este botão precisa
+   para sustentar texto branco. Sair do nome é mais honesto do que
+   empilhar mais um !important em cima dela. */
+html body #app #view-focus .mw-foco-btn{
+  border: 0; cursor: pointer; min-width: 148px;
+  padding: 13px 26px; border-radius: 999px;
+  /* Superfície grande e com gradiente: a ponta clara dele ficava em
+     4,3:1 com o branco, então este botão leva um véu mais escuro que as
+     pílulas pequenas. */
+  background: linear-gradient(rgba(0,0,0,.26), rgba(0,0,0,.26)), var(--ds-ac-grad);
+  color: #fff;
+  font: inherit; font-size: 14px; font-weight: 700;
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--ds-ac) 34%, transparent);
+  transition: transform .16s var(--ds-mola), box-shadow .18s var(--ds-suave);
+}
+html body #app #view-focus .mw-foco-btn:hover{ transform: translateY(-1px); }
+html body #app #view-focus .mw-foco-btn:active{ transform: translateY(1px); }
+html body #app #view-focus .mw-foco-btn-sec{
+  border: 0; cursor: pointer; padding: 12px 16px; border-radius: 999px;
+  background: var(--ds-vidro-2); box-shadow: var(--ds-fio);
+  color: var(--ds-txt-2); font: inherit; font-size: 12.5px; font-weight: 620;
+}
+html body #app #view-focus .mw-foco-btn-sec:hover{ color: var(--ds-txt); box-shadow: var(--ds-fio-forte); }
+/* O display de autor vence o [hidden] do navegador — sem esta linha,
+   "Concluir" e "Descartar" continuariam visíveis fora de uma sessão. */
+html body #app #view-focus .mw-foco-acoes button[hidden]{ display: none !important; }
+
+/* --- Ajustes ------------------------------------------------------------ */
+html body #app #view-focus .mw-foco-ajustes{ margin-top: 18px; }
+html body #app #view-focus .mw-foco-ajustes summary{
+  cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 7px;
+  font-size: 12px; font-weight: 640; color: var(--ds-txt-3);
+}
+html body #app #view-focus .mw-foco-ajustes summary::-webkit-details-marker{ display: none; }
+html body #app #view-focus .mw-foco-ajustes summary::before{ content: '\203A'; transition: transform .2s var(--ds-suave); }
+html body #app #view-focus .mw-foco-ajustes[open] summary::before{ transform: rotate(90deg); }
+html body #app #view-focus .mw-foco-ajustes-grade{
+  display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; margin-top: 12px;
+}
+html body #app #view-focus .mw-foco-ajustes-grade label{
+  display: grid; gap: 5px; font-size: 11px; color: var(--ds-txt-3);
+}
+html body #app #view-focus .mw-foco-ajustes-grade input{
+  width: 100%; padding: 9px 11px; border: 0; border-radius: 11px;
+  background: var(--ds-vidro-2); box-shadow: var(--ds-fio);
+  color: var(--ds-txt); font: inherit; font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Resumo ------------------------------------------------------------- */
+html body #app #view-focus .mw-foco-numeros{
+  display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px;
+}
+html body #app #view-focus .mw-foco-num{
+  padding: 14px 12px; border-radius: var(--ds-r-2);
+  background: var(--ds-vidro-3); box-shadow: var(--ds-fio);
+}
+html body #app #view-focus .mw-foco-num b{
+  display: block; font-size: 22px; font-weight: 720; color: var(--ds-txt);
+  font-variant-numeric: tabular-nums; letter-spacing: -.02em;
+}
+html body #app #view-focus .mw-foco-num em{
+  display: block; margin-top: 3px; font-style: normal;
+  font-size: 10.5px; letter-spacing: .05em; text-transform: uppercase; color: var(--ds-txt-3);
+}
+/* Sete barras, uma por dia. Um dia sem estudo fica com o trilho vazio à
+   mostra em vez de sumir: a ausência também é informação. */
+html body #app #view-focus .mw-foco-barras{
+  display: grid; grid-template-columns: repeat(7, minmax(0,1fr));
+  gap: 8px; align-items: end; margin-top: 16px; min-height: 96px;
+}
+html body #app #view-focus .mw-foco-barra{ display: grid; gap: 6px; justify-items: center; }
+/* O trilho da barra vazia é uma cor derivada do texto, e não o token de
+   vidro: no tema claro o vidro é branco sobre branco, e os dias sem
+   estudo desapareciam — justamente os que a barra existe para mostrar. */
+html body #app #view-focus .mw-foco-barra i{
+  display: block; width: 100%; border-radius: 7px 7px 4px 4px;
+  background: color-mix(in srgb, var(--ds-txt-3) 22%, transparent);
+  transition: height .45s var(--ds-suave);
+}
+html body #app #view-focus .mw-foco-barra.tem i{ background: var(--ds-ac-grad); }
+html body #app #view-focus .mw-foco-barra.is-hoje i{
+  outline: 2px solid color-mix(in srgb, var(--ds-ac) 55%, transparent); outline-offset: 2px;
+}
+html body #app #view-focus .mw-foco-barra u{
+  text-decoration: none; font-size: 10px; color: var(--ds-txt-3);
+}
+
+/* --- Histórico ----------------------------------------------------------- */
+html body #app #view-focus .mw-foco-item{
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 13px; border-radius: var(--ds-r-1);
+  background: var(--ds-vidro-3); box-shadow: var(--ds-fio);
+}
+html body #app #view-focus .mw-foco-item .mw-foco-item-txt{ min-width: 0; flex: 1 1 auto; }
+html body #app #view-focus .mw-foco-item strong{
+  display: block; font-size: 13px; font-weight: 640; color: var(--ds-txt);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+html body #app #view-focus .mw-foco-item small{ display: block; margin-top: 2px; font-size: 11px; color: var(--ds-txt-3); }
+html body #app #view-focus .mw-foco-min{
+  font-size: 13px; font-weight: 700; color: var(--ds-txt);
+  font-variant-numeric: tabular-nums; flex: 0 0 auto;
+}
+html body #app #view-focus .mw-foco-item[data-tipo="foco"]{ box-shadow: var(--ds-fio), inset 3px 0 0 var(--ds-ac); }
+html body #app #view-focus .mw-foco-item[data-tipo="pausa"],
+html body #app #view-focus .mw-foco-item[data-tipo="longa"]{ box-shadow: var(--ds-fio), inset 3px 0 0 #34d399; }
+html body #app #view-focus .mw-foco-apagar{
+  flex: 0 0 auto; border: 0; cursor: pointer; width: 30px; height: 30px;
+  border-radius: 10px; background: transparent; color: var(--ds-txt-3);
+  font-size: 15px; line-height: 1;
+}
+html body #app #view-focus .mw-foco-apagar:hover{ background: var(--ds-vidro-1); color: #ff9aab; }
+html body #app #view-focus .mw-foco-vazio{
+  padding: 26px 16px; text-align: center; border-radius: var(--ds-r-2);
+  background: var(--ds-vidro-3); box-shadow: var(--ds-fio);
+  color: var(--ds-txt-3); font-size: 12px;
+}
+html body #app #view-focus .mw-foco-vazio strong{ display: block; color: var(--ds-txt-2); font-size: 13px; margin-bottom: 4px; }
+
+/* --- Tablet e telefone ---------------------------------------------------
+   Uma coluna só, e nessa ordem: o relógio primeiro. Quem abre esta área
+   no telefone quase sempre vem para começar ou parar uma sessão. */
+@media (max-width: 1080px){
+  html body #app #view-focus.active{ grid-template-columns: minmax(0,1fr); grid-template-rows: auto; }
+  html body #app #view-focus .mw-foco-palco,
+  html body #app #view-focus .mw-foco-resumo,
+  html body #app #view-focus .mw-foco-historico{ grid-column: 1; grid-row: auto; }
+}
+@media (max-width: 560px){
+  html body #app #view-focus .mw-foco-tipos button{ padding: 7px 10px; font-size: 11.5px; }
+  html body #app #view-focus .mw-foco-btn{ min-width: 0; flex: 1 1 100%; }
+  html body #app #view-focus .mw-foco-numeros{ gap: 7px; }
+  html body #app #view-focus .mw-foco-num{ padding: 11px 9px; }
+  html body #app #view-focus .mw-foco-num b{ font-size: 18px; }
+  html body #app #view-focus .mw-foco-num em{ font-size: 9.5px; letter-spacing: .03em; }
+  html body #app #view-focus .mw-foco-barras{ gap: 5px; min-height: 78px; }
+}
+</style>
+
+<script id="mw-foco-js">
+(function(){
+  'use strict';
+  /* A área de Foco.
+
+     A regra que sustenta tudo: NÃO existe contador decrescente guardado.
+     O que fica salvo é "esta sessão começou às 14h02, dura 25 minutos e
+     ficou parada 3 minutos". Quanto falta é sempre uma conta feita na
+     hora, contra o relógio do aparelho. Três consequências práticas:
+
+     - trocar de área, minimizar o app ou recarregar a página não perde
+       nada, porque não havia contador para perder;
+     - uma sessão que terminou enquanto o app estava fechado é gravada
+       assim mesmo na volta, com a duração que de fato teve;
+     - o intervalo de tela roda a 500ms só para redesenhar, e nunca
+       grava. Gravar acontece nas transições (começar, pausar, retomar,
+       concluir, descartar), que é quando há algo novo a guardar.
+
+     O histórico mora em data.focus.sessoes, dentro do mesmo blob que já
+     sincroniza com o servidor — não precisa de tabela nova nem migração. */
+
+  var CIRC = 2 * Math.PI * 106;      // o raio do anel no SVG
+  var DIAS = ['dom','seg','ter','qua','qui','sex','sáb'];
+  var ROTULO = { foco: 'Sessão de foco', pausa: 'Pausa curta', longa: 'Pausa longa' };
+  var tipoEscolhido = 'foco';
+  var relogio = null;
+  var tituloOriginal = document.title;
+  var avisou = false;                // já avisou o fim desta sessão?
+
+  function esc(v){ return String(v == null ? '' : v).replace(/[&<>'"]/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]; }); }
+  function $(id){ return document.getElementById(id); }
+  function dados(){
+    var d = window.data;
+    return (d && typeof d === 'object') ? d : null;
+  }
+  function inteiro(v, min, max, padrao){
+    var n = Math.round(Number(v));
+    if (!isFinite(n) || n < min || n > max) return padrao;
+    return n;
+  }
+  /* O estado nasce normalizado a cada leitura em vez de depender de o
+     arquivo salvo já ter o formato certo: uma conta criada antes desta
+     área existir não tem "focus" nenhum, e não deve quebrar por isso. */
+  function foco(){
+    var d = dados(); if (!d) return null;
+    if (!d.focus || typeof d.focus !== 'object') d.focus = {};
+    var f = d.focus;
+    if (!f.config || typeof f.config !== 'object') f.config = {};
+    f.config.foco  = inteiro(f.config.foco,  1, 180, 25);
+    f.config.pausa = inteiro(f.config.pausa, 1, 60,   5);
+    f.config.longa = inteiro(f.config.longa, 1, 120, 15);
+    if (!Array.isArray(f.sessoes)) f.sessoes = [];
+    if (f.atual && typeof f.atual !== 'object') f.atual = null;
+    return f;
+  }
+  function grava(){
+    if (typeof window.save === 'function') { window.save(); return; }
+    try { localStorage.setItem('mateusWorkspaceV4', JSON.stringify(window.data)); } catch(e){}
+    pinta();
+  }
+  function fala(msg){ if (typeof window.toast === 'function') window.toast(msg); }
+
+  /* --- Contas de tempo ------------------------------------------------- */
+  function duracaoMs(a){ return (a.minutos || 0) * 60000; }
+  function decorridoMs(a){
+    var base = a.acumulado || 0;
+    if (a.inicio) base += Date.now() - a.inicio;
+    return Math.max(0, base);
+  }
+  function restanteMs(a){ return duracaoMs(a) - decorridoMs(a); }
+  function relogioTexto(ms){
+    var s = Math.max(0, Math.ceil(ms / 1000));
+    var m = Math.floor(s / 60);
+    return String(m).padStart(2,'0') + ':' + String(s % 60).padStart(2,'0');
+  }
+
+  /* Um aviso audível curto, gerado na hora — sem arquivo de som para
+     baixar e sem depender de permissão de notificação, que este app não
+     tem. Se o navegador bloquear áudio, não acontece nada: o aviso
+     visual (o toast) já foi dado. */
+  function apita(){
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      var ctx = new AC();
+      [0, .18].forEach(function(atraso){
+        var osc = ctx.createOscillator(), g = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = 660;
+        g.gain.setValueAtTime(0, ctx.currentTime + atraso);
+        g.gain.linearRampToValueAtTime(.14, ctx.currentTime + atraso + .02);
+        g.gain.exponentialRampToValueAtTime(.0001, ctx.currentTime + atraso + .16);
+        osc.connect(g); g.connect(ctx.destination);
+        osc.start(ctx.currentTime + atraso);
+        osc.stop(ctx.currentTime + atraso + .18);
+      });
+      setTimeout(function(){ try { ctx.close(); } catch(e){} }, 900);
+    } catch(e){}
+  }
+
+  /* --- Transições ------------------------------------------------------- */
+  function registra(a, completa){
+    var f = foco(); if (!f) return 0;
+    var min = Math.round(decorridoMs(a) / 60000);
+    if (completa) min = a.minutos;
+    /* Menos de um minuto não vira linha no histórico. Não é desprezo
+       pelo dado: é que "0 min" ocupando uma linha atrapalha a leitura
+       do que de fato foi estudado. */
+    if (min < 1) return 0;
+    f.sessoes.push({
+      id: 'f' + Date.now() + Math.random().toString(36).slice(2,7),
+      tipo: a.tipo, subject: a.subject || '', minutos: min,
+      fim: Date.now(), completa: !!completa
+    });
+    if (f.sessoes.length > 400) f.sessoes = f.sessoes.slice(-400);
+    return min;
+  }
+
+  function comeca(){
+    var f = foco(); if (!f) return;
+    if (f.atual) return;
+    var sel = $('mwFocoDisciplina');
+    f.atual = {
+      tipo: tipoEscolhido,
+      minutos: f.config[tipoEscolhido],
+      subject: sel ? sel.value : '',
+      inicio: Date.now(),
+      acumulado: 0
+    };
+    avisou = false;
+    grava();
+  }
+  function pausa(){
+    var f = foco(); if (!f || !f.atual || !f.atual.inicio) return;
+    f.atual.acumulado = decorridoMs(f.atual);
+    f.atual.inicio = null;
+    grava();
+  }
+  function retoma(){
+    var f = foco(); if (!f || !f.atual || f.atual.inicio) return;
+    f.atual.inicio = Date.now();
+    grava();
+  }
+  function conclui(){
+    var f = foco(); if (!f || !f.atual) return;
+    var a = f.atual;
+    var min = registra(a, false);
+    f.atual = null;
+    grava();
+    if (min) fala(min + (min === 1 ? ' minuto registrado.' : ' minutos registrados.'));
+    else fala('Sessão curta demais para entrar no histórico.');
+  }
+  function descarta(){
+    var f = foco(); if (!f || !f.atual) return;
+    f.atual = null;
+    grava();
+    fala('Sessão descartada.');
+  }
+
+  /* --- Desenho ---------------------------------------------------------- */
+  function opcoesDisciplina(){
+    var sel = $('mwFocoDisciplina'); if (!sel) return;
+    var d = dados(); if (!d) return;
+    var nomes = (Array.isArray(d.subjects) ? d.subjects : [])
+      .map(function(s){ return (s && s.name) ? String(s.name) : ''; })
+      .filter(Boolean);
+    var assinatura = nomes.join('|');
+    if (sel.dataset.mwAssinatura === assinatura) return;
+    var escolhido = sel.value;
+    sel.innerHTML = '<option value="">Sem disciplina</option>' +
+      nomes.map(function(n){ return '<option value="' + esc(n) + '">' + esc(n) + '</option>'; }).join('');
+    sel.dataset.mwAssinatura = assinatura;
+    if (escolhido && nomes.indexOf(escolhido) !== -1) sel.value = escolhido;
+  }
+
+  function pintaRelogio(){
+    var f = foco(); if (!f) return;
+    var a = f.atual;
+    var caixa = document.querySelector('#view-focus .mw-foco-relogio');
+    var tempo = $('mwFocoTempo'), legenda = $('mwFocoLegenda'), arco = $('mwFocoArco');
+    var principal = $('mwFocoPrincipal'), concluir = $('mwFocoConcluir'), descartar = $('mwFocoDescartar');
+    if (!tempo || !arco || !principal) return;
+
+    var tipo = a ? a.tipo : tipoEscolhido;
+    var minutos = a ? a.minutos : (f.config[tipoEscolhido] || 25);
+    var total = minutos * 60000;
+    var restante = a ? restanteMs(a) : total;
+    var andado = total ? Math.min(1, Math.max(0, 1 - restante / total)) : 0;
+
+    tempo.textContent = relogioTexto(restante);
+    arco.style.strokeDasharray = CIRC;
+    arco.style.strokeDashoffset = CIRC * (1 - andado);
+
+    if (caixa){
+      caixa.classList.toggle('is-rodando', !!(a && a.inicio));
+      caixa.classList.toggle('is-pausa', tipo !== 'foco');
+    }
+    if (legenda){
+      legenda.textContent = !a ? ROTULO[tipo]
+        : (a.inicio ? (a.subject ? ROTULO[tipo] + ' · ' + a.subject : ROTULO[tipo])
+                    : 'Pausado' + (a.subject ? ' · ' + a.subject : ''));
+    }
+    principal.textContent = !a ? 'Iniciar' : (a.inicio ? 'Pausar' : 'Retomar');
+    if (concluir) concluir.hidden = !a;
+    if (descartar) descartar.hidden = !a;
+
+    document.querySelectorAll('#view-focus .mw-foco-tipos button[data-foco-tipo]').forEach(function(b){
+      var t = b.getAttribute('data-foco-tipo');
+      b.setAttribute('aria-pressed', t === tipo ? 'true' : 'false');
+      /* Trocar de tipo no meio de uma sessão mudaria a duração dela por
+         baixo do relógio. Enquanto há sessão, o seletor fica travado. */
+      b.disabled = !!a;
+    });
+
+    /* O título da aba é o único lugar em que o tempo aparece quando o
+       app está em segundo plano. */
+    if (a && a.inicio) document.title = relogioTexto(restante) + ' · ' + ROTULO[tipo];
+    else if (document.title !== tituloOriginal) document.title = tituloOriginal;
+  }
+
+  function diaChave(ms){
+    var d = new Date(ms);
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function horas(min){
+    if (min < 60) return min + ' min';
+    var h = Math.floor(min / 60), m = min % 60;
+    return m ? h + 'h' + String(m).padStart(2,'0') : h + 'h';
+  }
+  function pintaResumo(){
+    var f = foco(); if (!f) return;
+    var alvoN = $('mwFocoNumeros'), alvoB = $('mwFocoBarras');
+    var hoje = new Date(); hoje.setHours(0,0,0,0);
+    var chaveHoje = diaChave(hoje.getTime());
+
+    var porDia = {}, totalSessoes = 0, minHoje = 0, minSemana = 0;
+    var limiteSemana = hoje.getTime() - 6 * 86400000;
+    f.sessoes.forEach(function(s){
+      if (s.tipo !== 'foco') return;          // pausa não é tempo estudado
+      totalSessoes++;
+      var k = diaChave(s.fim);
+      porDia[k] = (porDia[k] || 0) + (s.minutos || 0);
+      if (k === chaveHoje) minHoje += s.minutos || 0;
+      if (s.fim >= limiteSemana) minSemana += s.minutos || 0;
+    });
+
+    if (alvoN){
+      alvoN.innerHTML =
+        '<div class="mw-foco-num"><b>' + horas(minHoje) + '</b><em>Hoje</em></div>' +
+        '<div class="mw-foco-num"><b>' + horas(minSemana) + '</b><em>7 dias</em></div>' +
+        '<div class="mw-foco-num"><b>' + totalSessoes + '</b><em>Sessões</em></div>';
+    }
+    if (alvoB){
+      var vals = [], rotulos = [], chaves = [];
+      for (var i = 6; i >= 0; i--){
+        var d = new Date(hoje); d.setDate(d.getDate() - i);
+        var k = diaChave(d.getTime());
+        chaves.push(k); vals.push(porDia[k] || 0); rotulos.push(DIAS[d.getDay()]);
+      }
+      var teto = Math.max.apply(null, vals.concat([1]));
+      alvoB.innerHTML = vals.map(function(v, i){
+        var altura = Math.round(8 + (v / teto) * 62);
+        return '<div class="mw-foco-barra' + (v ? ' tem' : '') +
+          (chaves[i] === chaveHoje ? ' is-hoje' : '') + '" title="' + v + ' min">' +
+          '<i style="height:' + altura + 'px"></i><u>' + rotulos[i] + '</u></div>';
+      }).join('');
+    }
+  }
+
+  function pintaHistorico(){
+    var f = foco(); if (!f) return;
+    var lista = $('mwFocoLista'), contagem = $('mwFocoContagem');
+    if (!lista) return;
+    var ordenadas = f.sessoes.slice().sort(function(a,b){ return b.fim - a.fim; }).slice(0, 25);
+    if (contagem) contagem.textContent = f.sessoes.length ? f.sessoes.length + ' no total' : '';
+    if (!ordenadas.length){
+      lista.innerHTML = '<div class="mw-foco-vazio"><strong>Nenhuma sessão ainda</strong>' +
+        'Quando você concluir a primeira, ela aparece aqui com a disciplina e a duração.</div>';
+      return;
+    }
+    lista.innerHTML = ordenadas.map(function(s){
+      var d = new Date(s.fim);
+      var quando = String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') +
+        ' às ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+      var meta = quando + ' · ' + (s.completa ? 'Completa' : 'Encerrada antes');
+      return '<div class="mw-foco-item" data-tipo="' + esc(s.tipo) + '">' +
+        '<span class="mw-foco-item-txt"><strong>' + esc(s.subject || ROTULO[s.tipo] || 'Sessão') + '</strong>' +
+        '<small>' + esc(meta) + '</small></span>' +
+        '<span class="mw-foco-min">' + s.minutos + ' min</span>' +
+        '<button type="button" class="mw-foco-apagar" data-apagar="' + esc(s.id) + '" ' +
+        'aria-label="Apagar esta sessão">×</button></div>';
+    }).join('');
+  }
+
+  function pintaAjustes(){
+    var f = foco(); if (!f) return;
+    [['mwFocoMinFoco','foco'], ['mwFocoMinPausa','pausa'], ['mwFocoMinLonga','longa']].forEach(function(par){
+      var el = $(par[0]);
+      if (el && document.activeElement !== el) el.value = f.config[par[1]];
+    });
+  }
+
+  function pinta(){
+    if (!$('mwFocoTempo')) return;
+    opcoesDisciplina();
+    pintaRelogio();
+    pintaResumo();
+    pintaHistorico();
+    pintaAjustes();
+  }
+
+  /* Uma sessão pode ter chegado ao fim com o app fechado. Na volta ela é
+     gravada com a duração que teve — o tempo passou de verdade, e fingir
+     que a sessão nunca existiu seria mentir sobre o histórico. */
+  function fechaVencida(silencioso){
+    var f = foco(); if (!f || !f.atual) return false;
+    var a = f.atual;
+    if (!a.inicio) return false;
+    if (restanteMs(a) > 0) return false;
+    registra(a, true);
+    f.atual = null;
+    grava();
+    if (!silencioso && !avisou){
+      avisou = true;
+      apita();
+      fala(ROTULO[a.tipo] + ' concluída: ' + a.minutos + ' min.');
+    }
+    return true;
+  }
+
+  /* --- Ligações --------------------------------------------------------- */
+  function liga(){
+    var view = $('view-focus');
+    if (!view || view.dataset.mwLigado === '1') return;
+    view.dataset.mwLigado = '1';
+
+    view.addEventListener('click', function(ev){
+      var tipo = ev.target.closest('[data-foco-tipo]');
+      if (tipo){
+        var f = foco();
+        if (f && f.atual) return;
+        tipoEscolhido = tipo.getAttribute('data-foco-tipo');
+        pinta();
+        return;
+      }
+      if (ev.target.closest('#mwFocoPrincipal')){
+        var g = foco(); if (!g) return;
+        if (!g.atual) comeca();
+        else if (g.atual.inicio) pausa();
+        else retoma();
+        return;
+      }
+      if (ev.target.closest('#mwFocoConcluir')){ conclui(); return; }
+      if (ev.target.closest('#mwFocoDescartar')){ descarta(); return; }
+      var apagar = ev.target.closest('[data-apagar]');
+      if (apagar){
+        var h = foco(); if (!h) return;
+        var id = apagar.getAttribute('data-apagar');
+        h.sessoes = h.sessoes.filter(function(s){ return s.id !== id; });
+        grava();
+        fala('Sessão removida do histórico.');
+      }
+    });
+
+    view.addEventListener('change', function(ev){
+      var alvo = ev.target;
+      if (alvo && alvo.id === 'mwFocoDisciplina'){
+        var f = foco();
+        if (f && f.atual){ f.atual.subject = alvo.value; grava(); }
+        return;
+      }
+      var mapa = { mwFocoMinFoco:['foco',1,180,25], mwFocoMinPausa:['pausa',1,60,5], mwFocoMinLonga:['longa',1,120,15] };
+      var cfg = alvo && mapa[alvo.id];
+      if (cfg){
+        var g = foco(); if (!g) return;
+        g.config[cfg[0]] = inteiro(alvo.value, cfg[1], cfg[2], cfg[3]);
+        alvo.value = g.config[cfg[0]];
+        grava();
+      }
+    });
+
+    if (!relogio){
+      relogio = setInterval(function(){
+        var f = foco();
+        if (!f || !f.atual) return;
+        if (!fechaVencida(false)) { if ($('mwFocoTempo')) pintaRelogio(); }
+      }, 500);
+    }
+  }
+
+  function inicia(){
+    liga();
+    fechaVencida(true);
+    pinta();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', inicia);
+  else inicia();
+
+  /* A corrente do mwDashRefresh: capturar o anterior e chamá-lo é o que
+     mantém vivo tudo o que foi registrado antes deste bloco. */
+  var anterior = window.mwDashRefresh;
+  window.mwDashRefresh = function(d){
+    if (typeof anterior === 'function') { try { anterior(d); } catch(e){} }
+    try { pinta(); } catch(e){}
   };
 })();
 </script>
