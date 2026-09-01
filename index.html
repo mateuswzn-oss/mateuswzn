@@ -26056,5 +26056,231 @@ html body #loginScreen .mw-login-particles{ opacity: .30 !important; }
 html body #loginScreen .mwv2-ambient{ display: none !important; }
 </style>
 
+
+<style id="mw-ds-bottomnav">
+/* =====================================================================
+   §8 BARRA INFERIOR (aplicativo instalado)
+   =====================================================================
+   Uma decisão que vem de antes e continua valendo: a barra inferior só
+   existe no aplicativo instalado. No navegador, a navegação é o drawer.
+   Não é omissão — são contextos diferentes, e uma barra fixa embaixo
+   disputa espaço com a barra do próprio navegador.
+
+   O que muda aqui é o estado ativo. Ele era uma "lente" flutuante
+   (#mwLiquidLens), um elemento separado posicionado por script sobre a
+   barra. Ela saiu do lugar: a captura mostrava o ícone da lente e o
+   ícone do próprio botão ao mesmo tempo, deslocados, com o círculo da
+   lente atravessado por uma linha azul. Dois desenhos para uma coisa só
+   é uma máquina que precisa acertar coordenadas a cada quadro — e
+   quando erra, erra visivelmente.
+
+   No lugar dela, o MESMO estado ativo da barra lateral: uma pílula que
+   entra por trás do item e se abre para caber o nome da seção. Um
+   desenho só, sem coordenadas para sincronizar.
+   ===================================================================== */
+
+/* As lentes saem de cena — e são TRÊS, o que explica por que esconder
+   uma de cada vez não resolvia: #mwLiquidLens (a que seguia o dedo),
+   #mwNavActiveLens (a cápsula do item atual) e .mw-lente-vidro (o
+   círculo de vidro). Três implementações do mesmo efeito, empilhadas em
+   rodadas diferentes, cada uma posicionada por script. Era o círculo
+   branco atravessado por uma linha azul que aparecia deslocado sobre o
+   ícone — e nenhuma delas sozinha era o problema: era o conjunto.
+
+   A pílula do design system faz o mesmo trabalho com CSS puro, sem
+   coordenadas para sincronizar a cada quadro. */
+html body #mwLiquidLens,
+html body #mwNavActiveLens,
+html body #mwBottomNav .mw-lente-vidro,
+html body .mw-lente-vidro{ display: none !important; }
+
+/* O <svg> que só guarda o filtro de distorção da lente continuava no
+   documento e desenhava um risco diagonal fino embaixo da barra. Com as
+   lentes aposentadas ele não tem mais para que servir; fica escondido em
+   vez de removido porque quem o cria é outro bloco, que o recriaria. */
+html body #mwLenteFiltroSvg{
+  display: none !important;
+  position: absolute !important;
+  width: 0 !important; height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* A barra era uma grade de quatro colunas fixas. Com o "+" no meio
+   passou a ter cinco itens, e o quinto quebrou para uma segunda linha —
+   a barra dobrou de altura. Em flex os itens se acomodam em uma linha
+   só, e os filhos ocultos (as lentes) continuam ocultos. */
+/* Ancorado em body.mw-in-app porque a regra que impõe a grade também
+   está — "html body.mw-in-app #mwBottomNav.mwbn{display:grid!important}",
+   dentro de uma media query. Sem a mesma âncora, esta perde por uma
+   classe. */
+html body.mw-in-app #mwBottomNav.mwbn,
+html body #mwBottomNav.mwbn{
+  display: flex !important;
+  align-items: center !important;
+  grid-template-columns: none !important;
+}
+/* Sem :not(#mwNavMais) aqui: o argumento de :not() entra na conta da
+   especificidade, e um ID lá dentro fazia esta regra valer MAIS que a
+   do item ativo logo abaixo — o ativo continuava dividindo a largura
+   com os irmãos e o nome saía cortado ("Iníci"). O "+" é tratado na
+   sua própria regra, que já é mais específica por ter o ID de verdade. */
+html body #mwBottomNav.mwbn > button{ flex: 1 1 0 !important; }
+
+html body #mwBottomNav.mwbn{
+  background: var(--ds-vidro-1) !important;
+  border: 0 !important;
+  box-shadow: var(--ds-fio-forte), var(--ds-alt-3) !important;
+  backdrop-filter: var(--ds-desfoque) !important;
+  -webkit-backdrop-filter: var(--ds-desfoque) !important;
+  border-radius: 26px !important;
+  padding: 8px !important;
+  gap: 4px !important;
+}
+
+html body #mwBottomNav.mwbn button{
+  position: relative !important;
+  border: 0 !important;
+  background: transparent !important;
+  border-radius: 18px !important;
+  color: var(--ds-txt-3) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0 !important;
+  padding: 10px 0 !important;
+  min-width: 0 !important;
+  transition: color .22s var(--ds-suave), flex-grow .34s var(--ds-mola) !important;
+}
+html body #mwBottomNav.mwbn button::before{
+  content:''; position: absolute; inset: 0; z-index: 0;
+  border-radius: inherit;
+  background: var(--ds-ac-grad);
+  opacity: 0; transform: scale(.86);
+  transition: opacity .22s var(--ds-suave), transform .34s var(--ds-mola);
+}
+html body #mwBottomNav.mwbn button > *{ position: relative; z-index: 1; }
+
+/* O ícone tinha deslocamento próprio: a coreografia antiga movia ícone
+   e lente separadamente, e sem a lente o deslocamento sobrava — o ícone
+   ficava FORA da pílula, à esquerda dela. Aqui ele volta ao fluxo, sem
+   transform e sem posição própria, e a pílula passa a envolver ícone e
+   nome juntos, que é o que ela deve fazer. */
+html body #mwBottomNav.mwbn .mwnav-icon{
+  position: relative !important;
+  transform: none !important;
+  left: auto !important; right: auto !important; top: auto !important; bottom: auto !important;
+  margin: 0 !important;
+  flex: 0 0 auto !important;
+}
+html body #mwBottomNav.mwbn button.active{ color: #fff !important; }
+html body #mwBottomNav.mwbn button.active::before{
+  opacity: 1; transform: scale(1);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--ds-ac) 50%, transparent);
+}
+html body #mwBottomNav.mwbn button.active .mwnav-icon svg{ fill: currentColor !important; }
+
+/* O nome da seção aparece SÓ no item ativo, e o item cresce para caber:
+   é a diferença entre uma barra de ícones (onde é preciso decorar) e uma
+   em que a seção atual está escrita. */
+html body #mwBottomNav.mwbn .mwnav-label{
+  position: static !important;
+  opacity: 0 !important;
+  max-width: 0 !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  transition: opacity .2s var(--ds-suave), max-width .34s var(--ds-mola), margin-left .34s var(--ds-mola) !important;
+}
+html body #mwBottomNav.mwbn button.active .mwnav-label{
+  opacity: 1 !important;
+  max-width: 90px !important;
+  margin-left: 7px !important;
+}
+/* O item ativo deixa de dividir a largura igualmente com os outros e
+   passa a se dimensionar pelo conteúdo: com "flex:1 1 0" ele competia
+   com os irmãos e o nome saía cortado dentro da própria pílula
+   ("Iníci…"). Os demais continuam dividindo o que sobra. */
+html body #mwBottomNav.mwbn > button.active{
+  /* "flex-basis:auto" volta a olhar para "width", e o botão herda
+     width:100% da barra em grade — o que fazia a pílula ocupar quase a
+     barra inteira. Com width:auto ela mede o próprio conteúdo. */
+  flex: 0 0 auto !important;
+  width: auto !important;
+  padding-left: 13px !important;
+  padding-right: 15px !important;
+}
+
+/* --- O + central -----------------------------------------------------
+   Fica no meio porque é a única ação da barra que CRIA algo — as outras
+   levam a algum lugar. Elevado e em cor de destaque para não ser lido
+   como uma quinta seção. */
+html body #mwBottomNav.mwbn #mwNavMais{
+  flex: 0 0 auto !important;
+  width: 46px !important; height: 46px !important;
+  align-self: center !important;
+  margin: 0 2px !important;
+  border-radius: 16px !important;
+  background: var(--ds-ac-grad) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--ds-ac) 55%, transparent),
+              inset 0 1px 0 rgba(255,255,255,.28) !important;
+  transition: transform .2s var(--ds-mola), box-shadow .2s var(--ds-suave) !important;
+}
+html body #mwBottomNav.mwbn #mwNavMais::before{ display: none !important; }
+html body #mwBottomNav.mwbn #mwNavMais:active{ transform: scale(.92) !important; }
+html body #mwBottomNav.mwbn #mwNavMais svg{ width: 21px !important; height: 21px !important; fill: currentColor !important; }
+
+@media (prefers-reduced-motion: reduce){
+  html body #mwBottomNav.mwbn button,
+  html body #mwBottomNav.mwbn button::before,
+  html body #mwBottomNav.mwbn .mwnav-label{ transition: none !important; }
+}
+</style>
+
+<script id="mw-ds-bottomnav-js">
+(function(){
+  'use strict';
+  /* O botão de criar, no meio da barra. Ele não abre um menu próprio:
+     chama a MESMA ação do "+" da barra superior, que já existe e já sabe
+     abrir o formulário. Duas portas para a mesma coisa é aceitável;
+     duas implementações da mesma coisa, não — a segunda envelhece
+     sozinha e passa a discordar da primeira. */
+  function monta(){
+    var barra = document.getElementById('mwBottomNav');
+    if (!barra || document.getElementById('mwNavMais')) return;
+    var botoes = barra.querySelectorAll('button');
+    if (botoes.length < 2) return;
+
+    var mais = document.createElement('button');
+    mais.type = 'button';
+    mais.id = 'mwNavMais';
+    mais.setAttribute('aria-label', 'Criar item');
+    mais.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true">' +
+      '<path d="M12 4.4a1.15 1.15 0 0 1 1.15 1.15v5.3h5.3a1.15 1.15 0 1 1 0 2.3h-5.3v5.3a1.15 1.15 0 1 1-2.3 0v-5.3h-5.3a1.15 1.15 0 1 1 0-2.3h5.3v-5.3A1.15 1.15 0 0 1 12 4.4z"/></svg>';
+
+    /* No meio da fileira: com 4 itens, entre o segundo e o terceiro. */
+    var meio = Math.floor(botoes.length / 2);
+    barra.insertBefore(mais, botoes[meio]);
+
+    mais.addEventListener('click', function(){
+      var topo = document.getElementById('quickAdd');
+      if (topo) { topo.click(); return; }
+      if (typeof window.showView === 'function') window.showView('activities');
+    });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', monta);
+  else monta();
+
+  /* A barra é remontada por outro bloco quando a foto de perfil muda
+     (mwApplyNavPhoto reescreve o innerHTML do item de perfil). Observar
+     a barra devolve o "+" caso ele seja levado junto. */
+  var barra = document.getElementById('mwBottomNav');
+  if (barra) new MutationObserver(function(){ try { monta(); } catch (e) {} })
+    .observe(barra, { childList: true });
+})();
+</script>
+
 </body>
 </html>

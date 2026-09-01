@@ -1,3 +1,24 @@
+/* v63 (BETA — a barra inferior, e as TRÊS lentes que a quebravam):
+   O item ativo era marcado por uma "lente" flutuante posicionada por
+   script. Ela saiu do lugar: a captura mostrava o ícone da lente e o do
+   próprio botão ao mesmo tempo, deslocados, com um círculo branco
+   atravessado por uma linha azul.
+   Descobrir a causa levou três rodadas porque eram TRÊS lentes
+   empilhadas — #mwLiquidLens (seguia o dedo), #mwNavActiveLens (a
+   cápsula do item) e .mw-lente-vidro (o círculo) — criadas em rodadas
+   diferentes, cada uma posicionada por conta própria. Esconder uma de
+   cada vez não mudava nada visível.
+   Todas saíram. No lugar, a MESMA pílula da barra lateral: CSS puro,
+   sem coordenadas para sincronizar a cada quadro, e ela se abre para
+   caber o nome da seção atual.
+   Entrou o "+" central, que chama a mesma ação do "+" do topo em vez de
+   ter lógica própria.
+   Duas armadilhas de especificidade no caminho, ambas minhas: a barra
+   continuava em grade (a regra que a impõe está ancorada em
+   body.mw-in-app, e sem a mesma âncora a minha perdia por uma classe),
+   e o item ativo saía com o nome cortado porque eu havia escrito
+   :not(#mwNavMais) — o argumento do :not() entra na conta, e aquele ID
+   fazia a regra dos irmãos valer mais que a do ativo. */
 /* v62 (BETA — a tela de entrada no material novo):
    As proporções tinham quebrado: o lado da marca media 562px de altura
    dentro de um cartão de 502px e vazava por cima e por baixo dele. Lia
@@ -647,7 +668,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v62-beta';
+const CACHE_NAME = 'mw-shell-v63-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
