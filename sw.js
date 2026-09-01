@@ -1,5 +1,15 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v51 (BETA — o selo Beta/Em breve, que existia sem uso):
+   A classe do selo foi criada na Fase 2 e nunca aplicada em lugar
+   nenhum. Agora marca três coisas, todas verdadeiras:
+   - "Beta" no cabeçalho da Nyc AI, que é o que ela de fato é;
+   - "Em breve" nas categorias Notificações e IA das Configurações, que
+     não têm nenhum recurso real ainda — antes só um parágrafo explicava
+     isso, e quem varre a tela sem ler não percebia.
+   Onde já existe recuo honesto e testado (Apple e Google desabilitados
+   no login, App Store e Google Play no rodapé) nada mudou: acrescentar
+   selo ali seria repetir o aviso, não esclarecer. */
 /* v50 (BETA — Fase 2, parte 3: a marca é uma só):
    Só a tela de carregamento desenhava o símbolo de verdade (o M e o W
    traçados, com gradiente). A sidebar, o login, o rodapé e o convite de
@@ -451,7 +461,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v50-beta';
+const CACHE_NAME = 'mw-shell-v51-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
