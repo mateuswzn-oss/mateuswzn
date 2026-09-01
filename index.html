@@ -25768,5 +25768,293 @@ html body #app .mw-topo-marca{ display: none; }
 })();
 </script>
 
+
+<style id="mw-ds-login">
+/* =====================================================================
+   §7 ENTRADA — login e cadastro
+   =====================================================================
+   A tela funcionava, mas as proporções tinham quebrado: o painel da
+   esquerda media 562px de altura dentro de um cartão de 502px, e por
+   isso vazava por cima e por baixo dele. Na captura lia como um bloco
+   roxo atravessado no meio da tela — não como uma parte do desenho.
+
+   O deslize entre "entrar" e "criar conta" é feito em PORCENTAGEM
+   (trilho de 200% de altura, translateY de -50%), então mudar as
+   dimensões não quebra a transição: por isso dá para redimensionar tudo
+   aqui sem tocar no JS que opera a troca.
+
+   Três colunas no desktop — trilho de navegação, lado da marca,
+   formulário — porque há largura para as três e a da marca é o que
+   distingue a entrada de um formulário genérico. No telefone o lado da
+   marca sai (não há espaço para ele sem espremer o formulário, que é a
+   razão de a tela existir) e sobra uma coluna só.
+   ===================================================================== */
+
+html body #loginScreen{
+  background: var(--ds-chao) !important;
+}
+/* Mesmo campo de luz do app: quem entra já vê o material que vai
+   encontrar do outro lado. */
+html body #loginScreen::after{
+  /* Absoluto, e não fixo: #loginScreen tem overflow:hidden, e um
+     descendente fixo é recortado por ele assim que algum ancestral vira
+     bloco de contenção (transform, filter, backdrop-filter). O campo
+     simplesmente não aparecia — o fundo media (7,11,24), o chão puro. */
+  /* display:block é obrigatório aqui, não estilo: uma pele antiga tem
+     "#loginScreen::after{display:none!important}", e sem reverter isso o
+     pseudo-elemento nem chega a ser gerado — testado pintando-o de
+     vermelho sólido, que também não aparecia. */
+  content:''; display: block !important;
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(90% 80% at 14% -8%,  color-mix(in srgb, var(--ds-ac) 55%, transparent) 0%, transparent 66%),
+    radial-gradient(80% 76% at 94% 8%,   color-mix(in srgb, var(--ds-ac-2) 48%, transparent) 0%, transparent 64%),
+    radial-gradient(110% 90% at 74% 108%, color-mix(in srgb, var(--ds-ac) 38%, transparent) 0%, transparent 70%),
+    radial-gradient(120% 100% at 50% 45%, color-mix(in srgb, var(--ds-ac) 18%, transparent) 0%, transparent 78%);
+  opacity: .62;
+}
+html body.light #loginScreen::after{ opacity: .5; }
+html body #loginScreen > *{ position: relative; z-index: 1; }
+
+/* --- O cartão -------------------------------------------------------- */
+html body #loginScreen #authScene.mwv2-card{
+  width: min(1020px, calc(100vw - 48px)) !important;
+  max-width: none !important;
+  height: min(620px, calc(100vh - 64px)) !important;
+  border-radius: var(--ds-r-4) !important;
+  overflow: hidden !important;
+  background: var(--ds-vidro-1) !important;
+  border: 0 !important;
+  box-shadow: var(--ds-fio), var(--ds-alt-3) !important;
+  backdrop-filter: var(--ds-desfoque) !important;
+  -webkit-backdrop-filter: var(--ds-desfoque) !important;
+  display: grid !important;
+  grid-template-columns: 92px minmax(0, 1fr) minmax(0, 400px) !important;
+}
+html body #loginScreen .mwv2-login-stack{
+  display: grid !important;
+  place-items: center !important;
+  width: 100% !important;
+  min-height: 100vh !important;
+}
+
+/* --- Trilho de navegação --------------------------------------------- */
+html body #loginScreen .mwv2-nav{
+  width: auto !important; height: 100% !important;
+  background: rgba(255,255,255,.035) !important;
+  box-shadow: inset -1px 0 0 rgba(255,255,255,.06) !important;
+  display: flex !important; flex-direction: column !important;
+  align-items: center !important; padding: 22px 0 !important;
+}
+html body.light #loginScreen .mwv2-nav{
+  background: rgba(19,38,84,.045) !important;
+  box-shadow: inset -1px 0 0 rgba(19,38,84,.07) !important;
+}
+html body #loginScreen .mwv2-logo{
+  width: 44px !important; height: 44px !important;
+  display: grid !important; place-items: center !important;
+  border-radius: 14px !important;
+  background: var(--ds-vidro-2) !important;
+  box-shadow: var(--ds-fio) !important;
+  margin: 0 0 auto !important;
+}
+html body #loginScreen .mwv2-logo svg{ width: 30px !important; height: 21px !important; }
+html body #loginScreen .mwv2-navbtn{
+  width: 100% !important; height: auto !important;
+  padding: 16px 0 !important;
+  display: flex !important; flex-direction: column !important;
+  align-items: center !important; gap: 7px !important;
+  color: var(--ds-txt-3) !important; background: transparent !important;
+  border: 0 !important; font-size: 11.5px !important; font-weight: 650 !important;
+  transition: color .2s var(--ds-suave) !important;
+}
+html body #loginScreen .mwv2-navbtn.active{ color: var(--ds-txt) !important; }
+html body #loginScreen .mwv2-navbtn:first-of-type{ margin-top: auto !important; }
+html body #loginScreen .mwv2-navbtn:last-of-type{ margin-bottom: auto !important; }
+html body #loginScreen .mwv2-activebar{
+  background: var(--ds-ac-grad) !important;
+  width: 3px !important; border-radius: 0 3px 3px 0 !important;
+}
+
+/* --- Lado da marca ---------------------------------------------------- */
+html body #loginScreen .mwv2-hero{
+  height: 100% !important; width: auto !important;
+  position: relative !important; overflow: hidden !important;
+  top: 0 !important; left: 0 !important;
+}
+html body #loginScreen .mwv2-hero-media,
+html body #loginScreen .mwv2-hero-fallback,
+html body #loginScreen .mwv2-hero-scrim{ inset: 0 !important; height: 100% !important; }
+html body #loginScreen .mwv2-hero-fallback{
+  background:
+    radial-gradient(120% 90% at 20% 0%,  color-mix(in srgb, var(--ds-ac) 82%, transparent) 0%, transparent 62%),
+    radial-gradient(110% 100% at 90% 100%, color-mix(in srgb, var(--ds-ac-2) 78%, transparent) 0%, transparent 60%),
+    linear-gradient(150deg, color-mix(in srgb, var(--ds-ac) 55%, #0a1024) 0%, color-mix(in srgb, var(--ds-ac-2) 45%, #0a1024) 100%) !important;
+}
+html body #loginScreen .mwv2-hero-scrim{
+  background: linear-gradient(180deg, rgba(4,8,20,.10) 0%, rgba(4,8,20,.42) 100%) !important;
+}
+html body #loginScreen .mwv2-hero-panel{
+  height: 50% !important;
+  display: flex !important; flex-direction: column !important;
+  justify-content: flex-end !important;
+  padding: 34px 30px !important;
+}
+/* A marca aparece grande no lado da esquerda, e não só no selo de 44px
+   do trilho: é a primeira tela do produto, e é onde a identidade tem
+   espaço para ser vista antes de virar um ícone de canto. */
+html body #loginScreen .mwv2-hero-panel::before{
+  content:'';
+  position: absolute; top: 30px; left: 30px;
+  width: 74px; height: 51px;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 44'%3E%3Cg fill='none' stroke='%23000' stroke-width='5.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 35V13.2L14.5 29L25 13.2V35'/%3E%3Cpath d='M34 13.2L40.5 35L47 20.6L53.5 35L60 13.2'/%3E%3C/g%3E%3C/svg%3E") no-repeat center / contain;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 44'%3E%3Cg fill='none' stroke='%23000' stroke-width='5.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 35V13.2L14.5 29L25 13.2V35'/%3E%3Cpath d='M34 13.2L40.5 35L47 20.6L53.5 35L60 13.2'/%3E%3C/g%3E%3C/svg%3E") no-repeat center / contain;
+  color: rgba(255,255,255,.92);
+  opacity: .95;
+}
+
+/* --- Formulário -------------------------------------------------------- */
+html body #loginScreen .mwv2-form-area{
+  height: 100% !important; width: auto !important;
+  overflow: hidden !important;
+  background: rgba(255,255,255,.022) !important;
+}
+html body.light #loginScreen .mwv2-form-area{ background: rgba(255,255,255,.45) !important; }
+html body #loginScreen .mwv2-auth-pane{
+  height: 50% !important;
+  padding: 34px 32px !important;
+  overflow-y: auto !important;
+  display: flex !important; flex-direction: column !important; justify-content: center !important;
+}
+/* Por elemento, não por atributo: o campo de e-mail é
+   <input id="username"> SEM type, e "input[type=text]" não casa com um
+   input que não declara o atributo — o resultado era um campo cinza ao
+   lado de outro branco, no mesmo formulário. As exclusões abaixo tiram
+   caixas de seleção e botões, que não são campos de texto. */
+html body #loginScreen .ref-field,
+html body #loginScreen input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="file"]){
+  background: var(--ds-vidro-2) !important;
+  border: 0 !important;
+  box-shadow: var(--ds-fio) !important;
+  border-radius: var(--ds-r-2) !important;
+  color: var(--ds-txt) !important;
+  backdrop-filter: none !important;
+}
+html body #loginScreen input::placeholder{ color: var(--ds-txt-3) !important; }
+html body #loginScreen input:focus{
+  box-shadow: var(--ds-fio), 0 0 0 3px color-mix(in srgb, var(--ds-ac) 34%, transparent) !important;
+}
+
+/* --- Telefone: uma coluna --------------------------------------------
+   O lado da marca sai. Não é uma escolha estética: ele e o formulário
+   não cabem lado a lado sem espremer o formulário, que é a razão de a
+   tela existir. A marca reaparece no alto do próprio formulário. */
+@media (max-width: 860px){
+  html body #loginScreen #authScene.mwv2-card{
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto minmax(0,1fr) !important;
+    width: min(440px, calc(100vw - 28px)) !important;
+    height: min(640px, calc(100vh - 40px)) !important;
+  }
+  html body #loginScreen .mwv2-hero{ display: none !important; }
+  html body #loginScreen .mwv2-nav{
+    flex-direction: row !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    padding: 14px 16px !important;
+    height: auto !important;
+    box-shadow: inset 0 -1px 0 rgba(255,255,255,.07) !important;
+  }
+  html body.light #loginScreen .mwv2-nav{ box-shadow: inset 0 -1px 0 rgba(19,38,84,.08) !important; }
+  html body #loginScreen .mwv2-logo{ margin: 0 auto 0 0 !important; width: 38px !important; height: 38px !important; }
+  html body #loginScreen .mwv2-navbtn{
+    width: auto !important; flex-direction: row !important;
+    padding: 9px 14px !important; border-radius: 999px !important;
+    margin: 0 !important;
+  }
+  html body #loginScreen .mwv2-navbtn.active{
+    background: var(--ds-ac-grad) !important; color: #fff !important;
+  }
+  html body #loginScreen .mwv2-navbtn svg{ width: 16px !important; height: 16px !important; }
+  html body #loginScreen .mwv2-activebar{ display: none !important; }
+  html body #loginScreen .mwv2-auth-pane{ padding: 26px 22px !important; }
+}
+
+/* O botão principal do cadastro saía com quicos retos enquanto o de
+   entrar era cápsula — dois botões primários com formas diferentes na
+   mesma tela, a dois cliques de distância. */
+html body #loginScreen .ref-primary,
+html body #loginScreen .mw-original-car-btn,
+html body #loginScreen .mwv2-submit,
+html body #loginScreen button[type="submit"]{
+  border-radius: 999px !important;
+  overflow: hidden !important;
+  border: 0 !important;
+  font-weight: 750 !important;
+  letter-spacing: .04em !important;
+}
+
+/* O degradê do botão de cadastro é pintado por um filho (.mw-btn-inner)
+   que fica 6px para dentro. Arredondar só o botão não bastava: o filho
+   continuava reto e era ele que se via. Recortar pelo pai também não
+   resolve — ele não transborda, só tem cantos próprios. */
+html body #loginScreen .mw-btn-inner{ border-radius: 999px !important; }
+
+/* --- Tema claro da entrada -------------------------------------------
+   A tela de login foi desenhada só para o escuro: no claro, as cores de
+   texto continuavam as de fundo escuro e os campos ficavam cinza com o
+   texto de dica quase invisível. Não é ajuste fino — é a metade do tema
+   que nunca existiu aqui. O lado da marca continua colorido e com texto
+   branco (ele tem fundo próprio); o lado do formulário passa a ser
+   branco de verdade, com texto escuro. */
+html body.light #loginScreen .mwv2-form-area{
+  background: rgba(255,255,255,.78) !important;
+}
+html body.light #loginScreen .mwv2-auth-pane,
+html body.light #loginScreen .mwv2-auth-pane label,
+html body.light #loginScreen .mwv2-auth-pane p,
+html body.light #loginScreen .mwv2-auth-pane span,
+html body.light #loginScreen .mwv2-auth-pane small,
+html body.light #loginScreen .signup-divider{
+  color: var(--ds-txt) !important;
+}
+html body.light #loginScreen .mwv2-auth-pane .mwv2-hint,
+html body.light #loginScreen .mwv2-auth-pane .mwv2-sub{ color: var(--ds-txt-2) !important; }
+
+html body.light #loginScreen .ref-field,
+html body.light #loginScreen input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="file"]){
+  background: #fff !important;
+  color: var(--ds-txt) !important;
+  box-shadow: inset 0 0 0 1px rgba(19,38,84,.14) !important;
+}
+html body.light #loginScreen input::placeholder{ color: #7d879f !important; }
+
+/* O botão principal ficava com texto escuro sobre azul claro — pouco
+   mais de 2:1. Passa a ser branco sobre o degradê de destaque, que é o
+   mesmo par usado no resto do app. */
+html body.light #loginScreen .mwv2-submit,
+html body.light #loginScreen .ref-primary,
+html body.light #loginScreen button[type="submit"]{
+  background: var(--ds-ac-grad) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--ds-ac) 34%, transparent) !important;
+}
+html body.light #loginScreen .mwv2-navbtn{ color: var(--ds-txt-2) !important; }
+html body.light #loginScreen .mwv2-navbtn.active{ color: var(--ds-txt) !important; }
+
+/* O lado da marca é uma superfície colorida com fundo próprio: o texto
+   nele é branco nos DOIS temas, e escurecê-lo no claro seria trocar um
+   contraste bom por um ruim. */
+html body.light #loginScreen .mwv2-hero,
+html body.light #loginScreen .mwv2-hero *{ color: #fff !important; }
+
+/* As partículas eram o único "ambiente" da tela; agora há o campo de luz
+   inteiro atrás. Duas camadas de atmosfera competindo deixam o fundo
+   sujo, então as partículas ficam bem mais discretas. */
+html body #loginScreen .mw-login-particles{ opacity: .30 !important; }
+html body #loginScreen .mwv2-ambient{ display: none !important; }
+</style>
+
 </body>
 </html>

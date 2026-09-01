@@ -1,3 +1,22 @@
+/* v62 (BETA — a tela de entrada no material novo):
+   As proporções tinham quebrado: o lado da marca media 562px de altura
+   dentro de um cartão de 502px e vazava por cima e por baixo dele. Lia
+   como um bloco roxo atravessado no meio da tela.
+   Agora é uma tela dividida de verdade — trilho de navegação, lado da
+   marca com o MW grande, formulário — em vidro, sobre o mesmo campo de
+   luz do app. No telefone o lado da marca sai e sobra uma coluna só,
+   com Entrar/Criar como pílulas no topo.
+   Três defeitos reais no caminho, todos da mesma família:
+   (1) o campo de luz não aparecia porque uma pele antiga tem
+   "#loginScreen::after{display:none!important}" — descoberto pintando o
+   pseudo-elemento de vermelho sólido, que também não aparecia;
+   (2) o campo de e-mail é <input id="username"> SEM type, então
+   "input[type=text]" não casava com ele: ficava cinza ao lado de outro
+   branco, no mesmo formulário;
+   (3) o botão de criar conta continuava reto com raio de 999px, porque
+   quem pinta o degradê é um filho .mw-btn-inner que tem cantos próprios.
+   E o tema claro da entrada, que nunca existiu: os textos continuavam
+   nas cores de fundo escuro. Rótulos e campos agora medem 15:1. */
 /* v61 (BETA — dashboard vira painel, e o telefone ganha layout próprio):
    O dashboard era uma coluna de cartões de largura cheia, todos com o
    mesmo peso: uma lista, não um painel. Agora é uma grade de doze
@@ -628,7 +647,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v61-beta';
+const CACHE_NAME = 'mw-shell-v62-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
