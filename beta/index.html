@@ -28023,5 +28023,46 @@ html body #app #view-focus .mw-foco-vazio strong{ display: block; color: var(--d
 })();
 </script>
 
+<style id="mw-previa-carimbo">
+#mwPreviaCarimbo{
+  position: fixed; top: 8px; left: 50%; transform: translateX(-50%);
+  z-index: 2147483647; pointer-events: none;
+  padding: 5px 12px; border-radius: 999px;
+  background: rgba(10,14,30,.82); color: #eef2ff;
+  border: 1px solid rgba(255,255,255,.18);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  font: 600 11px/1 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  letter-spacing: .04em; white-space: nowrap;
+  animation: mwPreviaSome 6s ease forwards;
+}
+@keyframes mwPreviaSome{
+  0%{ opacity: 0; transform: translateX(-50%) translateY(-6px) }
+  8%{ opacity: 1; transform: translateX(-50%) translateY(0) }
+  80%{ opacity: 1 }
+  100%{ opacity: 0; transform: translateX(-50%) translateY(-6px); visibility: hidden }
+}
+@media (prefers-reduced-motion: reduce){
+  #mwPreviaCarimbo{ animation: none; opacity: .9 }
+}
+</style>
+<script id="mw-previa-carimbo-js">
+(function(){
+  'use strict';
+  /* O carimbo entra depois do preloader para não brigar com a abertura
+     da marca, e sai sozinho. window.MW_PREVIA fica disponível para
+     conferir a versão pelo console sem depender de ver o carimbo. */
+  window.MW_PREVIA = 'v69 · Foco e Calendário';
+  function mostra(){
+    if (document.getElementById('mwPreviaCarimbo')) return;
+    var el = document.createElement('div');
+    el.id = 'mwPreviaCarimbo';
+    el.textContent = 'prévia ' + window.MW_PREVIA;
+    document.body.appendChild(el);
+    setTimeout(function(){ el.remove(); }, 6200);
+  }
+  setTimeout(mostra, 3200);
+})();
+</script>
+
 </body>
 </html>
