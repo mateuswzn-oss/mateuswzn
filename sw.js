@@ -1,3 +1,20 @@
+/* v60 (BETA — design system novo: o vidro passa a existir de verdade):
+   O app não parecia de vidro porque havia regras ATIVAS desligando o
+   vidro: backdrop-filter:none!important, box-shadow:none!important (213
+   vezes) e background:#151619!important em .card, .sidebar, .topbar e
+   .settings-group, vindas de seis peles antigas empilhadas. Nenhuma
+   folha nova produzia vidro — só empilhava mais uma camada perdendo a
+   disputa.
+   Agora existe uma folha canônica que declara as quatro propriedades de
+   superfície de uma vez e ancora nos mesmos seletores das peles antigas,
+   vencendo pela ordem do arquivo em vez de por mais !important.
+   Junto veio o que faltava para vidro ser vidro: um campo de luz atrás
+   de tudo. Desfoque sobre chão liso é cinza, não vidro — o chão entre os
+   cartões media (6,10,23), o preto puro. Agora a hierarquia é medida:
+   chão (18,23,54), cartão (26,34,77), linha (36,45,85).
+   A barra lateral e a superior viraram peças flutuantes com margem, o
+   item ativo da navegação é uma superfície que entra por trás dele, e
+   claro deixou de ser o escuro invertido: tem paleta própria. */
 /* v59 (BETA — Configurações completas: cor de destaque, notificações e IA):
    Duas das sete categorias eram só um aviso de "em breve" — mas as duas
    coisas existiam. O sino já mostrava prazos; o que faltava era decidir
@@ -592,7 +609,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v59-beta';
+const CACHE_NAME = 'mw-shell-v60-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

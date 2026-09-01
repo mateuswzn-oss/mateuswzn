@@ -24650,5 +24650,464 @@ html body #app .mw-settings-em-breve{ color:var(--id-txt-3,#7b88a6) !important; 
 })();
 </script>
 
+<style id="mw-ds-2026">
+/* =====================================================================
+   MW DESIGN SYSTEM 2026
+   =====================================================================
+   Por que esta folha existe, e por que ela é diferente das ~110 que
+   vieram antes:
+
+   O arquivo acumulou seis peles inteiras (bege, grafite, ciano, duas de
+   "liquid glass" e uma de vídeo-referência). Cada uma repintou as MESMAS
+   superfícies — .card, .sidebar, .topbar, .settings-group — com
+   !important, e a última a ser escrita venceu. O resultado é que hoje
+   existem regras ATIVAS dizendo, literalmente:
+
+       .card,.sidebar,.topbar{background:#151619!important;
+                              box-shadow:none!important}
+       .liquid-card{backdrop-filter:none!important}
+
+   ou seja: o app desliga o vidro de propósito, em 213 lugares. Enquanto
+   isso valer, nenhuma folha nova produz vidro — ela só empilha mais uma
+   camada perdendo a disputa. Por isso aqui a ordem é outra: primeiro
+   ANULAR as reivindicações de superfície das peles antigas, depois
+   declarar o material uma única vez.
+
+   O que NÃO se mexe: geometria. Larguras, grades, posicionamento e a
+   coreografia de scroll continuam vindo das folhas antigas — elas
+   funcionam, foram medidas e testadas, e reescrevê-las seria trocar um
+   problema de aparência por um de layout. Esta folha muda o que a
+   superfície É (cor, translucidez, profundidade, borda, movimento), não
+   onde ela fica.
+
+   Uma nota sobre vidro que vale para tudo abaixo: desfoque sem nada
+   atrás não é vidro, é cinza. O campo de luz do §2 não é decoração —
+   é a condição para o material do §4 existir.
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   §1 TOKENS
+   Escala fechada. Componente nenhum abaixo escreve uma cor literal: se
+   uma cor não está aqui, ela não existe no sistema. É o que permite a
+   cor de destaque escolhida em Configurações repintar o app inteiro
+   trocando três variáveis.
+   ------------------------------------------------------------------ */
+:root{
+  /* Chão: azul-marinho profundo, nunca #000. Preto puro achata o vidro
+     (não há o que escurecer abaixo dele) e endurece o contraste. */
+  --ds-chao:        #070b18;
+  --ds-chao-2:      #0a1024;
+
+  /* Vidro em três profundidades. A diferença entre elas é opacidade, não
+     matiz: é assim que superfícies empilhadas continuam parecendo o
+     mesmo material sob luzes diferentes. */
+  /* Calibrado medindo o pixel, não no olho: sobre o chão do §2 o cartão
+     precisa cair por volta de (26,32,58) para separar do fundo, que fica
+     entre (10,14,32) e (18,22,48). Abaixo de ~9% de branco o cartão
+     desaparece no chão e o "vidro" vira um retângulo escuro. */
+  --ds-vidro-1:     linear-gradient(157deg, rgba(255,255,255,.115) 0%, rgba(255,255,255,.048) 100%);
+  --ds-vidro-2:     linear-gradient(157deg, rgba(255,255,255,.090) 0%, rgba(255,255,255,.036) 100%);
+  --ds-vidro-3:     linear-gradient(157deg, rgba(255,255,255,.060) 0%, rgba(255,255,255,.024) 100%);
+  --ds-vidro-solido: #131a2e;   /* recuo onde o desfoque não existe */
+
+  --ds-desfoque:    blur(30px) saturate(175%);
+  --ds-desfoque-2:  blur(18px) saturate(160%);
+
+  /* Fio de luz: a linha clara no topo é o que faz a superfície parecer
+     iluminada de cima em vez de recortada. Vem como inset shadow e não
+     como border para não roubar 1px do layout já medido. */
+  --ds-fio:         inset 0 1px 0 0 rgba(255,255,255,.155), inset 0 0 0 1px rgba(255,255,255,.055);
+  --ds-fio-forte:   inset 0 1px 0 0 rgba(255,255,255,.24),  inset 0 0 0 1px rgba(255,255,255,.10);
+
+  /* Profundidade em três paradas: contato, corpo e ambiente. Uma sombra
+     só sempre parece adesivo. */
+  --ds-alt-1: 0 1px 2px rgba(2,6,20,.30), 0 4px 12px rgba(2,6,20,.22);
+  --ds-alt-2: 0 1px 2px rgba(2,6,20,.34), 0 10px 28px rgba(2,6,20,.30), 0 28px 64px rgba(2,6,20,.24);
+  --ds-alt-3: 0 2px 4px rgba(2,6,20,.40), 0 18px 44px rgba(2,6,20,.38), 0 48px 110px rgba(2,6,20,.34);
+
+  --ds-txt:   #eef2ff;
+  --ds-txt-2: #a9b6d6;
+  --ds-txt-3: #7c8aad;
+
+  /* Destaque: os mesmos nomes que Configurações reescreve em tempo real.
+     O recuo é o par índigo→violeta da identidade. */
+  --ds-ac:      var(--id-ac, #5b6cff);
+  --ds-ac-2:    var(--id-ac-2, #8b5cf6);
+  --ds-ac-grad: var(--id-ac-grad, linear-gradient(135deg,#5b6cff 0%,#8b5cf6 100%));
+
+  /* Raios: escala curta e reconhecível. Suave o bastante para parecer
+     orgânico, firme o bastante para não virar cápsula. */
+  --ds-r-1: 12px;   /* controles pequenos */
+  --ds-r-2: 16px;   /* linhas de lista, campos */
+  --ds-r-3: 22px;   /* cartões */
+  --ds-r-4: 28px;   /* painéis e modais */
+
+  --ds-mola:  cubic-bezier(.34, 1.30, .50, 1);
+  --ds-suave: cubic-bezier(.32, .72, 0, 1);
+  --ds-t:     .28s;
+}
+
+/* Claro: paleta própria, não a escura invertida. O chão é um azul-gelo
+   levemente frio; se fosse branco puro, o vidro (que clareia o que está
+   atrás) não teria como aparecer — branco sobre branco é papel. */
+html body.light{
+  --ds-chao:        #eaf0fb;
+  --ds-chao-2:      #f4f7fe;
+  --ds-vidro-1:     linear-gradient(157deg, rgba(255,255,255,.86) 0%, rgba(255,255,255,.62) 100%);
+  --ds-vidro-2:     linear-gradient(157deg, rgba(255,255,255,.74) 0%, rgba(255,255,255,.50) 100%);
+  --ds-vidro-3:     linear-gradient(157deg, rgba(255,255,255,.58) 0%, rgba(255,255,255,.36) 100%);
+  --ds-vidro-solido:#ffffff;
+  --ds-fio:         inset 0 1px 0 0 rgba(255,255,255,.95), inset 0 0 0 1px rgba(19,38,84,.075);
+  --ds-fio-forte:   inset 0 1px 0 0 rgba(255,255,255,1),   inset 0 0 0 1px rgba(19,38,84,.13);
+  --ds-alt-1: 0 1px 2px rgba(26,45,95,.07), 0 4px 12px rgba(26,45,95,.06);
+  --ds-alt-2: 0 1px 2px rgba(26,45,95,.08), 0 10px 26px rgba(26,45,95,.09), 0 28px 60px rgba(26,45,95,.07);
+  --ds-alt-3: 0 2px 4px rgba(26,45,95,.10), 0 18px 40px rgba(26,45,95,.13), 0 48px 100px rgba(26,45,95,.10);
+  --ds-txt:   #0f1830;
+  --ds-txt-2: #4a5674;
+  --ds-txt-3: #626e8b;
+}
+
+/* ---------------------------------------------------------------------
+   §2 CAMPO DE LUZ
+   Sem isto o resto não funciona. Vidro é um material que mostra o que
+   está atrás dele — sobre um chão liso, blur(30px) de nada continua
+   sendo nada, e a superfície lê como plástico cinza. Duas auroras
+   grandes e de baixa opacidade dão ao desfoque o que refratar, e são o
+   que faz a mesma superfície mudar de tom conforme a posição na tela.
+   Fixo na viewport: rola por baixo do conteúdo, não junto com ele.
+   ------------------------------------------------------------------ */
+html body{ background: var(--ds-chao) !important; }
+
+html body #app{
+  background: var(--ds-chao) !important;
+  position: relative;
+  isolation: isolate;
+}
+html body #app::before{
+  content:'';
+  position: fixed;
+  inset: -10vmax;
+  z-index: -1;
+  pointer-events: none;
+  /* Quatro auroras nos cantos deixavam o CENTRO da tela sem cor nenhuma
+     — medido, o chão entre os cartões dava (6,10,23), o chão puro. Um
+     desfoque sobre chão puro não é vidro. Agora há também uma lavagem
+     central larga e uma inclinação vertical: a tela fica mais clara em
+     cima e mais funda embaixo, que é o que dá a sensação de profundidade
+     antes mesmo de qualquer sombra. */
+  background:
+    radial-gradient(75vmax 60vmax at 18% -4%,  color-mix(in srgb, var(--ds-ac)   52%, transparent) 0%, transparent 68%),
+    radial-gradient(68vmax 58vmax at 94% 6%,   color-mix(in srgb, var(--ds-ac-2) 46%, transparent) 0%, transparent 66%),
+    radial-gradient(88vmax 70vmax at 70% 108%, color-mix(in srgb, var(--ds-ac)   38%, transparent) 0%, transparent 70%),
+    radial-gradient(60vmax 56vmax at -4% 82%,  color-mix(in srgb, var(--ds-ac-2) 32%, transparent) 0%, transparent 66%),
+    radial-gradient(100vmax 80vmax at 50% 40%, color-mix(in srgb, var(--ds-ac)   20%, transparent) 0%, transparent 76%),
+    linear-gradient(180deg, rgba(255,255,255,.045) 0%, rgba(255,255,255,0) 45%, rgba(0,0,0,.14) 100%);
+  opacity: .62;
+  /* A deriva é longa e quase imperceptível de propósito: percebe-se que
+     a tela está viva, não que algo está se mexendo. */
+  animation: ds-deriva 34s ease-in-out infinite alternate;
+}
+html body.light #app::before{ opacity: .55; }
+
+@keyframes ds-deriva{
+  0%   { transform: translate3d(0,0,0)            scale(1); }
+  100% { transform: translate3d(-2.2%, 1.8%, 0)   scale(1.07); }
+}
+@media (prefers-reduced-motion: reduce){
+  html body #app::before{ animation: none; }
+}
+
+</style>
+
+<style id="mw-ds-2026-material">
+/* =====================================================================
+   §3 MATERIAL — a superfície de vidro
+   =====================================================================
+   Cada regra aqui declara as QUATRO propriedades de superfície de uma
+   vez — fundo, sombra, borda e desfoque. Isso não é verbosidade: as
+   peles antigas reivindicaram essas quatro com !important em seletores
+   como "#app .card" e "html body #app .card.section", e deixar qualquer
+   uma de fora significa herdar o valor antigo justamente na propriedade
+   que faz o vidro existir.
+
+   Por isso também toda variante de um componente aparece escrita por
+   extenso (.card, .card.section, .card.stat) em vez de só .card: a
+   especificidade tem que empatar ou superar a da regra antiga, e um
+   seletor curto perderia de "html body #app .card.section" por uma
+   classe de diferença. Foi exatamente esse o erro da primeira tentativa
+   desta folha — a anulação vinha num bloco separado e MAIS específico
+   que o material, então ela vencia a própria folha que deveria abrir
+   caminho.
+   ===================================================================== */
+
+/* A área de conteúdo tinha um brilho verde-água de uma pele antiga que
+   nada mais no app usa; ele tingia todo o vidro por cima. */
+html body #app .main{
+  background-image: none !important;
+  background-color: transparent !important;
+}
+
+/* --- Painel: as maiores superfícies --------------------------------- */
+html body #app .sidebar,
+html body #app .modal-box,
+html body #app .notification-menu{
+  background: var(--ds-vidro-1) !important;
+  border-color: transparent !important;
+  box-shadow: var(--ds-fio), var(--ds-alt-2) !important;
+  backdrop-filter: var(--ds-desfoque) !important;
+  -webkit-backdrop-filter: var(--ds-desfoque) !important;
+}
+html body #app .sidebar{ border-right: 0 !important; }
+html body #app .modal-box,
+html body #app .notification-menu{ border-radius: var(--ds-r-4) !important; }
+
+/* --- Cartão: o corpo do conteúdo ------------------------------------ */
+html body #app .card,
+html body #app .card.section,
+html body #app .card.stat,
+html body #app .card.section-card,
+html body #app .liquid-card,
+html body #app .lecture-card,
+html body #app .settings-group,
+html body #app .workspace-hero,
+html body #app .workspace-form,
+html body #app .activity-card{
+  background: var(--ds-vidro-2) !important;
+  border-color: transparent !important;
+  box-shadow: var(--ds-fio), var(--ds-alt-1) !important;
+  backdrop-filter: var(--ds-desfoque-2) !important;
+  -webkit-backdrop-filter: var(--ds-desfoque-2) !important;
+  border-radius: var(--ds-r-3) !important;
+  transition: box-shadow var(--ds-t) var(--ds-suave),
+              transform var(--ds-t) var(--ds-mola),
+              background var(--ds-t) var(--ds-suave) !important;
+}
+
+/* As peles antigas ancoram algumas regras em ".main" — três classes,
+   uma a mais que as de cima. Não adianta subir a especificidade num
+   bloco separado (foi o erro anterior desta folha): o jeito certo é
+   repetir o material no MESMO nível de ancoragem, e vencer por vir
+   depois no arquivo, que é o desempate normal do CSS. */
+html body #app .main .card,
+html body #app .main .card.section,
+html body #app .main .card.stat,
+html body #app .main .card.section-card,
+html body #app .main .liquid-card,
+html body #app .main .lecture-card,
+html body #app .main .settings-group,
+html body #app .main .workspace-hero,
+html body #app .main .workspace-form,
+html body #app .main .activity-card{
+  background: var(--ds-vidro-2) !important;
+  border-color: transparent !important;
+  box-shadow: var(--ds-fio), var(--ds-alt-1) !important;
+  backdrop-filter: var(--ds-desfoque-2) !important;
+  -webkit-backdrop-filter: var(--ds-desfoque-2) !important;
+  border-radius: var(--ds-r-3) !important;
+}
+@media (hover: hover){
+  html body #app .main .card:hover,
+  html body #app .main .card.section:hover,
+  html body #app .main .card.stat:hover,
+  html body #app .main .settings-group:hover{
+    box-shadow: var(--ds-fio-forte), var(--ds-alt-2) !important;
+    transform: translateY(-2px) !important;
+  }
+}
+
+/* --- Linha: itens dentro de um cartão -------------------------------
+   Sem desfoque, de propósito. Desfocar o que já está desfocado pelo pai
+   não acrescenta nada visualmente e custa caro — e a lista é justamente
+   onde há muitos elementos ao mesmo tempo. */
+html body #app .list-item,
+html body #app .main .list-item,
+html body #app .course,
+html body #app .project,
+html body #app .mw-inst-selo,
+html body #app .empty-state,
+html body #app .empty{
+  background: var(--ds-vidro-3) !important;
+  border-color: transparent !important;
+  box-shadow: var(--ds-fio) !important;
+  border-radius: var(--ds-r-2) !important;
+  transition: box-shadow .2s var(--ds-suave),
+              transform .2s var(--ds-mola),
+              background .2s var(--ds-suave) !important;
+}
+html body #app .empty,
+html body #app .empty-state{ color: var(--ds-txt-3) !important; }
+
+html body #app .main .list-item,
+html body #app .main .course,
+html body #app .main .project,
+html body #app .main .empty{
+  background: var(--ds-vidro-3) !important;
+  border-color: transparent !important;
+  box-shadow: var(--ds-fio) !important;
+  border-radius: var(--ds-r-2) !important;
+}
+@media (hover: hover){
+  html body #app .main .list-item:hover,
+  html body #app .main .course:hover,
+  html body #app .main .project:hover{
+    background: var(--ds-vidro-2) !important;
+    box-shadow: var(--ds-fio-forte) !important;
+    border-color: transparent !important;
+    transform: translateY(-1px) !important;
+  }
+}
+
+/* --- Elevação por interação ------------------------------------------
+   Sobe, o fio de luz acende e a sombra ganha corpo. Os três juntos leem
+   como "levantou"; qualquer um sozinho lê como "mudou de cor". */
+@media (hover: hover){
+  html body #app .card:hover,
+  html body #app .card.section:hover,
+  html body #app .card.stat:hover,
+  html body #app .lecture-card:hover,
+  html body #app .settings-group:hover{
+    box-shadow: var(--ds-fio-forte), var(--ds-alt-2) !important;
+    transform: translateY(-2px) !important;
+  }
+  html body #app .list-item:hover,
+  html body #app .course:hover,
+  html body #app .project:hover{
+    background: var(--ds-vidro-2) !important;
+    box-shadow: var(--ds-fio-forte) !important;
+    transform: translateY(-1px) !important;
+  }
+}
+
+/* Sem desfoque no navegador, o vidro vira superfície sólida — em vez de
+   virar um retângulo cinza sem contraste com o que está atrás. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))){
+  html body #app .sidebar,
+  html body #app .modal-box,
+  html body #app .notification-menu,
+  html body #app .card,
+  html body #app .card.section,
+  html body #app .card.stat,
+  html body #app .liquid-card,
+  html body #app .lecture-card,
+  html body #app .settings-group{
+    background: var(--ds-vidro-solido) !important;
+  }
+}
+
+/* =====================================================================
+   §4 CROMO — barra superior, barra lateral, navegação
+   ===================================================================== */
+
+/* A barra superior flutua sobre o conteúdo em vez de ser uma faixa
+   colada no topo. É a diferença entre "cabeçalho de site" e "barra de
+   aplicativo": ela tem começo e fim, e o conteúdo passa por baixo. */
+html body #app .topbar{
+  position: sticky !important; top: 10px; z-index: 40;
+  padding: 13px 18px !important;
+  margin-bottom: 20px !important;
+  border-radius: var(--ds-r-4) !important;
+  background: var(--ds-vidro-1) !important;
+  border-color: transparent !important;
+  box-shadow: var(--ds-fio), var(--ds-alt-1) !important;
+  backdrop-filter: var(--ds-desfoque) !important;
+  -webkit-backdrop-filter: var(--ds-desfoque) !important;
+}
+html body #app .topbar .hello h2{
+  font-size: 21px !important;
+  letter-spacing: -.025em !important;
+  color: var(--ds-txt) !important;
+}
+html body #app .topbar .hello p{ color: var(--ds-txt-3) !important; font-size: 12px !important; }
+
+/* Painel lateral flutuante, com margem nos quatro lados: é a margem que
+   deixa o campo de luz aparecer em volta e faz a barra parecer uma peça
+   POSTA sobre a tela, em vez de uma coluna recortada nela. */
+@media (min-width: 981px){
+  html body #app{ grid-template-columns: 264px 1fr !important; }
+  html body #app .sidebar{
+    position: sticky !important;
+    top: 12px !important;
+    height: calc(100vh - 24px) !important;
+    margin: 12px 0 12px 12px !important;
+    border-radius: var(--ds-r-4) !important;
+    padding: 20px 13px !important;
+  }
+  html body #app .main{ padding: 0 24px 64px !important; }
+}
+
+/* Itens de navegação: a pílula do item ativo é uma SUPERFÍCIE que entra
+   por trás dele, não uma cor de texto. É o que dá a sensação de item
+   selecionado em vez de item destacado. */
+html body #app #nav button{
+  position: relative;
+  border-radius: var(--ds-r-2) !important;
+  padding: 11px 13px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--ds-txt-2) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transition: color .2s var(--ds-suave), transform .2s var(--ds-mola) !important;
+}
+html body #app #nav button::before{
+  content:''; position:absolute; inset:0; z-index:-1;
+  border-radius: inherit;
+  background: var(--ds-ac-grad);
+  opacity: 0;
+  transform: scale(.94);
+  transition: opacity .24s var(--ds-suave), transform .30s var(--ds-mola);
+}
+html body #app #nav button:hover{ color: var(--ds-txt) !important; }
+html body #app #nav button:hover::before{ opacity: .14; transform: scale(1); }
+html body #app #nav button.active,
+html body.light #app #nav button.active{
+  color: #fff !important;
+  background: transparent !important;
+}
+html body #app #nav button.active::before{
+  opacity: 1;
+  transform: scale(1);
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--ds-ac) 45%, transparent);
+}
+html body #app #nav button .nav-icon,
+html body #app #nav button .nav-icon svg{ color: inherit !important; }
+html body #app #nav button.active .nav-icon svg{ fill: currentColor !important; }
+
+/* Controles redondos do topo: mesma família de vidro. */
+html body #app .icon-btn,
+html body #app .profile-btn,
+html body #app .top-actions .icon-btn{
+  background: var(--ds-vidro-2) !important;
+  border-color: transparent !important;
+  box-shadow: var(--ds-fio) !important;
+  color: var(--ds-txt-2) !important;
+  border-radius: var(--ds-r-1) !important;
+  transition: box-shadow .2s var(--ds-suave), color .2s var(--ds-suave), transform .2s var(--ds-mola) !important;
+}
+html body #app .icon-btn:hover,
+html body #app .profile-btn:hover{
+  color: var(--ds-txt) !important;
+  box-shadow: var(--ds-fio-forte), var(--ds-alt-1) !important;
+  transform: translateY(-1px) !important;
+}
+html body #app .icon-btn:active,
+html body #app .profile-btn:active{ transform: translateY(0) scale(.95) !important; }
+
+html body #app .search-wrap{
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+html body #app .search-wrap input{
+  background: var(--ds-vidro-2) !important;
+  box-shadow: var(--ds-fio) !important;
+  border: 0 !important;
+  border-radius: var(--ds-r-1) !important;
+  color: var(--ds-txt) !important;
+}
+html body #app .search-wrap input::placeholder{ color: var(--ds-txt-3) !important; }
+</style>
+
+
 </body>
 </html>
