@@ -1,3 +1,23 @@
+/* v68 (BETA — Foco com sessões reais):
+   O que faz um cronômetro de estudo prestar não é a animação: é ele
+   sobreviver a você sair da tela. Por isso não existe contador guardado.
+   O que fica salvo é o instante em que a sessão começou, a duração
+   escolhida e quanto tempo ela ficou parada; quanto falta é sempre uma
+   conta contra o relógio do aparelho. Trocar de área, minimizar o app ou
+   recarregar a página não perde nada, e uma sessão que venceu com o app
+   fechado entra no histórico na volta, com a duração que de fato teve —
+   o tempo passou, e apagá-la seria mentir sobre o histórico.
+   A sessão fica vinculada a uma disciplina do próprio workspace, e o
+   histórico mora em data.focus, dentro do mesmo blob que já sincroniza:
+   sem tabela nova, sem migração.
+   Sessão de menos de um minuto não vira linha, e o aviso do fim é um som
+   gerado na hora — sem arquivo para baixar e sem permissão de
+   notificação, que este app não tem.
+   Junto vieram duas correções medidas em pixel: o anel do relógio não
+   aparecia (o token de vidro é um gradiente, e gradiente não é valor
+   válido para "stroke"), e o texto branco sobre o gradiente de destaque
+   ficava em 4,0–4,4:1 na pílula ativa e no botão principal — abaixo do
+   AA. Agora essas superfícies usam o gradiente com um véu escuro. */
 /* v67 (BETA — Calendário vira área própria):
    O calendário do mês já existia e funcionava; estava escondido dentro
    do painel inicial, competindo por espaço com o resto do dashboard.
@@ -737,7 +757,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v67-beta';
+const CACHE_NAME = 'mw-shell-v68-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
