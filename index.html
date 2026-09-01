@@ -2669,15 +2669,50 @@ body.light #app .calendar-card .calendar-nav button:hover{
        carregamento morrem junto com ele: aquele bloco é removido do
        documento quando o boot termina, e um <use> apontando para um
        gradiente que não existe mais renderiza sem cor nenhuma. -->
-  <linearGradient id="mwi-marca-m" x1="4" y1="34" x2="30" y2="10" gradientUnits="userSpaceOnUse">
-    <stop stop-color="#2563eb"/><stop offset=".55" stop-color="#38bdf8"/><stop offset="1" stop-color="#a5f3ff"/>
+  <!-- Um degradê só, atravessando a marca inteira. Antes havia um por
+       letra, o que reforçava justamente o que a marca nova quer desfazer:
+       a leitura de "dois símbolos". Ele lê a cor de destaque escolhida em
+       Configurações, com o par índigo→violeta como recuo — a marca
+       acompanha o app em vez de ser a única coisa que não muda. -->
+  <linearGradient id="mwi-marca-m" x1="7" y1="35" x2="55" y2="13" gradientUnits="userSpaceOnUse">
+    <stop stop-color="var(--ds-ac, #5b6cff)"/>
+    <stop offset=".52" stop-color="var(--ds-ac-2, #8b5cf6)"/>
+    <stop offset="1" stop-color="var(--ds-ac, #5b6cff)"/>
   </linearGradient>
-  <linearGradient id="mwi-marca-w" x1="34" y1="10" x2="60" y2="36" gradientUnits="userSpaceOnUse">
-    <stop stop-color="#a5b8ff"/><stop offset=".5" stop-color="#7c5cff"/><stop offset="1" stop-color="#38bdf8"/>
-  </linearGradient>
+  <!-- Marca MW.
+       Duas correções sobre o desenho anterior, nas quais está a diferença
+       entre "duas letras que por acaso estão juntas" e um monograma:
+
+       (1) O W tinha hastes VERTICAIS, como as do M. Um W de verdade tem
+       os braços externos na diagonal — com eles verticais o desenho lia
+       como um colchete, não como a letra. Agora os quatro segmentos do W
+       são diagonais e simétricos, e ele é reconhecível sozinho.
+
+       (2) O respiro entre as letras é óptico, não aritmético: 9 unidades
+       de vão para 5,8 de traço deixam ~3 de ar. Colado demais (foi a
+       primeira tentativa, com as letras compartilhando uma haste) as
+       duas se fundem num borrão em tamanho pequeno — que é justamente o
+       tamanho em que uma marca de app costuma ser vista.
+
+       O degradê é UM só, atravessando as duas letras da esquerda para a
+       direita, e não um por letra: é o que faz o par ler como uma peça
+       de material contínuo. Ele acompanha a cor de destaque escolhida em
+       Configurações, com o par índigo→violeta como recuo. -->
   <symbol id="mwi-marca" viewBox="0 0 64 44">
-    <path d="M6 34.5V11.5L17 26.5L28 11.5V34.5" fill="none" stroke="url(#mwi-marca-m)" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M36 11.5V34.5L47 19.5L58 34.5V11.5" fill="none" stroke="url(#mwi-marca-w)" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M4 35V13.2L14.5 29L25 13.2V35" fill="none" stroke="url(#mwi-marca-m)" stroke-width="5.8"
+          stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M34 13.2L40.5 35L47 20.6L53.5 35L60 13.2" fill="none" stroke="url(#mwi-marca-m)" stroke-width="5.8"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+
+  <!-- Versão monocromática: mesma forma, sem degradê, para carimbo,
+       impressão de uma cor e qualquer superfície que já tenha cor
+       própria. Herda currentColor em vez de trazer cor embutida. -->
+  <symbol id="mwi-marca-mono" viewBox="0 0 64 44">
+    <path d="M4 35V13.2L14.5 29L25 13.2V35" fill="none" stroke="currentColor" stroke-width="5.8"
+          stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M34 13.2L40.5 35L47 20.6L53.5 35L60 13.2" fill="none" stroke="currentColor" stroke-width="5.8"
+          stroke-linecap="round" stroke-linejoin="round"/>
   </symbol>
   <symbol id="mwi-dashboard" viewBox="0 0 24 24">
     <rect x="3.2" y="3.2" width="7.9" height="7.9" rx="2.2"/>
@@ -2920,18 +2955,20 @@ html.mw-reload-leve #mwBootLoader.mw-boot-out{
 }
 .mwb-traco{
   fill:none;stroke-width:5.2;stroke-linecap:round;stroke-linejoin:round;
-  stroke-dasharray:84;stroke-dashoffset:84;
-  /* Entrada mais lenta e deliberada (pedido explícito: "tá muito
-     rápido, falta impacto") — 1,08s -> 1,3s por letra. */
-  animation:mwbTracar 1.3s cubic-bezier(.4,.02,.2,1) both;
+  /* Um dasharray só não serve: as letras têm comprimentos diferentes
+     (M = 21,8+19,1+19,1+21,8 = 81,8; W = 4x22,9 = 91,6) e um valor único
+     deixaria uma delas com sobra ou cortada. Cada uma leva o seu, logo
+     abaixo. */
+  stroke-linecap:round;stroke-linejoin:round;
+  animation:mwbTracar 1.15s cubic-bezier(.4,.02,.2,1) both;
 }
 /* O rastro: um pedaço curto e claro que corre à frente do traço, com
    um lampejo (fica mais grosso) bem no instante em que alcança a
    ponta — o "impacto" da conclusão de cada letra. */
 .mwb-rastro{
   fill:none;stroke:#dff2ff;stroke-width:5.6;stroke-linecap:round;stroke-linejoin:round;
-  stroke-dasharray:7 84;stroke-dashoffset:84;opacity:.92;
-  animation:mwbRastro 1.3s cubic-bezier(.4,.02,.2,1) both;
+  opacity:.92;
+  animation:mwbRastro 1.15s cubic-bezier(.4,.02,.2,1) both;
 }
 /* Uma batida de silêncio antes de qualquer coisa acontecer: a tela
    azul fica só ela por um instante, e só então o M começa a ser
@@ -2939,10 +2976,16 @@ html.mw-reload-leve #mwBootLoader.mw-boot-out{
    app e parecia atropelada — era o "esperar uns milésimos antes de
    aparecer". */
 .mwb-m{animation-delay:.55s}
-.mwb-w{animation-delay:1.5s}
+/* Cada letra carrega o próprio comprimento e o próprio atraso: o W só
+   começa quando o M termina, e a emenda entre os dois é o ritmo da
+   abertura. */
+.mwb-m{--mwb-len:84;  stroke-dasharray:84;  stroke-dashoffset:84;  animation-delay:.55s}
+.mwb-w{--mwb-len:94;  stroke-dasharray:94;  stroke-dashoffset:94;  animation-delay:1.42s}
+.mwb-rastro.mwb-m{stroke-dasharray:8 84}
+.mwb-rastro.mwb-w{stroke-dasharray:8 94}
 @keyframes mwbTracar{to{stroke-dashoffset:0}}
 @keyframes mwbRastro{
-  0%{stroke-dashoffset:84;opacity:0}
+  0%{stroke-dashoffset:var(--mwb-len);opacity:0}
   10%{opacity:1}
   80%{opacity:1;stroke-width:5.6}
   92%{opacity:1;stroke-width:8}
@@ -3140,19 +3183,20 @@ try {
     <span class="mwb-halo"></span>
     <svg class="mwb-glifo" viewBox="0 0 64 44" fill="none">
       <defs>
-        <linearGradient id="mwbGradM" x1="4" y1="34" x2="30" y2="10" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#2563eb"/><stop offset=".55" stop-color="#38bdf8"/><stop offset="1" stop-color="#a5f3ff"/>
-        </linearGradient>
-        <linearGradient id="mwbGradW" x1="34" y1="10" x2="60" y2="36" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#a5b8ff"/><stop offset=".5" stop-color="#7c5cff"/><stop offset="1" stop-color="#38bdf8"/>
+        <linearGradient id="mwbGradM" x1="7" y1="35" x2="55" y2="13" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#5b6cff"/><stop offset=".52" stop-color="#8b5cf6"/><stop offset="1" stop-color="#38bdf8"/>
         </linearGradient>
       </defs>
-      <path class="mwb-trilho" d="M6 34.5V11.5L17 26.5L28 11.5V34.5"/>
-      <path class="mwb-trilho" d="M36 11.5V34.5L47 19.5L58 34.5V11.5"/>
-      <path class="mwb-traco mwb-m" stroke="url(#mwbGradM)" d="M6 34.5V11.5L17 26.5L28 11.5V34.5"/>
-      <path class="mwb-traco mwb-w" stroke="url(#mwbGradW)" d="M36 11.5V34.5L47 19.5L58 34.5V11.5"/>
-      <path class="mwb-rastro mwb-m" d="M6 34.5V11.5L17 26.5L28 11.5V34.5"/>
-      <path class="mwb-rastro mwb-w" d="M36 11.5V34.5L47 19.5L58 34.5V11.5"/>
+      <!-- A marca virou um traço contínuo (a perna direita do M é a
+           esquerda do W), e a abertura ganhou com isso: em vez de duas
+           letras traçadas em sequência, com uma emenda visível no meio,
+           é UM gesto que não levanta do papel do começo ao fim. -->
+      <path class="mwb-trilho" d="M4 35V13.2L14.5 29L25 13.2V35"/>
+      <path class="mwb-trilho" d="M34 13.2L40.5 35L47 20.6L53.5 35L60 13.2"/>
+      <path class="mwb-traco mwb-m" stroke="url(#mwbGradM)" d="M4 35V13.2L14.5 29L25 13.2V35"/>
+      <path class="mwb-traco mwb-w" stroke="url(#mwbGradM)" d="M34 13.2L40.5 35L47 20.6L53.5 35L60 13.2"/>
+      <path class="mwb-rastro mwb-m" d="M4 35V13.2L14.5 29L25 13.2V35"/>
+      <path class="mwb-rastro mwb-w" d="M34 13.2L40.5 35L47 20.6L53.5 35L60 13.2"/>
     </svg>
     <span class="mwb-brilho" aria-hidden="true"><i></i></span>
     <span class="mwb-nome-trilha"><span class="mwb-nome-corte"><span class="mwb-nome">Workspace</span></span></span>
