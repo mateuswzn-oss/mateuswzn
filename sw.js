@@ -1,5 +1,23 @@
 /* Versão nova do cache: obrigatória sempre que a estratégia muda, senão
    um app já instalado continua rodando o service worker antigo. */
+/* v52 (BETA — Fase 4, parte 1: o dashboard vira centro de comando):
+   Duas peças novas no topo do painel, ambas derivadas SÓ do que já
+   existe em data — nenhuma inventa número.
+   (1) Resumo do dia: a data por extenso, quantas entregas há pela
+   frente, e chips clicáveis com atrasadas, entregas de hoje e a
+   próxima. Quando não há nenhuma atividade com prazo a faixa some
+   inteira, em vez de exibir uma fileira de zeros, que ocuparia o topo
+   dizendo nada.
+   (2) Acesso rápido: atalhos para Disciplinas, Projetos, Atividades,
+   Arquivos e Anotações, mais Adicionar — que reaproveita o #quickAdd
+   que já existe em vez de abrir um segundo fluxo de criação.
+   A ligação é o mwDashRefresh, que o renderAll já chama no fim de todo
+   save(); encadeamos nele preservando quem estiver lá, porque este
+   arquivo tem outros blocos fazendo o mesmo e sobrescrever apagaria os
+   anteriores em silêncio.
+   O h2 da saudação NÃO foi mexido: mais de dez scripts escrevem nele, e
+   disputar isso por um ganho cosmético seria risco sem retorno. A data
+   entrou na faixa nova, onde a marcação é minha. */
 /* v51 (BETA — o selo Beta/Em breve, que existia sem uso):
    A classe do selo foi criada na Fase 2 e nunca aplicada em lugar
    nenhum. Agora marca três coisas, todas verdadeiras:
@@ -461,7 +479,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v51-beta';
+const CACHE_NAME = 'mw-shell-v52-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
