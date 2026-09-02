@@ -1,3 +1,49 @@
+/* v87 (BETA — Suporte é a primeira área no Design System):
+   Migração de verdade: o CSS antigo da área SAIU, não foi coberto.
+
+   O PROTOCOLO, EXECUTADO NA ORDEM
+   1. Levantamento (tools/ds/dependencias.py support): 25 regras eram da
+      área; 2.492 chegavam de raspão de seletores amplos, 1.586 com
+      !important.
+   2. Teste da área ANTES de tocar em nada: 25 verificações do que a área
+      FAZ — abrir atendimento, validar campo vazio, conversar, anexar,
+      encerrar, voltar, persistir no recarregamento, e não vazar em três
+      larguras x dois temas. Verde no legado.
+   3. Marcação reescrita com os componentes do sistema; a folha
+      mw-support-style perdeu as 50 regras de aparência e ficou só com o
+      que é desta tela e de mais nenhuma: o mecanismo de trocar de painel
+      e o layout da conversa — escrito com os TOKENS do sistema.
+   4. Desligamento do legado por escopo, com :where() de especificidade
+      zero, restrito a #view-support[data-mw-migrada="1"].
+   5. Mesmo teste DEPOIS: as mesmas 25 verificações, verdes.
+
+   TRÊS DEFEITOS QUE A MIGRAÇÃO REVELOU
+   1. O app sinalizava o tema pela AUSÊNCIA de body.light. Isso basta para
+      o CSS legado, mas quebra o sistema: o fallback dele por
+      prefers-color-scheme lê a ausência como "ninguém escolheu" e segue o
+      sistema operacional — o app estava no escuro e o cartão veio com o
+      vidro do tema claro. Agora o tema é carimbado no <html>,
+      positivamente, no boot e a cada troca.
+   2. Duas regras legadas miravam o ELEMENTO (body.light #app h1/h2/h3, e
+      p/span/small), então o desligamento por classe não as alcançava, e a
+      primeira, com !important, vencia o sistema dentro da área migrada.
+      Foram RESTRINGIDAS com :not([data-mw-migrada] *) — continuam valendo
+      nas treze áreas legadas e param na porta das migradas.
+   3. --mw-txt-3 (#7b88a6) media 4,25:1 sobre o vidro que cobre o gradiente
+      da canvas do app. O fundo da galeria é mais escuro, e por isso o
+      defeito só apareceu quando o sistema encontrou a superfície de
+      verdade. Virou #8893af: 4,91:1, ainda abaixo de --mw-txt-2 para a
+      hierarquia entre os três níveis sobreviver.
+
+   FERRAMENTA NOVA
+   tools/ds/quem-vence.mjs percorre a área migrada e diz qual regra está
+   ganhando em cada propriedade. Passar no teste prova que nada quebrou;
+   não prova que o sistema é quem pinta. Hoje, em Suporte: zero regras
+   legadas vencendo, nos dois temas.
+
+   O teste 13 mudou de pergunta junto com a realidade. Não é mais "a folha
+   não pode mexer em nada": é "ela tem de mexer EXATAMENTE nas áreas
+   migradas, e em nenhuma outra". Mede as duas metades. */
 /* v86 (BETA — o Design System novo, completo e ainda sem tocar em tela nenhuma):
    Primeira metade da reformulação combinada: construir o sistema inteiro
    ANTES de migrar qualquer área, para a transformação visual não acontecer
@@ -1183,7 +1229,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v86-beta';
+const CACHE_NAME = 'mw-shell-v87-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

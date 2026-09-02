@@ -78,7 +78,13 @@
 
   --mw-p-gelo-100:#e9eefb;
   --mw-p-gelo-300:#a6b2ce;
-  --mw-p-gelo-500:#7b88a6;
+  /* Medido no app, não na galeria: sobre o vidro que cobre o gradiente da
+     canvas, #7b88a6 dava 4,25:1 — abaixo do mínimo. O fundo da galeria é
+     mais escuro que o do app, e por isso o defeito só apareceu quando o
+     sistema encontrou a superfície de verdade. #8893af dá 4,91:1 e
+     continua abaixo de --mw-txt-2 (7,09:1), que é o que preserva a
+     hierarquia entre os três níveis de texto. */
+  --mw-p-gelo-500:#8893af;
 
   /* semânticas de estado */
   --mw-p-verde-400:#34d399;

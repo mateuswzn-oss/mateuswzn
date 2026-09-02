@@ -57,6 +57,7 @@ node tools/testes/1-regressao.mjs mobile
 | 11 | `11-dados.mjs` | o ciclo completo nas cinco entidades: criar com todos os campos, recarregar, editar sem apagar o resto, excluir o item certo com a lista reordenada | um campo não chegar ao dado, sumir no reload, a edição zerar campos, ou a exclusão pegar o item errado |
 | 12 | `12-teclado.mjs` | operar sem mouse: atalho para o conteúdo, Escape fechando formulário e diálogo, Tab preso dentro do modal, foco voltando para quem abriu | qualquer um deles |
 | 13 | `13-ds.mjs` | o Design System carrega **sem o app** (galeria, 2 temas × 4 larguras) e está **inerte dentro dele** enquanto nenhuma área foi migrada | o sistema depender de regra legada, ou a folha mexer no app antes da migração |
+| 14 | `14-suporte.mjs` | a área migrada faz tudo o que fazia: abrir atendimento, validar, conversar, anexar, encerrar, persistir — e nenhuma regra legada vence lá dentro | uma função perder-se na migração, ou o legado voltar a pintar a área |
 
 ### Por que o contraste é medido em duas etapas
 

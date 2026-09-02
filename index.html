@@ -30,6 +30,15 @@ try {
      estaria inerte.
      Fica em <head> e render-blocking de propósito: assim não há lampejo de
      conteúdo sem estilo quando a primeira área migrar. -->
+<script>
+/* Carimba o tema ANTES de qualquer folha aplicar. Sem isto, entre o parse
+   do HTML e o applyTheme() haveria um quadro em que o Design System segue
+   o sistema operacional em vez de seguir a escolha da pessoa. */
+(function(){try{
+  var d = JSON.parse(localStorage.getItem('mateusWorkspaceV4') || '{}');
+  document.documentElement.setAttribute('data-mw-tema', d.theme === 'light' ? 'claro' : 'escuro');
+}catch(e){ document.documentElement.setAttribute('data-mw-tema','escuro'); }})();
+</script>
 <link rel="stylesheet" href="ds/mw-ds.css">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png" type="image/png">
@@ -2525,14 +2534,20 @@ body.light #app [class*="progress"] .label{
   font-weight:700!important;
   letter-spacing:.015em!important;
 }
-body.light #app h1,
-body.light #app h2,
-body.light #app h3{
+/* Estas duas regras miram o ELEMENTO (h1, h2, p, span), e não uma classe.
+   Por isso o desligamento por :where() da área migrada não as alcançava: e
+   como a primeira usa !important sem camada, ela vencia o Design System
+   dentro do Suporte já migrado — o título vinha #141a22 em vez do token.
+   Achado por tools/ds/quem-vence.mjs, que lista exatamente quem ainda
+   ganha dentro de uma área migrada.
+   A saída é RESTRINGIR o seletor, e não empilhar outra regra por cima:
+   elas continuam valendo nas treze áreas que ainda são legadas, e param na
+   porta das que já são do sistema. Cada migração vai encurtar mais este
+   alcance, até a regra poder sair inteira. */
+body.light #app :is(h1, h2, h3):not([data-mw-migrada] *){
   color:#141a22!important;
 }
-body.light #app p,
-body.light #app span,
-body.light #app small{
+body.light #app :is(p, span, small):not([data-mw-migrada] *){
   color:inherit;
 }
 
@@ -4343,74 +4358,110 @@ body.light .mw-faceid-gate-card p{color:#526988}
         <div class="list" id="mwArqLista"></div>
       </section>
     </section>
-    <section class="view" id="view-support">
-      <section class="card section mw-support-panel" id="mwSupportList">
-        <div class="section-head">
-          <h3>Suporte</h3>
-          <button type="button" class="add-btn" id="mwSupportNewBtn">+ Novo atendimento</button>
-        </div>
-        <p class="mw-support-intro">Abra um atendimento e acompanhe a conversa por aqui. O histórico fica salvo neste navegador.</p>
-        <div class="list" id="mwSupportTicketList"></div>
-      </section>
+    <!-- ÁREA MIGRADA PARA O DESIGN SYSTEM (ds/mw-ds.css). Primeira do app.
+     A raiz leva `mw-ds` (que liga o sistema nesta subárvore e só nela) e
+     `data-mw-migrada="1"` (que o desligamento do legado usa como escopo).
+     Todos os ids continuam os mesmos: o comportamento é do bloco
+     mw-support-system, e migração de visual não mexe em comportamento. -->
+<section class="view mw-ds" id="view-support" data-mw-migrada="1">
 
-      <form class="card section mw-support-panel hidden" id="mwSupportForm" novalidate>
-        <div class="section-head">
-          <h3>Novo atendimento</h3>
-          <button type="button" class="small-btn" id="mwSupportFormBack">← Voltar</button>
-        </div>
-        <div class="profile-form">
-          <div class="form-field"><label for="sfName">Nome</label><input id="sfName" required placeholder="Seu nome"></div>
-          <div class="form-field"><label for="sfUsername">Nome de usuário</label><input id="sfUsername" required placeholder="Como te chamam no Workspace"></div>
-          <div class="form-field full"><label for="sfEmail">E-mail</label><input id="sfEmail" type="email" required placeholder="seu@email.com"></div>
-          <div class="form-field"><label for="sfType">Tipo de suporte</label>
-            <select id="sfType">
-              <option>Problema técnico</option>
-              <option>Conta e acesso</option>
-              <option>Faculdade</option>
-              <option>Projetos</option>
-              <option>Pagamentos</option>
-              <option>Sugestão</option>
-              <option>Bug</option>
-              <option>Outro</option>
-            </select>
-          </div>
-          <div class="form-field"><label for="sfPriority">Prioridade</label>
-            <select id="sfPriority"><option>Baixa</option><option selected>Média</option><option>Alta</option></select>
-          </div>
-          <div class="form-field full"><label for="sfSubject">Assunto</label><input id="sfSubject" required placeholder="Resuma em poucas palavras"></div>
-          <div class="form-field full"><label for="sfDescription">Descrição do problema</label><textarea id="sfDescription" required placeholder="Conte com detalhes o que está acontecendo"></textarea></div>
-          <div class="form-field full"><label for="sfAttachment">Anexo (opcional)</label><input type="file" id="sfAttachment"></div>
-        </div>
-        <div class="form-error" id="mwSupportFormError"></div>
-        <div class="profile-actions"><button type="submit" class="save-btn">Abrir atendimento</button></div>
-      </form>
+  <section class="mw-cartao mw-support-panel" id="mwSupportList">
+    <div class="mw-secao-cabeca">
+      <div>
+        <h2 class="mw-titulo">Suporte</h2>
+        <p class="mw-micro">Abra um atendimento e acompanhe a conversa por aqui. O histórico fica salvo neste navegador.</p>
+      </div>
+      <div class="mw-secao-acoes">
+        <button type="button" class="mw-btn mw-btn-primario mw-btn-p" id="mwSupportNewBtn">+ Novo atendimento</button>
+      </div>
+    </div>
+    <div class="mw-lista" id="mwSupportTicketList"></div>
+  </section>
 
-      <section class="card section mw-support-panel mw-support-chat hidden" id="mwSupportChat">
-        <div class="mw-support-chat-head">
-          <button type="button" id="mwSupportChatBack" aria-label="Voltar para a lista de atendimentos">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-            <span class="mw-back-label">Voltar</span>
-          </button>
-          <div class="mw-support-chat-id">
-            <strong id="mwSupportChatSubject">Assunto</strong>
-            <small><span id="mwSupportChatTicketId">#MW-000000</span> · <span class="mw-support-status" id="mwSupportChatStatus">Aberto</span></small>
-          </div>
-          <button type="button" id="mwSupportCloseBtn" class="small-btn danger">Encerrar</button>
-        </div>
-        <div class="mw-support-chat-messages" id="mwSupportChatMessages"></div>
-        <form class="mw-support-chat-form" id="mwSupportChatForm">
-          <button type="button" id="mwSupportChatAttachBtn" aria-label="Anexar arquivo">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21.44 11.05l-8.49 8.49a5.25 5.25 0 0 1-7.43-7.43l8.49-8.49a3.5 3.5 0 0 1 4.95 4.95l-8.49 8.49a1.75 1.75 0 1 1-2.47-2.47l7.78-7.78"/></svg>
-          </button>
-          <input type="file" id="mwSupportChatFile" hidden>
-          <input type="text" id="mwSupportChatInput" placeholder="Escreva sua mensagem..." autocomplete="off">
-          <button type="submit" id="mwSupportChatSend" aria-label="Enviar">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg>
-          </button>
-        </form>
-      </section>
-    </section>
-    <section class="view" id="view-profile"><section class="card section"><div class="section-head"><h3>Perfil</h3><span>Como você aparece no Workspace</span></div>
+  <form class="mw-cartao mw-support-panel hidden" id="mwSupportForm" novalidate>
+    <div class="mw-secao-cabeca">
+      <div><h2 class="mw-titulo">Novo atendimento</h2></div>
+      <div class="mw-secao-acoes">
+        <button type="button" class="mw-btn mw-btn-fantasma mw-btn-p" id="mwSupportFormBack">← Voltar</button>
+      </div>
+    </div>
+    <div class="mw-grade-fixa-2">
+      <div class="mw-campo mw-campo-obrigatorio">
+        <label for="sfName">Nome</label>
+        <input id="sfName" class="mw-entrada" required placeholder="Seu nome">
+      </div>
+      <div class="mw-campo mw-campo-obrigatorio">
+        <label for="sfUsername">Nome de usuário</label>
+        <input id="sfUsername" class="mw-entrada" required placeholder="Como te chamam no Workspace">
+      </div>
+      <div class="mw-campo mw-campo-obrigatorio mw-largo">
+        <label for="sfEmail">E-mail</label>
+        <input id="sfEmail" class="mw-entrada" type="email" required placeholder="seu@email.com">
+      </div>
+      <div class="mw-campo">
+        <label for="sfType">Tipo de suporte</label>
+        <select id="sfType">
+          <option>Problema técnico</option><option>Conta e acesso</option>
+          <option>Faculdade</option><option>Projetos</option>
+          <option>Pagamentos</option><option>Sugestão</option>
+          <option>Bug</option><option>Outro</option>
+        </select>
+      </div>
+      <div class="mw-campo">
+        <label for="sfPriority">Prioridade</label>
+        <select id="sfPriority">
+          <option>Baixa</option><option selected>Média</option><option>Alta</option>
+        </select>
+      </div>
+      <div class="mw-campo mw-campo-obrigatorio mw-largo">
+        <label for="sfSubject">Assunto</label>
+        <input id="sfSubject" class="mw-entrada" required placeholder="Resuma em poucas palavras">
+      </div>
+      <div class="mw-campo mw-campo-obrigatorio mw-largo">
+        <label for="sfDescription">Descrição do problema</label>
+        <textarea id="sfDescription" required placeholder="Conte com detalhes o que está acontecendo"></textarea>
+      </div>
+      <div class="mw-campo mw-largo">
+        <label for="sfAttachment">Anexo (opcional)</label>
+        <input type="file" id="sfAttachment" class="mw-entrada">
+      </div>
+    </div>
+    <!-- aria-live: quem usa leitor de tela precisa OUVIR o erro, e não
+         descobrir que ele existe tateando de volta pelo formulário -->
+    <p class="mw-campo-aviso" id="mwSupportFormError" role="alert" aria-live="polite"></p>
+    <div class="mw-dialogo-acoes">
+      <button type="submit" class="mw-btn mw-btn-primario">Abrir atendimento</button>
+    </div>
+  </form>
+
+  <section class="mw-cartao mw-support-panel mw-support-chat hidden" id="mwSupportChat">
+    <div class="mw-support-chat-head">
+      <button type="button" class="mw-btn mw-btn-secundario mw-btn-p" id="mwSupportChatBack" aria-label="Voltar para a lista de atendimentos">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        <span class="mw-back-label">Voltar</span>
+      </button>
+      <div class="mw-support-chat-id">
+        <strong class="mw-item-titulo mw-cortar-1" id="mwSupportChatSubject">Assunto</strong>
+        <small class="mw-micro"><span id="mwSupportChatTicketId">#MW-000000</span> · <span class="mw-support-status" id="mwSupportChatStatus">Aberto</span></small>
+      </div>
+      <button type="button" id="mwSupportCloseBtn" class="mw-btn mw-btn-perigo mw-btn-p">Encerrar</button>
+    </div>
+    <div class="mw-support-chat-messages" id="mwSupportChatMessages"></div>
+    <form class="mw-support-chat-form" id="mwSupportChatForm">
+      <button type="button" class="mw-btn mw-btn-fantasma mw-btn-icone mw-btn-p" id="mwSupportChatAttachBtn" aria-label="Anexar arquivo">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21.44 11.05l-8.49 8.49a5.25 5.25 0 0 1-7.43-7.43l8.49-8.49a3.5 3.5 0 0 1 4.95 4.95l-8.49 8.49a1.75 1.75 0 1 1-2.47-2.47l7.78-7.78"/></svg>
+      </button>
+      <input type="file" id="mwSupportChatFile" hidden>
+      <input type="text" class="mw-entrada" id="mwSupportChatInput" placeholder="Escreva sua mensagem..." autocomplete="off" aria-label="Mensagem">
+      <button type="submit" class="mw-btn mw-btn-primario mw-btn-icone mw-btn-p" id="mwSupportChatSend" aria-label="Enviar">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg>
+      </button>
+    </form>
+  </section>
+
+</section>
+
+<section class="view" id="view-profile"><section class="card section"><div class="section-head"><h3>Perfil</h3><span>Como você aparece no Workspace</span></div>
       <!-- Cabeçalho de identidade. A página abria direto numa fileira de
            chips e o avatar ficava enterrado no meio do formulário, três
            blocos abaixo — numa página que é justamente sobre "quem é
@@ -5358,7 +5409,14 @@ function renderAll(){const p=progress();$('#statSubjects').textContent=data.subj
    estão espalhadas por cinco folhas antigas em regras de vários
    seletores — mexer nelas custa mais risco do que o peso que tiram. */
 /* Theme and profile */
-function applyTheme(){document.body.classList.toggle('light',data.theme==='light');const tt=$('#themeToggle');if(tt)tt.classList.toggle('is-light',data.theme==='light');$('#darkModeBtn').classList.toggle('active',data.theme==='dark');$('#lightModeBtn').classList.toggle('active',data.theme==='light')}
+/* O app sinalizava o tema pela AUSÊNCIA de body.light — "sem a classe" é
+   que significava escuro. Isso funciona enquanto só o CSS legado lê, mas
+   quebra o Design System: o fallback dele por prefers-color-scheme
+   interpreta a ausência como "ninguém escolheu" e segue o sistema
+   operacional. Achado na migração de Suporte: o app estava no escuro e o
+   cartão veio com o vidro do tema claro.
+   Agora o tema é CARIMBADO no <html>, positivamente, nos dois sentidos. */
+function applyTheme(){document.documentElement.setAttribute('data-mw-tema',data.theme==='light'?'claro':'escuro');document.body.classList.toggle('light',data.theme==='light');const tt=$('#themeToggle');if(tt)tt.classList.toggle('is-light',data.theme==='light');$('#darkModeBtn').classList.toggle('active',data.theme==='dark');$('#lightModeBtn').classList.toggle('active',data.theme==='light')}
 function setTheme(theme){data.theme=theme;if(persistWorkspace())applyTheme();toast(theme==='light'?'Modo claro ativado':'Modo escuro ativado')}
 $('#themeToggle').onclick=()=>setTheme(data.theme==='light'?'dark':'light');$('#darkModeBtn').onclick=()=>setTheme('dark');$('#lightModeBtn').onclick=()=>setTheme('light');
 function loadProfileFields(){const p=data.profile||defaults.profile;$('#profileName').value=p.name||'';$('#profileEmail').value=p.email||'';$('#profilePhoto').value=p.photo||''}/* Atribuir data.profile = {name,email,photo} SUBSTITUÍA o objeto
@@ -15486,56 +15544,137 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
 </style>
 
 <style id="mw-support-style">
-/* ============================================================
-   Suporte: SUPORTE → NOVO ATENDIMENTO → FORMULÁRIO → CHAT → ENCERRAMENTO
-   Tudo local (localStorage), com uma camada de serviço isolada e
-   claramente marcada pra uma futura integração real (ex.: Discord).
-   ============================================================ */
-#mwSupportForm .form-field select{width:100%;height:42px;border:1px solid rgba(68,145,255,.28);border-radius:11px;background:rgba(1,10,25,.55);color:var(--text);padding:0 11px;outline:0;font-size:13px}
-body.light #mwSupportForm .form-field select{background:#fff;color:#17233a;border-color:rgba(20,40,80,.18)}
-.mw-support-intro{color:var(--muted);font-size:12px;margin:0 0 14px;line-height:1.5}
-.mw-support-panel.hidden{display:none!important}
-.mw-support-ticket{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px;border-radius:14px;background:rgba(6,18,36,.55);border:1px solid rgba(78,132,204,.11);cursor:pointer;transition:.2s;text-align:left;width:100%}
-.mw-support-ticket:hover{transform:translateY(-2px);border-color:rgba(72,153,255,.34)}
-.mw-support-ticket-copy strong{font-size:12px;display:block}
-.mw-support-ticket-copy small{color:#7890b1;font-size:10px;display:block;margin-top:4px}
-.mw-support-badge{padding:4px 9px;border-radius:999px;font-size:9px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap;flex:0 0 auto}
-.mw-support-badge.aberto{background:rgba(56,189,248,.16);color:#7dd3fc}
-.mw-support-badge.em_andamento{background:rgba(250,204,21,.16);color:#fde68a}
-.mw-support-badge.encerrado{background:rgba(148,163,184,.16);color:#cbd5e1}
+/* =====================================================================
+   SUPORTE — ÁREA MIGRADA PARA O DESIGN SYSTEM
+   =====================================================================
+   Esta folha tinha 50 regras que pintavam a área inteira: cartões,
+   campos, selos, botões, balões de conversa, e um bloco espelhado para o
+   tema claro. Tudo isso agora vem de ds/mw-ds.css, e por isso saiu
+   daqui — foi substituída, não coberta.
 
-.mw-support-chat{display:flex;flex-direction:column;height:min(640px,72vh);padding:0!important;overflow:hidden}
-.mw-support-chat-head{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid rgba(78,132,204,.14)}
-#mwSupportChatBack{border:1px solid rgba(125,194,255,.22);background:rgba(255,255,255,.08);color:inherit;width:34px;height:34px;min-height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:6px;flex:0 0 auto;cursor:pointer}
-#mwSupportChatBack .mw-back-label{display:none;font-size:12.5px;font-weight:700}
-body.light #mwSupportChatBack{border-color:rgba(15,23,42,.14)}
-.mw-support-chat-id{flex:1;min-width:0}
-.mw-support-chat-id strong{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mw-support-chat-id small{color:#7890b1;font-size:10.5px;display:flex;align-items:center;gap:6px}
-.mw-support-status{font-weight:700}
-.mw-support-chat-messages{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
-.mw-support-msg{max-width:78%;padding:10px 13px;border-radius:16px;font-size:12.5px;line-height:1.5}
-.mw-support-msg.user{align-self:flex-end;background:linear-gradient(135deg,rgba(37,99,235,.85),rgba(14,116,144,.8));color:#fff;border-bottom-right-radius:4px}
-.mw-support-msg.system{align-self:flex-start;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-bottom-left-radius:4px}
-.mw-support-msg time{display:block;margin-top:4px;font-size:9.5px;opacity:.65}
-.mw-support-msg .mw-support-file{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:11px;opacity:.85}
-.mw-support-chat-form{display:flex;align-items:center;gap:8px;padding:12px 14px;border-top:1px solid rgba(78,132,204,.14)}
-.mw-support-chat-form input[type=text]{flex:1;height:40px;min-height:40px;border-radius:100px;border:1px solid rgba(78,132,204,.2);background:rgba(6,14,28,.5);color:var(--text);padding:0 16px;font-size:16px}
-.mw-support-chat-form button{border:0;background:rgba(255,255,255,.06);color:inherit;width:36px;height:36px;min-height:36px;border-radius:100px;display:grid;place-items:center;flex:0 0 auto;cursor:pointer}
-#mwSupportChatSend{background:linear-gradient(135deg,#67e8f9,#38bdf8 48%,#2563eb);color:#061525}
-#mwSupportChat.is-closed .mw-support-chat-form{opacity:.5;pointer-events:none}
-body.light .mw-support-msg.system{background:#eef4fb;border-color:#d8e4f0;color:#17233a}
-body.light .mw-support-ticket{background:rgba(235,245,255,.7)}
-body.light .mw-support-badge.aberto{background:rgba(14,116,144,.12);color:#0e7490}
-body.light .mw-support-badge.em_andamento{background:rgba(202,138,4,.14);color:#a16207}
-body.light .mw-support-badge.encerrado{background:rgba(71,85,105,.12);color:#475569}
-body.light #mwSupportChatBack,body.light .mw-support-chat-form button{background:rgba(15,23,42,.06)}
-body.light .mw-support-chat-form input[type=text]{background:#fff;border-color:rgba(15,23,42,.15);color:#0b1830}
-body.light .mw-support-intro{color:#526988}
-@media(max-width:860px){
-  .mw-support-chat{height:calc(100dvh - 190px)}
-  #mwSupportChatBack{width:auto;min-height:40px;padding:0 14px 0 10px;border-radius:100px}
-  #mwSupportChatBack .mw-back-label{display:inline}
+   O que sobrou são as duas coisas que o sistema NÃO deve conhecer:
+
+   1. o mecanismo de mostrar/esconder painel, que é comportamento (o JS
+      liga e desliga a classe `hidden` para trocar entre lista,
+      formulário e conversa);
+   2. o layout da conversa — cabeça fixa, corpo que rola, barra de
+      digitar embaixo — que é desta tela e de mais nenhuma. Ele é escrito
+      COM os tokens do sistema, e não com valores soltos: é isso que
+      mantém a área no mesmo ritmo do resto quando o sistema mudar.
+   ===================================================================== */
+
+/* O JS troca de painel pela classe `hidden`. Sem !important porque nada
+   mais disputa este seletor dentro da área migrada. */
+#view-support[data-mw-migrada="1"] .mw-support-panel.hidden{ display: none; }
+
+/* ---- layout da conversa --------------------------------------------- */
+#view-support[data-mw-migrada="1"] .mw-support-chat{
+  padding: 0;
+  gap: 0;
+  height: min(640px, 72vh);
+  overflow: hidden;
+}
+#view-support[data-mw-migrada="1"] .mw-support-chat-head{
+  display: flex; align-items: center; gap: var(--mw-e-3);
+  padding: var(--mw-e-4) var(--mw-e-5);
+  border-bottom: 1px solid var(--mw-divisor);
+}
+#view-support[data-mw-migrada="1"] .mw-support-chat-id{ flex: 1 1 auto; min-width: 0; }
+#view-support[data-mw-migrada="1"] .mw-support-chat-messages{
+  flex: 1 1 auto; min-height: 0;
+  overflow-y: auto; overscroll-behavior: contain;
+  padding: var(--mw-e-4) var(--mw-e-5);
+  display: flex; flex-direction: column; gap: var(--mw-e-2);
+}
+/* Balão: quem escreveu fica à direita, o suporte à esquerda — a posição
+   diz de quem é a fala antes de a cor dizer. */
+#view-support[data-mw-migrada="1"] .mw-support-msg{
+  max-width: 78%;
+  padding: 10px 13px;
+  border-radius: var(--mw-r-3);
+  font-size: var(--mw-t-corpo);
+  line-height: var(--mw-l-normal);
+}
+#view-support[data-mw-migrada="1"] .mw-support-msg.user{
+  align-self: flex-end;
+  background: var(--mw-ac-grad-forte);
+  color: var(--mw-txt-sobre-acento);
+  border-bottom-right-radius: var(--mw-r-1);
+}
+#view-support[data-mw-migrada="1"] .mw-support-msg.system{
+  align-self: flex-start;
+  background: var(--mw-sup-2);
+  border: 1px solid var(--mw-borda);
+  color: var(--mw-txt-1);
+  border-bottom-left-radius: var(--mw-r-1);
+}
+#view-support[data-mw-migrada="1"] .mw-support-msg time{
+  display: block; margin-top: var(--mw-e-1);
+  font-size: 10px; opacity: .7;
+  font-variant-numeric: tabular-nums;
+}
+#view-support[data-mw-migrada="1"] .mw-support-file{
+  display: flex; align-items: center; gap: 6px;
+  margin-top: 6px; font-size: var(--mw-t-micro); opacity: .85;
+}
+#view-support[data-mw-migrada="1"] .mw-support-chat-form{
+  display: flex; align-items: center; gap: var(--mw-e-2);
+  padding: var(--mw-e-3) var(--mw-e-4);
+  border-top: 1px solid var(--mw-divisor);
+}
+#view-support[data-mw-migrada="1"] .mw-support-chat-form .mw-entrada{
+  flex: 1 1 auto; min-width: 0;
+  border-radius: var(--mw-r-total);
+}
+/* Encerrado: a barra de digitar continua visível, mas inerte — sumir com
+   ela faria a pessoa procurar o que não existe mais. */
+#view-support[data-mw-migrada="1"].is-closed .mw-support-chat-form,
+#view-support[data-mw-migrada="1"] .mw-support-chat.is-closed .mw-support-chat-form{
+  opacity: .5; pointer-events: none;
+}
+#view-support[data-mw-migrada="1"] #mwSupportCloseBtn.hidden{ display: none; }
+
+@media (max-width: 860px){
+  /* No celular a conversa ocupa o que sobra da tela, descontadas as
+     barras — altura fixa deixaria um vão morto embaixo. */
+  #view-support[data-mw-migrada="1"] .mw-support-chat{ height: calc(100dvh - 190px); }
+}
+@media (max-width: 520px){
+  #view-support[data-mw-migrada="1"] .mw-support-chat-head{ padding: var(--mw-e-3) var(--mw-e-4); }
+  #view-support[data-mw-migrada="1"] .mw-support-msg{ max-width: 88%; }
+}
+</style>
+
+<style id="mw-legado-desligado">
+/* =====================================================================
+   DESLIGAMENTO DO LEGADO, POR ÁREA
+   =====================================================================
+   O levantamento (tools/ds/dependencias.py support) mostrou o tamanho do
+   problema: 25 regras eram da área — essas saíram junto com ela — mas
+   2.492 chegam DE RASPÃO, de seletores amplos espalhados por dezenas de
+   folhas antigas (.card, .section, .list-item, #app ...), e 1.586 delas
+   com !important.
+
+   Essas não podem ser apagadas: ainda pintam as treze áreas que não
+   foram migradas. Também não adianta gritar mais alto — era assim que o
+   arquivo virou sete mil !important.
+
+   A saída é ESCOPO. `:where()` tem especificidade ZERO, então este bloco
+   não entra na disputa: ele só declara, no lugar certo do cascade, que
+   dentro da subárvore migrada os nomes antigos não carregam mais
+   aparência. Como o Design System vive numa @layer e regra em camada
+   perde para regra sem camada no caso normal, o que garante a ordem aqui
+   é o próprio `all: revert-layer` — ele devolve a declaração ao valor
+   que a camada anterior daria, e não ao que o legado queria.
+
+   Reverter a migração é tirar `data-mw-migrada` da raiz: este bloco
+   deixa de casar, e as regras antigas voltam a valer sozinhas — nunca
+   foram apagadas globalmente.
+   ===================================================================== */
+#view-support[data-mw-migrada="1"] :where(.card, .section, .section-head,
+  .list, .list-item, .small-btn, .save-btn, .add-btn, .form-field,
+  .profile-form, .profile-actions, .form-error, .empty, .kicker){
+  all: revert-layer;
 }
 </style>
 
@@ -15594,16 +15733,27 @@ body.light .mw-support-intro{color:#526988}
     if (!wrap) return;
     const tickets = readTickets().slice().sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
     if (!tickets.length) {
-      wrap.innerHTML = '<div class="empty"><strong>Nenhum atendimento aberto</strong><span>Use "Novo atendimento" pra falar com a gente.</span></div>';
+      /* Estado vazio do Design System: diz o que falta e oferece a ação,
+         em vez de deixar um retângulo em branco. */
+      wrap.innerHTML = '<div class="mw-vazio">' +
+        '<span class="mw-vazio-icone" aria-hidden="true">?</span>' +
+        '<h4>Nenhum atendimento aberto</h4>' +
+        '<p>Abra um atendimento para falar com a gente. A conversa fica salva aqui neste navegador.</p>' +
+        '</div>';
       return;
     }
+    /* .mw-item e .mw-selo vêm do sistema; mw-support-ticket fica só como
+       gancho para o JS e para o teste da área encontrarem a linha. */
+    const SELO = { aberto: 'mw-selo-info', em_andamento: 'mw-selo-alerta', encerrado: 'mw-selo' };
     wrap.innerHTML = tickets.map(t => `
-      <button type="button" class="mw-support-ticket" data-open-ticket="${t.id}">
-        <span class="mw-support-ticket-copy">
-          <strong>${esc(t.subject)}</strong>
-          <small>#${esc(t.id)} · ${esc(t.type)} · ${fmtTime(t.updatedAt)}</small>
+      <button type="button" class="mw-item mw-support-ticket" data-open-ticket="${t.id}" data-mw-ticket>
+        <span class="mw-item-texto">
+          <strong class="mw-item-titulo">${esc(t.subject)}</strong>
+          <small class="mw-item-apoio">#${esc(t.id)} · ${esc(t.type)} · ${fmtTime(t.updatedAt)}</small>
         </span>
-        <span class="mw-support-badge ${t.status}">${esc(STATUS_LABEL[t.status] || t.status)}</span>
+        <span class="mw-item-acoes">
+          <span class="mw-selo ${SELO[t.status] || 'mw-selo'}">${esc(STATUS_LABEL[t.status] || t.status)}</span>
+        </span>
       </button>
     `).join('');
     wrap.querySelectorAll('[data-open-ticket]').forEach(btn => {
@@ -15639,7 +15789,7 @@ body.light .mw-support-intro{color:#526988}
   function renderMessages(ticket) {
     const box = $('#mwSupportChatMessages');
     box.innerHTML = ticket.messages.map(m => `
-      <div class="mw-support-msg ${m.from}">
+      <div class="mw-support-msg ${m.from}" data-mw-msg>
         ${esc(m.text)}
         ${m.attachment ? `<span class="mw-support-file">📎 ${esc(m.attachment.name)}</span>` : ''}
         <time>${fmtTime(m.at)}</time>

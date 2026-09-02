@@ -178,8 +178,14 @@ console.log('\n=== a folha está inerte no app? ===');
     college:{ institution:'UFPA', course:'Eng', area:'', semester:5 }, theme:'dark'
   }, { viewport: { width: 1280, height: 900 } });
 
-  const semEscopo = await p.evaluate(() => document.querySelectorAll('#app .mw-ds').length);
-  console.log('  elementos .mw-ds dentro do #app:', semEscopo, semEscopo === 0 ? '(nenhuma área migrada ainda)' : '');
+  /* A pergunta mudou de forma quando a primeira área foi migrada. Não é
+     mais "a folha não pode mexer em nada": é "ela tem de mexer EXATAMENTE
+     nas áreas migradas, e em nenhuma outra". As duas metades importam —
+     a segunda protege o que ainda é legado, e a primeira comprova que o
+     sistema é mesmo quem pinta o que foi migrado. */
+  const migradas = await p.evaluate(() =>
+    [...document.querySelectorAll('#app [data-mw-migrada="1"]')].map(e => e.id.replace('view-', '')));
+  console.log('  áreas migradas:', migradas.length ? migradas.join(', ') : 'nenhuma ainda');
 
   const medeTudo = () => p.evaluate(async (areas) => {
     const r = {};
@@ -227,16 +233,22 @@ console.log('\n=== a folha está inerte no app? ===');
     const ligada2 = await medeTudo();
 
     const ruido = Object.keys(ligada1).filter(a => ligada1[a] !== ligada2[a]);
-    const suspeitas = Object.keys(ligada1).filter(a => ligada1[a] !== desligada[a]);
-    /* vazamento de verdade: mudou sem a folha e VOLTOU com ela */
-    const vazam = suspeitas.filter(a => ligada1[a] === ligada2[a]);
+    /* mudou de verdade: difere sem a folha E volta ao original com ela */
+    const mudaram = Object.keys(ligada1)
+      .filter(a => ligada1[a] !== desligada[a] && ligada1[a] === ligada2[a]);
 
     console.log('  áreas medidas:', Object.keys(ligada1).length);
     console.log('  ruído entre duas medições com a folha ligada:', ruido.length,
                 ruido.length ? '(o app ainda estava trabalhando)' : '');
-    console.log('  diferiram sem a folha:', suspeitas.length,
-                '| dessas, com medição estável (= vazamento):', vazam.length);
-    if (vazam.length) falha('a folha do DS está afetando o app', vazam.map(a => a + ': ' + ligada1[a] + ' → ' + desligada[a]));
+    console.log('  mudaram ao desligar a folha:', mudaram.length ? mudaram.join(', ') : 'nenhuma');
+
+    const vazam = mudaram.filter(a => !migradas.includes(a));
+    const inertes = migradas.filter(a => !mudaram.includes(a) && !ruido.includes(a));
+    if (vazam.length) falha('a folha do DS pinta área NÃO migrada', vazam.map(a => a + ': ' + ligada1[a] + ' → ' + desligada[a]));
+    if (inertes.length) falha('área migrada não muda ao desligar a folha — o DS não é quem a pinta', inertes);
+    if (!vazam.length && !inertes.length)
+      console.log('  ' + migradas.length + ' migrada(s) pintada(s) pelo sistema, ' +
+                  (Object.keys(ligada1).length - migradas.length) + ' legada(s) intocada(s)');
   }
 
   if (erros.length) falha('erros de JS no app', erros);
