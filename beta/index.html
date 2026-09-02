@@ -3837,17 +3837,68 @@ body.light .mw-faceid-gate-card p{color:#526988}
         <form id="inlineCreateForm" class="mwv2-auth-pane">
           <p class="mwv2-switch-text">Já tem conta? <button type="button" data-switch="signin">Entrar.</button></p>
 
-          <label for="newUsername">Nome de usuário</label>
-          <div class="mwv2-input-wrap"><input id="newUsername" required pattern="[A-Za-z0-9._\-]{3,20}" placeholder="Nome de usuário"></div>
+          <!-- Cadastro em etapas. Os campos são os MESMOS de antes, com
+               os mesmos id — o que mudou foi só quando cada um aparece.
+               Isso é deliberado: o handler que grava a conta é código
+               delicado (tem correção documentada de um bug do iOS) e não
+               podia ser reescrito só para mudar a apresentação.
+               Os botões de navegar são type="button" de propósito: o
+               script que decora o botão de enviar procura o único
+               button[type="submit"] do formulário. -->
+          <ol class="mw-passos" id="mwPassos" aria-label="Etapas do cadastro">
+            <li data-passo="1" aria-current="step"><i>1</i><span>Conta</span></li>
+            <li data-passo="2"><i>2</i><span>Segurança</span></li>
+            <li data-passo="3"><i>3</i><span>Faculdade</span></li>
+          </ol>
 
-          <label for="newEmail">E-mail</label>
-          <div class="mwv2-input-wrap"><input id="newEmail" type="email" required placeholder="E-mail"></div>
+          <div class="mw-etapa" data-etapa="1">
+            <label for="newUsername">Nome de usuário</label>
+            <div class="mwv2-input-wrap"><input id="newUsername" required pattern="[A-Za-z0-9._\-]{3,20}" placeholder="Nome de usuário"></div>
 
-          <label for="newPass">Senha</label>
-          <div class="mwv2-input-wrap"><input id="newPass" type="password" required placeholder="Senha"><button class="toggle" id="toggleNewPass" type="button" aria-label="Mostrar ou ocultar senha">◌</button></div>
-          <div class="mw-forca-senha" id="mwForcaSenha" hidden>
-            <div class="mw-forca-trilho"><i id="mwForcaBarra"></i></div>
-            <span class="mw-forca-texto" id="mwForcaTexto" aria-live="polite"></span>
+            <label for="newEmail">E-mail</label>
+            <div class="mwv2-input-wrap"><input id="newEmail" type="email" required placeholder="E-mail"></div>
+
+            <div class="mw-etapa-acoes">
+              <button type="button" class="mw-etapa-frente" data-vai="2">Continuar</button>
+            </div>
+          </div>
+
+          <div class="mw-etapa" data-etapa="2" hidden>
+            <label for="newPass">Senha</label>
+            <div class="mwv2-input-wrap"><input id="newPass" type="password" required placeholder="Senha"><button class="toggle" id="toggleNewPass" type="button" aria-label="Mostrar ou ocultar senha">◌</button></div>
+            <div class="mw-forca-senha" id="mwForcaSenha" hidden>
+              <div class="mw-forca-trilho"><i id="mwForcaBarra"></i></div>
+              <span class="mw-forca-texto" id="mwForcaTexto" aria-live="polite"></span>
+            </div>
+
+            <!-- Confirmar a senha não existia neste formulário. Como não
+                 há verificação por e-mail, um erro de digitação aqui
+                 tranca a pessoa para fora de uma conta que ela acabou de
+                 criar, sem caminho de volta. -->
+            <label for="newPass2">Confirmar senha</label>
+            <div class="mwv2-input-wrap"><input id="newPass2" type="password" required placeholder="Digite a senha de novo"></div>
+
+            <div class="mw-etapa-acoes">
+              <button type="button" class="mw-etapa-voltar" data-vai="1">Voltar</button>
+              <button type="button" class="mw-etapa-frente" data-vai="3">Continuar</button>
+            </div>
+          </div>
+
+          <div class="mw-etapa" data-etapa="3" hidden>
+            <p class="mw-etapa-nota">Opcional. Dá para preencher depois, em Faculdade.</p>
+
+            <label for="newInstituicao">Instituição</label>
+            <div class="mwv2-input-wrap"><input id="newInstituicao" placeholder="Ex.: a universidade onde você estuda"></div>
+
+            <label for="newCurso">Curso</label>
+            <div class="mwv2-input-wrap"><input id="newCurso" placeholder="Ex.: o curso que você faz"></div>
+
+            <label for="newSemestre">Semestre</label>
+            <div class="mwv2-input-wrap"><input id="newSemestre" type="number" min="1" max="99" step="1" inputmode="numeric" placeholder="Ex.: 3"></div>
+
+            <div class="mw-etapa-acoes">
+              <button type="button" class="mw-etapa-voltar" data-vai="2">Voltar</button>
+            </div>
           </div>
 
           <!-- Campo-armadilha: invisível pra gente (fora da tela, sem
@@ -6590,6 +6641,16 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
       if(err)err.textContent='Digite um e-mail válido.';return;
     }
     if(!pass){if(err)err.textContent='Digite uma senha.';return}
+    /* Confirmação escopada no próprio formulário, e não em document:
+       existe um segundo formulário de criação (o modal antigo) com os
+       MESMOS id. Buscar no documento pegaria o campo errado se ele
+       estivesse aberto. */
+    const pass2=(clean.querySelector('#newPass2')?.value)||'';
+    if(pass!==pass2){
+      if(err)err.textContent='As duas senhas não são iguais.';
+      if(typeof window.mwVaiParaEtapa==='function')window.mwVaiParaEtapa(2);
+      return;
+    }
 
     let users={};try{users=JSON.parse(localStorage.getItem('mateusWorkspaceUsersV2')||'{}')||{}}catch{}
     /* Unicidade pela MESMA regra que a troca em Configurações usa
@@ -6629,7 +6690,14 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
        último. Antes o `mwSession` era escrito 59ms ANTES da conta, e
        nessa janela existia uma sessão apontando para uma conta que
        ainda não existia. */
-    const data={subjects:[],projects:[],activities:[],notes:[],institutions:[],profile:{name:username,email,photo:'',username:'',bio:'',skills:[],links:[],visibility:{}},college:{institution:'',course:'',area:'',semester:1},theme:'dark'};
+    /* A etapa acadêmica é opcional: campo em branco entra vazio, como
+       entrava antes, e não como um valor inventado. O semestre só vira
+       número se a pessoa digitou um. */
+    const inst=(clean.querySelector('#newInstituicao')?.value||'').trim();
+    const curso=(clean.querySelector('#newCurso')?.value||'').trim();
+    const semBruto=(clean.querySelector('#newSemestre')?.value||'').trim();
+    const semestre=semBruto?Math.max(1,Math.min(99,Number(semBruto)||1)):1;
+    const data={subjects:[],projects:[],activities:[],notes:[],institutions:[],focus:{config:{foco:25,pausa:5,longa:15},atual:null,sessoes:[]},profile:{name:username,email,photo:'',username:'',bio:'',skills:[],links:[],visibility:{}},college:{institution:inst,course:curso,area:'',semester:semestre},theme:'dark'};
     const nova={name:username,username,email,data};
     const contaGravada=Promise.resolve(
         window.mwSenha?window.mwSenha.grava(nova,pass):(nova.password=pass)
@@ -22357,11 +22425,26 @@ body.light .mw-filtro[aria-pressed="true"]{background:rgba(37,99,235,.12);color:
 .mw-forca-senha{display:flex;align-items:center;gap:10px;margin:-2px 0 10px}
 .mw-forca-trilho{flex:1;height:4px;border-radius:99px;background:rgba(255,255,255,.10);overflow:hidden}
 .mw-forca-trilho i{display:block;height:100%;width:0;border-radius:99px;background:#f87171;transition:width .25s ease,background .25s ease}
-.mw-forca-senha[data-nivel="media"] .mw-forca-trilho i{background:#fbbf24}
-.mw-forca-senha[data-nivel="forte"] .mw-forca-trilho i{background:#34d399}
-.mw-forca-texto{font-size:11.5px;font-weight:600;color:#f87171;min-width:52px;text-align:right}
-.mw-forca-senha[data-nivel="media"] .mw-forca-texto{color:#fbbf24}
-.mw-forca-senha[data-nivel="forte"] .mw-forca-texto{color:#34d399}
+/* Cinco níveis, e cada um com cor própria. Três degraus diziam "média"
+   para senhas muito diferentes entre si; com cinco, subir de degrau vira
+   um retorno visível para quem acabou de acrescentar um caractere. */
+.mw-forca-senha[data-nivel="fraca"] .mw-forca-trilho i{background:#fb923c}
+.mw-forca-senha[data-nivel="razoavel"] .mw-forca-trilho i{background:#fbbf24}
+.mw-forca-senha[data-nivel="forte"] .mw-forca-trilho i{background:#a3e635}
+.mw-forca-senha[data-nivel="excelente"] .mw-forca-trilho i{background:#34d399}
+.mw-forca-texto{font-size:11.5px;font-weight:600;color:#f87171;min-width:66px;text-align:right}
+.mw-forca-senha[data-nivel="fraca"] .mw-forca-texto{color:#fb923c}
+.mw-forca-senha[data-nivel="razoavel"] .mw-forca-texto{color:#fbbf24}
+.mw-forca-senha[data-nivel="forte"] .mw-forca-texto{color:#a3e635}
+.mw-forca-senha[data-nivel="excelente"] .mw-forca-texto{color:#34d399}
+/* No tema claro o lima e o amarelo sobre branco não sustentam texto:
+   medido, ficavam abaixo de 3:1. Os degraus mantêm a cor na barra e
+   escurecem só a palavra. */
+body.light .mw-forca-senha[data-nivel="razoavel"] .mw-forca-texto{color:#a16207}
+body.light .mw-forca-senha[data-nivel="forte"] .mw-forca-texto{color:#4d7c0f}
+body.light .mw-forca-senha[data-nivel="excelente"] .mw-forca-texto{color:#047857}
+body.light .mw-forca-senha[data-nivel="fraca"] .mw-forca-texto{color:#c2410c}
+body.light .mw-forca-texto{color:#b91c1c}
 body.light .mw-forca-trilho{background:rgba(15,35,70,.12)}
 @media(prefers-reduced-motion:reduce){.mw-forca-trilho i{transition:none}}
 
@@ -22406,20 +22489,38 @@ body.light .mw-social-nota strong{color:#6d28d9}
        cada tipo de caractere diferente soma um pouco. O mínimo real do
        cadastro continua sendo 6 caracteres — isto aqui é orientação
        visual, não uma segunda regra de validação. */
+    var NIVEIS = [
+      { nivel:'muito-fraca', rotulo:'Muito fraca', pct: 18 },
+      { nivel:'fraca',       rotulo:'Fraca',       pct: 38 },
+      { nivel:'razoavel',    rotulo:'Razoável',    pct: 58 },
+      { nivel:'forte',       rotulo:'Forte',       pct: 79 },
+      { nivel:'excelente',   rotulo:'Excelente',   pct: 100 }
+    ];
+    /* Sequências óbvias não somam: "aaaaaaaa" tem oito caracteres e
+       nenhuma resistência, e um medidor que a chamasse de razoável
+       estaria mentindo justamente para quem mais precisa do aviso. */
+    function previsivel(senha){
+      if (/^(.)\1+$/.test(senha)) return true;
+      var comuns = ['123456','1234567','12345678','123456789','senha','password',
+                    'qwerty','abc123','111111','000000','iloveyou','admin'];
+      var minuscula = senha.toLowerCase();
+      return comuns.some(function(c){ return minuscula === c || minuscula.indexOf(c) === 0; });
+    }
     function avalia(senha){
       if (!senha) return null;
+      if (senha.length < 6 || previsivel(senha)) return NIVEIS[0];
       var pontos = 0;
-      if (senha.length >= 6) pontos++;
-      if (senha.length >= 10) pontos++;
-      if (senha.length >= 14) pontos++;
+      if (senha.length >= 8)  pontos++;
+      if (senha.length >= 12) pontos++;
+      if (senha.length >= 16) pontos++;
       if (/[a-z]/.test(senha) && /[A-Z]/.test(senha)) pontos++;
       if (/\d/.test(senha)) pontos++;
       if (/[^A-Za-z0-9]/.test(senha)) pontos++;
-      if (senha.length < 6) return { nivel: 'fraca', rotulo: 'Fraca', pct: 22 };
-      if (pontos <= 2) return { nivel: 'fraca', rotulo: 'Fraca', pct: 33 };
-      if (pontos <= 4) return { nivel: 'media', rotulo: 'Média', pct: 66 };
-      return { nivel: 'forte', rotulo: 'Forte', pct: 100 };
+      /* Zero ou um ponto continua sendo "fraca", não "muito fraca": o
+         primeiro degrau fica reservado para o que é de fato inseguro. */
+      return NIVEIS[Math.min(4, Math.max(1, pontos - 1))];
     }
+    window.mwAvaliaSenha = avalia;
     function pinta(){
       var r = avalia(campo.value);
       if (!r) { caixa.hidden = true; return; }
@@ -28516,6 +28617,286 @@ html body #app #view-reports .mw-rel-link{
 })();
 </script>
 
+<style id="mw-cadastro">
+/* =====================================================================
+   §14 CADASTRO EM ETAPAS
+   =====================================================================
+   Um formulário de sete campos de uma vez parece trabalho. Os mesmos
+   sete em três telas de duas ou três linhas parecem um caminho. Nada
+   foi acrescentado ao que se pede — só foi distribuído.
+   ===================================================================== */
+
+/* O display de autor vence o [hidden] do navegador; sem isto as três
+   etapas apareceriam empilhadas. */
+.mw-etapa[hidden]{ display: none !important; }
+.mw-etapa{ animation: mwEtapaEntra .28s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes mwEtapaEntra{
+  from{ opacity: 0; transform: translateX(10px) }
+  to{ opacity: 1; transform: none }
+}
+.mw-etapa.mw-etapa-voltando{ animation-name: mwEtapaVolta; }
+@keyframes mwEtapaVolta{
+  from{ opacity: 0; transform: translateX(-10px) }
+  to{ opacity: 1; transform: none }
+}
+@media (prefers-reduced-motion: reduce){
+  .mw-etapa, .mw-etapa.mw-etapa-voltando{ animation: none; }
+}
+
+/* --- Trilha de passos ---------------------------------------------------
+   Numerada porque a ordem é real: não dá para escolher a senha antes de
+   dizer quem você é. Numeração decorativa seria ruído; esta informa. */
+.mw-passos{
+  display: flex; align-items: center; gap: 6px;
+  list-style: none; margin: 0 0 18px; padding: 0;
+}
+.mw-passos li{
+  display: flex; align-items: center; gap: 7px;
+  flex: 1 1 0; min-width: 0;
+  font-size: 11px; font-weight: 600; letter-spacing: .01em;
+  color: rgba(255,255,255,.42);
+  transition: color .22s ease;
+}
+.mw-passos li i{
+  flex: 0 0 auto; display: grid; place-items: center;
+  width: 22px; height: 22px; border-radius: 999px;
+  font-style: normal; font-size: 11px; font-weight: 700;
+  background: rgba(255,255,255,.08);
+  color: rgba(255,255,255,.55);
+  transition: background .22s ease, color .22s ease, transform .22s cubic-bezier(.34,1.56,.64,1);
+}
+.mw-passos li span{ overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mw-passos li[aria-current="step"]{ color: #eef2ff; }
+.mw-passos li[aria-current="step"] i{
+  background: linear-gradient(135deg,#5b6cff,#8b5cf6);
+  color: #fff; transform: scale(1.08);
+}
+/* Passo já cumprido vira visto: o número deixou de ser informação
+   (você já sabe o que preencheu) e o que importa é ele estar feito. */
+.mw-passos li[data-feito="1"] i{
+  background: rgba(52,211,153,.22); color: #34d399; font-size: 12px;
+}
+.mw-passos li[data-feito="1"]{ color: rgba(255,255,255,.62); }
+body.light .mw-passos li{ color: rgba(15,35,70,.45) }
+body.light .mw-passos li i{ background: rgba(15,35,70,.08); color: rgba(15,35,70,.55) }
+body.light .mw-passos li[aria-current="step"]{ color: #16233d }
+body.light .mw-passos li[data-feito="1"]{ color: rgba(15,35,70,.6) }
+body.light .mw-passos li[data-feito="1"] i{ background: rgba(4,120,87,.14); color: #047857 }
+
+/* --- Ações da etapa ------------------------------------------------------ */
+.mw-etapa-acoes{ display: flex; gap: 9px; margin-top: 16px; }
+.mw-etapa-frente,
+.mw-etapa-voltar{
+  border: 0; cursor: pointer; height: 48px; border-radius: 14px;
+  font: inherit; font-size: 13px; font-weight: 750; letter-spacing: .02em;
+  transition: filter .16s ease, transform .12s ease;
+}
+.mw-etapa-frente{
+  flex: 1 1 auto;
+  background: linear-gradient(135deg,#4a5ae8,#7c4fdd);
+  color: #fff;
+}
+.mw-etapa-frente:hover{ filter: brightness(1.09) }
+.mw-etapa-frente:active{ transform: scale(.985) }
+.mw-etapa-voltar{
+  flex: 0 0 auto; padding: 0 18px;
+  background: rgba(255,255,255,.07);
+  color: rgba(255,255,255,.72);
+}
+.mw-etapa-voltar:hover{ background: rgba(255,255,255,.12); color: #eef2ff }
+body.light .mw-etapa-voltar{ background: rgba(15,35,70,.07); color: rgba(15,35,70,.7) }
+body.light .mw-etapa-voltar:hover{ background: rgba(15,35,70,.12); color: #16233d }
+
+.mw-etapa-nota{
+  margin: -4px 0 14px; font-size: 12px; line-height: 1.5;
+  color: rgba(255,255,255,.5);
+}
+body.light .mw-etapa-nota{ color: rgba(15,35,70,.55) }
+
+/* O botão de enviar só existe na última etapa; nas outras ele fica fora
+   da tela para o formulário continuar tendo um único button[type=submit]
+   (é assim que o script da animação o encontra) e para o Enter continuar
+   funcionando no teclado. */
+#inlineCreateForm.mw-em-etapa-1 > button[type="submit"],
+#inlineCreateForm.mw-em-etapa-2 > button[type="submit"]{
+  position: absolute !important;
+  width: 1px !important; height: 1px !important;
+  margin: 0 !important; padding: 0 !important;
+  overflow: hidden !important; clip-path: inset(50%) !important;
+  pointer-events: none !important;
+}
+
+@media (max-width: 520px){
+  /* No telefone o nome do passo some e ficam só as bolinhas: três
+     palavras lado a lado numa tela de 390px viram três palavras
+     cortadas, que é pior que nenhuma. */
+  .mw-passos li span{ display: none }
+  .mw-passos{ gap: 8px; justify-content: flex-start }
+  .mw-passos li{ flex: 0 0 auto }
+  .mw-passos li[aria-current="step"] span{
+    display: inline; font-size: 11.5px;
+  }
+}
+</style>
+
+<script id="mw-cadastro-js">
+(function(){
+  'use strict';
+  /* A máquina de etapas do cadastro.
+
+     Ela NÃO cria conta, NÃO valida senha contra regra de negócio e NÃO
+     grava nada. Só decide qual bloco de campos está visível e impede
+     seguir com um campo obviamente inválido. Quem cria a conta continua
+     sendo o mesmo handler de submit de antes — código com correção
+     documentada de um bug do iOS, que não podia ser reescrito só para
+     mudar a apresentação.
+
+     Por isso este bloco roda no fim do documento: existe um script que
+     CLONA o formulário e substitui o original (para trocar o botão de
+     enviar). Um listener preso ao formulário antigo morreria nessa
+     troca. Aqui já se pega o clone.
+
+     Tudo é buscado dentro do formulário, nunca em document: existe um
+     segundo formulário de criação de conta (o modal antigo) com os
+     mesmos id, e uma busca no documento pegaria o campo errado. */
+
+  function inicia(){
+    var form = document.getElementById('inlineCreateForm');
+    if (!form || form.dataset.mwEtapasProntas === '1') return;
+    var passos = form.querySelector('#mwPassos');
+    var etapas = [].slice.call(form.querySelectorAll('.mw-etapa'));
+    if (!passos || etapas.length !== 3) return;
+    form.dataset.mwEtapasProntas = '1';
+
+    var atual = 1;
+    var erro = form.querySelector('#inlineCreateError');
+
+    function diz(msg){ if (erro) erro.textContent = msg || ''; }
+
+    function mostra(n, voltando){
+      atual = Math.max(1, Math.min(3, n));
+      etapas.forEach(function(el){
+        var meu = Number(el.getAttribute('data-etapa'));
+        var vaiAparecer = meu === atual;
+        if (vaiAparecer && el.hidden){
+          /* Reiniciar a animação exige tirar e repor a classe: sem isso
+             o navegador reaproveita a anterior e a entrada não roda. */
+          el.classList.remove('mw-etapa-voltando');
+          if (voltando) el.classList.add('mw-etapa-voltando');
+          el.hidden = false;
+          void el.offsetWidth;
+        } else if (!vaiAparecer){
+          el.hidden = true;
+        }
+      });
+      passos.querySelectorAll('li').forEach(function(li){
+        var meu = Number(li.getAttribute('data-passo'));
+        if (meu === atual) li.setAttribute('aria-current','step');
+        else li.removeAttribute('aria-current');
+        if (meu < atual) { li.setAttribute('data-feito','1'); li.querySelector('i').textContent = '✓'; }
+        else { li.removeAttribute('data-feito'); li.querySelector('i').textContent = String(meu); }
+      });
+      form.classList.remove('mw-em-etapa-1','mw-em-etapa-2','mw-em-etapa-3');
+      form.classList.add('mw-em-etapa-' + atual);
+      diz('');
+      /* O foco vai para o primeiro campo da etapa: sem isso, quem usa
+         teclado ou leitor de tela continuaria no botão que acabou de
+         sumir. */
+      var primeiro = etapas[atual - 1].querySelector('input:not([type=hidden])');
+      if (primeiro) setTimeout(function(){ try { primeiro.focus({ preventScroll: true }); } catch(e){} }, 60);
+    }
+    /* Exposta para o handler de submit poder trazer a pessoa de volta à
+       etapa da senha quando as duas não conferem. */
+    window.mwVaiParaEtapa = function(n){ mostra(n, true); };
+
+    function valor(id){ var el = form.querySelector(id); return el ? el.value.trim() : ''; }
+
+    /* As mesmas regras que o submit aplica, e nada além. Duplicar aqui
+       uma regra que o submit não tem faria a etapa barrar um cadastro
+       que o formulário aceitaria — divergência que já causou problema
+       neste arquivo antes. */
+    function podeSair(n){
+      if (n === 1){
+        var usuario = valor('#newUsername');
+        var email = valor('#newEmail').toLowerCase();
+        if (!/^[A-Za-z0-9._-]{3,20}$/.test(usuario)){
+          diz('Use de 3 a 20 caracteres no usuário: letras, números, ponto, hífen ou sublinhado.');
+          form.querySelector('#newUsername').focus();
+          return false;
+        }
+        if (!email || email.indexOf('@') === -1 || email.indexOf('.') === -1){
+          diz('Digite um e-mail válido.');
+          form.querySelector('#newEmail').focus();
+          return false;
+        }
+        /* Avisar aqui que o usuário ou o e-mail já existe evita a pessoa
+           preencher senha e faculdade para só então descobrir. A mesma
+           checagem roda de novo no submit — esta é conveniência, não a
+           autoridade. */
+        var ocupado = null;
+        try {
+          if (window.mwConta){
+            if (!window.mwConta.usuarioLivre(usuario)) ocupado = 'Esse nome de usuário já está em uso.';
+            else if (!window.mwConta.emailLivre(email)) ocupado = 'Este e-mail já possui uma conta.';
+          }
+        } catch(e){}
+        if (ocupado){ diz(ocupado); return false; }
+        return true;
+      }
+      if (n === 2){
+        var senha = form.querySelector('#newPass') ? form.querySelector('#newPass').value : '';
+        var senha2 = form.querySelector('#newPass2') ? form.querySelector('#newPass2').value : '';
+        if (!senha){ diz('Digite uma senha.'); form.querySelector('#newPass').focus(); return false; }
+        if (senha.length < 6){
+          diz('A senha precisa de pelo menos 6 caracteres.');
+          form.querySelector('#newPass').focus();
+          return false;
+        }
+        if (senha !== senha2){
+          diz('As duas senhas não são iguais.');
+          form.querySelector('#newPass2').focus();
+          return false;
+        }
+        return true;
+      }
+      return true;
+    }
+
+    form.addEventListener('click', function(ev){
+      var frente = ev.target.closest('.mw-etapa-frente');
+      if (frente){
+        ev.preventDefault();
+        if (podeSair(atual)) mostra(Number(frente.getAttribute('data-vai')) || atual + 1, false);
+        return;
+      }
+      var voltar = ev.target.closest('.mw-etapa-voltar');
+      if (voltar){
+        ev.preventDefault();
+        mostra(Number(voltar.getAttribute('data-vai')) || atual - 1, true);
+      }
+    });
+
+    /* Enter dentro de um campo avança a etapa em vez de enviar o
+       formulário incompleto. Sem isto, quem cadastra pelo teclado
+       dispararia o submit na primeira etapa e veria "digite uma senha"
+       sem nunca ter visto o campo de senha. */
+    form.addEventListener('keydown', function(ev){
+      if (ev.key !== 'Enter') return;
+      if (atual === 3) return;
+      var campo = ev.target;
+      if (!campo || campo.tagName !== 'INPUT') return;
+      ev.preventDefault();
+      if (podeSair(atual)) mostra(atual + 1, false);
+    });
+
+    mostra(1, false);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', inicia);
+  else inicia();
+})();
+</script>
+
 <style id="mw-previa-carimbo">
 #mwPreviaCarimbo{
   position: fixed; top: 8px; left: 50%; transform: translateX(-50%);
@@ -28544,7 +28925,7 @@ html body #app #view-reports .mw-rel-link{
   /* O carimbo entra depois do preloader para não brigar com a abertura
      da marca, e sai sozinho. window.MW_PREVIA fica disponível para
      conferir a versão pelo console sem depender de ver o carimbo. */
-  window.MW_PREVIA = 'v71 · Relatórios';
+  window.MW_PREVIA = 'v72 · cadastro em etapas';
   function mostra(){
     if (document.getElementById('mwPreviaCarimbo')) return;
     var el = document.createElement('div');
