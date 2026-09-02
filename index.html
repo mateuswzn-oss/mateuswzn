@@ -4481,6 +4481,20 @@ body.light .mw-faceid-gate-card p{color:#526988}
         <textarea id="mwTransfereCodigo" rows="3" readonly hidden aria-label="Código da conta"></textarea>
         <p class="form-error" id="mwTransfereStatus" hidden></p>
         <details class="mw-transfere-porque"><summary>Por que preciso fazer isso?</summary><p>No iPhone, o app da tela de início guarda os dados <b>separado</b> do Safari. É assim que o iOS funciona e nenhum ajuste no site muda isso: a conta criada num não existe no outro. O código leva a conta de um lado para o outro. Ele não carrega sua senha — quem receber ainda precisa dela para entrar — mas leva seus dados do Workspace, então trate como coisa sua.</p></details></div>
+      <!-- Diagnóstico: existe porque o desenvolvimento é verificado no
+           Chromium e o Safari do iPhone tem diferenças reais justamente
+           no que este app usa. Em vez de afirmar por leitura de
+           especificação, esta tela MEDE no aparelho de quem abriu. -->
+      <div class="settings-group"><h4>Diagnóstico deste aparelho</h4>
+        <p>Roda uma verificação do que este navegador realmente suporta e mostra o resultado. Serve para quando algo parecer errado: o relatório diz o que falhou, em vez de a gente ficar adivinhando.</p>
+        <p class="mw-diag-resumo" id="mwDiagResumo">Nada verificado ainda.</p>
+        <div class="mw-diag-lista" id="mwDiagLista"></div>
+        <div class="profile-actions">
+          <button class="small-btn" id="mwDiagRodar">Verificar agora</button>
+          <button class="small-btn" id="mwDiagCopiar">Copiar relatório</button>
+        </div>
+        <textarea id="mwDiagBruto" readonly aria-label="Relatório do diagnóstico em texto" placeholder="O relatório aparece aqui depois de verificar."></textarea>
+      </div>
     </section></section>
 
     <section class="view" id="view-admin">
@@ -30190,6 +30204,337 @@ html body #app #subjectsList .mw-ordem-titulo[hidden]{ display: none !important;
       mostrarAntes(v);
       if (v === 'subjects' || v === 'projects') setTimeout(organiza, 30);
     };
+  }
+})();
+</script>
+
+<style id="mw-diagnostico">
+/* =====================================================================
+   §19 DIAGNÓSTICO
+   =====================================================================
+   Existe porque eu não consigo ver este app rodando num iPhone. Todo o
+   desenvolvimento foi verificado no Chromium; o Safari tem diferenças
+   reais justamente nas coisas de que este app depende (backdrop-filter
+   com filtro SVG, color-mix, :has, IndexedDB, modo standalone).
+
+   Em vez de continuar afirmando por leitura de especificação, esta tela
+   MEDE no aparelho de quem abriu e mostra o resultado. Cada linha é um
+   teste que roda de verdade — não é lista de "suportado segundo a
+   documentação".
+   ===================================================================== */
+html body #app #view-settings .mw-diag-lista{
+  display: grid; gap: 7px; margin: 4px 0 14px;
+}
+/* A coluna do valor NÃO pode ser "auto": um valor longo ("nenhum
+   registrado (normal na prévia)") toma a largura toda e espreme o
+   rótulo até ele quebrar uma letra por linha — foi exatamente o que
+   aconteceu com "Service worker" na primeira versão desta tela. Duas
+   colunas elásticas com minmax(0,...) dividem o espaço em vez de
+   disputá-lo. */
+html body #app #view-settings .mw-diag-linha{
+  display: grid; grid-template-columns: 18px minmax(0,1fr) minmax(0,1.15fr);
+  gap: 10px; align-items: baseline;
+  padding: 9px 12px; border-radius: var(--ds-r-1, 12px);
+  background: var(--ds-vidro-3, rgba(255,255,255,.05));
+  box-shadow: var(--ds-fio, none);
+  font-size: 12.5px;
+}
+html body #app #view-settings .mw-diag-linha i{
+  font-style: normal; font-size: 13px; line-height: 1.3; text-align: center;
+}
+html body #app #view-settings .mw-diag-linha b{
+  font-weight: 620; color: var(--ds-txt, #eef2ff); min-width: 0;
+  overflow-wrap: anywhere;
+}
+html body #app #view-settings .mw-diag-linha span{
+  color: var(--ds-txt-3, #8a99c1); font-size: 12px; text-align: right;
+  overflow-wrap: anywhere; font-variant-numeric: tabular-nums;
+}
+html body #app #view-settings .mw-diag-linha[data-r="ok"] i{ color: #34d399; }
+html body #app #view-settings .mw-diag-linha[data-r="aviso"] i{ color: #f0b429; }
+html body #app #view-settings .mw-diag-linha[data-r="falha"] i{ color: #ff8fa3; }
+html body #app #view-settings .mw-diag-linha[data-r="falha"]{
+  box-shadow: var(--ds-fio, none), inset 3px 0 0 #ff8fa3;
+}
+html body #app #view-settings .mw-diag-linha[data-r="aviso"]{
+  box-shadow: var(--ds-fio, none), inset 3px 0 0 #f0b429;
+}
+html body #app #view-settings .mw-diag-resumo{
+  margin: 0 0 10px; font-size: 12.5px; line-height: 1.55;
+}
+/* No telefone nem duas colunas cabem: o valor desce para a linha de
+   baixo, alinhado com o rótulo. */
+@media (max-width: 560px){
+  html body #app #view-settings .mw-diag-linha{ grid-template-columns: 18px minmax(0,1fr); }
+  html body #app #view-settings .mw-diag-linha span{ grid-column: 2; text-align: left; margin-top: 2px; }
+}
+
+html body #app #view-settings #mwDiagBruto{
+  width: 100%; min-height: 92px; margin-top: 10px;
+  padding: 10px 12px; border: 0; border-radius: var(--ds-r-1, 12px);
+  background: var(--ds-vidro-2, rgba(255,255,255,.07));
+  box-shadow: var(--ds-fio, none);
+  color: var(--ds-txt-2, #a9b6d6);
+  font: 11.5px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+  resize: vertical;
+}
+</style>
+
+<script id="mw-diagnostico-js">
+(function(){
+  'use strict';
+  /* Diagnóstico do aparelho.
+
+     Cada verificação RODA de verdade: o teste de IndexedDB abre o banco
+     e grava um registro, o de localStorage escreve e apaga uma chave. O
+     que dá para saber só por detecção de recurso (color-mix, :has,
+     backdrop-filter) usa CSS.supports, que é a pergunta certa para
+     esses.
+
+     Nenhum resultado é inventado, e a tela não diz "tudo certo" por
+     omissão: o que não deu para medir aparece como "não deu para
+     medir", que é diferente de "passou". */
+
+  function texto(el, t){ if (el) el.textContent = t; }
+
+  function suporta(prop, valor){
+    try {
+      return (window.CSS && CSS.supports && (CSS.supports(prop, valor) ||
+              CSS.supports('-webkit-' + prop, valor))) || false;
+    } catch(e){ return false; }
+  }
+  /* Seletor NÃO se testa com CSS.supports(prop, valor): a forma de dois
+     argumentos é para declarações. Para seletor existe a forma de um
+     argumento só, com "selector(...)" dentro. Escrito errado, o teste
+     dizia que o Chromium não suporta :has() — que suporta desde 2022.
+     Um diagnóstico que erra é pior que nenhum, porque manda consertar
+     o que não está quebrado. */
+  function suportaSeletor(sel){
+    try { return (window.CSS && CSS.supports && CSS.supports('selector(' + sel + ')')) || false; }
+    catch(e){ return false; }
+  }
+
+  function motor(){
+    var ua = navigator.userAgent || '';
+    /* O Safari do iOS é o único navegador do iPhone: Chrome e Firefox
+       ali por dentro também são WebKit. Por isso a pergunta útil não é
+       "qual app", é "qual motor". */
+    var ehWebKit = /AppleWebKit/.test(ua) && !/Chrome|Chromium|Edg\//.test(ua);
+    var ios = /iPhone|iPad|iPod/.test(ua) ||
+              (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    var v = /Version\/(\d+\.\d+)/.exec(ua);
+    var nome = ehWebKit ? 'WebKit (Safari)' :
+               (/Firefox/.test(ua) ? 'Gecko (Firefox)' : 'Blink (Chrome/Edge)');
+    return { nome: nome + (v ? ' ' + v[1] : ''), ios: ios, webkit: ehWebKit, ua: ua };
+  }
+
+  function bytes(n){
+    if (!isFinite(n)) return '—';
+    if (n < 1024) return n + ' B';
+    if (n < 1048576) return (n/1024).toFixed(0) + ' KB';
+    if (n < 1073741824) return (n/1048576).toFixed(1) + ' MB';
+    return (n/1073741824).toFixed(2) + ' GB';
+  }
+
+  /* --- as verificações ---------------------------------------------------- */
+  function testaLocalStorage(){
+    try {
+      var k = '__mwDiag' + Date.now();
+      localStorage.setItem(k, 'x');
+      var leu = localStorage.getItem(k) === 'x';
+      localStorage.removeItem(k);
+      return leu ? ['ok', 'grava e lê'] : ['falha', 'gravou mas não leu de volta'];
+    } catch(e){
+      return ['falha', 'bloqueado (' + (e && e.name || 'erro') + ')'];
+    }
+  }
+
+  function testaIndexedDB(){
+    return new Promise(function(ok){
+      if (!window.indexedDB) return ok(['falha', 'não existe neste navegador']);
+      var req;
+      try { req = indexedDB.open('mwDiagnostico', 1); }
+      catch(e){ return ok(['falha', 'recusado (' + (e && e.name || 'erro') + ')']); }
+      var respondeu = false;
+      /* Safari em janela privada às vezes nem chama onerror: fica calado.
+         Sem prazo, a linha ficaria "medindo…" para sempre. */
+      setTimeout(function(){ if (!respondeu){ respondeu = true; ok(['falha', 'não respondeu em 4s']); } }, 4000);
+      req.onupgradeneeded = function(){
+        var d = req.result;
+        if (!d.objectStoreNames.contains('p')) d.createObjectStore('p', { keyPath: 'id' });
+      };
+      req.onerror = function(){
+        if (respondeu) return; respondeu = true;
+        ok(['falha', 'não abriu (' + ((req.error && req.error.name) || 'erro') + ')']);
+      };
+      req.onsuccess = function(){
+        if (respondeu) return;
+        var d = req.result;
+        try {
+          var tx = d.transaction('p', 'readwrite');
+          tx.objectStore('p').put({ id: 1, quando: Date.now(), bloco: new Blob(['x'.repeat(2048)]) });
+          tx.oncomplete = function(){
+            var t2 = d.transaction('p', 'readonly').objectStore('p').get(1);
+            t2.onsuccess = function(){
+              respondeu = true;
+              var r = t2.result;
+              ok(r && r.bloco ? ['ok', 'grava e lê arquivo'] : ['falha', 'gravou mas voltou vazio']);
+              try { d.close(); indexedDB.deleteDatabase('mwDiagnostico'); } catch(e){}
+            };
+            t2.onerror = function(){ respondeu = true; ok(['falha', 'não leu de volta']); };
+          };
+          tx.onerror = function(){ respondeu = true; ok(['falha', 'não gravou']); };
+        } catch(e){ respondeu = true; ok(['falha', 'erro ao gravar']); }
+      };
+    });
+  }
+
+  function testaEspaco(){
+    return new Promise(function(ok){
+      if (!navigator.storage || !navigator.storage.estimate) return ok(['aviso', 'o navegador não informa']);
+      navigator.storage.estimate().then(function(e){
+        ok(e && e.quota ? ['ok', bytes(e.usage || 0) + ' de ' + bytes(e.quota)]
+                        : ['aviso', 'sem números']);
+      }).catch(function(){ ok(['aviso', 'não deu para medir']); });
+    });
+  }
+
+  function testaServiceWorker(){
+    return new Promise(function(ok){
+      if (!('serviceWorker' in navigator)) return ok(['aviso', 'não existe neste navegador']);
+      navigator.serviceWorker.getRegistrations().then(function(rs){
+        if (!rs.length) return ok(['aviso', 'nenhum registrado (normal na prévia)']);
+        var controlando = !!navigator.serviceWorker.controller;
+        ok([controlando ? 'ok' : 'aviso',
+            rs.length + ' registrado(s)' + (controlando ? ' e no comando' : ', mas sem controlar esta aba')]);
+      }).catch(function(){ ok(['aviso', 'não deu para consultar']); });
+    });
+  }
+
+  function testaSafeArea(){
+    try {
+      var d = document.createElement('div');
+      d.style.cssText = 'position:fixed;bottom:0;left:0;width:1px;height:env(safe-area-inset-bottom,0px);visibility:hidden';
+      document.body.appendChild(d);
+      var h = Math.round(d.getBoundingClientRect().height);
+      d.remove();
+      return ['ok', h > 0 ? h + 'px embaixo' : 'lida, e vale 0 aqui'];
+    } catch(e){ return ['aviso', 'não deu para medir']; }
+  }
+
+  var LINHAS = [];
+
+  function monta(){
+    var alvo = document.getElementById('mwDiagLista');
+    if (!alvo) return;
+    alvo.innerHTML = LINHAS.map(function(l){
+      var icone = l.r === 'ok' ? '✓' : (l.r === 'falha' ? '✕' : '!');
+      return '<div class="mw-diag-linha" data-r="' + l.r + '">' +
+             '<i aria-hidden="true">' + icone + '</i><b>' + l.nome + '</b>' +
+             '<span>' + l.valor + '</span></div>';
+    }).join('');
+
+    var falhas = LINHAS.filter(function(l){ return l.r === 'falha'; });
+    var avisos = LINHAS.filter(function(l){ return l.r === 'aviso'; });
+    var resumo = document.getElementById('mwDiagResumo');
+    if (resumo){
+      resumo.textContent = falhas.length
+        ? falhas.length + (falhas.length === 1 ? ' verificação falhou' : ' verificações falharam') +
+          ' neste aparelho. Copie o relatório e mande — é isso que diz o que precisa ser corrigido.'
+        : (avisos.length
+            ? 'Nada falhou. ' + avisos.length + (avisos.length === 1 ? ' ponto' : ' pontos') +
+              ' de atenção, que costumam ser normais dependendo de onde o app foi aberto.'
+            : 'Todas as verificações passaram neste aparelho.');
+    }
+    var bruto = document.getElementById('mwDiagBruto');
+    if (bruto){
+      bruto.value = LINHAS.map(function(l){
+        return (l.r === 'ok' ? '[ok]   ' : l.r === 'falha' ? '[FALHA]' : '[aviso]') + ' ' + l.nome + ': ' + l.valor;
+      }).join('\n');
+    }
+  }
+
+  function roda(){
+    var m = motor();
+    var pe = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) ||
+             navigator.standalone === true;
+
+    LINHAS = [];
+    function junta(nome, r, valor){ LINHAS.push({ nome: nome, r: r, valor: valor }); }
+
+    junta('Motor do navegador', 'ok', m.nome);
+    junta('Sistema', m.ios ? 'ok' : 'ok', m.ios ? 'iPhone/iPad' : 'outro');
+    junta('Como está aberto', 'ok', pe ? 'instalado na tela de início' : 'dentro do navegador');
+    junta('Tela', 'ok', window.innerWidth + '×' + window.innerHeight +
+          ' · ' + (window.devicePixelRatio || 1) + 'x');
+
+    /* As quatro capacidades de CSS de que o desenho depende. Se alguma
+       falhar, o app não fica "um pouco diferente" — fica quebrado de um
+       jeito específico, e é bom saber qual. */
+    junta('Vidro (backdrop-filter)', suporta('backdrop-filter', 'blur(4px)') ? 'ok' : 'falha',
+          suporta('backdrop-filter', 'blur(4px)') ? 'funciona' : 'sem suporte: os painéis ficam opacos');
+    junta('Lente com filtro SVG', suporta('backdrop-filter', 'url(#x)') ? 'ok' : 'aviso',
+          suporta('backdrop-filter', 'url(#x)') ? 'funciona'
+            : 'sem suporte: a barra de baixo fica lisa, sem deformar (previsto)');
+    junta('Mistura de cor (color-mix)', suporta('color', 'color-mix(in srgb, red 50%, blue)') ? 'ok' : 'falha',
+          suporta('color', 'color-mix(in srgb, red 50%, blue)') ? 'funciona'
+            : 'sem suporte: cores e bordas do app saem erradas');
+    var temHas = suportaSeletor(':has(a)');
+    junta('Seletor :has()', temHas ? 'ok' : 'aviso',
+          temHas ? 'funciona' : 'sem suporte: o calendário do mês pode não aparecer');
+    junta('Corte de texto (line-clamp)', suporta('-webkit-line-clamp', '3') ? 'ok' : 'aviso',
+          suporta('-webkit-line-clamp', '3') ? 'funciona' : 'sem suporte: anotações longas saem inteiras');
+
+    var ls = testaLocalStorage();
+    junta('Dados do navegador', ls[0], ls[1]);
+    var sa = testaSafeArea();
+    junta('Área segura (notch)', sa[0], sa[1]);
+    junta('Versão da prévia', window.MW_PREVIA ? 'ok' : 'aviso', window.MW_PREVIA || 'não é a prévia');
+
+    monta();
+
+    /* Os assíncronos entram depois, na ordem em que respondem — a tela
+       já é útil antes deles. */
+    testaIndexedDB().then(function(r){ junta('Arquivos (IndexedDB)', r[0], r[1]); monta(); });
+    testaEspaco().then(function(r){ junta('Espaço disponível', r[0], r[1]); monta(); });
+    testaServiceWorker().then(function(r){ junta('Service worker', r[0], r[1]); monta(); });
+  }
+
+  function liga(){
+    var botao = document.getElementById('mwDiagRodar');
+    var copiar = document.getElementById('mwDiagCopiar');
+    if (!botao || botao.dataset.mwLigado === '1') return;
+    botao.dataset.mwLigado = '1';
+    botao.addEventListener('click', function(){
+      texto(document.getElementById('mwDiagResumo'), 'Medindo…');
+      roda();
+    });
+    if (copiar) copiar.addEventListener('click', function(){
+      var bruto = document.getElementById('mwDiagBruto');
+      if (!bruto || !bruto.value) { if (window.toast) window.toast('Rode a verificação primeiro.'); return; }
+      var conteudo = bruto.value + '\n\nUA: ' + (navigator.userAgent || '');
+      /* clipboard.writeText pede contexto seguro e, no Safari, precisa
+         estar dentro do gesto do toque. Se falhar, o campo já está aí
+         para selecionar à mão — por isso ele é visível, e não escondido. */
+      var pronto = function(){ if (window.toast) window.toast('Relatório copiado.'); };
+      var falhou = function(){
+        bruto.focus(); bruto.select();
+        if (window.toast) window.toast('Não deu para copiar sozinho — selecione o texto e copie.');
+      };
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText)
+          navigator.clipboard.writeText(conteudo).then(pronto).catch(falhou);
+        else falhou();
+      } catch(e){ falhou(); }
+    });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', liga);
+  else liga();
+
+  var mostrarAntes = window.showView;
+  if (typeof mostrarAntes === 'function') {
+    window.showView = function(v){ mostrarAntes(v); if (v === 'settings') setTimeout(liga, 30); };
   }
 })();
 </script>

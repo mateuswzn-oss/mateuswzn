@@ -1,3 +1,23 @@
+/* v79 (BETA — Diagnóstico: o app passa a se medir sozinho):
+   Existe por uma limitação honesta: o desenvolvimento é verificado no
+   Chromium, e o Safari do iPhone tem diferenças reais justamente no que
+   este app usa. Tudo que se afirmava sobre iOS era leitura de
+   especificação, não medição.
+   Agora, em Configurações › Aplicativo, há uma verificação que RODA no
+   aparelho de quem abriu: abre o IndexedDB e grava um registro de
+   verdade, escreve e apaga uma chave no localStorage, mede o
+   safe-area-inset real, pergunta o espaço disponível, e checa as quatro
+   capacidades de CSS de que o desenho depende (backdrop-filter, o mesmo
+   com filtro SVG, color-mix e :has). Cada linha diz o que quebra se
+   aquilo faltar, e há um relatório em texto para copiar.
+   Nada é afirmado por omissão: o que não deu para medir aparece como
+   "não deu para medir", que é diferente de "passou".
+   Dois defeitos meus, achados no próprio teste desta tela: o suporte a
+   :has() era testado com a forma de dois argumentos de CSS.supports,
+   que é para declarações e não para seletor — dizia que o Chromium não
+   suporta :has(), e um diagnóstico que erra é pior que nenhum. E a
+   coluna do valor era "auto", então um valor longo espremia o rótulo
+   até quebrar uma letra por linha ("Service worker" saiu na vertical). */
 /* v78 (BETA — sai o formulário de conta que nunca abria):
    A auditoria tinha marcado e deixado para depois: existia um segundo
    formulário de criar conta, num modal, preso a #createAccountLink — um
@@ -933,7 +953,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v78-beta';
+const CACHE_NAME = 'mw-shell-v79-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
