@@ -35,8 +35,22 @@ p.on('console', m => {
 await p.addInitScript(() => {
   localStorage.setItem('mwZerarTudo-2026-08-e', '1');
 });
+/* O boot tem PISO de 4,55s mais 620ms de saída — de propósito, para a
+   marca terminar de se construir antes de a tela de login aparecer. O
+   `ajuda.abre()` não esbarra nisso porque arranca o loader à força; aqui
+   o teste quer justamente ver o que vem depois dele, então espera de
+   verdade. Esperar por tempo fixo foi o primeiro erro deste arquivo:
+   2,8s mediam a tela de carregamento e reprovavam tudo. */
+async function esperaBoot(){
+  await p.waitForFunction(
+    () => !document.getElementById('mwBootLoader') &&
+          document.documentElement.classList.contains('mw-login-pronto'),
+    null, { timeout: 20000 });
+  await p.waitForTimeout(700);   // a revelação da tela de baixo dura 400ms
+}
+
 await p.goto(ENDERECO + '/index.html');
-await p.waitForTimeout(2800);
+await esperaBoot();
 
 let ruins = 0;
 const ok = (rotulo, certo, detalhe) => {
@@ -167,35 +181,66 @@ ok('e cada nível tem nome escrito',
    [forca.fraca, forca.media, forca.forte].every(x => x.txt.length > 2), forca);
 
 /* ---- 7. senha e confirmação têm de bater ------------------------------- */
+/* Dois caminhos levam ao envio, e os dois precisam barrar:
+   o botão "Continuar" da etapa 2 e o Enter (o botão de enviar fica
+   escondido fora da tela nas etapas 1 e 2, mas continua sendo o alvo do
+   Enter — foi ali que a mensagem de erro estava sumindo). */
 await p.evaluate(() => {
   const a = document.getElementById('newPass'), b2 = document.getElementById('newPass2');
   a.value = 'S3nh4-muito-Long4-e-boa!'; a.dispatchEvent(new Event('input', { bubbles: true }));
   b2.value = 'outra-coisa'; b2.dispatchEvent(new Event('input', { bubbles: true }));
 });
-await avanca(3); await p.waitForTimeout(450);
-await p.evaluate(() => document.getElementById('inlineCreateForm')
-  .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })));
-await p.waitForTimeout(700);
-const naoBate = await p.evaluate(() => ({
-  erro: (document.getElementById('inlineCreateError').textContent || '').trim(),
-  criou: !!localStorage.getItem('mwSession')
+await avanca(3); await p.waitForTimeout(500);
+const barrou = await p.evaluate(() => ({
+  etapa: [...document.querySelectorAll('#inlineCreateForm .mw-etapa')]
+           .filter(e => !e.hidden).map(e => e.dataset.etapa),
+  erro: (document.getElementById('inlineCreateError').textContent || '').trim()
 }));
-ok('senha e confirmação diferentes não criam conta', !naoBate.criou && naoBate.erro.length > 3, naoBate);
+ok('"Continuar" não passa da etapa 2 com senhas diferentes',
+   barrou.etapa.join() === '2' && /iguais/i.test(barrou.erro), barrou);
 
-/* ---- 8. o campo-armadilha barra o robô em silêncio ---------------------- */
-const robo = await p.evaluate(async () => {
-  document.getElementById('newPass2').value = document.getElementById('newPass').value;
-  document.getElementById('newWebsite').value = 'http://spam.exemplo';
+const porEnter = await p.evaluate(async () => {
+  document.getElementById('inlineCreateError').textContent = '';
   document.getElementById('inlineCreateForm')
     .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
   await new Promise(r => setTimeout(r, 800));
-  return { criou: !!localStorage.getItem('mwSession') };
+  return { erro: (document.getElementById('inlineCreateError').textContent || '').trim(),
+           etapa: [...document.querySelectorAll('#inlineCreateForm .mw-etapa')]
+                    .filter(e => !e.hidden).map(e => e.dataset.etapa),
+           criou: !!localStorage.getItem('mwSession') };
+});
+ok('e o Enter também avisa, em vez de não fazer nada',
+   !porEnter.criou && /iguais/i.test(porEnter.erro), porEnter);
+
+/* ---- 8. o campo-armadilha barra o robô em silêncio ---------------------- */
+/* A conferência da armadilha existe em DOIS lugares: no caminho da
+   nuvem e no local. Este teste roda sem Supabase alcançável, então quem
+   responde é o local — que é justamente o caminho que sobra quando o de
+   cima falha, e onde a armadilha faltava. */
+await p.evaluate(() => {
+  const a = document.getElementById('newPass'), b2 = document.getElementById('newPass2');
+  b2.value = a.value; b2.dispatchEvent(new Event('input', { bubbles: true }));
+});
+const robo = await p.evaluate(async () => {
+  /* A caixa guarda o aviso do passo anterior; sem limpar, o teste
+     mediria aquele recado e não o silêncio deste. */
+  document.getElementById('inlineCreateError').textContent = '';
+  document.getElementById('newWebsite').value = 'http://spam.exemplo';
+  document.getElementById('inlineCreateForm')
+    .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+  await new Promise(r => setTimeout(r, 900));
+  return { criou: !!localStorage.getItem('mwSession'),
+           /* silêncio total é parte do desenho: nada de mensagem que
+              ensine o robô a tentar outro jeito */
+           erro: (document.getElementById('inlineCreateError').textContent || '').trim() };
 });
 ok('o campo-armadilha impede o cadastro de um robô', !robo.criou, robo);
+ok('e faz isso em silêncio, sem ensinar o robô', !robo.erro, robo);
 
 /* ---- 9. o caminho inteiro: criar conta, sair, entrar de novo ------------ */
 const ciclo = await p.evaluate(async () => {
   document.getElementById('newWebsite').value = '';
+  document.getElementById('newPass2').value = document.getElementById('newPass').value;
   document.getElementById('inlineCreateForm')
     .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
   await new Promise(r => setTimeout(r, 1400));
@@ -213,7 +258,7 @@ ok('criar conta pela interface chega ao fim', ciclo.sessao || ciclo.sucesso, cic
    que o login consegue ler — as duas metades do mesmo par. */
 await p.evaluate(() => localStorage.removeItem('mwSession'));
 await p.reload();
-await p.waitForTimeout(2800);
+await esperaBoot();
 const reentrada = await p.evaluate(async () => {
   const u = document.getElementById('username'), s = document.getElementById('password');
   if (!u || !s) return { campos: false };
@@ -229,18 +274,30 @@ const reentrada = await p.evaluate(async () => {
 ok('e a conta criada consegue entrar', reentrada.sessao && reentrada.app, reentrada);
 
 /* ---- 10. recuperação de senha abre ------------------------------------- */
-await p.evaluate(() => { localStorage.removeItem('mwSession'); });
-await p.reload();
-await p.waitForTimeout(2800);
+/* Cuidado com o painel que se mede aqui. O `#otpOverlay` do markup
+   antigo continua no documento e AINDA responde ao clique — mas um
+   handler mais novo, em captura, fecha ele de propósito e abre o
+   `#mwRecupera`, que é a recuperação de verdade (a que fala com o
+   Supabase). Medir o antigo dá "não abriu" numa tela que abriu certo:
+   foi o que este teste acusou na primeira versão. */
 const recupera = await p.evaluate(async () => {
   document.getElementById('forgotPasswordLink').click();
-  await new Promise(r => setTimeout(r, 700));
-  const o = document.getElementById('otpOverlay');
-  return { abriu: o && !o.classList.contains('hidden'),
-           titulo: (document.getElementById('otpTitle')?.textContent || '').trim() };
+  await new Promise(r => setTimeout(r, 800));
+  const novo = document.getElementById('mwRecupera');
+  const velho = document.getElementById('otpOverlay');
+  return {
+    abriu: !!novo && novo.classList.contains('mw-aberto'),
+    velhoFechado: !velho || velho.classList.contains('hidden'),
+    texto: (novo?.textContent || '').trim().slice(0, 60)
+  };
 });
 ok('"Esqueci minha senha" abre a recuperação', recupera.abriu, recupera);
-await p.evaluate(() => document.getElementById('otpCancelMethod')?.click());
+ok('e a tela antiga de código não aparece junto', recupera.velhoFechado, recupera);
+/* Fechar pela tecla, não por um botão qualquer: o primeiro <button> do
+   painel é "enviar o link", e clicá-lo dispara o pedido em vez de sair. */
+await p.keyboard.press('Escape');
+await p.waitForTimeout(500);
+await p.evaluate(() => document.getElementById('mwRecupera')?.classList.remove('mw-aberto'));
 await p.waitForTimeout(400);
 
 /* ---- 11. entrada social honesta ---------------------------------------- */
@@ -254,6 +311,23 @@ ok('os botões de entrada social continuam desligados e avisados',
    social.quantos >= 2 && social.todosDesligados && /em breve/i.test(social.nota), social);
 
 /* ---- 12. nada vaza, em três larguras e dois temas ---------------------- */
+/* Recarga limpa antes de medir. Sem ela o teste media a tela ERRADA: o
+   ciclo do passo 9 deixa uma conta gravada e uma sessão aberta, e algum
+   caminho de entrada automática a restaura depois do passo 10 — o
+   `#loginScreen` fica com display:none e o cartão mede 0x0, o que este
+   teste relatava como "o cartão não cabe". A medida de layout começa,
+   portanto, de uma tela de login recém-aberta, e confere isso antes de
+   confiar no que mediu. */
+await p.evaluate(() => localStorage.removeItem('mwSession'));
+await p.reload();
+await esperaBoot();
+const prontoParaMedir = await p.evaluate(() => ({
+  login: getComputedStyle(document.getElementById('loginScreen')).display !== 'none',
+  sessao: !!localStorage.getItem('mwSession')
+}));
+ok('a tela de login está de pé para a medida de layout',
+   prontoParaMedir.login && !prontoParaMedir.sessao, prontoParaMedir);
+
 for (const [rot, larg, alt] of [['desktop', 1280, 900], ['tablet', 834, 1000], ['celular', 390, 780]]) {
   for (const tema of ['escuro', 'claro']) {
     await p.setViewportSize({ width: larg, height: alt });

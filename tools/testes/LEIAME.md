@@ -281,3 +281,28 @@ num iPhone com o app instalado na tela de início, e rodar em cada um o
 painel **Configurações › Diagnóstico do aparelho**, que reporta exatamente
 o que a tabela acima precisa saber. Foi assim que a linha do iOS deixou de
 ser suposição.
+
+- **O boot tem piso de 4,55s, e ele é de propósito.** O `ajuda.abre()`
+  arranca o preloader à força porque quer o app; um teste da tela de
+  ENTRADA quer o que vem depois dele, e tem de esperar de verdade. A
+  primeira versão do teste 17 esperava 2,8s fixos: media a tela de
+  carregamento e reprovava oito verificações de uma vez, todas corretas.
+  Espere pela condição (`#mwBootLoader` fora do documento e
+  `html.mw-login-pronto` presente), nunca por um número.
+
+- **A tela de recuperação de senha são duas, e a que responde é a nova.**
+  O `#otpOverlay` do markup antigo continua no documento e ainda reage ao
+  clique — mas um handler em captura o fecha e abre o `#mwRecupera`, que
+  é o que fala com o Supabase. Medir o antigo dá "não abriu" numa tela
+  que abriu certo.
+
+- **Um passo de teste herda o estado do passo anterior.** A caixa de erro
+  guardava o aviso do passo 7 e o passo 8 mediu aquele texto achando que
+  era o seu. Limpe o que você vai medir antes de medir.
+
+- **Depois de um ciclo de cadastro, a sessão volta sozinha.** O teste 17
+  cria conta, entra, sai e recarrega — e algum caminho de entrada
+  automática restaura a sessão adiante. A medida de layout começa, por
+  isso, de uma recarga limpa, e confere que a tela de login está de pé
+  antes de confiar no que mediu. Sem isso ela media `#loginScreen` com
+  `display:none` e relatava "o cartão não cabe" para um cartão de 0x0.

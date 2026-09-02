@@ -221,8 +221,43 @@ Da menor superfície de risco para a maior. Cada uma é uma rodada.
 | ✅ 4 | ~~Configurações · Perfil~~ | **migradas.** Não são coleções: o teste delas é outro (16-ajustes), e mede o que uma tela de ajustes pode perder — campo que deixa de gravar, rótulo que se solta, categoria que some |
 | ✅ 5 | ~~Faculdade · Relatórios · Foco · Calendário~~ | **migradas.** Layout próprio em cada uma, então cada uma manteve o seu — o que passou para o sistema foi a casca (cartão, cabeçalho, campo, botão, controle segmentado) e o que era genérico |
 | ✅ 6 | ~~Início~~ e ~~Arquivos~~ | **migradas.** Início é a maior — treze cartões, cinco cabeçalhos, quatro grades — e foi por último de propósito: ela resume as outras, então só fazia sentido depois que o vocabulário delas estava pronto. Com as duas, **as catorze áreas do app estão sob o Design System** |
-| 7 | Login / cadastro | fora do `#app`, com regras próprias e seis peles legadas sobrepostas |
+| ✅ 7 | ~~Login / cadastro~~ | **migrada.** A única tela cujo defeito tranca a pessoa do lado de fora, então o teste dela (17) cobre o caminho inteiro — criar conta, sair, entrar de novo — e não só a aparência. Zero regra legada vencendo, nos dois temas |
 | 8 | Barra lateral e barra de baixo | tocam todas as telas; por último, quando o resto já está no sistema |
+
+## Folha não é a unidade; regra é
+
+O `quem-vence.mjs` separa o que encontra em três baldes, e um deles —
+"CSS próprio da área" — some do relatório de propósito: o quadro de
+Projetos, a agenda de Atividades, o cartão de dois painéis da entrada.
+São componentes que só existem numa tela, e o sistema não vai ter um
+"quadro Kanban".
+
+O ponto cego é que **uma folha pode ser as duas coisas ao mesmo tempo**.
+`mw-ds-login` é o layout do cartão de entrada — que fica — e era também a
+pele dos campos daquela tela, que tinha de sair. Enquanto ela estava
+declarada como própria, o relatório dizia *"zero regras legadas"* com os
+campos ainda vestidos pela folha antiga, `html body #id` e `!important`
+inclusive.
+
+Daí o segundo script, `tools/ds/quem-veste.mjs`. Ele pergunta o
+contrário: **dos elementos que carregam uma classe `ds-*`, quais estão
+sendo pintados por alguém que não é o sistema?** Aí não há balde onde se
+esconder — se o elemento anuncia que é do sistema, quem o pinta tem de
+ser o sistema. Saída vazia é o certo, e ele roda para as quinze
+superfícies no teste 18.
+
+Na primeira execução ele achou três coisas que os outros testes não
+viam, duas delas em áreas dadas como prontas há rodadas:
+
+| onde | o que estava vestindo | o que aconteceu |
+|---|---|---|
+| entrada | `mw-ds-login` nos campos | as regras saíram; `.ds-campo` no invólucro assumiu |
+| calendário | `mw-calendario` no controle "Mês / Semana" | a pele saiu; `ds-abas`/`ds-aba` assumiu |
+| configurações | `mw-transfere-style` no botão secundário | a regra saiu; `ds-btn-secundario` assumiu |
+
+A lição é a da tabela: quando se declara uma folha inteira como "própria
+da área", declara-se junto tudo o que ela faz — e folhas antigas fazem
+muita coisa.
 
 ## O gancho durável
 

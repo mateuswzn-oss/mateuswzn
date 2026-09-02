@@ -11,30 +11,71 @@
  *
  * Uso: node tools/ds/quem-vence.mjs support [claro|escuro]
  */
-import { abre, vaiPara, esperaParar } from '../testes/ajuda.mjs';
+import { abre, vaiPara, esperaParar, ENDERECO, achaNavegador } from '../testes/ajuda.mjs';
+import { chromium } from 'playwright';
+
+/* Abre PARANDO na tela de login: sem `mwSession`, e esperando o boot
+   terminar de verdade em vez de arrancar o loader (o piso é de 4,55s,
+   de propósito — a marca tem de acabar de se construir antes). */
+async function abreLogin(tema){
+  const ep = achaNavegador();
+  const nav = await chromium.launch(ep ? { executablePath: ep } : {});
+  const pag = await nav.newPage({ viewport: { width: 1280, height: 900 } });
+  await pag.addInitScript(t => {
+    localStorage.setItem('mwZerarTudo-2026-08-e', '1');
+    /* O tema tem de estar decidido ANTES da primeira pintura: aplicá-lo
+       depois mediria a tela do outro tema durante a transição. */
+    if (t === 'claro') localStorage.setItem('mwTemaPreferido', 'light');
+  }, tema);
+  await pag.goto(ENDERECO + '/index.html');
+  await pag.waitForFunction(
+    () => !document.getElementById('mwBootLoader') &&
+          document.documentElement.classList.contains('mw-login-pronto'),
+    null, { timeout: 20000 });
+  await pag.waitForTimeout(900);
+  await pag.evaluate(t => {
+    document.body.classList.toggle('light', t === 'claro');
+    document.documentElement.setAttribute('data-ds-tema', t);
+  }, tema);
+  await pag.waitForTimeout(500);
+  return { b: nav, p: pag };
+}
 
 const INTEIRO = !!process.env.MW_SEL_INTEIRO;
 const area = process.argv[2] || 'support';
 const tema = process.argv[3] || 'escuro';
 
-const { b, p } = await abre({
+/* A tela de login não é uma `#view-`: ela vive FORA do `#app`, e o
+   `abre()` existe justamente para pulá-la. Medir ali exige o contrário
+   — abrir sem sessão e parar na tela. É a última superfície do app que
+   ainda não passou por aqui, e é a mais pesada: 612 regras em 44
+   folhas, contra as 79 de Início e Arquivos juntas. */
+const ELOGIN = area === 'login';
+const RAIZ = ELOGIN ? '#loginScreen' : '#view-' + area;
+
+const { b, p } = ELOGIN ? await abreLogin(tema) : await abre({
   subjects:[], projects:[], activities:[], notes:[], institutions:[],
   profile:{ name:'Mateus Souza', email:'m@x.com', photo:'', username:'m', bio:'', skills:[], links:[], visibility:{} },
   college:{ institution:'UFPA', course:'Eng', area:'', semester:5 },
   theme: tema === 'claro' ? 'light' : 'dark'
 }, { viewport: { width: 1280, height: 900 } });
 
-await vaiPara(p, area);
-await p.waitForTimeout(800);
-await esperaParar(p, '#view-' + area);
+if (!ELOGIN) {
+  await vaiPara(p, area);
+  await p.waitForTimeout(800);
+  await esperaParar(p, '#view-' + area);
+}
 
-const existe = await p.evaluate(a => !!document.getElementById('view-' + a), area);
-if (!existe) { console.log('#view-' + area + ' não está no documento.'); await b.close(); process.exit(2); }
+const existe = await p.evaluate(sel => {
+  const e = document.querySelector(sel);
+  return !!e && getComputedStyle(e).display !== 'none';
+}, RAIZ);
+if (!existe) { console.log(RAIZ + ' não está visível no documento.'); await b.close(); process.exit(2); }
 
-const achados = await p.evaluate(a => {
+const achados = await p.evaluate(sel => {
   const PROPS = ['color','background-color','background-image','border-radius','border-color',
                  'font-size','font-weight','padding','margin','box-shadow','backdrop-filter'];
-  const raiz = document.getElementById('view-' + a);
+  const raiz = document.querySelector(sel);
   if (!raiz) return { erro: 'área não encontrada' };
   const alvos = [raiz, ...raiz.querySelectorAll('*')].filter(e => {
     const r = e.getBoundingClientRect();
@@ -101,7 +142,7 @@ const achados = await p.evaluate(a => {
   return { total: alvos.length,
            lista: [...fora.values()].map(x => ({ folha: x.folha, sel: x.sel,
                                                  props: [...x.props].join(','), imp: x.imp, exemplo: x.exemplo })) };
-}, area);
+}, RAIZ);
 
 /* Nem toda regra que não vem do mw-ds.css é legado por substituir.
  *
@@ -134,7 +175,22 @@ const PROPRIO = {
   focus:      ['mw-foco'],
   calendar:   ['mw-calendario', 'mw-cal-semana', 'mw-agenda'],
   files:      ['mw-arquivos', 'mw-arq-style'],
-  home:       ['mw-comando', 'mw-insights', 'mw-dev-tools', 'mw-graficos', 'mw-painel']
+  home:       ['mw-comando', 'mw-insights', 'mw-dev-tools', 'mw-graficos', 'mw-painel'],
+  /* A tela de login tem componentes que só existem nela e que o Design
+     System não vai ter: o painel de mídia com o avatar que acompanha a
+     digitação, as etapas do cadastro, a barra de força da senha, a
+     recuperação por e-mail e a animação de sucesso. O que o protocolo
+     exige desse CSS é que ele leia os TOKENS do sistema — não que
+     desapareça. */
+  login:      ['mw-ds-login',              /* as proporções do cartão e o trilho do deslize */
+               'mw-cadastro',              /* as três etapas */
+               'mw-forca-senha-e-social',  /* a barra de força e os botões "em breve" */
+               'mwv2-login-style',         /* o painel de mídia com o avatar que acompanha a digitação */
+               'mateus-login-animation',   /* a animação do carrinho no botão de criar */
+               'mw-recupera-css',          /* o painel de recuperação por e-mail */
+               'mw-boot-loader-style',     /* a construção da marca, que roda antes da tela */
+               'mateus-original-car-animation', /* o carrinho que atravessa o botão de criar conta */
+               'mw-cyan-glass-finish']     /* as partículas do fundo */
 };
 const meus = new Set(PROPRIO[area] || []);
 

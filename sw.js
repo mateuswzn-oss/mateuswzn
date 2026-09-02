@@ -1,3 +1,64 @@
+/* v94 (BETA — a tela de entrada no Design System, e dois defeitos reais
+   que apareceram enquanto o teste dela era escrito):
+
+   A TELA QUE TRANCA A PESSOA DO LADO DE FORA
+   Login e cadastro é a última superfície grande do app e a única cujo
+   defeito não tem contorno: um cartão torto em Relatórios é feio; um
+   botão de entrar que não responde é o fim da linha. Por isso o teste
+   novo (17) cobre o CAMINHO INTEIRO — criar conta, sair, entrar de
+   novo — e não só a aparência: troca de painel, rótulos, olho da senha,
+   as três etapas, a barra de força, a confirmação que não bate, o
+   campo-armadilha, a recuperação, a entrada social desligada, e o
+   vazamento em três larguras e dois temas. São 24 verificações.
+
+   DOIS DEFEITOS REAIS, ACHADOS AO ESCREVER O TESTE
+   1. A mensagem de erro era apagada pela própria navegação que devia
+      mostrá-la. Com senhas diferentes, o envio escrevia "As duas senhas
+      não são iguais." e logo depois chamava a troca de etapa, que
+      termina limpando a caixa de erro. Quem via isso era quem aperta
+      Enter na etapa 2 (o botão de enviar fica escondido ali, mas
+      continua sendo o alvo do Enter): o formulário não fazia nada
+      visível. Agora a mensagem entra DEPOIS da troca e sobrevive a ela.
+
+   2. O campo-armadilha só era conferido no caminho da nuvem. O handler
+      do Supabase começa com `if (!temNuvem()) return;` — então quando a
+      rede cai, ou o projeto não está configurado, o cadastro caía no
+      caminho local, que não tinha a conferência. É justamente o caminho
+      que sobra quando o de cima falha. A armadilha agora vale nos dois,
+      e nos dois em silêncio: sem mensagem que ensine o robô a tentar
+      outro jeito.
+
+   A MIGRAÇÃO
+   Campo, botão do olho, botão primário, botões das etapas, entrada
+   social e mensagens passaram para os componentes do sistema. O trilho
+   lateral de "Entrar / Criar" chegou a virar `ds-aba` e voltou atrás:
+   as abas do sistema são um controle segmentado horizontal, e aquilo é
+   uma coluna de dois itens com uma barra que desliza ao lado. Não é a
+   mesma peça com outra pele — é outra peça, e fica com a área.
+
+   UM PONTO CEGO DA FERRAMENTA, E A FERRAMENTA NOVA
+   O `quem-vence` separa o que acha em três baldes, e um deles — "CSS
+   próprio da área" — some do relatório de propósito. O problema é que
+   uma folha pode ser as duas coisas: `mw-ds-login` é o layout do cartão
+   de entrada (que fica) E era a pele dos campos (que tinha de sair).
+   Enquanto ela estava declarada como própria, o relatório dizia "zero
+   regras legadas" com os campos ainda vestidos pela folha antiga.
+
+   Daí o `tools/ds/quem-veste.mjs`, que pergunta o contrário: dos
+   elementos que carregam uma classe `ds-*`, quais estão sendo pintados
+   por quem não é o sistema? Aí não há balde onde se esconder. Na
+   primeira execução ele achou três, duas delas em áreas dadas como
+   prontas há rodadas:
+
+     entrada       mw-ds-login vestindo os campos
+     calendário    mw-calendario vestindo o "Mês / Semana"
+     configurações mw-transfere-style vestindo o botão secundário
+
+   As três peles saíram; os componentes do sistema assumiram. Ele agora
+   roda para as quinze superfícies, no teste 18.
+
+   Suíte: 19 de 19.
+
 /* v93 (BETA — Início e Arquivos migrados: as 14 áreas agora são pintadas
    pelo Design System):
 
@@ -1564,7 +1625,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v93-beta';
+const CACHE_NAME = 'mw-shell-v94-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

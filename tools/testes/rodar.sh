@@ -70,6 +70,8 @@ declare -a NOMES=(
   "14 suporte · área migrada"
   "15 área · estrutura das seis coleções"
   "16 ajustes · as oito áreas que não são coleção"
+  "17 entrada · login e cadastro"
+  "18 pele · quem veste os componentes do sistema"
 )
 declare -a CMDS=(
   "node tools/testes/1-regressao.mjs"
@@ -89,6 +91,8 @@ declare -a CMDS=(
   "node tools/testes/14-suporte.mjs && node tools/ds/quem-vence.mjs support claro | tail -3 && node tools/ds/quem-vence.mjs support escuro | tail -3"
   "for a in institutions subjects projects activities notes; do node tools/testes/15-area.mjs \$a || exit 1; done; node tools/ds/quem-vence.mjs institutions claro | tail -3 && node tools/ds/quem-vence.mjs institutions escuro | tail -3"
   "for a in profile settings college reports focus calendar home files; do node tools/testes/16-ajustes.mjs \$a || exit 1; done; for a in profile settings college reports focus calendar home files; do for t in claro escuro; do node tools/ds/quem-vence.mjs \$a \$t | sed -n 2p; done; done"
+  "node tools/testes/17-login.mjs && node tools/ds/quem-vence.mjs login claro | sed -n 2p && node tools/ds/quem-vence.mjs login escuro | sed -n 2p"
+  "for a in login home files profile settings college reports focus calendar institutions subjects projects activities notes support; do node tools/ds/quem-veste.mjs \$a | sed -n 2p || exit 1; done"
 )
 
 SO_ESTES=("$@")

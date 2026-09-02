@@ -25,7 +25,12 @@ import json
 import re
 import sys
 
-GUARDA = ':not([data-mw-migrada] *)'
+# Duas guardas, não uma. A primeira versão só tinha a de DESCENDENTE, e
+# ela não alcança a regra que mira a RAIZ da área — `#loginScreen{...}`,
+# por exemplo. A raiz é quem carrega o atributo, e um elemento não é
+# descendente de si mesmo: o seletor continuava valendo, e o quem-vence
+# continuava acusando a mesma regra depois de "restringida".
+GUARDA = ':not([data-mw-migrada]):not([data-mw-migrada] *)'
 ARQUIVO = 'index.html'
 
 # Pseudo-elemento tem de ficar no fim: `a::after:not(x)` é inválido.
@@ -44,7 +49,7 @@ def normaliza(s):
 def guarda_um(parte):
     """Acrescenta a guarda a UMA parte do seletor, antes do pseudo-elemento."""
     p = parte.strip()
-    if not p or GUARDA in p:
+    if not p or ':not([data-mw-migrada]' in p:
         return p
     m = PSEUDO_ELEM.search(p)
     if m:
@@ -152,6 +157,14 @@ def main():
         'mw-perfil-polido', 'mw-perfil-publico', 'mw-perfil-config-separados',
         'mw-diagnostico', 'mw-transfere-style',
         'mw-preferencias', 'mw-faceid-style', 'mw-conta-style', 'mw-pin-style',
+        # A tela de entrada: o cartão de dois painéis, as etapas do
+        # cadastro, a barra de força, a recuperação, o carrinho do botão
+        # de criar conta e as partículas do fundo. Restringi-los
+        # desmonta componentes que só existem ali.
+        'mw-ds-login', 'mw-cadastro', 'mw-forca-senha-e-social',
+        'mwv2-login-style', 'mateus-login-animation', 'mw-recupera-css',
+        'mw-boot-loader-style', 'mateus-original-car-animation',
+        'mw-cyan-glass-finish',
     }
     NAO_RESTRINGIR |= PROPRIO
     alvos = {}
@@ -163,7 +176,15 @@ def main():
         if r['folha'] in NAO_RESTRINGIR:
             print('pulando (correção que vale para todas as áreas): %s :: %s' % (r['folha'], chave[:60]))
             continue
-        alvos.setdefault(chave, r['folha'])
+        # A chave é (folha, seletor), não o seletor sozinho. Duas folhas
+        # diferentes escrevem o MESMO seletor com frequência neste
+        # arquivo — `#loginScreen, #loginScreen.reference-login` aparece
+        # em `mw-smart-gradient-palette` e em `mw-mobile-fix`. Com a
+        # chave só no seletor, a segunda sobrescrevia a primeira e uma
+        # das duas ficava de fora sem ninguém notar: o relatório dizia
+        # "restringidas", o quem-vence continuava acusando, e não havia
+        # como saber qual das duas tinha ficado para trás.
+        alvos[(r['folha'], chave)] = r['folha']
     if not alvos:
         print('nada a restringir: a área já está limpa.')
         return 0
@@ -179,19 +200,19 @@ def main():
         base = m.start(2)
         for ini, fim, sel in regras(css, base):
             chave = normaliza(sel)
-            if chave in alvos and alvos[chave] == folha:
+            if (folha, chave) in alvos:
                 trocas.append((ini, fim, sel, folha))
 
-    achadas = {normaliza(s) for _, _, s, _ in trocas}
-    faltam = [s for s in alvos if s not in achadas]
+    achadas = {(fo, normaliza(se)) for _, _, se, fo in trocas}
+    faltam = [k for k in alvos if k not in achadas]
 
     print('regras a restringir: %d de %d relatadas' % (len(trocas), len(alvos)))
     for _, _, sel, folha in trocas:
         print('  %-28s %s' % (folha, normaliza(sel)[:96]))
     if faltam:
         print('\nNÃO localizadas no index.html (conferir à mão):')
-        for s in faltam:
-            print('  %-28s %s' % (alvos[s], s[:96]))
+        for folha, sel in faltam:
+            print('  %-28s %s' % (folha, sel[:96]))
 
     if not aplicar:
         print('\n(nada foi escrito — repita com --aplicar)')
