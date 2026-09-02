@@ -1,3 +1,21 @@
+/* v76 (BETA — Atividades em ordem de prazo):
+   Segundo achado da auditoria sob carga, e o mais sério dos dois: a
+   lista de atividades saía na ORDEM DE CADASTRO. Uma entrega de amanhã
+   podia aparecer embaixo de uma de quarenta dias atrás. Uma lista de
+   prazos que não está em ordem de prazo não responde à pergunta que a
+   pessoa foi ali fazer — e com 120 atividades isso deixa de ser
+   incômodo e vira inutilizável.
+   Agora agrupa em Atrasadas, Hoje, Próximos 7 dias, Mais adiante e Sem
+   prazo, e ordena por data dentro de cada grupo. Uma regra só: da mais
+   antiga para a mais nova. Nos atrasados isso põe em cima o que espera
+   há mais tempo; nos futuros, o que vence primeiro.
+   É apresentação, não dado: não reordena data.activities. Reordenar o
+   array quebraria Editar e Excluir, que guardam o índice da posição
+   original — conferido no teste, inclusive a confirmação de exclusão
+   nomeando o item certo depois da reordenação.
+   Os títulos recontam quando um filtro esconde itens, e o título de um
+   grupo que ficou vazio some: cabeçalho sozinho anuncia uma seção que
+   não existe. */
 /* v75 (BETA — auditoria do conjunto, e o que ela achou):
    Seis áreas novas entraram em sequência, cada uma testada isolada.
    Esta é a primeira varredura do conjunto sob carga real (24
@@ -877,7 +895,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v75-beta';
+const CACHE_NAME = 'mw-shell-v76-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
