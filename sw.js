@@ -1,3 +1,20 @@
+/* v78 (BETA — sai o formulário de conta que nunca abria):
+   A auditoria tinha marcado e deixado para depois: existia um segundo
+   formulário de criar conta, num modal, preso a #createAccountLink — um
+   botão que não existe mais no HTML. O handler nunca era ligado e o
+   modal nunca abria. Mesmo morto, ele carregava ids iguais aos do
+   formulário vivo (newUsername, newEmail, newPass, newPass2), e foi por
+   causa dessa colisão que o cadastro em etapas precisou buscar tudo
+   escopado no próprio formulário.
+   Saíram as quatro linhas (2.928 caracteres), incluindo a função
+   authModal, que só ele usava — conferido antes de apagar: as outras
+   duas ocorrências do nome no arquivo eram texto de comentário, e uma
+   delas apontava para cá; foi reescrita para apontar para #modal, que
+   existe, em vez de virar referência órfã.
+   Ids duplicados no documento: de 14 para 10. Os que sobram são três
+   pares de <style>/<script> com o mesmo id (não afetam comportamento),
+   dois falsos positivos de template literal, e "username" e
+   "mwPerfilIniciais", que ficam para uma próxima. */
 /* v77 (BETA — ordem em Disciplinas e Projetos, e um conserto que não
    tinha consertado):
    Mesmo defeito de Atividades, em grau menor: as duas listas saíam na
@@ -916,7 +933,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v77-beta';
+const CACHE_NAME = 'mw-shell-v78-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
