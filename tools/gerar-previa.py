@@ -31,14 +31,17 @@ def main():
 
     # O Design System vive num arquivo separado; a prévia precisa dele ao
     # lado, senão o <link> aponta para o nada dentro de /beta/.
+    # Procura ao lado do index.html DE ORIGEM, e não ao lado deste script:
+    # a prévia é gerada a partir da main, lendo uma cópia do index.html da
+    # beta que está fora do repositório — e ali o caminho relativo ao script
+    # aponta para outro lugar.
     import shutil
-    raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    ds_origem = os.path.join(raiz, 'ds', 'mw-ds.css')
+    ds_origem = os.path.join(os.path.dirname(os.path.abspath(origem)), 'ds', 'mw-ds.css')
     ds_destino = os.path.join(os.path.dirname(os.path.abspath(destino)), 'ds', 'mw-ds.css')
     if os.path.exists(ds_origem):
         os.makedirs(os.path.dirname(ds_destino), exist_ok=True)
         shutil.copyfile(ds_origem, ds_destino)
-        print('design system copiado para', os.path.relpath(ds_destino, raiz))
+        print('design system copiado de', ds_origem)
     else:
         raise SystemExit('ds/mw-ds.css não encontrado — a prévia sairia sem o sistema.')
 
