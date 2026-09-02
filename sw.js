@@ -1,3 +1,27 @@
+/* v75 (BETA — auditoria do conjunto, e o que ela achou):
+   Seis áreas novas entraram em sequência, cada uma testada isolada.
+   Esta é a primeira varredura do conjunto sob carga real (24
+   disciplinas, 120 atividades, 30 projetos, 40 anotações, 140 sessões
+   de foco, 12 arquivos), em três tamanhos, mais acessibilidade e boot.
+   Três defeitos reais, todos corrigidos:
+   1. Numa anotação longa o botão "Excluir" virava "Exc" e VAZAVA para
+      fora do cartão. Causa: .list-item é flex e o bloco de texto não
+      tinha min-width:0, então ele se recusava a encolher e quem cedia
+      era o botão. Vale para as quatro listas, não só anotações.
+   2. O corpo da anotação era impresso inteiro: quarenta anotações
+      viravam nove mil pixels de rolagem. Agora corta em quatro linhas,
+      com "Ver mais" — que só aparece onde o texto de fato transborda.
+      Detectar isso exigiu medir com o corte desligado: com
+      -webkit-line-clamp, scrollHeight É IGUAL a clientHeight, e a
+      verificação óbvia nunca dispara.
+   3. Catorze campos com rótulo visível mas sem "for": para um leitor de
+      tela eram campos sem nome. Instituição, curso, área, semestre,
+      nome, e-mail, usuário, senha. Agora vinculados.
+   Mais um acerto de contraste: o subtítulo de seção media 4,48:1 sobre
+   a parte clara do gradiente do cartão de Perfil, 0,4% abaixo do AA.
+   Subiu de terciário para secundário — é subtítulo, não sussurro.
+   Boot conferido nos dois caminhos (com e sem sessão), amostrando a cor
+   do centro da tela a cada 120ms: nenhum quadro quase branco. */
 /* v74 (BETA — o backup passa a levar os arquivos):
    Conserto de um buraco que a área de Arquivos abriu ontem: o exportador
    serializava só o blob do workspace (localStorage), e os arquivos moram
@@ -853,7 +877,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v74-beta';
+const CACHE_NAME = 'mw-shell-v75-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

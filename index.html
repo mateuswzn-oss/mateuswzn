@@ -4158,7 +4158,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
     <section class="card liquid-card extra-panel" id="academicCalendarPanel"><div class="section-head"><h3>Calendário acadêmico</h3><div class="cal-nav" id="calNav"><button type="button" id="calPrev" aria-label="Mês anterior">‹</button><strong id="calMonthLabel">Agosto 2026</strong><button type="button" id="calNext" aria-label="Próximo mês">›</button></div></div><p class="mw-cal-todayline" id="calTodayLine"></p><div class="calendar-grid" id="academicCalendar"></div><div class="mw-cal-detail" id="calDayDetail" hidden></div></section>
     <section class="card liquid-card extra-panel" id="lecturesPanel"><div class="section-head"><h3>Aulas</h3><span class="aulas-sub">Suas aulas e progresso</span></div><div class="lecture-grid" id="lectureGrid"><div class="lecture-card"><strong>Nenhuma aula cadastrada</strong><div class="lecture-meta">Adicione disciplinas para começar a organizar suas aulas.</div><div class="progress-line"><i></i></div></div></div></section>
     </div>
-<section class="view" id="view-college"><section class="card section"><div class="section-head"><h3>Faculdade</h3><span>Seu contexto acadêmico</span></div><div class="section-grid grid"><div class="card section-card"><h3 id="collegeCourseLabel">Seu curso</h3><p id="collegeSemesterLabel">1º semestre</p></div><div class="card section-card"><h3>Progresso do curso</h3><p id="collegeProgress2">0% calculado a partir das suas disciplinas</p></div><div class="card section-card"><h3>Organização</h3><p>Use Disciplinas, Atividades e Projetos para montar seu Workspace.</p></div></div><div class="college-setup"><div class="form-field"><label>Instituição</label><input id="collegeInstitution" list="collegeInstitutionOptions" placeholder="Sua faculdade ou universidade" autocomplete="organization"><datalist id="collegeInstitutionOptions"></datalist></div><div class="form-field"><label>Curso</label><input id="collegeCourse" list="collegeCourseOptions" placeholder="Seu curso"><datalist id="collegeCourseOptions"></datalist></div><div class="form-field"><label>Área/Especialização (opcional)</label><input id="collegeArea" list="collegeAreaOptions" placeholder="Sua área de interesse"><datalist id="collegeAreaOptions"></datalist></div><div class="form-field"><label>Semestre atual</label><input id="collegeSemester" type="number" min="1" max="20" value="1"></div></div><button class="save-btn college-save" id="saveCollege">Salvar organização</button></section></section>
+<section class="view" id="view-college"><section class="card section"><div class="section-head"><h3>Faculdade</h3><span>Seu contexto acadêmico</span></div><div class="section-grid grid"><div class="card section-card"><h3 id="collegeCourseLabel">Seu curso</h3><p id="collegeSemesterLabel">1º semestre</p></div><div class="card section-card"><h3>Progresso do curso</h3><p id="collegeProgress2">0% calculado a partir das suas disciplinas</p></div><div class="card section-card"><h3>Organização</h3><p>Use Disciplinas, Atividades e Projetos para montar seu Workspace.</p></div></div><div class="college-setup"><div class="form-field"><label for="collegeInstitution">Instituição</label><input id="collegeInstitution" list="collegeInstitutionOptions" placeholder="Sua faculdade ou universidade" autocomplete="organization"><datalist id="collegeInstitutionOptions"></datalist></div><div class="form-field"><label for="collegeCourse">Curso</label><input id="collegeCourse" list="collegeCourseOptions" placeholder="Seu curso"><datalist id="collegeCourseOptions"></datalist></div><div class="form-field"><label for="collegeArea">Área/Especialização (opcional)</label><input id="collegeArea" list="collegeAreaOptions" placeholder="Sua área de interesse"><datalist id="collegeAreaOptions"></datalist></div><div class="form-field"><label for="collegeSemester">Semestre atual</label><input id="collegeSemester" type="number" min="1" max="20" value="1"></div></div><button class="save-btn college-save" id="saveCollege">Salvar organização</button></section></section>
     <!-- Instituições: até aqui "instituição" era um campo de texto solto
          dentro de Faculdade, então quem estuda em duas (graduação numa,
          técnico/pós em outra) não tinha onde registrar a segunda, e a
@@ -4421,7 +4421,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
         <div class="mw-perfil-chip"><span>Instituição</span><strong id="mwPerfilResumoInstituicao">—</strong><a href="javascript:void(0)" data-ir-faculdade>Editar em Faculdade</a></div>
         <div class="mw-perfil-chip"><span>Semestre</span><strong id="mwPerfilResumoSemestre">1º</strong><a href="javascript:void(0)" data-ir-faculdade>Editar em Faculdade</a></div>
       </div>
-      <div class="settings-group"><h4>Nome e foto</h4><p>Como você aparece no Workspace. O nome de exibição pode ser trocado a qualquer momento, sem senha.</p><div class="profile-form"><div class="form-field"><label>Nome de exibição</label><input id="profileName" type="text" placeholder="Mateus"></div><div class="form-field"><label>E-mail</label><input id="profileEmail" type="email" readonly placeholder="seu@email.com" title="O e-mail da conta muda em Configurações › Conta."></div><div class="form-field full profile-photo-field">
+      <div class="settings-group"><h4>Nome e foto</h4><p>Como você aparece no Workspace. O nome de exibição pode ser trocado a qualquer momento, sem senha.</p><div class="profile-form"><div class="form-field"><label for="profileName">Nome de exibição</label><input id="profileName" type="text" placeholder="Mateus"></div><div class="form-field"><label for="profileEmail">E-mail</label><input id="profileEmail" type="email" readonly placeholder="seu@email.com" title="O e-mail da conta muda em Configurações › Conta."></div><div class="form-field full profile-photo-field">
 <label>Foto de perfil</label>
 <div class="profile-photo-card" id="profilePhotoCard">
   <div class="profile-avatar-preview" id="profileAvatarPreview"><span id="profileAvatarInitials">MW</span></div>
@@ -4432,9 +4432,9 @@ body.light .mw-faceid-gate-card p{color:#526988}
     <section class="view" id="view-settings"><section class="card section"><div class="section-head"><h3>Configurações</h3><span>Conta, aparência e segurança</span></div>
       <h3 class="mw-settings-categoria">Conta</h3>
       <div class="settings-group" id="mwContaGrupo"><h4>Informações de acesso</h4><p>Nome de usuário, e-mail e senha. Mudar qualquer um deles pede sua senha ou o código de acesso, porque são as três coisas com que se entra na conta.</p>
-        <div class="mw-conta-linha"><div class="mw-conta-campo"><label>Nome de usuário</label><input id="mwContaUsuario" type="text" readonly autocomplete="off"></div><button type="button" class="small-btn" id="mwContaTrocarUsuario">Alterar</button></div>
-        <div class="mw-conta-linha"><div class="mw-conta-campo"><label>E-mail</label><input id="mwContaEmail" type="email" readonly autocomplete="off"></div><button type="button" class="small-btn" id="mwContaTrocarEmail">Alterar</button></div>
-        <div class="mw-conta-linha"><div class="mw-conta-campo"><label>Senha</label><input id="mwContaSenha" type="password" value="••••••••" readonly autocomplete="off"></div><button type="button" class="small-btn" id="mwContaTrocarSenha">Alterar</button></div>
+        <div class="mw-conta-linha"><div class="mw-conta-campo"><label for="mwContaUsuario">Nome de usuário</label><input id="mwContaUsuario" type="text" readonly autocomplete="off"></div><button type="button" class="small-btn" id="mwContaTrocarUsuario">Alterar</button></div>
+        <div class="mw-conta-linha"><div class="mw-conta-campo"><label for="mwContaEmail">E-mail</label><input id="mwContaEmail" type="email" readonly autocomplete="off"></div><button type="button" class="small-btn" id="mwContaTrocarEmail">Alterar</button></div>
+        <div class="mw-conta-linha"><div class="mw-conta-campo"><label for="mwContaSenha">Senha</label><input id="mwContaSenha" type="password" value="••••••••" readonly autocomplete="off"></div><button type="button" class="small-btn" id="mwContaTrocarSenha">Alterar</button></div>
         <div class="mw-conta-linha"><div class="mw-conta-campo"><label>Telefone</label><div class="mw-tel-exibicao" id="mwContaTelefoneExibicao"><span class="mw-tel-vazio" id="mwContaTelefoneVazio">Não cadastrado</span><span class="mw-tel-valor" id="mwContaTelefoneValor" hidden></span><span class="mw-tel-badge" id="mwContaTelefoneBadge" hidden>Aguardando confirmação</span></div></div><button type="button" class="small-btn" id="mwContaTrocarTelefone">Adicionar</button></div>
         <p class="form-error" id="mwContaStatus" hidden></p></div>
       <div class="settings-group"><h4>Sessão</h4><p>Sua conta fica guardada neste navegador. Ao sair, será preciso entrar de novo com seu usuário e senha.</p><div class="profile-actions"><button class="small-btn mw-logout-btn" id="logout">Sair</button><button class="small-btn" id="mwSairOutrosAparelhos">Sair de todos os outros aparelhos</button></div><p class="form-error" id="mwSairOutrosStatus" hidden></p></div>
@@ -5407,7 +5407,7 @@ window.toast = toast;
   /* Account creation */
   const create=q('#createAccountLink');
   function authModal(title,html){let m=q('#accountModal');if(!m){m=document.createElement('div');m.id='accountModal';m.className='modal';document.body.appendChild(m)}m.innerHTML=`<div class="modal-box auth-modal-card"><div class="modal-head"><h3>${title}</h3><button class="close" data-close>×</button></div>${html}</div>`;m.classList.remove('hidden');m.querySelector('[data-close]').onclick=()=>m.classList.add('hidden');return m}
-  create?.addEventListener('click',()=>{const m=authModal('Criar sua conta',`<form id="createForm"><div class="form-field"><label>Nome completo</label><input id="newName" required placeholder="Ex.: Mateus Silva"></div><div class="form-field"><label>Nome de usuário</label><input id="newUsername" required pattern="[A-Za-z0-9._\-]{3,20}" placeholder="Ex.: mateus.dev"><small class="field-hint">3–20 caracteres: letras, números, ponto, hífen ou sublinhado.</small></div><div class="form-field"><label>E-mail</label><input id="newEmail" type="email" required placeholder="voce@exemplo.com"></div><div class="form-field"><label>Senha</label><input id="newPass" type="password" required placeholder="Escolha uma senha segura"></div><div class="form-field"><label>Confirmar senha</label><input id="newPass2" type="password" required placeholder="Digite a senha novamente"></div><div class="form-error" id="createError"></div><div class="profile-actions"><button class="save-btn" type="submit">Criar conta</button></div><p style="color:var(--muted);font-size:12px">Sua conta e seus dados ficam separados por usuário neste navegador.</p></form>`);m.querySelector('#createForm').onsubmit=e=>{e.preventDefault();const u=users(),name=m.querySelector('#newName').value.trim(),username=m.querySelector('#newUsername').value.trim(),email=m.querySelector('#newEmail').value.trim().toLowerCase(),p=m.querySelector('#newPass').value,p2=m.querySelector('#newPass2').value,err=m.querySelector('#createError');const usernames=Object.values(u).map(x=>(x.username||'').toLowerCase());if(!/^[A-Za-z0-9._-]{3,20}$/.test(username)){err.textContent='Nome de usuário inválido. Use 3–20 caracteres.';return}if(usernames.includes(username.toLowerCase())){err.textContent='Esse nome de usuário já está em uso. Escolha outro.';return}if(u[email]){err.textContent='Este e-mail já possui uma conta.';return}if(p!==p2){err.textContent='As senhas não coincidem.';return}if(!p||p.length<6){err.textContent='A senha precisa ter pelo menos 6 caracteres.';return}const nova={name,username,email,data:defaultData(name,email)};Promise.resolve(window.mwSenha?window.mwSenha.grava(nova,p):(nova.password=p)).then(function(){u[email]=nova;saveUsers(u);m.classList.add('hidden');userInput.value=email;passInput.value='';refreshLogin();notify('Conta criada com sucesso. Agora você pode entrar.');});};});
+  create?.addEventListener('click',()=>{const m=authModal('Criar sua conta',`<form id="createForm"><div class="form-field"><label for="newName">Nome completo</label><input id="newName" required placeholder="Ex.: Mateus Silva"></div><div class="form-field"><label for="newUsername">Nome de usuário</label><input id="newUsername" required pattern="[A-Za-z0-9._\-]{3,20}" placeholder="Ex.: mateus.dev"><small class="field-hint">3–20 caracteres: letras, números, ponto, hífen ou sublinhado.</small></div><div class="form-field"><label for="newEmail">E-mail</label><input id="newEmail" type="email" required placeholder="voce@exemplo.com"></div><div class="form-field"><label for="newPass">Senha</label><input id="newPass" type="password" required placeholder="Escolha uma senha segura"></div><div class="form-field"><label for="newPass2">Confirmar senha</label><input id="newPass2" type="password" required placeholder="Digite a senha novamente"></div><div class="form-error" id="createError"></div><div class="profile-actions"><button class="save-btn" type="submit">Criar conta</button></div><p style="color:var(--muted);font-size:12px">Sua conta e seus dados ficam separados por usuário neste navegador.</p></form>`);m.querySelector('#createForm').onsubmit=e=>{e.preventDefault();const u=users(),name=m.querySelector('#newName').value.trim(),username=m.querySelector('#newUsername').value.trim(),email=m.querySelector('#newEmail').value.trim().toLowerCase(),p=m.querySelector('#newPass').value,p2=m.querySelector('#newPass2').value,err=m.querySelector('#createError');const usernames=Object.values(u).map(x=>(x.username||'').toLowerCase());if(!/^[A-Za-z0-9._-]{3,20}$/.test(username)){err.textContent='Nome de usuário inválido. Use 3–20 caracteres.';return}if(usernames.includes(username.toLowerCase())){err.textContent='Esse nome de usuário já está em uso. Escolha outro.';return}if(u[email]){err.textContent='Este e-mail já possui uma conta.';return}if(p!==p2){err.textContent='As senhas não coincidem.';return}if(!p||p.length<6){err.textContent='A senha precisa ter pelo menos 6 caracteres.';return}const nova={name,username,email,data:defaultData(name,email)};Promise.resolve(window.mwSenha?window.mwSenha.grava(nova,p):(nova.password=p)).then(function(){u[email]=nova;saveUsers(u);m.classList.add('hidden');userInput.value=email;passInput.value='';refreshLogin();notify('Conta criada com sucesso. Agora você pode entrar.');});};});
 
   /* legacy recovery modal disabled; login-only OTP controller handles recovery */
 
@@ -29018,6 +29018,13 @@ html body #app #view-files .mw-arq-aviso strong{ display: block; color: var(--ds
    claro — abaixo do AA nos dois. Sobre um fundo colorido, quem marca o
    link é o sublinhado; a cor pode ser a do texto forte, que contrasta
    com qualquer um dos dois fundos. */
+/* O subtítulo do cabeçalho de seção sobe de terciário para secundário.
+   Medido: sobre a parte mais clara do gradiente do cartão de Perfil ele
+   dava 4,48:1 — 0,4% abaixo do AA, no limite exato. Em vez de mexer no
+   token global (que passa em todo o resto), sobe só esta classe, que é
+   subtítulo de seção: texto que se lê, não sussurro. */
+html body #app .section-head span{ color: var(--ds-txt-2); }
+
 html body #app #view-files .mw-arq-link{
   border: 0; padding: 0; background: none; cursor: pointer;
   font: inherit; color: var(--ds-txt); font-weight: 680;
@@ -29647,6 +29654,161 @@ html body #app #view-files .mw-arq-vazio strong{
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', liga);
   else liga();
+})();
+</script>
+
+<style id="mw-listas-longas">
+/* =====================================================================
+   §16 LISTAS COM CONTEÚDO LONGO
+   =====================================================================
+   Achado da auditoria sob carga: numa anotação longa o botão "Excluir"
+   aparecia como "Exc" e vazava para fora do cartão.
+
+   A causa é uma regra de flexbox que quase todo mundo esbarra uma vez:
+   .list-item é flex, e o <div> do texto não tem min-width:0. Sem isso
+   ele se recusa a encolher abaixo da largura do próprio conteúdo, e
+   quem cede é o vizinho — o botão, que tem flex-shrink:1 por padrão.
+   Corrigir do lado do botão só (com flex:0 0 auto) resolveria o
+   esmagamento mas não o vazamento; é o min-width:0 no texto que devolve
+   a conta ao lugar certo.
+   ===================================================================== */
+html body #app .list-item > div:first-child{ min-width: 0; }
+html body #app .list-item > .small-btn,
+html body #app .list-item > .mw-item-acoes{ flex: 0 0 auto; }
+html body #app .list-item .small-btn{ white-space: nowrap; }
+
+/* O nome do item também precisa de saída: sem isto, um título sem
+   espaços (um link colado, por exemplo) empurra tudo de novo. */
+html body #app .list-item > div:first-child > strong{
+  display: block; overflow-wrap: anywhere;
+}
+
+/* --- Anotação longa ------------------------------------------------------
+   O corpo era impresso inteiro: quarenta anotações viravam nove mil
+   pixels de rolagem, e a lista deixava de servir para achar alguma
+   coisa. Quatro linhas mostram o suficiente para reconhecer a anotação;
+   o resto abre com um toque. O corte usa line-clamp, que respeita a
+   altura da linha, em vez de uma altura fixa que corta letra ao meio. */
+html body #app #notesList .list-item > div:first-child > small{
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+html body #app #notesList .list-item.mw-nota-aberta > div:first-child > small,
+html body #app #notesList.mw-medindo .list-item > div:first-child > small{
+  -webkit-line-clamp: unset;
+  display: block;
+}
+/* Enquanto mede, nada pisca: a lista fica invisível por um quadro em vez
+   de mostrar todos os textos abertos e fechar de novo. */
+html body #app #notesList.mw-medindo{ visibility: hidden; }
+html body #app .mw-nota-ver{
+  display: inline-block; margin-top: 7px;
+  border: 0; padding: 0; background: none; cursor: pointer;
+  font: inherit; font-size: 11px; font-weight: 650;
+  color: var(--ds-ac, #5b6cff);
+  text-decoration: underline; text-underline-offset: 2px;
+}
+html body #app .mw-nota-ver:hover{ filter: brightness(1.15); }
+</style>
+
+<script id="mw-listas-longas-js">
+(function(){
+  'use strict';
+  /* O "ver mais" das anotações.
+
+     Só aparece onde faz falta: o botão é acrescentado quando o texto
+     REALMENTE transborda o corte de quatro linhas. Numa anotação de
+     duas linhas ele seria um controle que não faz nada.
+
+     A lista de anotações é reescrita inteira pelo renderAll a cada
+     gravação, então isto roda de novo na corrente do mwDashRefresh —
+     e é idempotente, porque marca o item que já tratou. */
+
+  function aplica(){
+    var lista = document.getElementById('notesList');
+    if (!lista) return;
+    var itens = [].slice.call(lista.querySelectorAll('.list-item'))
+      .filter(function(it){ return !it.classList.contains('mw-nota-aberta'); });
+    if (!itens.length) return;
+
+    /* Como saber se o texto foi cortado:
+
+       o caminho óbvio (scrollHeight > clientHeight) NÃO funciona com
+       -webkit-line-clamp. Medido: os dois valores vêm iguais, porque o
+       clamp não cria área rolável — ele simplesmente não pinta o resto.
+       O botão nunca aparecia.
+
+       Então a medida é feita com o corte desligado, uma vez para a
+       lista inteira: tira o clamp de todos, lê todas as alturas, repõe.
+       São duas reflows no total, e não duas por anotação. */
+    /* Medir com a área ESCONDIDA devolve zero em tudo, e zero não é
+       maior que zero: era por isso que o botão nunca aparecia. Na carga
+       da página a lista de anotações existe, mas a área está com
+       display:none. Sem esta saída a função decidia errado; com ela, a
+       decisão espera a área abrir. */
+    if (getComputedStyle(lista).display === 'none' || !lista.offsetParent) return;
+
+    var caixas = itens.map(function(it){ return it.querySelector(':scope > div:first-child > small'); });
+    lista.classList.add('mw-medindo');
+    var cheias = caixas.map(function(el){ return el ? el.getBoundingClientRect().height : 0; });
+    lista.classList.remove('mw-medindo');
+    var cortadas = caixas.map(function(el){ return el ? el.getBoundingClientRect().height : 0; });
+    if (!cheias.some(function(h){ return h > 0; })) return;
+
+    itens.forEach(function(item, i){
+      var texto = caixas[i];
+      if (!texto) return;
+      var jaTem = item.querySelector('.mw-nota-ver');
+      var transborda = cheias[i] > cortadas[i] + 2;
+      if (!transborda){ if (jaTem) jaTem.remove(); return; }
+      if (jaTem) return;
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'mw-nota-ver';
+      b.textContent = 'Ver mais';
+      b.setAttribute('aria-expanded', 'false');
+      texto.insertAdjacentElement('afterend', b);
+    });
+  }
+
+  document.addEventListener('click', function(ev){
+    var b = ev.target.closest && ev.target.closest('.mw-nota-ver');
+    if (!b) return;
+    var item = b.closest('.list-item');
+    if (!item) return;
+    var aberto = item.classList.toggle('mw-nota-aberta');
+    b.textContent = aberto ? 'Ver menos' : 'Ver mais';
+    b.setAttribute('aria-expanded', aberto ? 'true' : 'false');
+  });
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', aplica);
+  else aplica();
+
+  var anterior = window.mwDashRefresh;
+  window.mwDashRefresh = function(d){
+    if (typeof anterior === 'function') { try { anterior(d); } catch(e){} }
+    try { aplica(); } catch(e){}
+  };
+
+  /* E de novo quando a área de Anotações ABRE: é o único momento em que
+     as alturas passam a ser mensuráveis. Encapsular showView é o padrão
+     que este arquivo já usa para reagir a troca de área; o clique direto
+     nos botões da barra lateral entra pelo mesmo caminho, mas o ouvinte
+     de clique cobre quem não passa por showView. */
+  var mostrarAntes = window.showView;
+  if (typeof mostrarAntes === 'function') {
+    window.showView = function(v){
+      mostrarAntes(v);
+      if (v === 'notes') setTimeout(function(){ try { aplica(); } catch(e){} }, 30);
+    };
+  }
+  document.addEventListener('click', function(ev){
+    var alvo = ev.target.closest && ev.target.closest('[data-view="notes"],[data-ir="notes"]');
+    if (alvo) setTimeout(function(){ try { aplica(); } catch(e){} }, 60);
+  });
 })();
 </script>
 
