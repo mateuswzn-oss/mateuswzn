@@ -63,6 +63,7 @@ declare -a NOMES=(
   "7 contraste · coleta + medida"
   "8 estrutura · IDs e rótulos"
   "9 criação · todos os caminhos"
+  "10 offline · service worker"
 )
 declare -a CMDS=(
   "node tools/testes/1-regressao.mjs"
@@ -75,6 +76,7 @@ declare -a CMDS=(
   "for l in 1440 834 390; do for t in dark light; do node tools/testes/7-contraste-coleta.mjs \$l \$t || exit 1; done; done; python3 tools/testes/7-contraste-medir.py"
   "node tools/testes/8-estrutura.mjs"
   "node tools/testes/9-criacao.mjs"
+  "node tools/testes/10-offline.mjs"
 )
 
 SO_ESTES=("$@")
@@ -83,7 +85,7 @@ RESUMO=()
 
 for i in "${!NOMES[@]}"; do
   n="${NOMES[$i]}"
-  num="${n:0:1}"
+  num="${n%% *}"
   if [ ${#SO_ESTES[@]} -gt 0 ]; then
     escolhido=0
     for s in "${SO_ESTES[@]}"; do [ "$s" = "$num" ] && escolhido=1; done

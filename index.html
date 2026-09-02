@@ -15083,9 +15083,18 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
 
 <script id="mwv2-pwa">
 (() => {
-  // Service worker só funciona servido por http(s) — em file:// o navegador
-  // recusa o registro silenciosamente, então isso é seguro em qualquer caso.
-  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  // Service worker só funciona em contexto seguro; em file:// o navegador
+  // recusa o registro de qualquer jeito.
+  //
+  // A condição era (https OU hostname === 'localhost'). Ela deixava de
+  // fora 127.0.0.1 e [::1], que a especificação também trata como
+  // seguros — e o efeito era silencioso: quem servia a pasta em
+  // 127.0.0.1 para testar simplesmente não tinha service worker
+  // nenhum, sem nenhum aviso. Foi assim que o teste de offline
+  // descobriu isto: ele media 127.0.0.1 e não achava registro algum.
+  // isSecureContext é a pergunta certa, e responde pelos quatro casos
+  // de uma vez.
+  if ('serviceWorker' in navigator && window.isSecureContext) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('sw.js').catch(() => {});
     });

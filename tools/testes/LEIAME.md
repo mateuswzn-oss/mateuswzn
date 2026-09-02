@@ -53,6 +53,7 @@ node tools/testes/1-regressao.mjs mobile
 | 7 | `7-contraste-coleta.mjs` + `7-contraste-medir.py` | razão de contraste WCAG medida **no pixel**, em 3 larguras × 2 temas | qualquer texto abaixo de 4.5:1 (3.0:1 se grande) |
 | 8 | `8-estrutura.mjs` | invariantes do DOM: IDs duplicados, `label[for]` órfão, `aria-labelledby` apontando para o nada | qualquer um deles |
 | 9 | `9-criacao.mjs` | os quatro caminhos de criar (o "+ Adicionar" da área, o atalho do painel, o "+" do topo, o "+" da barra de baixo) abrem o **mesmo** formulário | qualquer um deles abrir outro, ou o modal legado voltar |
+| 10 | `10-offline.mjs` | instala o service worker de verdade, desliga a rede e recarrega | o app não abrir, os dados sumirem, ou faltar folha de estilo |
 
 ### Por que o contraste é medido em duas etapas
 
@@ -87,6 +88,12 @@ resumidas aqui para quem for escrever um teste novo.
 - **`p.dragTo()` emite eventos de mouse.** Num celular o caminho é
   `PointerEvent` de tipo `touch`, que é outro código. O teste 5 monta o
   gesto à mão por isso.
+- **`localhost` não é a mesma coisa que `127.0.0.1`.** O registro do
+  service worker exigia `hostname === 'localhost'` e deixava de fora
+  `127.0.0.1` e `[::1]`, que a especificação também trata como seguros.
+  O efeito era silencioso: servir a pasta em 127.0.0.1 dava um app sem
+  service worker nenhum, sem aviso. `window.isSecureContext` responde
+  pelos quatro casos.
 - **Um controle que "não faz nada" pode estar fazendo a coisa errada.** O
   "+" da barra de baixo abria um formulário de três campos enquanto o
   "+ Adicionar" da mesma entidade abria um de seis. Nada na tela

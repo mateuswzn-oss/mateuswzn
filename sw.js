@@ -1,3 +1,27 @@
+/* v83 (BETA — a promessa de funcionar sem internet, medida pela primeira vez):
+   O README diz que o app "continua funcionando sem internet". Isso é uma
+   afirmação sobre o service worker, e até aqui ela nunca tinha sido
+   medida — só lida na especificação. O teste 10 instala o SW de verdade,
+   desliga a rede e recarrega.
+   A promessa se sustenta: sem rede o app abre direto no workspace (não
+   na tela de login), os dados locais continuam lá, as 181 folhas de
+   estilo vêm junto porque o app é um arquivo só, o fundo é pintado, a
+   troca de área responde, e nenhum erro de JS aparece.
+   Mas o teste começou falhando por um motivo que valia a pena:
+   O registro do service worker era guardado por
+       location.protocol === 'https:' || location.hostname === 'localhost'
+   e isso deixa de fora 127.0.0.1 e [::1], que a especificação também
+   trata como contextos seguros. O efeito era silencioso: quem servisse a
+   pasta em 127.0.0.1 para testar ficava sem service worker nenhum, sem
+   nenhum aviso na tela — e concluiria que o cache offline não funciona.
+   Em produção (https) nunca houve problema; o buraco era em
+   desenvolvimento. Agora a condição é window.isSecureContext, que é a
+   pergunta certa e responde pelos quatro casos de uma vez.
+   Fechou também a auditoria de controle morto: os quatro candidatos que
+   sobravam (Definir código, Importar backup, Escolher foto, Ajustar) são
+   honestos — três abrem o seletor de arquivo e o do código abre um
+   prompt. O que parecia inércia era o Playwright dispensando o prompt
+   sozinho. Nenhum botão do app fica em silêncio sem fazer nada. */
 /* v82 (BETA — dois formulários para a mesma coisa, e o celular pegava o pior):
    A auditoria desta rodada saiu à procura de controle morto — botão que
    não faz nada e não avisa nada — e achou coisa pior: um que fazia a
@@ -1045,7 +1069,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v82-beta';
+const CACHE_NAME = 'mw-shell-v83-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
