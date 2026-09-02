@@ -7,6 +7,9 @@ Sistema de interface do Mateus Workspace. Existe para **substituir** as folhas l
 ds/mw-ds.css      o sistema
 ds/index.html     a galeria: todo componente, nos dois temas, em quatro larguras
 ds/amostra.html   uma tela do app montada só com o sistema, dentro da galeria
+
+tools/ds/dependencias.py   antes de migrar: que folhas legadas pintam a área
+tools/ds/quem-vence.mjs    depois de migrar: que regra legada ainda ganha lá dentro
 ```
 
 Para ver: `tools/testes/rodar.sh` sobe o servidor, ou `python3 -m http.server 8795` na raiz
@@ -130,12 +133,29 @@ Uma área por vez. Sem exceção — migrar duas juntas é como o legado virou o
    restringir o seletor àquela área.
 6. Reescrever a marcação com as classes do sistema.
 7. Rodar a suíte + o teste da área.
+8. **Conferir quem está ganhando dentro da área.** Passar no teste prova que
+   nada quebrou; não prova que o sistema é quem pinta.
+
+   ```bash
+   node tools/ds/quem-vence.mjs subjects escuro
+   node tools/ds/quem-vence.mjs subjects claro
+   ```
+
+   O que sobrar na lista são regras legadas que miram o ELEMENTO (`h2`, `p`,
+   `button`) em vez de uma classe — o `:where()` do desligamento não as
+   alcança, e as que têm `!important` vencem o sistema. Para cada uma,
+   **restringir o seletor legado** com `:not([data-mw-migrada] *)`, e não
+   empilhar outra regra por cima. Cada migração encurta mais esse alcance,
+   até a regra poder sair inteira.
+
+   Na migração de Suporte foram exatamente duas, ambas de
+   `mw-smart-light-calendar-polish`, ambas sobre cor de texto no tema claro.
 
 ### Depois
 
-8. Comparar com o "antes": nenhuma funcionalidade perdida, nenhum erro de JS, contraste
+9. Comparar com o "antes": nenhuma funcionalidade perdida, nenhum erro de JS, contraste
    mantido ou melhor, nenhum vazamento horizontal.
-9. Commit da área sozinha. Migração de duas áreas num commit é irreversível na prática.
+10. Commit da área sozinha. Migração de duas áreas num commit é irreversível na prática.
 
 ### O fallback
 
@@ -150,7 +170,7 @@ Da menor superfície de risco para a maior. Cada uma é uma rodada.
 
 | # | área | por que nesta posição |
 |---|---|---|
-| 1 | Suporte | a menor do app (267px de altura), poucos componentes, nenhum dado crítico |
+| ✅ 1 | ~~Suporte~~ | **migrada.** 25 verificações de funcionalidade antes e depois, idênticas; zero regra legada vencendo lá dentro |
 | 2 | Instituições | CRUD puro, já testado ponta a ponta pelo teste 11 |
 | 3 | Disciplinas · Projetos · Atividades · Anotações | mesmo formulário e mesma lista; migram juntas ou brigam entre si |
 | 4 | Configurações · Perfil | muitos campos, pouca lógica |
