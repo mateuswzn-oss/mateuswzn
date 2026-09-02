@@ -142,7 +142,7 @@ await p.evaluate(d => {
 }, { hoje: dia(0), longe: dia(40), ontem: dia(-1) });
 await vaiPara(p, 'activities'); await p.waitForTimeout(900);
 
-const naTela = await p.evaluate(() => [...document.querySelectorAll('#activitiesList .list-item')]
+const naTela = await p.evaluate(() => [...document.querySelectorAll('#activitiesList > [data-mw-linha]')]
   .filter(e => !e.hidden)
   .map(e => ({ nome: e.querySelector('strong').textContent,
                indice: Number(e.querySelector('[data-index]').getAttribute('data-index')) })));
@@ -153,7 +153,7 @@ const bateAntes = await p.evaluate(l => l.every(x => window.data.activities[x.in
 if (!bateAntes) falha('o índice na tela não aponta para o item certo do array');
 
 await p.evaluate(() => {
-  const b = [...document.querySelectorAll('#activitiesList .list-item')].filter(e => !e.hidden)[0].querySelector('[data-delete]');
+  const b = [...document.querySelectorAll('#activitiesList > [data-mw-linha]')].filter(e => !e.hidden)[0].querySelector('[data-delete]');
   b.click();
 });
 await p.waitForTimeout(500);

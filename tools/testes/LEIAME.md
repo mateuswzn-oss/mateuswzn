@@ -58,7 +58,7 @@ node tools/testes/1-regressao.mjs mobile
 | 12 | `12-teclado.mjs` | operar sem mouse: atalho para o conteúdo, Escape fechando formulário e diálogo, Tab preso dentro do modal, foco voltando para quem abriu | qualquer um deles |
 | 13 | `13-ds.mjs` | o Design System carrega **sem o app** (galeria, 2 temas × 4 larguras), pinta **exatamente** as áreas migradas e nenhuma outra, e nenhum nome `ds-*` anda solto fora delas | o sistema depender de regra legada, a folha mexer em área não migrada, uma área migrada não mudar ao desligar a folha, ou um `ds-*` aparecer onde o sistema não alcança |
 | 14 | `14-suporte.mjs` | a área migrada faz tudo o que fazia: abrir atendimento, validar, conversar, anexar, encerrar, persistir — e nenhuma regra legada vence lá dentro | uma função perder-se na migração, ou o legado voltar a pintar a área |
-| 15 | `15-area.mjs <área>` | o teste de área genérico, o "antes e depois" de cada migração: estado vazio, formulário com foco e rótulos, criar pela interface, botões do item ao alcance, e nada vazando em 3 larguras × 2 temas. Roda nas seis coleções | qualquer um deles, em qualquer área — migrada ou não |
+| 15 | `15-area.mjs <área>` | o teste de área genérico, o "antes e depois" de cada migração: estado vazio, formulário com foco e rótulos, criar pela interface, botões do item ao alcance, **agrupamento e ordem de pé com seis itens**, e nada vazando em 3 larguras × 2 temas. Roda nas seis coleções | qualquer um deles, em qualquer área — migrada ou não |
 
 ### Por que o contraste é medido em duas etapas
 
@@ -169,6 +169,27 @@ resumidas aqui para quem for escrever um teste novo.
   outro compõe duas translucidezes sobre o gradiente animado: o mesmo texto
   que dá 4,9:1 na galeria (chão `#020617`, parado) caiu para 3,4:1 dentro do
   app. Cartão dentro de cartão agora é superfície opaca.
+- **Seletor que não casa não levanta erro.** É o defeito de migração mais
+  comum e o mais silencioso: um `querySelector` preso a uma classe que a
+  migração renomeou devolve `null`, o bloco desiste, e não há erro no
+  console nem pixel fora do lugar. Na migração das quatro áreas de coleção
+  foram OITO lugares assim — a agenda de Atividades, a ordem de Disciplinas
+  e de Projetos, o "Ver mais" das Anotações, o filtro, o `monta()` do
+  quadro, o foco de volta no Escape, e o filtro de Projetos que procurava
+  `[data-v]` num selo que deixara de emiti-lo. A regra: **o que o JS
+  precisa achar depois é atributo, não classe.**
+- **Um item na lista não testa lista nenhuma.** Todos os blocos que
+  reordenam ou agrupam desistem cedo quando há menos de dois itens — então
+  um teste que cria UM item passa por cima deles inteiros. O teste 15 semeia
+  seis de propósito, e verifica que os títulos de grupo continuam lá.
+- **Guarda que degrada em silêncio esconde o defeito que deveria evitar.**
+  `(typeof mwArea === 'function') && mwArea(a)` parece defensivo: quando o
+  helper não é global, dá `false` calado e a área migrada segue montando o
+  material antigo. Ou se exporta o helper, ou se pergunta ao DOM na hora.
+- **A checagem estática lê comentário também.** O teste 13 confere se todo
+  nome do sistema usado no `index.html` existe na folha — e um nome citado
+  dentro de um comentário conta como uso, do mesmo jeito que o grep acha
+  `id="x"` dentro de comentário. Quando acontecer, o texto é que muda.
 - **Grep no arquivo não serve para achar ID duplicado.** Ele acha `id="x"`
   dentro de comentário de CSS e dentro de string de JS, e reporta
   duplicata onde não existe nenhuma. O teste 8 mede no DOM depois de o

@@ -1,3 +1,63 @@
+/* v89 (BETA — as quatro áreas de coleção no Design System, e oito
+   seletores que a migração teria quebrado em silêncio):
+
+   AS ÁREAS
+   Disciplinas, Projetos, Atividades e Anotações passaram para o sistema
+   numa rodada só, porque compartilham o gerador do formulário, o
+   template da linha e os selos: migrar uma sem as outras deixaria o
+   mesmo gerador servindo dois materiais ao mesmo tempo. Com Suporte e
+   Instituições, são SEIS áreas sob o Design System, todas com zero
+   regras legadas vencendo lá dentro, nos dois temas.
+
+   O template da linha, que estava repetido quatro vezes, virou um lugar
+   só (mwLinha). Enquanto era só legado isso era repetição; na migração
+   viraria armadilha, porque cada cópia teria de aprender a escolher o
+   conjunto de classes sozinha.
+
+   OITO SELETORES QUE TERIAM QUEBRADO CALADOS
+   Toda migração renomeia classes, e todo querySelector preso a uma
+   dessas classes quebra junto — sem erro no console e sem um pixel fora
+   do lugar, porque seletor que não casa devolve null e o bloco desiste:
+
+     · a agenda de Atividades procurava .list-item      → a lista voltaria
+       à ordem de cadastro, sem os títulos "Atrasadas / Hoje / Esta semana"
+     · a ordem por semestre de Disciplinas, idem
+     · a ordem por prazo de Projetos, idem
+     · o "Ver mais" das Anotações                       → nunca apareceria
+     · o filtro (aplica)                                → deixaria de filtrar
+     · o monta() do quadro procurava .section-head      → o quadro inteiro
+       nunca seria construído
+     · o Escape no formulário procurava .add-btn        → o foco cairia no
+       <body> em vez de voltar ao botão
+     · o filtro de Projetos procurava [data-v] no selo  → "Em andamento" e
+       "Concluídos" não achariam nada
+
+   A regra que sai daí: o que o JS precisa achar depois é ATRIBUTO, não
+   classe. [data-mw-linha], [data-mw-cabeca], [data-add], [data-filtro],
+   data-v. Atributo é dado; o desligamento do legado mata classes e não
+   os alcança, e o nome não muda com a migração.
+
+   E uma segunda, sobre guardas: `(typeof mwArea === 'function') &&
+   mwArea(a)` parece defensivo e é o contrário. O helper não era global,
+   então a expressão dava false calada — e a barra Quadro/Lista e os
+   filtros seguiram montando o material antigo dentro de áreas já
+   migradas, até serem medidos.
+
+   O TESTE QUE FALTAVA
+   Nenhum desses oito aparecia com UM item na lista: todo bloco que
+   reordena ou agrupa desiste quando há menos de dois. O teste de área
+   agora semeia seis e confere que o agrupamento continua de pé. Provado
+   contra o defeito real: reintroduzido de propósito, ele falha; corrigido,
+   passa.
+
+   FERRAMENTA
+   O quem-vence.mjs passou a separar "legado por substituir" de "CSS
+   próprio da área". O quadro de Projetos e a agenda são componentes que
+   só existem naquela tela — o sistema não vai ter um quadro Kanban. O que
+   se exige deles é que leiam os TOKENS do sistema, e é o que passaram a
+   fazer; os dois números ficam à vista no relatório, em vez de uma
+   exceção silenciosa. */
+
 /* v88 (BETA — Instituições migrada, e três defeitos que a migração revelou):
 
    A ÁREA
@@ -1290,7 +1350,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v88-beta';
+const CACHE_NAME = 'mw-shell-v89-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

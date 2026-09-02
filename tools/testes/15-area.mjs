@@ -114,6 +114,68 @@ const acoes = await p.evaluate(a => {
 ok('os botões do item existem e cabem dentro dele',
    acoes.achou && acoes.bts.length >= 1 && acoes.bts.every(x => x.dentro && x.alt >= 24), acoes);
 
+/* ---- 4b. com vários itens, o agrupamento da área continua de pé --------
+   Três áreas reordenam e agrupam a própria lista depois que o render
+   termina: a agenda de Atividades ("Atrasadas / Hoje / Esta semana"), a
+   ordem por semestre de Disciplinas, a ordem por prazo de Projetos. As
+   três achavam as linhas por `.list-item`.
+
+   Esse nome muda quando a área migra para o Design System — e aí cada um
+   desses blocos acha ZERO itens e desiste em silêncio: sem erro no
+   console, sem pixel fora do lugar, só uma lista que voltou à ordem de
+   cadastro e perdeu os títulos. Com um item só na lista nada disso
+   aparece, porque todos eles desistem cedo quando há menos de dois.
+
+   Por isso este trecho semeia seis. */
+const AGRUPA = {
+  activities: '.mw-agenda-titulo',
+  subjects:   '.mw-ordem-titulo',
+  projects:   null,   /* ordena, mas não põe título: o quadro já agrupa */
+  notes:      null,
+  institutions: null
+};
+const varios = await p.evaluate(async ([a, campo]) => {
+  const hoje = new Date();
+  const dia = n => { const d = new Date(hoje); d.setDate(d.getDate() + n); return d.toISOString().slice(0,10); };
+  const datas = [-9, -2, 0, 1, 5, 30];
+  window.data[a] = datas.map((d, i) => {
+    const o = {};
+    o[campo] = 'Item ' + (i + 1);
+    o.description = 'linha de teste';
+    o.date = dia(d);
+    o.semester = (i % 3) + 1;
+    o.status = ['Em andamento','Concluído','Em revisão'][i % 3];
+    return o;
+  });
+  window.save();
+  await new Promise(r => setTimeout(r, 700));
+  const lista = document.getElementById(a + 'List');
+  return {
+    linhas: lista.querySelectorAll('[data-mw-linha]').length,
+    ordem: [...lista.querySelectorAll('[data-mw-linha]')].map(e => (e.textContent||'').trim().slice(0,7))
+  };
+}, [area, CAMPO_NOME]);
+ok('as seis linhas aparecem', varios.linhas === 6, varios);
+
+if (AGRUPA[area]) {
+  const g = await p.evaluate(([a, sel]) => {
+    const lista = document.getElementById(a + 'List');
+    const t = [...lista.querySelectorAll(sel)];
+    return { titulos: t.length, rotulos: t.map(x => (x.textContent||'').trim().slice(0,18)) };
+  }, [area, AGRUPA[area]]);
+  ok('o agrupamento da área continua de pé', g.titulos >= 1, g);
+} else {
+  /* Sem títulos, o que se pode afirmar é que a área REORDENOU: a ordem
+     na tela não é a ordem de cadastro. */
+  const reordenou = varios.ordem.join('|') !== ['Item 1','Item 2','Item 3','Item 4','Item 5','Item 6'].map(x=>x.slice(0,7)).join('|');
+  console.log('  ' + (area === 'projects' ? 'ordena por prazo (sem títulos)' : 'não agrupa').padEnd(46),
+              reordenou ? 'reordenou' : 'ordem de cadastro');
+}
+
+/* volta ao estado de um item só, para o resto do teste medir o mesmo de antes */
+await p.evaluate(a => { window.data[a] = window.data[a].slice(0,1); window.save(); }, area);
+await p.waitForTimeout(500);
+
 /* ---- 5. nada vaza, em três larguras e dois temas ------------------------ */
 for (const [rot, larg] of [['desktop', 1280], ['tablet', 834], ['celular', 390]]) {
   for (const tema of ['escuro', 'claro']) {

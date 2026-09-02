@@ -4191,7 +4191,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
          código: o nome, o tipo e o curso são digitados pela pessoa. -->
     <section class="view ds" id="view-institutions" data-mw-migrada="1">
   <section class="ds-cartao">
-    <div class="ds-secao-cabeca">
+    <div class="ds-secao-cabeca" data-mw-cabeca>
       <div><h2 class="ds-titulo">Instituições</h2>
       <p class="ds-micro">Onde você estuda. Cada disciplina aponta para a sua.</p></div>
       <div class="ds-secao-acoes">
@@ -4205,9 +4205,44 @@ body.light .mw-faceid-gate-card p{color:#526988}
     <div class="ds-lista" id="institutionsList"></div>
   </section>
 </section>
-    <section class="view" id="view-subjects"><section class="card section"><div class="section-head"><h3>Disciplinas</h3><button class="add-btn" data-add="subjects">+ Adicionar</button></div><div class="list" id="subjectsList"></div></section></section>
-    <section class="view" id="view-projects"><section class="card section"><div class="section-head"><h3>Projetos</h3><button class="add-btn" data-add="projects">+ Adicionar</button></div><div class="list" id="projectsList"></div></section></section>
-    <section class="view" id="view-activities"><section class="card section"><div class="section-head"><h3>Atividades</h3><button class="add-btn" data-add="activities">+ Adicionar</button></div><div class="list" id="activitiesList"></div></section></section>
+    <section class="view ds" id="view-subjects" data-mw-migrada="1">
+  <section class="ds-cartao">
+    <div class="ds-secao-cabeca" data-mw-cabeca>
+      <div><h2 class="ds-titulo">Disciplinas</h2>
+      <p class="ds-micro">O que você cursa neste semestre, e o quanto já andou em cada uma.</p></div>
+      <div class="ds-secao-acoes">
+        <!-- data-add é o gancho do fluxo de criação; a classe .add-btn
+             não vem junto porque o legado a alcança com !important. -->
+        <button type="button" class="ds-btn ds-btn-primario ds-btn-p" data-add="subjects">+ Adicionar</button>
+      </div>
+    </div>
+    <div class="ds-lista" id="subjectsList"></div>
+  </section>
+</section>
+    <section class="view ds" id="view-projects" data-mw-migrada="1">
+  <section class="ds-cartao">
+    <div class="ds-secao-cabeca" data-mw-cabeca>
+      <div><h2 class="ds-titulo">Projetos</h2>
+      <p class="ds-micro">Do planejamento à entrega, no quadro ou em lista.</p></div>
+      <div class="ds-secao-acoes">
+        <button type="button" class="ds-btn ds-btn-primario ds-btn-p" data-add="projects">+ Adicionar</button>
+      </div>
+    </div>
+    <div class="ds-lista" id="projectsList"></div>
+  </section>
+</section>
+    <section class="view ds" id="view-activities" data-mw-migrada="1">
+  <section class="ds-cartao">
+    <div class="ds-secao-cabeca" data-mw-cabeca>
+      <div><h2 class="ds-titulo">Atividades</h2>
+      <p class="ds-micro">Listas, provas e entregas — em ordem de prazo, com o que já passou em destaque.</p></div>
+      <div class="ds-secao-acoes">
+        <button type="button" class="ds-btn ds-btn-primario ds-btn-p" data-add="activities">+ Adicionar</button>
+      </div>
+    </div>
+    <div class="ds-lista" id="activitiesList"></div>
+  </section>
+</section>
     <!-- Calendário: o mês já existia como painel no dashboard e
          funcionava. Em vez de escrever um segundo calendário, ele foi
          PROMOVIDO a área própria (o script abaixo o move para cá) e
@@ -4327,7 +4362,18 @@ body.light .mw-faceid-gate-card p{color:#526988}
         <p class="mw-rel-limites-pe">Uma cópia completa dos seus dados sai em <button type="button" class="mw-rel-link" data-rel-ir="settings">Configurações › Backup</button>.</p>
       </section>
     </section>
-    <section class="view" id="view-notes"><section class="card section"><div class="section-head"><h3>Anotações</h3><button class="add-btn" data-add="notes">+ Nova anotação</button></div><div class="list" id="notesList"></div></section></section>
+    <section class="view ds" id="view-notes" data-mw-migrada="1">
+  <section class="ds-cartao">
+    <div class="ds-secao-cabeca" data-mw-cabeca>
+      <div><h2 class="ds-titulo">Anotações</h2>
+      <p class="ds-micro">Decisões, referências e o que não pode se perder entre uma aula e outra.</p></div>
+      <div class="ds-secao-acoes">
+        <button type="button" class="ds-btn ds-btn-primario ds-btn-p" data-add="notes">+ Nova anotação</button>
+      </div>
+    </div>
+    <div class="ds-lista" id="notesList"></div>
+  </section>
+</section>
     <!-- Arquivos. Os arquivos são guardados de verdade, no IndexedDB
          deste navegador: entram, ficam, voltam depois de fechar o app e
          saem quando você apaga. O que ainda NÃO acontece é ir para o
@@ -4394,7 +4440,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
   </section>
 
   <form class="ds-cartao mw-support-panel hidden" id="mwSupportForm" novalidate>
-    <div class="ds-secao-cabeca">
+    <div class="ds-secao-cabeca" data-mw-cabeca>
       <div><h2 class="ds-titulo">Novo atendimento</h2></div>
       <div class="ds-secao-acoes">
         <button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwSupportFormBack">← Voltar</button>
@@ -5403,16 +5449,99 @@ window.mwDataHumana = mwDataHumana;
 function mwSelos(tipo, item){
   const selos = [];
   const esc2 = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  if (item.status) selos.push(`<span class="mw-selo mw-selo-status" data-v="${esc2(item.status)}">${esc2(item.status)}</span>`);
-  if (item.priority) selos.push(`<span class="mw-selo mw-selo-prio" data-v="${esc2(item.priority)}">${esc2(item.priority)}</span>`);
-  if (tipo === 'projects' && item.deadline) selos.push(`<span class="mw-selo">Prazo: ${esc2(mwDataHumana(item.deadline))}</span>`);
-  if (item.members) selos.push(`<span class="mw-selo">${esc2(item.members)}</span>`);
-  if (item.tag) selos.push(`<span class="mw-selo">${esc2(item.tag)}</span>`);
-  return selos.length ? `<div class="mw-selos">${selos.join('')}</div>` : '';
+  const migrada = (typeof mwArea === 'function') && mwArea(tipo);
+
+  /* O legado pinta o selo pelo VALOR, com um seletor por texto
+     (`[data-v="Em revisão"]`). Isso funciona, mas amarra a cor ao
+     vocabulário do app dentro da folha de estilo.
+
+     Na área migrada quem faz o mapa é o app, não o Design System: o
+     sistema oferece tons (ok, info, alerta, perigo) e aqui se diz qual
+     valor tem qual tom. É a mesma regra dos tokens — componente não
+     conhece o assunto, a tela conhece. */
+  /* Nome de classe inteiro, e não o sufixo: a checagem estática do teste
+     13 lê os nomes do sistema que aparecem no arquivo e confere se a folha
+     define cada um. Montando o nome por concatenação, o que ela enxerga é
+     só o prefixo sem o tom — que a folha não define, e com razão. */
+  const TOM = {
+    'Concluído':    'ds-selo-ok',
+    'Em andamento': 'ds-selo-info',
+    'Em revisão':   'ds-selo-alerta',
+    'Alta':         'ds-selo-perigo',
+    'Média':        'ds-selo-alerta',
+    'Baixa':        'ds-selo-liso'
+  };
+  const selo = (papel, valor, texto) => {
+    /* `data-v` fica nos DOIS materiais: é dado, não aparência. O
+       desligamento do legado mata classes, não atributos — e é por
+       data-v que o filtro de Projetos acha "Em andamento" e
+       "Concluídos". Tirá-lo na área migrada quebraria o filtro sem
+       quebrar um pixel, que é o tipo de defeito que ninguém vê. */
+    const attr = valor ? ` data-v="${valor}"` : '';
+    if (migrada) {
+      const tom = TOM[valor];
+      return `<span class="ds-selo${tom ? ' ' + tom : ''}"${attr}>${texto}</span>`;
+    }
+    return `<span class="mw-selo${papel ? ' mw-selo-' + papel : ''}"${attr}>${texto}</span>`;
+  };
+
+  if (item.status) selos.push(selo('status', esc2(item.status), esc2(item.status)));
+  if (item.priority) selos.push(selo('prio', esc2(item.priority), esc2(item.priority)));
+  if (tipo === 'projects' && item.deadline) selos.push(selo('', '', 'Prazo: ' + esc2(mwDataHumana(item.deadline))));
+  if (item.members) selos.push(selo('', '', esc2(item.members)));
+  if (item.tag) selos.push(selo('', '', esc2(item.tag)));
+  return selos.length ? `<div class="${migrada ? 'ds-selos' : 'mw-selos'}">${selos.join('')}</div>` : '';
 }
-function empty(text){return `<div class="empty"><strong>${esc(text)}</strong><span>Use o botão + para começar.</span></div>`}
+
+/* As quatro áreas de coleção repetiam o MESMO template de linha, com o
+   mesmo par de botões, quatro vezes. Enquanto era só legado isso era
+   apenas repetição; na migração vira armadilha, porque cada cópia teria
+   de aprender a escolher o conjunto de classes sozinha — e a que
+   esquecesse ficaria sem regra nenhuma, que foi exatamente como os
+   botões de Projetos viraram um div de 0x0.
+
+   Agora existe um lugar só. `mwLinha` pergunta se a área está migrada e
+   emite UM conjunto de nomes ou o outro — nunca os dois, porque contra
+   `html body #app .list-item{ … !important }` não existe regra
+   acrescentada que ganhe: carregar o nome antigo é continuar sendo
+   pintado por ele.
+
+   `data-mw-linha` fica nos dois casos: é o gancho durável de quem
+   precisa achar a linha depois (teste, seletor), e não muda com a
+   migração. */
+function mwArea(area){
+  const v = document.getElementById('view-' + area);
+  return !!(v && v.hasAttribute('data-mw-migrada'));
+}
+/* Este bloco não é global: sem esta linha, `typeof mwArea === 'function'`
+   em QUALQUER outro <script> dá false — e um guard escrito assim não
+   levanta erro, apenas responde "não migrada" para sempre. Foi o que
+   aconteceu com a barra Quadro/Lista e com os filtros: eles seguiram
+   montando o material antigo dentro de uma área já migrada. */
+window.mwArea = mwArea;
+function mwLinha(area, i, titulo, apoio, extras, classeExtra){
+  const m = mwArea(area);
+  const cls = (novo, velho) => m ? novo : velho;
+  const bt = cls('ds-btn ds-btn-fantasma ds-btn-p', 'small-btn');
+  return '<div data-mw-linha class="' + cls('ds-item', 'list-item') + (classeExtra ? ' ' + classeExtra : '') + '">'
+    + '<div class="' + cls('ds-item-texto', '') + '">'
+    +   '<strong class="' + cls('ds-item-titulo', '') + '">' + titulo + '</strong>'
+    +   '<small class="' + cls('ds-item-apoio', '') + '">' + apoio + '</small>'
+    +   (extras || '')
+    + '</div>'
+    + '<div class="' + cls('ds-item-acoes', 'mw-item-acoes') + '">'
+    +   '<button class="' + bt + '" data-edit="' + area + '" data-index="' + i + '">Editar</button>'
+    +   '<button class="' + bt + '" data-delete="' + area + '" data-index="' + i + '">Excluir</button>'
+    + '</div></div>';
+}
+function empty(text, area){
+  const m = area && mwArea(area);
+  return m
+    ? `<div class="ds-vazio"><strong>${esc(text)}</strong><span class="ds-micro">Use o botão + para começar.</span></div>`
+    : `<div class="empty"><strong>${esc(text)}</strong><span>Use o botão + para começar.</span></div>`;
+}
 function projectHtml(p){return `<div class="project"><b>${esc(p.name)}</b><p>${esc(p.description||'Projeto acadêmico ou pessoal.')}</p><div class="tags"><span class="tag">${esc(p.tag||'Projeto')}</span></div></div>`}
-function renderAll(){const p=progress();$('#statSubjects').textContent=data.subjects.length;$('#statActivities').textContent=data.activities.length;$('#statProjects').textContent=data.projects.length;$('#statProgress').textContent=p+'%';$('#statSubjectsHint').textContent=data.subjects.length?'cadastradas no semestre':'Nenhuma cadastrada';$('#statActivitiesHint').textContent=data.activities.length?'registradas':'Nenhuma cadastrada';$('#statProjectsHint').textContent=data.projects.length?'cadastrados':'Nenhum cadastrado';$('#statProgressHint').textContent=data.subjects.length?'média das disciplinas':'Sem dados ainda';$('#subjectsCountLabel').textContent=`${data.subjects.length} cadastrada${data.subjects.length===1?'':'s'}`;$('#projectsCountLabel').textContent=`${data.projects.length} cadastrado${data.projects.length===1?'':'s'}`;$('#collegeProgress').textContent=p+'% — calculado automaticamente com seus registros.';$('#collegeProgress2').textContent=p+'% calculado a partir das suas disciplinas';$('#homeSubjects').innerHTML=data.subjects.length?data.subjects.slice(0,5).map(s=>`<div class="course"><div class="course-dot">${esc((s.name||'DS').slice(0,2).toUpperCase())}</div><div><b>${esc(s.name)}</b><small>${esc(s.description||'Disciplina do semestre')}</small></div><div class="progress"><i style="width:${Math.max(0,Math.min(100,Number(s.progress)||0))}%"></i></div></div>`).join(''):empty('Nenhuma disciplina cadastrada.');$('#homeProjects').innerHTML=data.projects.length?data.projects.slice(0,4).map(projectHtml).join(''):empty('Nenhum projeto cadastrado.');$('#subjectsList').innerHTML=data.subjects.length?data.subjects.map((s,i)=>`<div class="list-item"><div><strong>${esc(s.name)}</strong><small>${esc(s.description||'Sem descrição')} · ${Number(s.progress)||0}%</small></div><div class="mw-item-acoes"><button class="small-btn" data-edit="subjects" data-index="${i}">Editar</button><button class="small-btn" data-delete="subjects" data-index="${i}">Excluir</button></div></div>`).join(''):empty('Nenhuma disciplina cadastrada.');$('#projectsList').innerHTML=data.projects.length?data.projects.map((p,i)=>`<div class="list-item"><div><strong>${esc(p.name)}</strong><small>${esc(p.description||'Sem descrição')}</small>${mwSelos('projects',p)}</div><div class="mw-item-acoes"><button class="small-btn" data-edit="projects" data-index="${i}">Editar</button><button class="small-btn" data-delete="projects" data-index="${i}">Excluir</button></div></div>`).join(''):empty('Nenhum projeto cadastrado.');$('#activitiesList').innerHTML=data.activities.length?data.activities.map((a,i)=>{const today=new Date();today.setHours(0,0,0,0);const due=a.date?new Date(a.date+'T00:00:00'):null;const overdue=!!(due&&due<today);const isToday=!!(due&&due.getTime()===today.getTime());const badge=overdue?'<span class="mw-due-badge overdue">Atrasada</span>':isToday?'<span class="mw-due-badge today">Hoje</span>':'';return `<div class="list-item${overdue?' mw-overdue':''}"><div><strong>${esc(a.name)}</strong><small>${esc(a.description||'Sem descrição')} · ${esc(mwDataHumana(a.date))}</small>${badge}${mwSelos('activities',a)}</div><div class="mw-item-acoes"><button class="small-btn" data-edit="activities" data-index="${i}">Editar</button><button class="small-btn" data-delete="activities" data-index="${i}">Excluir</button></div></div>`}).join(''):empty('Nenhuma atividade cadastrada.');$('#notesList').innerHTML=data.notes.length?data.notes.map((n,i)=>`<div class="list-item"><div><strong>${esc(n.title)}</strong><small>${esc(n.body||'')}</small></div><div class="mw-item-acoes"><button class="small-btn" data-edit="notes" data-index="${i}">Editar</button><button class="small-btn" data-delete="notes" data-index="${i}">Excluir</button></div></div>`).join(''):empty('Nenhuma anotação criada.');$$('[data-delete]').forEach(b=>b.onclick=()=>{data[b.dataset.delete].splice(Number(b.dataset.index),1);save();toast('Item removido')});if(typeof window.mwDashRefresh==='function')window.mwDashRefresh(data)}
+function renderAll(){const p=progress();$('#statSubjects').textContent=data.subjects.length;$('#statActivities').textContent=data.activities.length;$('#statProjects').textContent=data.projects.length;$('#statProgress').textContent=p+'%';$('#statSubjectsHint').textContent=data.subjects.length?'cadastradas no semestre':'Nenhuma cadastrada';$('#statActivitiesHint').textContent=data.activities.length?'registradas':'Nenhuma cadastrada';$('#statProjectsHint').textContent=data.projects.length?'cadastrados':'Nenhum cadastrado';$('#statProgressHint').textContent=data.subjects.length?'média das disciplinas':'Sem dados ainda';$('#subjectsCountLabel').textContent=`${data.subjects.length} cadastrada${data.subjects.length===1?'':'s'}`;$('#projectsCountLabel').textContent=`${data.projects.length} cadastrado${data.projects.length===1?'':'s'}`;$('#collegeProgress').textContent=p+'% — calculado automaticamente com seus registros.';$('#collegeProgress2').textContent=p+'% calculado a partir das suas disciplinas';$('#homeSubjects').innerHTML=data.subjects.length?data.subjects.slice(0,5).map(s=>`<div class="course"><div class="course-dot">${esc((s.name||'DS').slice(0,2).toUpperCase())}</div><div><b>${esc(s.name)}</b><small>${esc(s.description||'Disciplina do semestre')}</small></div><div class="progress"><i style="width:${Math.max(0,Math.min(100,Number(s.progress)||0))}%"></i></div></div>`).join(''):empty('Nenhuma disciplina cadastrada.');$('#homeProjects').innerHTML=data.projects.length?data.projects.slice(0,4).map(projectHtml).join(''):empty('Nenhum projeto cadastrado.');$('#subjectsList').innerHTML=data.subjects.length?data.subjects.map((s,i)=>mwLinha('subjects',i,esc(s.name),`${esc(s.description||'Sem descrição')} · ${Number(s.progress)||0}%`)).join(''):empty('Nenhuma disciplina cadastrada.','subjects');$('#projectsList').innerHTML=data.projects.length?data.projects.map((p,i)=>mwLinha('projects',i,esc(p.name),esc(p.description||'Sem descrição'),mwSelos('projects',p))).join(''):empty('Nenhum projeto cadastrado.','projects');$('#activitiesList').innerHTML=data.activities.length?data.activities.map((a,i)=>{const today=new Date();today.setHours(0,0,0,0);const due=a.date?new Date(a.date+'T00:00:00'):null;const overdue=!!(due&&due<today);const isToday=!!(due&&due.getTime()===today.getTime());const badge=overdue?'<span class="mw-due-badge overdue">Atrasada</span>':isToday?'<span class="mw-due-badge today">Hoje</span>':'';return mwLinha('activities',i,esc(a.name),`${esc(a.description||'Sem descrição')} · ${esc(mwDataHumana(a.date))}`,badge+mwSelos('activities',a),overdue?'mw-overdue':'')}).join(''):empty('Nenhuma atividade cadastrada.','activities');$('#notesList').innerHTML=data.notes.length?data.notes.map((n,i)=>mwLinha('notes',i,esc(n.title),esc(n.body||''))).join(''):empty('Nenhuma anotação criada.','notes');$$('[data-delete]').forEach(b=>b.onclick=()=>{data[b.dataset.delete].splice(Number(b.dataset.index),1);save();toast('Item removido')});if(typeof window.mwDashRefresh==='function')window.mwDashRefresh(data)}
 /* Forms — o modal legado foi removido daqui.
    Ele já era inalcançável: o bloco de criação novo escuta o clique na
    FASE DE CAPTURA do document e chama stopImmediatePropagation(), então
@@ -15724,7 +15853,34 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
   .empty, .empty-state, .kicker, .workspace-hero, .workspace-form,
   .workspace-form-head, .workspace-form-grid, .workspace-form-actions,
   .workspace-cancel, .workspace-submit, .workspace-metrics,
-  .mw-inst-selo, .mw-inst-vinculo){
+  .mw-inst-selo, .mw-inst-vinculo),
+/* As quatro áreas de coleção compartilham o mesmo gerador e a mesma
+   linha, então compartilham também a lista de nomes a desligar. */
+#view-projects[data-mw-migrada="1"] :where(.card, .section, .section-head,
+  .list, .list-item, .small-btn, .save-btn, .add-btn, .form-field,
+  .empty, .empty-state, .kicker, .workspace-hero, .workspace-form,
+  .workspace-form-head, .workspace-form-grid, .workspace-form-actions,
+  .workspace-cancel, .workspace-submit, .workspace-metrics,
+  .mw-item-acoes, .mw-selos, .mw-selo, .mw-filtros, .mw-filtro,
+  .mw-proj-modos),
+#view-activities[data-mw-migrada="1"] :where(.card, .section, .section-head,
+  .list, .list-item, .small-btn, .save-btn, .add-btn, .form-field,
+  .empty, .empty-state, .kicker, .workspace-hero, .workspace-form,
+  .workspace-form-head, .workspace-form-grid, .workspace-form-actions,
+  .workspace-cancel, .workspace-submit, .workspace-metrics,
+  .mw-item-acoes, .mw-selos, .mw-selo, .mw-filtros, .mw-filtro),
+#view-notes[data-mw-migrada="1"] :where(.card, .section, .section-head,
+  .list, .list-item, .small-btn, .save-btn, .add-btn, .form-field,
+  .empty, .empty-state, .kicker, .workspace-hero, .workspace-form,
+  .workspace-form-head, .workspace-form-grid, .workspace-form-actions,
+  .workspace-cancel, .workspace-submit, .workspace-metrics,
+  .mw-item-acoes, .mw-selos, .mw-selo),
+#view-subjects[data-mw-migrada="1"] :where(.card, .section, .section-head,
+  .list, .list-item, .small-btn, .save-btn, .add-btn, .form-field,
+  .empty, .empty-state, .kicker, .workspace-hero, .workspace-form,
+  .workspace-form-head, .workspace-form-grid, .workspace-form-actions,
+  .workspace-cancel, .workspace-submit, .workspace-metrics,
+  .mw-item-acoes, .mw-selos, .mw-selo){
   all: revert-layer;
 }
 </style>
@@ -22710,17 +22866,19 @@ body.light .eva-sugestao{background:rgba(109,40,217,.09);color:#6d28d9;border-co
   function montaFiltros(tipo){
     var lista = document.getElementById(tipo + 'List');
     if (!lista || document.querySelector('[data-filtros="' + tipo + '"]')) return;
+    var migrada = !!document.querySelector('#view-' + tipo + '[data-mw-migrada]');
     var barra = document.createElement('div');
-    barra.className = 'mw-filtros';
+    barra.className = migrada ? 'ds-filtros' : 'mw-filtros';
     barra.setAttribute('data-filtros', tipo);
     FILTROS[tipo].forEach(function(f, i){
       var b = document.createElement('button');
       b.type = 'button';
-      b.className = 'mw-filtro';
+      b.className = migrada ? 'ds-filtro' : 'mw-filtro';
+      b.setAttribute('data-filtro', f[0]);
       b.textContent = f[1];
       b.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
       b.addEventListener('click', function(){
-        barra.querySelectorAll('.mw-filtro').forEach(function(x){ x.setAttribute('aria-pressed', 'false'); });
+        barra.querySelectorAll('[data-filtro]').forEach(function(x){ x.setAttribute('aria-pressed', 'false'); });
         b.setAttribute('aria-pressed', 'true');
         aplica(tipo, f[2]);
       });
@@ -22732,7 +22890,10 @@ body.light .eva-sugestao{background:rgba(109,40,217,.09);color:#6d28d9;border-co
   function aplica(tipo, teste){
     var lista = document.getElementById(tipo + 'List');
     if (!lista) return;
-    lista.querySelectorAll('.list-item').forEach(function(el){
+    /* [data-mw-linha] e não .list-item: o nome da classe muda com a
+       migração da área, e o filtro pararia de achar as linhas sem
+       levantar erro nenhum — a lista simplesmente deixaria de filtrar. */
+    lista.querySelectorAll('[data-mw-linha]').forEach(function(el){
       el.hidden = !teste(el);
     });
   }
@@ -22740,7 +22901,7 @@ body.light .eva-sugestao{background:rgba(109,40,217,.09);color:#6d28d9;border-co
   function reaplica(tipo){
     var barra = document.querySelector('[data-filtros="' + tipo + '"]');
     if (!barra) return;
-    var ativos = [...barra.querySelectorAll('.mw-filtro')];
+    var ativos = [...barra.querySelectorAll('[data-filtro]')];
     var i = ativos.findIndex(function(b){ return b.getAttribute('aria-pressed') === 'true'; });
     if (i > 0) aplica(tipo, FILTROS[tipo][i][2]);
   }
@@ -27193,19 +27354,19 @@ html body.light #app .sidebar #nav button.active .nav-icon svg{ color: #fff !imp
 html body #app .mw-proj-modos{
   display: inline-flex; gap: 3px; padding: 3px;
   border-radius: 999px;
-  background: var(--ds-vidro-3);
-  box-shadow: var(--ds-fio);
+  background: var(--mw-sup-2, var(--ds-vidro-3));
+  box-shadow: var(--mw-sombra-1, var(--ds-fio));
 }
 html body #app .mw-proj-modos button{
   border: 0; cursor: pointer;
   padding: 7px 15px; border-radius: 999px;
-  background: transparent; color: var(--ds-txt-2);
+  background: transparent; color: var(--mw-txt-2, var(--ds-txt-2));
   font: inherit; font-size: 12.5px; font-weight: 650;
-  transition: color .18s var(--ds-suave), background .18s var(--ds-suave);
+  transition: color .18s var(--mw-curva, var(--ds-suave)), background .18s var(--mw-curva, var(--ds-suave));
 }
 html body #app .mw-proj-modos button[aria-pressed="true"]{
   background: var(--ds-ac-grad-forte); color: #fff;
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--ds-ac) 38%, transparent);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--mw-ac, var(--ds-ac)) 38%, transparent);
 }
 
 /* --- O quadro ---------------------------------------------------------
@@ -27232,15 +27393,15 @@ html body #app .mw-kan-col{
   display: flex; flex-direction: column;
   min-width: 0;
   scroll-snap-align: start;
-  border-radius: var(--ds-r-3);
-  background: var(--ds-vidro-3);
-  box-shadow: var(--ds-fio);
+  border-radius: var(--mw-r-3, var(--ds-r-3));
+  background: var(--mw-sup-2, var(--ds-vidro-3));
+  box-shadow: var(--mw-sombra-1, var(--ds-fio));
   padding: 12px 10px 10px;
-  transition: background .18s var(--ds-suave), box-shadow .18s var(--ds-suave);
+  transition: background .18s var(--mw-curva, var(--ds-suave)), box-shadow .18s var(--mw-curva, var(--ds-suave));
 }
 html body #app .mw-kan-col.is-alvo{
-  background: color-mix(in srgb, var(--ds-ac) 14%, transparent);
-  box-shadow: var(--ds-fio-forte), inset 0 0 0 2px color-mix(in srgb, var(--ds-ac) 55%, transparent);
+  background: color-mix(in srgb, var(--mw-ac, var(--ds-ac)) 14%, transparent);
+  box-shadow: var(--mw-sombra-2, var(--ds-fio-forte)), inset 0 0 0 2px color-mix(in srgb, var(--mw-ac, var(--ds-ac)) 55%, transparent);
 }
 html body #app .mw-kan-topo{
   display: flex; align-items: center; gap: 8px;
@@ -27248,7 +27409,7 @@ html body #app .mw-kan-topo{
 }
 html body #app .mw-kan-ponto{ width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; }
 html body #app .mw-kan-topo strong{
-  font-size: 12.5px; font-weight: 700; color: var(--ds-txt);
+  font-size: 12.5px; font-weight: 700; color: var(--mw-txt-1, var(--ds-txt));
   letter-spacing: .01em; min-width: 0;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
@@ -27256,8 +27417,8 @@ html body #app .mw-kan-conta{
   margin-left: auto; flex: 0 0 auto;
   min-width: 22px; text-align: center;
   padding: 2px 7px; border-radius: 999px;
-  background: var(--ds-vidro-1);
-  color: var(--ds-txt-2); font-size: 11.5px; font-weight: 700;
+  background: var(--mw-sup-3, var(--ds-vidro-1));
+  color: var(--mw-txt-2, var(--ds-txt-2)); font-size: 11.5px; font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 html body #app .mw-kan-pilha{ display: grid; gap: 8px; min-height: 54px; align-content: start; }
@@ -27266,39 +27427,39 @@ html body #app .mw-kan-pilha{ display: grid; gap: 8px; min-height: 54px; align-c
 html body #app .mw-kan-card{
   position: relative;
   padding: 12px 13px;
-  border-radius: var(--ds-r-2);
-  background: var(--ds-vidro-1);
-  box-shadow: var(--ds-fio), var(--ds-alt-1);
+  border-radius: var(--mw-r-2, var(--ds-r-2));
+  background: var(--mw-sup-3, var(--ds-vidro-1));
+  box-shadow: var(--mw-sombra-1, var(--ds-fio)), var(--ds-alt-1);
   cursor: grab;
   touch-action: none;          /* o arrasto é nosso, não do scroll */
-  transition: box-shadow .18s var(--ds-suave), transform .18s var(--ds-mola);
+  transition: box-shadow .18s var(--mw-curva, var(--ds-suave)), transform .18s var(--mw-curva-mola, var(--ds-mola));
 }
 html body #app .mw-kan-card:focus-visible{
-  outline: 3px solid color-mix(in srgb, var(--ds-ac) 55%, transparent);
+  outline: 3px solid color-mix(in srgb, var(--mw-ac, var(--ds-ac)) 55%, transparent);
   outline-offset: 2px;
 }
 @media (hover: hover){
-  html body #app .mw-kan-card:hover{ box-shadow: var(--ds-fio-forte), var(--ds-alt-2); transform: translateY(-1px); }
+  html body #app .mw-kan-card:hover{ box-shadow: var(--mw-sombra-2, var(--ds-fio-forte)), var(--ds-alt-2); transform: translateY(-1px); }
 }
 html body #app .mw-kan-card.is-arrastando{
   position: fixed; z-index: 999; margin: 0; pointer-events: none;
   cursor: grabbing;
-  box-shadow: var(--ds-fio-forte), var(--ds-alt-3);
+  box-shadow: var(--mw-sombra-2, var(--ds-fio-forte)), var(--ds-alt-3);
   transform: rotate(-1.6deg) scale(1.03);
   opacity: .96;
 }
 html body #app .mw-kan-fantasma{
-  border-radius: var(--ds-r-2);
-  border: 1px dashed color-mix(in srgb, var(--ds-ac) 45%, transparent);
-  background: color-mix(in srgb, var(--ds-ac) 7%, transparent);
+  border-radius: var(--mw-r-2, var(--ds-r-2));
+  border: 1px dashed color-mix(in srgb, var(--mw-ac, var(--ds-ac)) 45%, transparent);
+  background: color-mix(in srgb, var(--mw-ac, var(--ds-ac)) 7%, transparent);
 }
 html body #app .mw-kan-card b{
   display: block; font-size: 13.5px; font-weight: 700;
-  color: var(--ds-txt); line-height: 1.3;
+  color: var(--mw-txt-1, var(--ds-txt)); line-height: 1.3;
 }
 html body #app .mw-kan-card small{
   display: block; margin-top: 5px;
-  font-size: 12px; line-height: 1.45; color: var(--ds-txt-3);
+  font-size: 12px; line-height: 1.45; color: var(--mw-txt-3, var(--ds-txt-3));
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 html body #app .mw-kan-selos{ display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
@@ -27306,19 +27467,19 @@ html body #app .mw-kan-selo{
   display: inline-flex; align-items: center; gap: 5px;
   padding: 3px 8px; border-radius: 999px;
   font-size: 11px; font-weight: 650;
-  background: var(--ds-vidro-3); color: var(--ds-txt-2);
-  box-shadow: var(--ds-fio);
+  background: var(--mw-sup-2, var(--ds-vidro-3)); color: var(--mw-txt-2, var(--ds-txt-2));
+  box-shadow: var(--mw-sombra-1, var(--ds-fio));
 }
 html body #app .mw-kan-selo[data-p="Alta"]{ color: #ffb4a8; }
 html body.light #app .mw-kan-selo[data-p="Alta"]{ color: #a3312a; }
 html body #app .mw-kan-vazio{
   padding: 16px 10px; text-align: center;
-  font-size: 12px; color: var(--ds-txt-3);
-  border-radius: var(--ds-r-2);
+  font-size: 12px; color: var(--mw-txt-3, var(--ds-txt-3));
+  border-radius: var(--mw-r-2, var(--ds-r-2));
   border: 1px dashed var(--ds-borda, rgba(140,165,220,.16));
 }
 html body #app .mw-kan-dica{
-  margin: 10px 2px 0; font-size: 12px; color: var(--ds-txt-3);
+  margin: 10px 2px 0; font-size: 12px; color: var(--mw-txt-3, var(--ds-txt-3));
 }
 
 @media (prefers-reduced-motion: reduce){
@@ -27387,16 +27548,21 @@ html body #app .mw-kan-dica{
     var view = document.getElementById('view-projects');
     if (!view || document.getElementById('mwKanban')) return true;
     var lista = document.getElementById('projectsList');
-    var cabeca = view.querySelector('.section-head');
+    /* [data-mw-cabeca] antes de .section-head: o cabeçalho da área
+       muda de nome quando ela migra, e preso ao nome antigo o `monta()`
+       devolvia false para sempre — o quadro inteiro nunca era
+       construído, sem erro nenhum no console. */
+    var cabeca = view.querySelector('[data-mw-cabeca], .section-head');
     if (!lista || !cabeca) return false;
 
     var modos = document.createElement('div');
-    modos.className = 'mw-proj-modos';
+    var migradaP = !!document.querySelector('#view-projects[data-mw-migrada]');
+    modos.className = migradaP ? 'ds-abas' : 'mw-proj-modos';
     modos.setAttribute('role', 'group');
     modos.setAttribute('aria-label', 'Como ver os projetos');
     modos.innerHTML =
-      '<button type="button" data-modo="quadro" aria-pressed="true">Quadro</button>' +
-      '<button type="button" data-modo="lista" aria-pressed="false">Lista</button>';
+      '<button type="button" class="' + (migradaP ? 'ds-aba' : '') + '" data-modo="quadro" aria-pressed="true">Quadro</button>' +
+      '<button type="button" class="' + (migradaP ? 'ds-aba' : '') + '" data-modo="lista" aria-pressed="false">Lista</button>';
     modos.addEventListener('click', function(ev){
       var b = ev.target.closest('button[data-modo]');
       if (b) defineModo(b.getAttribute('data-modo'));
@@ -30039,15 +30205,15 @@ html body #app .list-item > div:first-child > strong{
    coisa. Quatro linhas mostram o suficiente para reconhecer a anotação;
    o resto abre com um toque. O corte usa line-clamp, que respeita a
    altura da linha, em vez de uma altura fixa que corta letra ao meio. */
-html body #app #notesList .list-item > div:first-child > small{
+html body #app #notesList [data-mw-linha] > div:first-child > small{
   display: -webkit-box;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
   overflow-wrap: anywhere;
 }
-html body #app #notesList .list-item.mw-nota-aberta > div:first-child > small,
-html body #app #notesList.mw-medindo .list-item > div:first-child > small{
+html body #app #notesList [data-mw-linha].mw-nota-aberta > div:first-child > small,
+html body #app #notesList.mw-medindo [data-mw-linha] > div:first-child > small{
   -webkit-line-clamp: unset;
   display: block;
 }
@@ -30058,7 +30224,7 @@ html body #app .mw-nota-ver{
   display: inline-block; margin-top: 7px;
   border: 0; padding: 0; background: none; cursor: pointer;
   font: inherit; font-size: 11px; font-weight: 650;
-  color: var(--ds-ac, #5b6cff);
+  color: var(--mw-ac, var(--ds-ac, #5b6cff));
   text-decoration: underline; text-underline-offset: 2px;
 }
 html body #app .mw-nota-ver:hover{ filter: brightness(1.15); }
@@ -30080,7 +30246,13 @@ html body #app .mw-nota-ver:hover{ filter: brightness(1.15); }
   function aplica(){
     var lista = document.getElementById('notesList');
     if (!lista) return;
-    var itens = [].slice.call(lista.querySelectorAll('.list-item'))
+    /* [data-mw-linha] e não .list-item, aqui e nos outros três lugares
+       que reordenam ou agrupam uma lista (agenda de Atividades, ordem de
+       Disciplinas, ordem de Projetos): o nome da classe da linha muda
+       quando a área migra para o Design System. Preso à classe, cada um
+       destes acharia ZERO itens e desistiria em silêncio — a lista
+       voltaria à ordem de cadastro, sem título, sem erro no console. */
+    var itens = [].slice.call(lista.querySelectorAll('[data-mw-linha]'))
       .filter(function(it){ return !it.classList.contains('mw-nota-aberta'); });
     if (!itens.length) return;
 
@@ -30127,7 +30299,7 @@ html body #app .mw-nota-ver:hover{ filter: brightness(1.15); }
   document.addEventListener('click', function(ev){
     var b = ev.target.closest && ev.target.closest('.mw-nota-ver');
     if (!b) return;
-    var item = b.closest('.list-item');
+    var item = b.closest('[data-mw-linha]');
     if (!item) return;
     var aberto = item.classList.toggle('mw-nota-aberta');
     b.textContent = aberto ? 'Ver menos' : 'Ver mais';
@@ -30193,7 +30365,7 @@ html body #app #activitiesList .mw-agenda-titulo[data-fixo="1"] .mw-agenda-seta{
 /* Recolhido é coisa do grupo; escondido pelo filtro é outra, e usa o
    atributo hidden. Duas causas diferentes não podem dividir o mesmo
    mecanismo, senão uma desfaz a outra. */
-html body #app #activitiesList .list-item.mw-agenda-recolhido{ display: none !important; }
+html body #app #activitiesList [data-mw-linha].mw-agenda-recolhido{ display: none !important; }
 @media (prefers-reduced-motion: reduce){
   html body #app #activitiesList .mw-agenda-seta{ transition: none; }
 }
@@ -30291,7 +30463,7 @@ html body #app #activitiesList .mw-agenda-titulo[hidden]{ display: none !importa
     var lista = document.getElementById('activitiesList');
     if (!lista) return;
     if (getComputedStyle(lista).display === 'none' || !lista.offsetParent) return;
-    var itens = [].slice.call(lista.querySelectorAll('.list-item'));
+    var itens = [].slice.call(lista.querySelectorAll('[data-mw-linha]'));
     if (itens.length < 2) { limpaTitulos(lista); return; }
 
     var atividades = (window.data && Array.isArray(window.data.activities)) ? window.data.activities : [];
@@ -30482,7 +30654,7 @@ html body #app #subjectsList .mw-ordem-titulo[hidden]{ display: none !important;
   function ordenaDisciplinas(){
     var lista = document.getElementById('subjectsList');
     if (!visivel(lista)) return;
-    var itens = [].slice.call(lista.querySelectorAll('.list-item'));
+    var itens = [].slice.call(lista.querySelectorAll('[data-mw-linha]'));
     if (itens.length < 2) { limpa(lista); return; }
 
     var dados = (window.data && Array.isArray(window.data.subjects)) ? window.data.subjects : [];
@@ -30539,7 +30711,7 @@ html body #app #subjectsList .mw-ordem-titulo[hidden]{ display: none !important;
   function ordenaProjetos(){
     var lista = document.getElementById('projectsList');
     if (!visivel(lista)) return;
-    var itens = [].slice.call(lista.querySelectorAll('.list-item'));
+    var itens = [].slice.call(lista.querySelectorAll('[data-mw-linha]'));
     if (itens.length < 2) return;
 
     var dados = (window.data && Array.isArray(window.data.projects)) ? window.data.projects : [];
@@ -31118,7 +31290,11 @@ html body .mw-pular:focus{ transform: translateY(0); }
         form.classList.remove('is-open');
         delete form.dataset.editIndex;
         var tipo = form.getAttribute('data-workspace-form');
-        var botao = document.querySelector('#view-' + tipo + ' .add-btn');
+        /* [data-add] e não .add-btn: quem devolve o foco tem de achar o
+           botão nas duas aparências. Preso à classe, o foco caía no
+           <body> depois do Escape numa área migrada — quem usa teclado
+           voltava ao topo da página em vez de voltar ao botão. */
+        var botao = document.querySelector('#view-' + tipo + ' [data-add]');
         if (botao) botao.focus();
       }
       return;

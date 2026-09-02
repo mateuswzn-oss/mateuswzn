@@ -217,12 +217,56 @@ Da menor superfície de risco para a maior. Cada uma é uma rodada.
 |---|---|---|
 | ✅ 1 | ~~Suporte~~ | **migrada.** 25 verificações de funcionalidade antes e depois, idênticas; zero regra legada vencendo lá dentro |
 | ✅ 2 | ~~Instituições~~ | **migrada.** 14 verificações do teste 15 antes e depois, idênticas; zero regra legada vencendo lá dentro, nos dois temas |
-| 3 | Disciplinas · Projetos · Atividades · Anotações | mesmo formulário e mesma lista; migram juntas ou brigam entre si |
+| ✅ 3 | ~~Disciplinas · Projetos · Atividades · Anotações~~ | **migradas.** As quatro numa rodada, porque compartilham gerador, linha e selos; 16 verificações cada no teste 15, zero regra legada vencendo nas quatro, nos dois temas |
 | 4 | Configurações · Perfil | muitos campos, pouca lógica |
 | 5 | Faculdade · Relatórios · Foco · Calendário | layout próprio em cada uma |
 | 6 | Início | depende do vocabulário das outras estar pronto |
 | 7 | Login / cadastro | fora do `#app`, com regras próprias e seis peles legadas sobrepostas |
 | 8 | Barra lateral e barra de baixo | tocam todas as telas; por último, quando o resto já está no sistema |
+
+## O gancho durável
+
+Toda migração renomeia classes. Todo `querySelector` preso a uma dessas classes
+quebra junto — e **quebra em silêncio**, porque um seletor que não casa não
+levanta erro: devolve `null`, ou uma lista vazia, e o bloco desiste.
+
+Na migração das quatro áreas de coleção foram **oito** lugares assim, todos
+invisíveis a olho nu e nenhum deles com erro no console:
+
+| onde | procurava | teria acontecido |
+|---|---|---|
+| agenda de Atividades | `.list-item` | a lista voltaria à ordem de cadastro, sem os títulos |
+| ordem de Disciplinas | `.list-item` | idem, sem os títulos de semestre |
+| ordem de Projetos | `.list-item` | idem |
+| "Ver mais" das Anotações | `.list-item` | o botão nunca apareceria |
+| filtro (aplica) | `.list-item` | os filtros deixariam de filtrar |
+| quadro de Projetos (`monta`) | `.section-head` | o quadro inteiro nunca seria construído |
+| Escape no formulário | `.add-btn` | o foco cairia no `<body>` em vez de voltar ao botão |
+| filtro de Projetos | `[data-v=...]` no selo | "Em andamento" e "Concluídos" não achariam nada |
+
+A regra que sai daí: **o que o JS precisa achar depois é atributo, não classe.**
+`[data-mw-linha]`, `[data-mw-cabeca]`, `[data-add]`, `[data-workspace-form]`,
+`[data-filtro]`, `data-v`. Atributo é dado; o desligamento do legado mata
+classes e não os alcança, e o nome não muda com a migração.
+
+E uma segunda, sobre guardas: `(typeof mwArea === 'function') && mwArea(a)`
+parece defensivo e é o contrário. Quando o helper não é global — e neste
+arquivo ele não era — a expressão dá `false` calada, e a área migrada segue
+montando o material antigo. A barra Quadro/Lista e os filtros ficaram assim
+até serem medidos. Ou se exporta o helper, ou se pergunta ao DOM na hora
+(`document.querySelector('#view-x[data-mw-migrada]')`); guarda que degrada em
+silêncio, não.
+
+## CSS próprio da área
+
+Nem toda regra que não vem do `mw-ds.css` é legado por substituir. O quadro de
+Projetos, a agenda de Atividades e a conversa do Suporte são componentes que só
+existem naquela tela — o sistema não vai ter um "quadro Kanban". O que o
+protocolo exige desse CSS é que ele leia os **tokens** do sistema, para seguir o
+tema junto com o resto; não que ele deixe de existir.
+
+O `quem-vence.mjs` declara esses blocos por área e os relata **à parte**, com os
+dois números à vista, em vez de escondê-los numa exceção silenciosa.
 
 ## O que este sistema não faz
 

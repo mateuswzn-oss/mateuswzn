@@ -82,7 +82,7 @@ const achados = await p.evaluate(a => {
       }
       if (!melhor) continue;
       if (melhor.r.folha === 'mw-ds.css') continue;
-      if (melhor.r.folha === 'mw-support-style' || melhor.r.folha === 'mw-legado-desligado') continue;
+      if (melhor.r.folha === 'mw-legado-desligado') continue;
       const chave = melhor.r.folha + ' :: ' + melhor.r.sel;
       if (!fora.has(chave)) fora.set(chave, { folha: melhor.r.folha, sel: melhor.r.sel, props: new Set(), imp: melhor.imp, exemplo: '' });
       const it = fora.get(chave);
@@ -96,6 +96,29 @@ const achados = await p.evaluate(a => {
                                                  props: [...x.props].join(','), imp: x.imp, exemplo: x.exemplo })) };
 }, area);
 
+/* Nem toda regra que não vem do mw-ds.css é legado por substituir.
+ *
+ * Uma área pode ter um componente que só existe nela — o quadro de
+ * Projetos, a agenda de Atividades, a conversa do Suporte. O Design
+ * System não vai ter um "quadro Kanban": ele dá as peças e o ritmo, e o
+ * layout daquela tela é da tela. O que o protocolo exige desse CSS é que
+ * ele leia os TOKENS do sistema, para seguir o tema junto com o resto —
+ * não que ele deixe de existir.
+ *
+ * Estes blocos ficam declarados aqui, por área, e são RELATADOS à parte
+ * em vez de escondidos: quem lê o resultado vê os dois números. */
+const PROPRIO = {
+  support:    ['mw-support-style'],
+  projects:   ['mw-kanban'],
+  activities: ['mw-agenda'],
+  subjects:   ['mw-ordem'],
+  notes:      ['mw-notas', 'mw-ordem'],
+  institutions: []
+};
+const meus = new Set(PROPRIO[area] || []);
+const proprias = achados.lista ? achados.lista.filter(r => meus.has(r.folha)) : [];
+if (achados.lista) achados.lista = achados.lista.filter(r => !meus.has(r.folha));
+
 console.log('=== área "' + area + '", tema ' + tema + ' — regras que NÃO são do sistema e ainda vencem ===');
 if (achados.erro) { console.log(achados.erro); }
 else {
@@ -107,5 +130,10 @@ else {
     console.log('    vence em: ' + r.props + '   (ex.: ' + r.exemplo + ')');
   }
   if (!achados.lista.length) console.log('\n  nenhuma — a área está inteiramente sob o Design System.');
+  if (proprias.length){
+    console.log('\n  --- CSS próprio desta área, mantido de propósito ---');
+    console.log('  (componente que só existe aqui; tem de ler os tokens do sistema, não sumir)');
+    for (const r of proprias) console.log('    ' + r.folha + ' :: ' + r.sel + '  →  ' + r.props);
+  }
 }
 await b.close();

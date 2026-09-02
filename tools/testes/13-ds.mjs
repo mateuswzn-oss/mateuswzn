@@ -276,7 +276,14 @@ console.log('\n=== a folha está inerte no app? ===');
      erro no console e sem falha em nenhum teste de layout.
 
      Duas perguntas, e as duas são baratas:
-     a) todo nome `ds-*` usado no app existe mesmo na folha do sistema?
+     Uma ressalva desta checagem: ela lê o ARQUIVO, comentário incluído.
+     Um nome do sistema citado dentro de um comentário conta como uso — do
+     mesmo jeito que o grep acha `id="x"` dentro de comentário e reporta
+     ID duplicado que não existe. Quando isso acontecer, o texto é que
+     muda, não a checagem: afrouxá-la para ignorar comentário exigiria
+     entender três sintaxes de comentário no mesmo arquivo.
+
+     a) todo nome do sistema usado no app existe mesmo na folha?
      b) todo elemento que carrega um `ds-*` está dentro de área migrada? */
   {
     const folha = fs.readFileSync('ds/mw-ds.css', 'utf-8');

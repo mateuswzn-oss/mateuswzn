@@ -710,6 +710,9 @@ body.light .ds{
   overflow-wrap: anywhere;
 }
 .ds .ds-item-apoio{ font-size: var(--mw-t-micro); color: var(--mw-txt-3); }
+/* Grupo de selos dentro de uma linha: quebra em várias faixas quando não
+   cabe, em vez de espremer o texto do item. */
+.ds .ds-selos{ display: flex; flex-wrap: wrap; gap: var(--mw-e-2); margin-top: var(--mw-e-1); }
 .ds .ds-item-acoes{ flex: 0 0 auto; display: flex; align-items: center; gap: var(--mw-e-2); }
 .ds .ds-item-acoes .ds-btn{ white-space: nowrap; }
 /* Numa coluna estreita, as ações descem para baixo do texto em vez de
@@ -767,6 +770,12 @@ body.light .ds{
 .ds .ds-filtro:hover{ border-color: var(--mw-borda-forte); color: var(--mw-txt-1); }
 .ds .ds-filtro[aria-pressed="true"]{
   background: var(--mw-ac-suave); border-color: var(--mw-ac); color: var(--mw-ac-txt);
+}
+/* Barra de filtros: rola na horizontal quando não cabe, em vez de
+   quebrar em duas linhas e empurrar a lista para baixo no celular. */
+.ds .ds-filtros{
+  display: flex; gap: var(--mw-e-2); flex-wrap: wrap;
+  margin-bottom: var(--mw-e-3);
 }
 
 /* ---- CARTÃO DE NÚMERO ------------------------------------------------------- */
@@ -854,7 +863,13 @@ body.light .ds{
   transition: background var(--mw-d-rapida) var(--mw-curva), color var(--mw-d-rapida) var(--mw-curva);
 }
 .ds .ds-aba:hover{ color: var(--mw-txt-1); }
-.ds .ds-aba[aria-selected="true"]{ background: var(--mw-sup-1); color: var(--mw-txt-1); box-shadow: var(--mw-sombra-1); }
+/* Duas semânticas para o mesmo controle segmentado: `aria-selected` quando
+   as abas trocam de painel (role="tab"), `aria-pressed` quando são botões
+   de alternância que trocam a forma de ver a MESMA lista — que é o caso do
+   Quadro/Lista de Projetos. Marcar aria-selected num botão sem role="tab"
+   seria ARIA inválida só para casar com o seletor. */
+.ds .ds-aba[aria-selected="true"],
+.ds .ds-aba[aria-pressed="true"]{ background: var(--mw-sup-1); color: var(--mw-txt-1); box-shadow: var(--mw-sombra-1); }
 
 /* ---- TABELA -----------------------------------------------------------------
    Sempre dentro de .ds-rolagem-h: tabela é o conteúdo que mais estoura a
