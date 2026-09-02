@@ -1,3 +1,23 @@
+/* v80 (BETA — o primeiro relatório vindo de um iPhone de verdade):
+   iOS 18.7, Safari 27, 393x695 a 3x, aberto no navegador. Resultado:
+   TUDO que o app precisa funciona. backdrop-filter, color-mix, :has,
+   line-clamp, localStorage, e o IndexedDB gravando e lendo arquivo —
+   ou seja, a área de Arquivos funciona no iPhone. Espaço disponível:
+   38,40 GB. Nenhuma falha.
+   Duas correções que o relatório provocou:
+   1. A linha "Lente com filtro SVG" saiu. Ela media a coisa errada
+      (CSS.supports só diz que a sintaxe é aceita, não que o filtro
+      desenha) e reportava um recurso que este app não usa mais — a
+      lente está com display:none desde que a barra de baixo foi
+      reescrita. No lugar entrou aspect-ratio, que sustenta o anel do
+      cronômetro e é usado de verdade.
+   2. O comentário do CSS da lente afirmava que o Safari recusa
+      backdrop-filter:url(#...). Medido: ele ACEITA. A premissa do
+      fallback ("recusa a sintaxe e fica com o blur simples") não vale
+      mais, e quem for reativar a lente precisa refazer a estratégia
+      antes. Registrado no lugar em vez de deixar a afirmação velha.
+   O viewport real é 393x695, e não os 390x844 que os testes usavam. As
+   catorze áreas foram reauditadas nessa altura: nada vaza, nada corta. */
 /* v79 (BETA — Diagnóstico: o app passa a se medir sozinho):
    Existe por uma limitação honesta: o desenvolvimento é verificado no
    Chromium, e o Safari do iPhone tem diferenças reais justamente no que
@@ -953,7 +973,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v79-beta';
+const CACHE_NAME = 'mw-shell-v80-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
