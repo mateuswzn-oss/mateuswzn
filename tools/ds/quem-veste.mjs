@@ -30,15 +30,25 @@ const area = process.argv[2] || 'login';
    despercebida por isso. Uma tela tem dois temas; medir um é medir
    metade. */
 const tema = process.argv[3] || 'escuro';
-const RAIZ = area === 'login' ? '#loginScreen' : '#view-' + area;
+const MOLDURA = { lateral: '.sidebar', topo: '.topbar', baixo: '#mwBottomNav' };
+const RAIZ = area === 'login' ? '#loginScreen' : (MOLDURA[area] || '#view-' + area);
 const b = await chromium.launch(ep ? { executablePath: ep } : {});
-const p = await b.newPage({ viewport: { width: 1280, height: 900 } });
+const p = await b.newPage({ viewport: area === 'baixo'
+  ? { width: 390, height: 780 } : { width: 1280, height: 900 } });
 await p.addInitScript(a => {
   localStorage.setItem('mwZerarTudo-2026-08-e','1');
   /* Para uma área do app é preciso ter sessão; para a tela de entrada,
      é preciso NÃO ter. */
   if (a.area !== 'login') localStorage.setItem('mwSession','1');
   if (a.tema === 'claro') localStorage.setItem('mwTemaPreferido','light');
+  /* A barra de baixo só existe no app instalado — ver o teste 20. */
+  if (a.area === 'baixo'){
+    const real = window.matchMedia.bind(window);
+    window.matchMedia = q => /display-mode:\s*standalone/.test(q)
+      ? { matches:true, media:q, onchange:null, addListener(){}, removeListener(){},
+          addEventListener(){}, removeEventListener(){}, dispatchEvent(){ return false; } }
+      : real(q);
+  }
 }, { area, tema });
 await p.goto(ENDERECO + '/index.html');
 await p.waitForFunction(() => !document.getElementById('mwBootLoader') && document.documentElement.classList.contains('mw-login-pronto'), null, {timeout:20000});
@@ -48,7 +58,7 @@ await p.evaluate(t => {
   document.documentElement.setAttribute('data-ds-tema', t);
 }, tema);
 await p.waitForTimeout(600);
-if (area !== 'login'){
+if (area !== 'login' && !MOLDURA[area]){
   await p.evaluate(a => {
     const bt = document.querySelector(`#nav button[data-view="${a}"]`);
     if (bt) bt.click(); else if (window.showView) window.showView(a);

@@ -1,3 +1,69 @@
+/* v97 (BETA — a moldura no Design System: a última superfície):
+
+   Com esta rodada não sobra tela: as catorze áreas, a tela de entrada e
+   agora a moldura — barra lateral, barra do topo e barra de baixo —
+   estão sob o sistema. 785 regras em 68 folhas chegavam até aqui.
+
+   O QUE PASSOU PARA O SISTEMA
+   Os treze itens da lista lateral viraram `ds-nav-item`, e o estado
+   ativo passou a ser o do sistema. Junto com isso o `showView` marca
+   `aria-current="page"` no item corrente — o que um leitor de tela
+   anuncia — mantendo a classe `.active` porque muito código do app a
+   lê. Os seis botões de ícone do topo viraram `ds-btn ds-btn-fantasma
+   ds-btn-icone`, e o campo de busca, `ds-entrada`.
+
+   O QUE FICOU COM A ÁREA, E POR QUÊ
+   A barra de baixo. O sistema TEM uma (`ds-nav-baixo`), e ela é uma
+   fileira simples de itens; esta é outra coisa — lente de vidro com
+   física de mola, foto de perfil no lugar do hambúrguer, recolher ao
+   rolar, máquina de estados própria. Trocá-la pela genérica jogaria
+   fora o que várias rodadas construíram. Ela recebeu `ds` e
+   `data-mw-migrada` assim mesmo: o que decide COR, RAIO e ESPAÇO ali
+   passa a ser o token do sistema; a peça continua da área. Mesma
+   decisão do quadro de Projetos, da agenda e do trilho da entrada.
+
+   Também ficaram: o material de vidro da moldura, as nove cores dos
+   ícones da lista, a lente que desliza, o recolher da lateral e a
+   coreografia de rolagem.
+
+   O PONTO CEGO, DE NOVO — E MAIOR
+   O `quem-veste` (criado na v94) achou aqui o mesmo tipo de coisa que
+   achou na entrada, e em quantidade: **73 regras** de folhas
+   declaradas como "próprias da área" ainda vestindo botões que
+   anunciavam `ds-nav-item`. É a mesma lição, escrita de novo: folha não
+   é a unidade; regra é. Uma folha de navegação faz layout E pele, e só
+   a segunda parte sai.
+
+   E UM DEFEITO NO PRÓPRIO restringe.py
+   A checagem de idempotência era `if ':not([data-mw-migrada]' in p` —
+   um prefixo que casa com as DUAS formas de guarda. Rodadas anteriores
+   deixaram regras com só a guarda de DESCENDENTE, e a moldura é o
+   primeiro caso em que a raiz da área é ela mesma o alvo
+   (`#app .sidebar{...}`). O script via a guarda velha, dizia "já está
+   restringida", e a regra continuava pintando. O laço rodava para
+   sempre relatando "1 regra restringida" e medindo 1 de novo. Agora as
+   duas formas são conferidas separadamente.
+
+   O QUE ESTÁ VERIFICADO NESTE COMMIT
+   Zero regra legada vencendo nas três peças, nos dois temas (seis
+   medições). O quem-veste limpo nas dezoito superfícies, nos dois temas
+   (trinta e seis medições). O teste 20 verde nos três modos — desktop,
+   navegador do celular e app instalado. O teste 13 verde: catorze áreas
+   pintadas pelo sistema, nenhuma legada tocada.
+
+   A suíte inteira ainda estava rodando quando este commit foi feito, e
+   o resultado dela vem no commit seguinte — verde, ou com a correção do
+   que ela achar. Fica dito aqui em vez de afirmado como pronto.
+
+   E UM DEFEITO DO TESTE 13, CORRIGIDO JUNTO
+   Ele montava a lista de áreas migradas com
+   `#app [data-mw-migrada="1"]` e tirava o nome do `id`. A moldura passou
+   a carregar a marca nesta rodada e não tem `id`: entravam dois nomes
+   VAZIOS na lista, e a comparação com as áreas medidas acusava "duas
+   áreas migradas que o sistema não pinta" para duas coisas que nem são
+   área. Agora a lista percorre o mesmo conjunto que a medição —
+   `.view[data-mw-migrada][id^=view-]`.
+
 /* v96 (BETA — a navegação ganha teste próprio, antes de ser migrada):
 
    POR QUE UM TESTE ANTES
@@ -1771,7 +1837,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v96-beta';
+const CACHE_NAME = 'mw-shell-v97-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

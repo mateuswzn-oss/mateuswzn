@@ -222,7 +222,25 @@ Da menor superfície de risco para a maior. Cada uma é uma rodada.
 | ✅ 5 | ~~Faculdade · Relatórios · Foco · Calendário~~ | **migradas.** Layout próprio em cada uma, então cada uma manteve o seu — o que passou para o sistema foi a casca (cartão, cabeçalho, campo, botão, controle segmentado) e o que era genérico |
 | ✅ 6 | ~~Início~~ e ~~Arquivos~~ | **migradas.** Início é a maior — treze cartões, cinco cabeçalhos, quatro grades — e foi por último de propósito: ela resume as outras, então só fazia sentido depois que o vocabulário delas estava pronto. Com as duas, **as catorze áreas do app estão sob o Design System** |
 | ✅ 7 | ~~Login / cadastro~~ | **migrada.** A única tela cujo defeito tranca a pessoa do lado de fora, então o teste dela (17) cobre o caminho inteiro — criar conta, sair, entrar de novo — e não só a aparência. Zero regra legada vencendo, nos dois temas |
-| 8 | Barra lateral e barra de baixo | tocam todas as telas; por último, quando o resto já está no sistema |
+| ✅ 8 | ~~Barra lateral, topo e barra de baixo~~ | **migradas.** A maior de todas — 785 regras em 68 folhas — e a única que toca todas as telas. Com ela **não sobra tela**: as catorze áreas, a entrada e a moldura estão sob o sistema |
+
+## Quando o sistema tem a peça e ainda assim ela não serve
+
+O sistema tem `ds-nav-baixo`: uma fileira de itens para uma barra de
+navegação inferior. A barra de baixo do MW não usa. Ela é uma lente de
+vidro com física de mola, a foto de perfil no lugar do hambúrguer, o
+recolher ao rolar e uma máquina de estados própria — coisas que várias
+rodadas construíram e que a peça genérica não tem.
+
+Isso não a deixa de fora do sistema. Ela recebeu `ds` e
+`data-mw-migrada` como qualquer outra: **o que decide cor, raio e espaço
+ali passa a ser o token**. O que não muda é a peça.
+
+A pergunta a fazer, diante de um componente da área que tem sósia no
+sistema, não é "existe uma peça equivalente?" — é "a peça do sistema faz
+o que ESTA faz?". Se não faz, o que se migra são os tokens, não o
+componente. Foi assim com o quadro de Projetos, a agenda de Atividades,
+o trilho da tela de entrada e agora a barra de baixo.
 
 ## A cor de fundo decide a cor do texto, não o tema da página
 

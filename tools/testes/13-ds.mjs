@@ -196,8 +196,15 @@ console.log('\n=== a folha está inerte no app? ===');
      nas áreas migradas, e em nenhuma outra". As duas metades importam —
      a segunda protege o que ainda é legado, e a primeira comprova que o
      sistema é mesmo quem pinta o que foi migrado. */
+  /* Só as ÁREAS. A moldura (barra lateral e barra do topo) também carrega
+     a marca desde que migrou, e nenhuma das duas tem `id` — entravam
+     nesta lista como dois nomes vazios, e a comparação com as áreas
+     medidas acusava "duas áreas migradas que o sistema não pinta" para
+     duas coisas que nem são área. A medição de baixo percorre
+     `#view-*`; a lista tem de percorrer o mesmo conjunto. */
   const migradas = await p.evaluate(() =>
-    [...document.querySelectorAll('#app [data-mw-migrada="1"]')].map(e => e.id.replace('view-', '')));
+    [...document.querySelectorAll('#app .view[data-mw-migrada="1"][id^="view-"]')]
+      .map(e => e.id.replace('view-', '')));
   console.log('  áreas migradas:', migradas.length ? migradas.join(', ') : 'nenhuma ainda');
 
   const medeTudo = () => p.evaluate(async (areas) => {

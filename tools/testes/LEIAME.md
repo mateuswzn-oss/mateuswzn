@@ -353,3 +353,19 @@ ser suposição.
   uma delas relata "a barra sumiu" para um app que está fazendo
   exatamente o que deve. Volte a uma área comum antes de medir — e,
   melhor, afirme o comportamento da tela-folha em vez de tropeçar nele.
+
+- **Uma checagem de idempotência por prefixo casa demais.** O
+  `restringe.py` conferia `if ':not([data-mw-migrada]' in p` — prefixo
+  que serve às duas formas de guarda, a de raiz e a de descendente.
+  Rodadas antigas deixaram regras com só a de descendente; a moldura foi
+  o primeiro caso em que a raiz da área é ela mesma o alvo. O script via
+  a guarda velha, dizia "já restringida", e a regra continuava pintando:
+  o laço rodava para sempre relatando "1 restringida" e medindo 1 de
+  novo. Confira cada forma separadamente.
+
+- **O servidor estático morre junto com o processo que o matou.** Um
+  laço de medição pesado foi encerrado pelo sistema por memória, e
+  levou o `python3 -m http.server` junto. As execuções seguintes
+  falhavam com `ERR_CONNECTION_REFUSED` — que parece defeito do teste e
+  é falta de servidor. Antes de investigar um erro de navegação,
+  confira: `curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8795/index.html`.

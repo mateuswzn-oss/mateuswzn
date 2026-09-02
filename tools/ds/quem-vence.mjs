@@ -17,6 +17,17 @@ import { chromium } from 'playwright';
 /* Abre PARANDO na tela de login: sem `mwSession`, e esperando o boot
    terminar de verdade em vez de arrancar o loader (o piso é de 4,55s,
    de propósito — a marca tem de acabar de se construir antes). */
+/* A barra de baixo só existe no app instalado — ver o teste 20. Para
+   medi-la é preciso fingir o `display-mode: standalone` ANTES de a
+   página abrir. */
+const INSTALADO = function(){
+  const real = window.matchMedia.bind(window);
+  window.matchMedia = q => /display-mode:\s*standalone/.test(q)
+    ? { matches: true, media: q, onchange: null, addListener(){}, removeListener(){},
+        addEventListener(){}, removeEventListener(){}, dispatchEvent(){ return false; } }
+    : real(q);
+};
+
 async function abreLogin(tema){
   const ep = achaNavegador();
   const nav = await chromium.launch(ep ? { executablePath: ep } : {});
@@ -51,16 +62,22 @@ const tema = process.argv[3] || 'escuro';
    ainda não passou por aqui, e é a mais pesada: 612 regras em 44
    folhas, contra as 79 de Início e Arquivos juntas. */
 const ELOGIN = area === 'login';
-const RAIZ = ELOGIN ? '#loginScreen' : '#view-' + area;
+/* A moldura não é uma `#view-` nem uma tela: são três pedaços que
+   convivem com todas as áreas. Medir cada um por si, porque cada um tem
+   folhas e problemas próprios. */
+const MOLDURA = { lateral: '.sidebar', topo: '.topbar', baixo: '#mwBottomNav' };
+const RAIZ = ELOGIN ? '#loginScreen' : (MOLDURA[area] || '#view-' + area);
 
 const { b, p } = ELOGIN ? await abreLogin(tema) : await abre({
   subjects:[], projects:[], activities:[], notes:[], institutions:[],
   profile:{ name:'Mateus Souza', email:'m@x.com', photo:'', username:'m', bio:'', skills:[], links:[], visibility:{} },
   college:{ institution:'UFPA', course:'Eng', area:'', semester:5 },
   theme: tema === 'claro' ? 'light' : 'dark'
-}, { viewport: { width: 1280, height: 900 } });
+}, area === 'baixo'
+     ? { viewport: { width: 390, height: 780 }, init: INSTALADO }
+     : { viewport: { width: 1280, height: 900 } });
 
-if (!ELOGIN) {
+if (!ELOGIN && !MOLDURA[area]) {
   await vaiPara(p, area);
   await p.waitForTimeout(800);
   await esperaParar(p, '#view-' + area);
@@ -190,7 +207,22 @@ const PROPRIO = {
                'mw-recupera-css',          /* o painel de recuperação por e-mail */
                'mw-boot-loader-style',     /* a construção da marca, que roda antes da tela */
                'mateus-original-car-animation', /* o carrinho que atravessa o botão de criar conta */
-               'mw-cyan-glass-finish']     /* as partículas do fundo */
+               'mw-cyan-glass-finish'],    /* as partículas do fundo */
+  /* A moldura. O que fica é o que só existe aqui: a lente de vidro com
+     mola da barra de baixo, o recolher da lateral, a coreografia de
+     rolagem. O que sai é aparência genérica — cor, raio, espaço. */
+  lateral: ['mw-sidebar-original-restore', 'sidebar-final-3-point-fix',
+            'sidebar-smooth-performance-fix', 'mw-nav-choreography',
+            'mw-sidebar-marca', 'mw-identidade-navegacao',
+            'mw-nav-icon-cores',        /* as nove cores dos ícones da lista */
+            'mw-sidebar-liquid-glass',  /* o material de vidro da moldura */
+            'mw-reference-exact-pass',  /* o layout em coluna da lateral */
+            'mw-sidebar-top-refinement'],
+  topo:    ['mw-nav-choreography', 'mw-identidade-navegacao',
+            'mw-sidebar-liquid-glass', 'mw-sidebar-top-refinement'],
+  baixo:   ['mw-bottomnav-instagram', 'mw-ds-bottomnav', 'mw-nav-label-reveal',
+            'mw-nav-choreography', 'mw-nav-por-contexto', 'mw-liquid-glass-polish',
+            'mw-nav-lens-neutral', 'mw-nav-active-lens']
 };
 const meus = new Set(PROPRIO[area] || []);
 

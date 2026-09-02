@@ -46,15 +46,36 @@ def normaliza(s):
     return re.sub(r'\s+', ' ', s).strip()
 
 
+RAIZ = ':not([data-mw-migrada])'
+DESC = ':not([data-mw-migrada] *)'
+
+
 def guarda_um(parte):
-    """Acrescenta a guarda a UMA parte do seletor, antes do pseudo-elemento."""
+    """Acrescenta ao seletor as guardas que faltarem, antes do pseudo-elemento.
+
+    As duas são conferidas SEPARADAMENTE, e isso custou uma sessão. A
+    checagem de idempotência era `if ':not([data-mw-migrada]' in p` — um
+    prefixo que casa com as duas formas. Rodadas anteriores deixaram
+    regras com só a guarda de DESCENDENTE, e a moldura é o primeiro caso
+    em que a raiz da área é ela mesma o alvo (`#app .sidebar{...}`).
+    Resultado: o script via a guarda velha, dizia "já está restringida",
+    e a regra continuava pintando a lateral. O laço rodava para sempre
+    relatando "1 regra restringida" e medindo 1 de novo.
+    """
     p = parte.strip()
-    if not p or ':not([data-mw-migrada]' in p:
+    if not p:
+        return p
+    falta = ''
+    if RAIZ not in p.replace(DESC, ''):
+        falta += RAIZ
+    if DESC not in p:
+        falta += DESC
+    if not falta:
         return p
     m = PSEUDO_ELEM.search(p)
     if m:
-        return p[:m.start()] + GUARDA + m.group(1)
-    return p + GUARDA
+        return p[:m.start()] + falta + m.group(1)
+    return p + falta
 
 
 def guarda(seletor):
@@ -165,6 +186,15 @@ def main():
         'mwv2-login-style', 'mateus-login-animation', 'mw-recupera-css',
         'mw-boot-loader-style', 'mateus-original-car-animation',
         'mw-cyan-glass-finish',
+        # A moldura: o material de vidro, as cores dos ícones, a lente
+        # que desliza, o recolher da lateral, a coreografia de rolagem.
+        'mw-sidebar-original-restore', 'sidebar-final-3-point-fix',
+        'sidebar-smooth-performance-fix', 'mw-nav-choreography',
+        'mw-sidebar-marca', 'mw-identidade-navegacao', 'mw-nav-icon-cores',
+        'mw-sidebar-liquid-glass', 'mw-reference-exact-pass',
+        'mw-sidebar-top-refinement', 'mw-bottomnav-instagram',
+        'mw-ds-bottomnav', 'mw-nav-label-reveal', 'mw-nav-por-contexto',
+        'mw-liquid-glass-polish', 'mw-nav-lens-neutral', 'mw-nav-active-lens',
     }
     NAO_RESTRINGIR |= PROPRIO
     alvos = {}
