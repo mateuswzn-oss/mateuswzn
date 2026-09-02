@@ -55,6 +55,7 @@ node tools/testes/1-regressao.mjs mobile
 | 9 | `9-criacao.mjs` | os quatro caminhos de criar (o "+ Adicionar" da área, o atalho do painel, o "+" do topo, o "+" da barra de baixo) abrem o **mesmo** formulário | qualquer um deles abrir outro, ou o modal legado voltar |
 | 10 | `10-offline.mjs` | instala o service worker de verdade, desliga a rede e recarrega | o app não abrir, os dados sumirem, ou faltar folha de estilo |
 | 11 | `11-dados.mjs` | o ciclo completo nas cinco entidades: criar com todos os campos, recarregar, editar sem apagar o resto, excluir o item certo com a lista reordenada | um campo não chegar ao dado, sumir no reload, a edição zerar campos, ou a exclusão pegar o item errado |
+| 12 | `12-teclado.mjs` | operar sem mouse: atalho para o conteúdo, Escape fechando formulário e diálogo, Tab preso dentro do modal, foco voltando para quem abriu | qualquer um deles |
 
 ### Por que o contraste é medido em duas etapas
 
@@ -89,6 +90,12 @@ resumidas aqui para quem for escrever um teste novo.
 - **`p.dragTo()` emite eventos de mouse.** Num celular o caminho é
   `PointerEvent` de tipo `touch`, que é outro código. O teste 5 monta o
   gesto à mão por isso.
+- **`aria-modal="true"` não faz nada sozinho.** É uma declaração para a
+  tecnologia assistiva, não um comportamento: o navegador não move o
+  foco para dentro, não prende o Tab e não fecha no Escape. Onze
+  diálogos do app declaravam isso sem implementar nada — quem usa
+  teclado abria um diálogo do qual não conseguia sair. Quem implementa é
+  o bloco `mw-teclado`, uma vez, para todos.
 - **A tela reordena, o array não.** As listas saem em ordem de prazo e de
   semestre, mas Editar e Excluir guardam o índice da posição ORIGINAL no
   array. É por isso que a última parte do teste 11 embaralha as datas de

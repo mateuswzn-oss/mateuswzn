@@ -94,6 +94,22 @@ O `index.html` concentra tudo. É uma decisão deliberada: sem passo de build, o
 repositório é exatamente o que roda no navegador, e o deploy é copiar arquivos. O custo é um
 arquivo grande — se o projeto crescer mais, vale separar em módulos.
 
+## Situação atual
+
+O endereço público mostra **uma tela de manutenção**. O app está sendo reformulado numa
+branch de trabalho (`beta/reformulacao-profissional`), com prévia publicada em
+[`/beta/`](https://mateuswzn-oss.github.io/mateuswzn/beta/). A versão estável anterior
+está preservada na branch `stable-backup`.
+
+**A prévia não é o produto final.** Ela é a etapa de *estabilização*: generalizar o modelo
+de dados, separar Perfil de Configurações, tornar honesto o que ainda não existe, e fechar
+os buracos que a suíte de testes encontra. Depois que essa base estiver sólida, vem a
+reformulação completa — design system novo, Liquid Glass, dashboard, perfil, configurações,
+login/cadastro, comunidade, arquivos com Storage de verdade, e layouts próprios para
+celular, tablet, desktop e web.
+
+A ordem é essa de propósito: transformação visual sobre base instável vira retrabalho.
+
 ## Testes
 
 ```bash

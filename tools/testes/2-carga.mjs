@@ -108,6 +108,25 @@ for (const [rotulo, vp] of [['1440', {width:1440,height:950}], ['834', {width:83
     if (alerta) ruins++;
     console.log('  ' + area.padEnd(13), JSON.stringify(r), ms + 'ms' + alerta);
   }
+  /* Com 120 atividades a área chegava a 21 mil pixels — umas 54 telas
+     de rolagem no celular. Os grupos que não pedem ação começam
+     recolhidos; isto vigia que continuem assim, e que a contagem
+     apareça (recolher sem dizer quanto sobrou seria esconder). */
+  if (rotulo === '390') {
+    await vaiPara(p, 'activities');
+    await p.waitForTimeout(900);
+    const agenda = await p.evaluate(() => ({
+      altura: Math.round(document.getElementById('view-activities').getBoundingClientRect().height),
+      recolhidos: [...document.querySelectorAll('#activitiesList .mw-agenda-titulo[aria-expanded="false"]')]
+        .map(t => t.querySelector('strong').textContent + '=' + t.querySelectorAll('span')[0].textContent),
+      itensVisiveis: [...document.querySelectorAll('#activitiesList .list-item')].filter(e => e.offsetParent).length
+    }));
+    console.log('  agenda recolhida:', JSON.stringify(agenda));
+    if (agenda.altura > 12000) { console.log('  <<< a área voltou a ser alta demais'); ruins++; }
+    if (!agenda.recolhidos.length) { console.log('  <<< nenhum grupo recolhido com 120 atividades'); ruins++; }
+    if (agenda.recolhidos.some(r => !/=\d+$/.test(r))) { console.log('  <<< grupo recolhido sem contagem'); ruins++; }
+  }
+
   console.log('  ERROS JS:', erros.length ? erros : 'nenhum');
   if (erros.length) ruins++;
   await b.close();

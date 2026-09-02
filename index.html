@@ -4914,7 +4914,11 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
        (você esqueceu), a sessão fica. Só depois de errar a senha é que
        resta o login completo. */
     esqueci && esqueci.addEventListener('click', function(){
-      var senha = prompt('Digite a senha da sua conta para destravar:');
+      /* mwPedirValor devolve promessa; o prompt() nativo era síncrono.
+         O corpo inteiro passou para dentro do then. */
+      window.mwPedirValor('Destravar o Workspace',
+        'Digite a senha da sua conta para remover o código de acesso.',
+        { tipo: 'password', placeholder: 'Sua senha' }).then(function(senha){
       if (senha === null) return;
       var conta = null;
       try {
@@ -4934,6 +4938,7 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
         revealApp();
         if (typeof toast === 'function') toast('Código removido. Defina outro em Configurações.');
       }).catch(function(){ dizer('Não foi possível conferir a senha.'); });
+      });
     });
     /* O card inteiro devolve o foco ao campo: no celular, tocar em
        qualquer lugar da tela traz o teclado de volta. */
@@ -5354,7 +5359,7 @@ function loadProfileFields(){const p=data.profile||defaults.profile;$('#profileN
    campos deste formulário são atualizados; o resto do perfil é
    preservado. */
 $('#saveProfile').onclick=()=>{data.profile=Object.assign({},data.profile||{},{name:$('#profileName').value.trim()||'Mateus',email:$('#profileEmail').value.trim(),photo:$('#profilePhoto').value.trim()});save();$('.hello h2').textContent='Olá, '+data.profile.name+'! 👋';toast('Perfil salvo')};
-$('#clearAll').onclick=()=>{if(confirm('Apagar todos os dados do Workspace?')){data.subjects=[];data.projects=[];data.activities=[];data.notes=[];save();toast('Dados apagados')}};
+$('#clearAll').onclick=()=>{window.mwConfirmar('Apagar todos os dados?','Isso remove disciplinas, projetos, atividades e anotações deste aparelho. Não dá para desfazer.',{sim:'Apagar tudo',icone:'!'}).then(ok=>{if(!ok)return;data.subjects=[];data.projects=[];data.activities=[];data.notes=[];save();toast('Dados apagados')})};
 $('#exportBackup').onclick=()=>{
   const payload={mateusWorkspaceBackup:1,exportedAt:new Date().toISOString(),data};
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
@@ -18968,9 +18973,11 @@ body.light .mw-transfere-nota b{color:#0b1830}
   };
 
   btnColar.addEventListener('click', function(){
-    var txt = prompt('Cole aqui o código copiado do outro lado:');
-    if (txt === null) return;
-    window.mwTrazerConta(txt);
+    window.mwPedirValor('Trazer conta', 'Cole aqui o código copiado do outro lado.',
+      { placeholder: 'Código da conta' }).then(function(txt){
+      if (txt === null) return;
+      window.mwTrazerConta(txt);
+    });
   });
 })();
 </script>
@@ -19537,12 +19544,16 @@ body.light .mw-transfere-nota b{color:#0b1830}
       aviso('Precisa de conta na nuvem conectada e internet.', false);
       return;
     }
-    if (!confirm('Isso derruba a sessão em qualquer outro aparelho ou navegador logado nesta conta (a sessão aqui continua). Continuar?')) return;
-    aviso('Encerrando...');
-    window.mwNuvem.sairOutrosAparelhos().then(function(){
-      aviso('Pronto — os outros aparelhos precisarão entrar de novo.', true);
-    }).catch(function(){
-      aviso('Não foi possível agora. Tente de novo.', false);
+    window.mwConfirmar('Sair dos outros aparelhos?',
+      'A sessão aqui continua. Em qualquer outro aparelho ou navegador logado nesta conta, será preciso entrar de novo.',
+      { sim: 'Sair dos outros' }).then(function(ok){
+      if (!ok) return;
+      aviso('Encerrando...');
+      window.mwNuvem.sairOutrosAparelhos().then(function(){
+        aviso('Pronto — os outros aparelhos precisarão entrar de novo.', true);
+      }).catch(function(){
+        aviso('Não foi possível agora. Tente de novo.', false);
+      });
     });
   });
 })();
@@ -19625,25 +19636,35 @@ body.light .mw-transfere-nota b{color:#0b1830}
   function soDigitos(v){ return /^[0-9]{6}$/.test(v || ''); }
 
   btnDefinir && btnDefinir.addEventListener('click', function(){
-    var a = prompt('Escolha um código de 6 dígitos:');
+    /* Dois prompts encadeados viraram duas promessas encadeadas. O
+       campo é password para o código não ficar à mostra na tela. */
+    window.mwPedirValor('Código de acesso', 'Escolha um código de 6 dígitos.',
+      { tipo: 'password', placeholder: '000000' }).then(function(a){
     if (a === null) return;
     if (!soDigitos(a)) { aviso('O código precisa ter exatamente 6 dígitos.', true); return; }
-    var b = prompt('Digite o código de novo para confirmar:');
+    return window.mwPedirValor('Confirme o código', 'Digite o mesmo código de novo.',
+      { tipo: 'password', placeholder: '000000' }).then(function(b){
     if (b === null) return;
     if (a !== b) { aviso('Os códigos não coincidem.', true); return; }
-    definir(a).then(function(ok){
+    return definir(a).then(function(ok){
       if (!ok) { aviso('Não foi possível guardar o código com segurança neste contexto (precisa de https).', true); return; }
       pintarAjuste();
       aviso('Código definido. Ele será pedido na próxima vez que você abrir o Workspace.');
       if (typeof toast === 'function') toast('Código de acesso definido');
     });
+    });
+    });
   });
 
   btnRemover && btnRemover.addEventListener('click', function(){
-    if (!confirm('Remover o código de acesso? O Workspace passa a abrir direto.')) return;
-    remover(); pintarAjuste();
-    aviso('Código removido.');
-    if (typeof toast === 'function') toast('Código de acesso removido');
+    window.mwConfirmar('Remover o código de acesso?',
+      'O Workspace passa a abrir direto, sem pedir o código.',
+      { sim: 'Remover' }).then(function(ok){
+      if (!ok) return;
+      remover(); pintarAjuste();
+      aviso('Código removido.');
+      if (typeof toast === 'function') toast('Código de acesso removido');
+    });
   });
 
   pintarAjuste();
@@ -20347,7 +20368,8 @@ html body .mwv2-auth-pane > *{flex-shrink:0}
   }
 
   link.addEventListener('click', function(){
-    var txt = prompt('Cole o código que você copiou no outro lado:');
+    window.mwPedirValor('Trazer conta', 'Cole o código que você copiou no outro lado.',
+      { placeholder: 'Código da conta' }).then(function(txt){
     if (txt === null) return;
     if (!window.mwTrazerConta) { mostrar('Recarregue a página e tente de novo.', false); return; }
     window.mwTrazerConta(txt, function(msg, bom){
@@ -20362,6 +20384,7 @@ html body .mwv2-auth-pane > *{flex-shrink:0}
         if (campo && ultima && ultima.username) { campo.value = ultima.username; campo.dispatchEvent(new Event('input', {bubbles:true})); }
         document.getElementById('password')?.focus();
       } catch (e) {}
+    });
     });
   });
 })();
@@ -22362,10 +22385,12 @@ body.light .eva-sugestao{background:rgba(109,40,217,.09);color:#6d28d9;border-co
       renomear.textContent = 'Renomear';
       renomear.addEventListener('click', function(e){
         e.stopPropagation();
-        var novo = window.prompt('Novo nome da conversa:', c.titulo || '');
-        if (novo === null) return;
-        c.titulo = tituloDe(novo);
-        grava(); pinta();
+        window.mwPedirValor('Renomear conversa', 'Como você quer chamar esta conversa?',
+          { valorInicial: c.titulo || '' }).then(function(novo){
+          if (novo === null) return;
+          c.titulo = tituloDe(novo);
+          grava(); pinta();
+        });
       });
 
       var excluir = document.createElement('button');
@@ -25104,11 +25129,15 @@ html body #app .mw-settings-em-breve{ color:var(--id-txt-3,#7b88a6) !important; 
       limpar.dataset.pronto = '1';
       limpar.addEventListener('click', function(){
         if (!conversas().length) return;
-        if (!window.confirm('Apagar todas as conversas guardadas com a Nyc AI? Não dá para desfazer.')) return;
-        dados().aiConversations = [];
-        grava();
-        montaIA();
-        if (window.toast) window.toast('Histórico da Nyc AI apagado.');
+        window.mwConfirmar('Apagar o histórico da Nyc AI?',
+          'Todas as conversas guardadas somem deste aparelho. Não dá para desfazer.',
+          { sim: 'Apagar', icone: '!' }).then(function(ok){
+          if (!ok) return;
+          dados().aiConversations = [];
+          grava();
+          montaIA();
+          if (window.toast) window.toast('Histórico da Nyc AI apagado.');
+        });
       });
     }
   }
@@ -29926,6 +29955,26 @@ html body #app .mw-nota-ver:hover{ filter: brightness(1.15); }
 html body #app #activitiesList .mw-agenda-titulo{
   display: flex; align-items: baseline; gap: 9px;
   margin: 18px 0 8px; padding: 0 2px;
+  /* Virou <button> para poder recolher o grupo. Zera o que o navegador
+     desenha em botão; o resto do visual continua igual ao que era. */
+  width: 100%; background: none; border: 0; text-align: left;
+  font: inherit; cursor: pointer;
+}
+/* Só os grupos que dá para recolher parecem clicáveis. */
+html body #app #activitiesList .mw-agenda-titulo[data-fixo="1"]{ cursor: default; }
+html body #app #activitiesList .mw-agenda-seta{
+  font-size: 10px; color: var(--ds-txt-3); transition: transform .16s ease;
+}
+html body #app #activitiesList .mw-agenda-titulo[aria-expanded="false"] .mw-agenda-seta{
+  transform: rotate(-90deg);
+}
+html body #app #activitiesList .mw-agenda-titulo[data-fixo="1"] .mw-agenda-seta{ display: none; }
+/* Recolhido é coisa do grupo; escondido pelo filtro é outra, e usa o
+   atributo hidden. Duas causas diferentes não podem dividir o mesmo
+   mecanismo, senão uma desfaz a outra. */
+html body #app #activitiesList .list-item.mw-agenda-recolhido{ display: none !important; }
+@media (prefers-reduced-motion: reduce){
+  html body #app #activitiesList .mw-agenda-seta{ transition: none; }
 }
 html body #app #activitiesList .mw-agenda-titulo:first-child{ margin-top: 2px; }
 html body #app #activitiesList .mw-agenda-titulo strong{
@@ -29967,6 +30016,42 @@ html body #app #activitiesList .mw-agenda-titulo[hidden]{ display: none !importa
     ['depois',    'Mais adiante'],
     ['sem',       'Sem prazo']
   ];
+
+  /* Achado da auditoria sob carga: com 120 atividades a área virava 21
+     mil pixels — umas 54 telas de rolagem no celular. Rolar tudo isso
+     só faz sentido para chegar em "Mais adiante", que por definição não
+     é o que a pessoa foi ali ver.
+     Então os dois grupos que não pedem ação nenhuma começam recolhidos
+     QUANDO SÃO GRANDES. Atrasadas, Hoje e Próximos 7 dias nunca
+     recolhem: são a razão de a pessoa ter aberto a área. Nada é
+     escondido de verdade — a contagem fica no título e um clique abre. */
+  var RECOLHIVEIS = ['depois', 'sem'];
+  var LIMITE = 8;
+  var estado = {};   /* grupo -> aberto?  (a lista é remontada a cada save) */
+
+  function aberto(grupo, quantos){
+    if (RECOLHIVEIS.indexOf(grupo) < 0) return true;
+    if (!(grupo in estado)) {
+      /* quantos === 0 é a chamada de dentro do laço, que só quer
+         consultar; a decisão inicial é tomada na montagem do título. */
+      if (!quantos) return true;
+      estado[grupo] = quantos <= LIMITE;
+    }
+    return estado[grupo];
+  }
+
+  document.addEventListener('click', function(ev){
+    var t = ev.target.closest && ev.target.closest('#activitiesList .mw-agenda-titulo');
+    if (!t || t.getAttribute('data-fixo') === '1') return;
+    var grupo = t.getAttribute('data-grupo');
+    estado[grupo] = !aberto(grupo, 0);
+    t.setAttribute('aria-expanded', String(estado[grupo]));
+    var n = t.nextElementSibling;
+    while (n && !n.classList.contains('mw-agenda-titulo')){
+      n.classList.toggle('mw-agenda-recolhido', !estado[grupo]);
+      n = n.nextElementSibling;
+    }
+  });
 
   function hoje0(){ var d = new Date(); d.setHours(0,0,0,0); return d.getTime(); }
   /* Nunca new Date('2026-09-05'): essa forma é lida como meia-noite UTC
@@ -30029,14 +30114,20 @@ html body #app #activitiesList .mw-agenda-titulo[hidden]{ display: none !importa
         atual = x.grupo;
         var rotulo = (GRUPOS.find(function(g){ return g[0] === atual; }) || ['', ''])[1];
         var quantos = comChave.filter(function(y){ return y.grupo === atual; }).length;
-        var t = document.createElement('div');
+        var t = document.createElement('button');
+        t.type = 'button';
         t.className = 'mw-agenda-titulo';
         t.setAttribute('data-grupo', atual);
-        t.innerHTML = '<strong></strong><span></span>';
+        var podeRecolher = RECOLHIVEIS.indexOf(atual) >= 0 && quantos > LIMITE;
+        t.setAttribute('data-fixo', podeRecolher ? '0' : '1');
+        t.setAttribute('aria-expanded', String(aberto(atual, quantos)));
+        t.innerHTML = '<strong></strong><span></span><span class="mw-agenda-seta" aria-hidden="true">▾</span>';
         t.querySelector('strong').textContent = rotulo;
-        t.querySelector('span').textContent = quantos;
+        t.querySelectorAll('span')[0].textContent = quantos;
         pedaco.appendChild(t);
       }
+      if (!aberto(atual, 0)) x.item.classList.add('mw-agenda-recolhido');
+      else x.item.classList.remove('mw-agenda-recolhido');
       pedaco.appendChild(x.item);
     });
     lista.appendChild(pedaco);
@@ -30663,6 +30754,199 @@ html body #app .mw-insight-action{
   margin: 3px 0 -6px;
 }
 </style>
+
+<style id="mw-teclado">
+/* =====================================================================
+   §20 OPERAR O APP SÓ PELO TECLADO
+   =====================================================================
+   Medido, não suposto. A sonda de teclado achou quatro coisas:
+
+   1. O diálogo de exclusão abre e o foco NÃO vai para dentro dele. O
+      Tab continua passeando pela página atrás, e o Escape não fecha.
+      Ele declara aria-modal="true" e não cumpria nada disso — para
+      quem usa teclado, era um diálogo impossível de operar e de sair.
+      São ONZE diálogos no app com a mesma declaração; por isso a
+      correção é genérica, e não um remendo naquele.
+   2. Escape não fechava o formulário de criação.
+   3. Não havia como pular a barra lateral: dezoito Tabs até o
+      conteúdo, a cada carregamento.
+   4. O foco não voltava para onde estava depois de fechar um diálogo.
+   ===================================================================== */
+
+/* O atalho fica fora da tela até receber foco. Quem usa mouse nunca o
+   vê; quem usa teclado o encontra no primeiro Tab. */
+html body .mw-pular{
+  position: fixed; top: 10px; left: 10px; z-index: 100000;
+  transform: translateY(-160%);
+  transition: transform .16s ease;
+  padding: 10px 16px; border: 0; border-radius: 12px;
+  background: var(--ds-ac-grad-forte, #2563eb); color: #fff;
+  font-size: 13px; font-weight: 650; cursor: pointer;
+  box-shadow: 0 10px 28px rgba(2,8,23,.45);
+}
+html body .mw-pular:focus{ transform: translateY(0); }
+@media (prefers-reduced-motion: reduce){
+  html body .mw-pular{ transition: none; }
+}
+</style>
+
+<script id="mw-teclado-js">
+(function(){
+  'use strict';
+
+  /* ---------- 1. pular para o conteúdo ------------------------------- */
+  var pular = document.createElement('button');
+  pular.type = 'button';
+  pular.className = 'mw-pular';
+  pular.textContent = 'Pular para o conteúdo';
+  pular.addEventListener('click', function(){
+    var alvo = document.querySelector('#app .main') || document.getElementById('app');
+    if (!alvo) return;
+    /* tabindex=-1 para poder receber foco por programa sem entrar na
+       ordem do Tab; é o padrão para destino de atalho. */
+    alvo.setAttribute('tabindex', '-1');
+    alvo.focus();
+    alvo.scrollIntoView({ block: 'start' });
+  });
+  if (document.body.firstChild) document.body.insertBefore(pular, document.body.firstChild);
+  else document.body.appendChild(pular);
+
+  /* ---------- 2. diálogos: foco entra, Tab não sai, Escape fecha ----- */
+  var FOCAVEL = 'a[href],button:not([disabled]),input:not([disabled]):not([type=hidden]),' +
+                'select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+  /* Cada diálogo fecha do seu jeito (uns resolvem uma promessa, outros
+     só escondem). Escondê-los à força deixaria promessa pendurada, por
+     isso o Escape CLICA no botão de sair que o próprio diálogo tem —
+     e, se não houver nenhum, não faz nada. */
+  var SAIDA = '.mw-confirm-no,[data-fechar],.close,#mwConfirmaCancelar,#mwPedirValorCancelar,' +
+              '#mwTelCancelar,[aria-label="Fechar"],[aria-label="Cancelar"]';
+
+  var abertoAgora = null;
+  var focoAnterior = null;
+
+  function visivel(el){
+    if (!el || !el.isConnected) return false;
+    var cs = getComputedStyle(el);
+    if (cs.display === 'none' || cs.visibility === 'hidden') return false;
+    var r = el.getBoundingClientRect();
+    return r.width > 1 && r.height > 1;
+  }
+  function focaveis(el){
+    return [].slice.call(el.querySelectorAll(FOCAVEL)).filter(function(e){
+      var r = e.getBoundingClientRect();
+      return r.width > 1 && r.height > 1 && getComputedStyle(e).visibility !== 'hidden';
+    });
+  }
+  function topo(){
+    var todos = [].slice.call(document.querySelectorAll('[role="dialog"][aria-modal="true"]'));
+    var vis = todos.filter(visivel);
+    return vis.length ? vis[vis.length - 1] : null;
+  }
+
+  function revisa(){
+    var agora = topo();
+    if (agora === abertoAgora) return;
+
+    if (!abertoAgora && agora){
+      /* abriu */
+      focoAnterior = document.activeElement;
+      var alvos = focaveis(agora);
+      if (alvos.length) alvos[0].focus();
+      else { agora.setAttribute('tabindex', '-1'); agora.focus(); }
+    } else if (abertoAgora && !agora){
+      /* fechou: o foco volta para quem abriu, senão ele cai no body e a
+         pessoa recomeça o Tab do zero */
+      if (focoAnterior && focoAnterior.isConnected && visivel(focoAnterior)) {
+        try { focoAnterior.focus(); } catch(e){}
+      }
+      focoAnterior = null;
+    }
+    abertoAgora = agora;
+  }
+
+  /* O app reescreve listas inteiras a cada gravação; sem agrupar por
+     quadro, esta revisão rodaria centenas de vezes por save(). */
+  var agendado = false;
+  function agenda(){
+    if (agendado) return;
+    agendado = true;
+    requestAnimationFrame(function(){ agendado = false; try { revisa(); } catch(e){} });
+  }
+  new MutationObserver(agenda).observe(document.body, {
+    childList: true, subtree: true,
+    attributes: true, attributeFilter: ['class', 'hidden', 'style']
+  });
+  agenda();
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape'){
+      var d = topo();
+      if (d){
+        var sair = d.querySelector(SAIDA) || (d.parentElement && d.parentElement.querySelector(SAIDA));
+        if (sair){ e.preventDefault(); sair.click(); return; }
+        /* Sem botão de sair não dá para fechar com segurança: fechar por
+           fora pode deixar uma promessa pendurada. Fica aberto, e isso é
+           melhor do que travar o fluxo pela metade. */
+        return;
+      }
+      /* Escape também fecha o formulário de criação, que não é diálogo
+         mas ocupa a tela do mesmo jeito. */
+      var form = document.querySelector('.workspace-form.is-open');
+      if (form){
+        e.preventDefault();
+        form.classList.remove('is-open');
+        delete form.dataset.editIndex;
+        var tipo = form.getAttribute('data-workspace-form');
+        var botao = document.querySelector('#view-' + tipo + ' .add-btn');
+        if (botao) botao.focus();
+      }
+      return;
+    }
+
+    if (e.key !== 'Tab') return;
+    var d2 = topo();
+    if (!d2) return;
+    var lista = focaveis(d2);
+    if (!lista.length) return;
+    var primeiro = lista[0], ultimo = lista[lista.length - 1];
+    /* Fora do diálogo o Tab não deveria nem começar; se estiver fora
+       (foi assim que a sonda encontrou o defeito), traz de volta. */
+    if (!d2.contains(document.activeElement)){
+      e.preventDefault(); primeiro.focus(); return;
+    }
+    if (e.shiftKey && document.activeElement === primeiro){ e.preventDefault(); ultimo.focus(); }
+    else if (!e.shiftKey && document.activeElement === ultimo){ e.preventDefault(); primeiro.focus(); }
+  }, true);
+
+  /* ---------- 3. confirmação própria, no lugar do confirm() ---------- */
+  /* O app já tinha um cartão de confirmação bonito, mas só dentro do
+     fluxo de excluir item. Aqui ele vira função, para os confirm()
+     nativos que sobraram poderem usar o mesmo desenho. */
+  window.mwConfirmar = function(titulo, texto, opcoes){
+    opcoes = opcoes || {};
+    return new Promise(function(resolve){
+      var back = document.createElement('div');
+      back.className = 'mw-confirm-backdrop';
+      var esc = function(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){
+        return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]; }); };
+      back.innerHTML = '<div class="mw-confirm-card" role="dialog" aria-modal="true" aria-labelledby="mwConfirmarTitulo">' +
+        '<div class="mw-confirm-icon">' + esc(opcoes.icone || '?') + '</div>' +
+        '<h3 id="mwConfirmarTitulo">' + esc(titulo) + '</h3>' +
+        '<p>' + esc(texto) + '</p>' +
+        '<div class="mw-confirm-actions">' +
+        '<button class="mw-confirm-no" type="button">' + esc(opcoes.nao || 'Cancelar') + '</button>' +
+        '<button class="mw-confirm-yes" type="button">' + esc(opcoes.sim || 'Confirmar') + '</button>' +
+        '</div></div>';
+      document.body.appendChild(back);
+      function fecha(v){ back.remove(); resolve(v); }
+      back.querySelector('.mw-confirm-no').addEventListener('click', function(){ fecha(false); });
+      back.querySelector('.mw-confirm-yes').addEventListener('click', function(){ fecha(true); });
+      back.addEventListener('click', function(ev){ if (ev.target === back) fecha(false); });
+      agenda();
+    });
+  };
+})();
+</script>
 
 </body>
 </html>

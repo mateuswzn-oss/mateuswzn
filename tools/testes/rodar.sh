@@ -65,6 +65,7 @@ declare -a NOMES=(
   "9 criação · todos os caminhos"
   "10 offline · service worker"
   "11 dados · criar, editar, excluir"
+  "12 teclado · operar sem mouse"
 )
 declare -a CMDS=(
   "node tools/testes/1-regressao.mjs"
@@ -79,6 +80,7 @@ declare -a CMDS=(
   "node tools/testes/9-criacao.mjs"
   "node tools/testes/10-offline.mjs"
   "node tools/testes/11-dados.mjs"
+  "node tools/testes/12-teclado.mjs"
 )
 
 SO_ESTES=("$@")

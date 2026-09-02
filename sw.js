@@ -1,3 +1,45 @@
+/* v85 (BETA — operar o app sem mouse, e a agenda que cabia em 54 telas):
+   Rodada de estabilização. Três frentes, todas medidas antes e depois.
+
+   1. TECLADO. Uma sonda achou quatro defeitos, e o primeiro é sério: o
+      diálogo de exclusão abria e o foco NÃO ia para dentro dele. O Tab
+      continuava passeando pela página atrás, e o Escape não fechava.
+      Ele declara aria-modal="true", que é uma promessa para a
+      tecnologia assistiva — mas o navegador não implementa nada disso
+      sozinho. Para quem usa teclado, era um diálogo impossível de
+      operar e de sair. São ONZE diálogos no app com a mesma declaração,
+      por isso o bloco mw-teclado resolve genericamente, e não naquele.
+      Também entraram: Escape fechando o formulário de criação, o foco
+      voltando para quem abriu o diálogo, e um "Pular para o conteúdo"
+      no primeiro Tab — antes eram dezoito Tabs até sair da barra
+      lateral, a cada carregamento.
+
+   2. DIÁLOGOS NATIVOS. Nove prompt()/confirm() do sistema operacional
+      ainda conviviam com o cartão de confirmação próprio do app, que só
+      era usado ao excluir um item. Todos passaram para os diálogos do
+      app (mwPedirValor, que já existia, e mwConfirmar, novo): apagar
+      todos os dados, definir e remover o código de acesso, sair dos
+      outros aparelhos, colar código de conta nos dois lugares, e
+      renomear e apagar conversas da Nyc AI. Cada um exigiu passar de
+      chamada síncrona para promessa; a sintaxe dos 126 blocos inline
+      foi conferida um a um depois.
+
+   3. LISTAS LONGAS. Com 120 atividades a área tinha 21 mil pixels —
+      umas 54 telas de rolagem no celular. Agora os grupos que NÃO pedem
+      ação ("Mais adiante" e "Sem prazo") começam recolhidos quando são
+      grandes; Atrasadas, Hoje e Próximos 7 dias nunca recolhem, porque
+      são a razão de a pessoa ter aberto a área. Resultado medido: 8.247
+      pixels ao abrir, com "Mais adiante = 72" no título e um clique
+      para expandir. Nada é escondido em silêncio: a contagem fica à
+      vista, e o título virou botão com aria-expanded.
+
+   O teste 12 vigia o teclado; o teste 2 passou a vigiar a altura da
+   agenda sob carga. 13 de 13 verdes.
+
+   Registrado no README: esta prévia é a etapa de ESTABILIZAÇÃO, não o
+   produto final. A reformulação completa — design system novo, Liquid
+   Glass, comunidade, Storage de verdade, layouts por dispositivo — vem
+   depois, sobre esta base. */
 /* v84 (BETA — Disciplinas e Anotações ganham o botão Editar):
    Escrevi um teste que faz o ciclo inteiro nas cinco entidades: criar
    preenchendo todos os campos, recarregar, editar, excluir. Ele achou
@@ -1090,7 +1132,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v84-beta';
+const CACHE_NAME = 'mw-shell-v85-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
