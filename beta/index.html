@@ -346,7 +346,7 @@ body.light{--bg:#edf5ff;--bg2:#e5efff;--panel:rgba(255,255,255,.68);--panel2:rgb
 </style>
 
 
-<style id="mw-final-polish">
+<style id="mw-pele-grafite">
 :root{--bg:#17191b;--bg2:#1d2023;--panel:rgba(30,33,36,.78);--panel2:rgba(25,28,31,.92);--line:rgba(255,255,255,.10);--blue:#b9c0c7;--blue2:#e5e7eb;--text:#f4f4f2;--muted:#a7aaad;--muted2:#777b80;--shadow:none}
 body{background:#17191b;color:var(--text)}
 body:not(.light){background:radial-gradient(circle at 20% 20%,rgba(255,255,255,.035),transparent 28%),radial-gradient(circle at 80% 70%,rgba(255,255,255,.025),transparent 30%),linear-gradient(135deg,#151719,#1b1d20 55%,#141516)}
@@ -534,7 +534,7 @@ body.light #academicCalendarPanel .calendar-day{background:#f1efe9!important;bor
  nav?.addEventListener('click',()=>setTimeout(sync,0)); sync();
 })();
 </script>
-<style id="mw-final-polish">
+<style id="mw-tokens-mw">
 :root{--mw-bg:#171a1f;--mw-surface:#20242a;--mw-surface-2:#252a31;--mw-border:rgba(255,255,255,.10);--mw-text:#f4f6f8;--mw-muted:#a8afb8;--mw-accent:#dfe5eb}
 body{color:var(--mw-text)!important}
 /* fundo removido: quem pinta body/#app é a folha de gradientes da
@@ -788,7 +788,7 @@ body.light #app .brand-mark,body.light #app .logo-mark,body.light #app .mw-logo{
 
 
 
-<style id="mw-create-final-fix">
+<style id="mw-cadastro-ordem">
 #loginScreen.reference-login .sign-up-side .inline-create-form{display:flex!important;flex-direction:column!important;gap:9px!important}
 #loginScreen.reference-login .sign-up-side .inline-create-form .ref-primary{order:10!important;margin-top:2px!important;box-shadow:none!important}
 #loginScreen.reference-login .sign-up-side .signup-divider{order:15!important;display:flex!important;align-items:center;gap:12px;margin:2px 0 0!important;color:#a5a8aa!important;font-size:9px;letter-spacing:.1em}
@@ -5179,7 +5179,7 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
 })();
 </script>
 
-<div class="modal hidden" id="modal"><div class="modal-box"><div class="modal-head"><h3 id="modalTitle">Adicionar</h3><button class="close" id="closeModal">×</button></div><form id="modalForm"></form></div></div>
+<!-- o #modal legado saiu daqui; ver a nota em "/* Forms */" --></div>
 <div class="modal ms-modal hidden" id="msModal"><div class="modal-box"><div class="ms-top"><span class="ms-logo"><i></i><i></i><i></i><i></i></span><strong>Microsoft</strong></div><h3 id="msTitle">Entrar</h3><p id="msDescription">Use sua conta Microsoft para continuar no Mateus Workspace.</p><form id="msForm"><input class="ms-input" id="msEmail" type="email" autocomplete="username" placeholder="Email, telefone ou Skype" required><div class="ms-error" id="msError"></div><div class="ms-actions"><button class="ms-cancel" id="msCancel" type="button">Voltar</button><button class="ms-continue" id="msContinue" type="submit">Avançar</button></div></form></div></div>
 <div id="toast"></div>
 <script>
@@ -5264,7 +5264,20 @@ function showView(view){$$('.view').forEach(v=>v.classList.remove('active'));$('
 // referência direta dentro desta mesma função.
 window.showView = showView;
 $$('#nav button').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
-$('#profileBtn').onclick=()=>showView('profile');$('#quickAdd').onclick=()=>openModal('subjects');
+$('#profileBtn').onclick=()=>showView('profile');
+/* O "+" do topo é o mesmo botão que o atalho "Adicionar" do painel e o
+   "+" da barra de baixo acionam por dentro (os dois fazem
+   getElementById('quickAdd').click()). Ele abria o formulário LEGADO,
+   de três campos, enquanto o "+ Adicionar" de cada área abre o de
+   seis (nome, objetivo, progresso, código, instituição, semestre).
+   Dois formulários diferentes para a mesma coisa, e no celular o
+   caminho principal caía justamente no menor. Agora os três levam ao
+   mesmo lugar: a área de Disciplinas, com o formulário completo. */
+$('#quickAdd').onclick=()=>{
+  showView('subjects');
+  /* o clique só depois da troca de área: o formulário vive dentro dela */
+  setTimeout(()=>document.querySelector('[data-add="subjects"]')?.click(),60);
+};
 /* Dynamic data */
 function progress(){if(!data.subjects.length)return 0;return Math.round(data.subjects.reduce((a,s)=>a+Number(s.progress||0),0)/data.subjects.length)}
 /* Selos das listas: status, prioridade, integrantes e tag. Campos que já
@@ -5321,10 +5334,16 @@ function mwSelos(tipo, item){
 function empty(text){return `<div class="empty"><strong>${esc(text)}</strong><span>Use o botão + para começar.</span></div>`}
 function projectHtml(p){return `<div class="project"><b>${esc(p.name)}</b><p>${esc(p.description||'Projeto acadêmico ou pessoal.')}</p><div class="tags"><span class="tag">${esc(p.tag||'Projeto')}</span></div></div>`}
 function renderAll(){const p=progress();$('#statSubjects').textContent=data.subjects.length;$('#statActivities').textContent=data.activities.length;$('#statProjects').textContent=data.projects.length;$('#statProgress').textContent=p+'%';$('#statSubjectsHint').textContent=data.subjects.length?'cadastradas no semestre':'Nenhuma cadastrada';$('#statActivitiesHint').textContent=data.activities.length?'registradas':'Nenhuma cadastrada';$('#statProjectsHint').textContent=data.projects.length?'cadastrados':'Nenhum cadastrado';$('#statProgressHint').textContent=data.subjects.length?'média das disciplinas':'Sem dados ainda';$('#subjectsCountLabel').textContent=`${data.subjects.length} cadastrada${data.subjects.length===1?'':'s'}`;$('#projectsCountLabel').textContent=`${data.projects.length} cadastrado${data.projects.length===1?'':'s'}`;$('#collegeProgress').textContent=p+'% — calculado automaticamente com seus registros.';$('#collegeProgress2').textContent=p+'% calculado a partir das suas disciplinas';$('#homeSubjects').innerHTML=data.subjects.length?data.subjects.slice(0,5).map(s=>`<div class="course"><div class="course-dot">${esc((s.name||'DS').slice(0,2).toUpperCase())}</div><div><b>${esc(s.name)}</b><small>${esc(s.description||'Disciplina do semestre')}</small></div><div class="progress"><i style="width:${Math.max(0,Math.min(100,Number(s.progress)||0))}%"></i></div></div>`).join(''):empty('Nenhuma disciplina cadastrada.');$('#homeProjects').innerHTML=data.projects.length?data.projects.slice(0,4).map(projectHtml).join(''):empty('Nenhum projeto cadastrado.');$('#subjectsList').innerHTML=data.subjects.length?data.subjects.map((s,i)=>`<div class="list-item"><div><strong>${esc(s.name)}</strong><small>${esc(s.description||'Sem descrição')} · ${Number(s.progress)||0}%</small></div><button class="small-btn" data-delete="subjects" data-index="${i}">Excluir</button></div>`).join(''):empty('Nenhuma disciplina cadastrada.');$('#projectsList').innerHTML=data.projects.length?data.projects.map((p,i)=>`<div class="list-item"><div><strong>${esc(p.name)}</strong><small>${esc(p.description||'Sem descrição')}</small>${mwSelos('projects',p)}</div><div class="mw-item-acoes"><button class="small-btn" data-edit="projects" data-index="${i}">Editar</button><button class="small-btn" data-delete="projects" data-index="${i}">Excluir</button></div></div>`).join(''):empty('Nenhum projeto cadastrado.');$('#activitiesList').innerHTML=data.activities.length?data.activities.map((a,i)=>{const today=new Date();today.setHours(0,0,0,0);const due=a.date?new Date(a.date+'T00:00:00'):null;const overdue=!!(due&&due<today);const isToday=!!(due&&due.getTime()===today.getTime());const badge=overdue?'<span class="mw-due-badge overdue">Atrasada</span>':isToday?'<span class="mw-due-badge today">Hoje</span>':'';return `<div class="list-item${overdue?' mw-overdue':''}"><div><strong>${esc(a.name)}</strong><small>${esc(a.description||'Sem descrição')} · ${esc(mwDataHumana(a.date))}</small>${badge}${mwSelos('activities',a)}</div><div class="mw-item-acoes"><button class="small-btn" data-edit="activities" data-index="${i}">Editar</button><button class="small-btn" data-delete="activities" data-index="${i}">Excluir</button></div></div>`}).join(''):empty('Nenhuma atividade cadastrada.');$('#notesList').innerHTML=data.notes.length?data.notes.map((n,i)=>`<div class="list-item"><div><strong>${esc(n.title)}</strong><small>${esc(n.body||'')}</small></div><button class="small-btn" data-delete="notes" data-index="${i}">Excluir</button></div>`).join(''):empty('Nenhuma anotação criada.');$$('[data-delete]').forEach(b=>b.onclick=()=>{data[b.dataset.delete].splice(Number(b.dataset.index),1);save();toast('Item removido')});if(typeof window.mwDashRefresh==='function')window.mwDashRefresh(data)}
-/* Forms */
-const modal=$('#modal'),form=$('#modalForm');
-function openModal(type){const configs={subjects:{title:'Nova disciplina',fields:[['name','Nome da disciplina','text','Ex.: Programação Web'],['description','Descrição','text','Ex.: Front-end e aplicações'],['progress','Progresso (%)','number','0']]},projects:{title:'Novo projeto',fields:[['name','Nome do projeto','text','Ex.: Mateus Workspace'],['description','Descrição','text','O que você está construindo?'],['tag','Tecnologia / tag','text','Ex.: JavaScript']]},activities:{title:'Nova atividade',fields:[['name','Nome da atividade','text','Ex.: Entregar trabalho'],['description','Descrição','text','Detalhes da tarefa'],['date','Data','date','']]},notes:{title:'Nova anotação',fields:[['title','Título','text','Ex.: Ideias'],['body','Conteúdo','textarea','Escreva sua anotação...']]}};const c=configs[type];if(!c)return;$('#modalTitle').textContent=c.title;form.innerHTML=c.fields.map(([id,label,t,ph])=>`<div class="form-field"><label for="f-${id}">${label}</label>${t==='textarea'?`<textarea id="f-${id}" placeholder="${ph}"></textarea>`:`<input id="f-${id}" type="${t}" placeholder="${ph}" ${t==='number'?'min="0" max="100" value="0"':''}>`}</div>`).join('')+`<button class="modal-submit" type="submit">Salvar</button>`;modal.classList.remove('hidden');form.onsubmit=e=>{e.preventDefault();const obj={};c.fields.forEach(([id])=>obj[id]=$('#f-'+id).value.trim());if(type==='subjects')obj.progress=Math.max(0,Math.min(100,Number(obj.progress)||0));data[type].push(obj);save();closeModal();toast('Salvo com sucesso')};setTimeout(()=>$('#f-'+c.fields[0][0])?.focus(),40)}
-function closeModal(){modal.classList.add('hidden');form.innerHTML=''}$('#closeModal').onclick=closeModal;modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});$$('[data-add]').forEach(b=>b.onclick=()=>openModal(b.dataset.add));
+/* Forms — o modal legado foi removido daqui.
+   Ele já era inalcançável: o bloco de criação novo escuta o clique na
+   FASE DE CAPTURA do document e chama stopImmediatePropagation(), então
+   o onclick que este trecho pendurava em cada [data-add] nunca rodava.
+   O único jeito de chegar nele era pelo #quickAdd, e esse agora abre o
+   formulário de verdade (ver acima).
+   Saiu junto o markup do #modal. As regras de CSS que ainda mencionam
+   #modal ficaram: são presas ao id, não têm elemento para pintar, e
+   estão espalhadas por cinco folhas antigas em regras de vários
+   seletores — mexer nelas custa mais risco do que o peso que tiram. */
 /* Theme and profile */
 function applyTheme(){document.body.classList.toggle('light',data.theme==='light');const tt=$('#themeToggle');if(tt)tt.classList.toggle('is-light',data.theme==='light');$('#darkModeBtn').classList.toggle('active',data.theme==='dark');$('#lightModeBtn').classList.toggle('active',data.theme==='light')}
 function setTheme(theme){data.theme=theme;if(persistWorkspace())applyTheme();toast(theme==='light'?'Modo claro ativado':'Modo escuro ativado')}
@@ -5576,7 +5595,13 @@ window.toast = toast;
 })();
 </script>
 
-<script id="mw-final-behavior">
+<script id="mw-faculdade-identidade-js">
+/* Bloco misto de uma rodada antiga. O que carrega peso aqui é a
+   identidade acadêmica: data.college <-> o formulário de Faculdade
+   <-> #collegeCourseLabel e #collegeSemesterLabel. Também moram
+   neste bloco, sem relação entre si: abrir/fechar a busca, manter o
+   calendário e as aulas dentro do Início, o painel expansível e a
+   ida direta ao Perfil. */
 (()=>{
  const q=s=>document.querySelector(s), qa=s=>[...document.querySelectorAll(s)];
  // Search: click icon to open, click outside to close
@@ -5649,7 +5674,7 @@ window.toast = toast;
 })();
 </script>
 
-<style id="mw-final-polish">
+<style id="mw-login-solido">
 /* Solid, lightweight theme: no animated background */
 #loginScreen.reference-login{background:#111418 !important;}
 #loginScreen.reference-login::after{display:none !important;}
@@ -5826,7 +5851,12 @@ body.light #app #collegeArea,body.light #app #collegeCourse,body.light #app #col
 })();
 </script>
 
-<script id="mw-final-behavior">
+<script id="mw-faculdade-sugestoes-e-foto-js">
+/* Outro bloco misto da mesma época. O que carrega peso: as sugestões
+   de curso/instituição/área como datalist (texto livre, nunca lista
+   travada) e o seletor de foto de perfil com as iniciais. Também
+   estão aqui: mover calendário/aulas para o Início, a lupa da busca,
+   os ícones da barra lateral e a saudação sem o emoji de mão. */
 (()=>{
  const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
  // Move global calendar/lectures into Home so they cannot leak into other sections.
@@ -6658,7 +6688,7 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
 </script>
 
 
-<script id="mw-create-final-fix">
+<script id="mw-cadastro-ordem-js">
 (()=>{
   const q=s=>document.querySelector(s), side=q('.sign-up-side'), form=q('#inlineCreateForm');
   if(!side||!form)return;
@@ -6960,7 +6990,7 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
   --mw-panel-2:#102244;
   --mw-border:#22406e;
   --mw-text:#f2f7ff;
-  --mw-muted:#9db2d4;
+  --mw-muted:#a9b6d6;   /* ver a nota na paleta canônica */
 }
 
 html,body{
@@ -10194,7 +10224,7 @@ html body #app .search-wrap:focus-within input{
   }
 }
 </style>
-<style id="mw-collapse-photo">
+<style id="mw-sidebar-marca">
 @media (min-width:861px){
   html body #app .mw-sidebar-brand{
     display:flex !important;
@@ -10243,7 +10273,7 @@ html body #app .search-wrap:focus-within input{
   }
 }
 </style>
-<style id="mw-collapse-photo">
+<style id="mw-sidebar-botao-recolher">
 @media (min-width:861px){
   html body #app .mw-sidebar-collapse,
   html body #app.mw-sidebar-collapsed .mw-sidebar-collapse{
@@ -13975,7 +14005,7 @@ body.light #mateusAiModal .mateus-ai-status { color:#5b7291!important; }
   }
 })();
 </script>
-<style id="mw-dashboard-functions-and-scroll">
+<style id="mw-faculdade-seletores">
 /* Keep the academic selectors visible above their glass card instead of clipping the menu. */
 #app #view-college > .card,#app #view-college .college-setup,#app #view-college .form-field { overflow:visible !important; }
 #app #view-college > .card { position:relative; z-index:30; }
@@ -14027,7 +14057,7 @@ body.light #app .mw-dev-tool h4 { color:#153651; } body.light #app .mw-dev-tool 
 #mateusAiModal .eva-attach { background:linear-gradient(145deg,rgba(34,211,238,.23),rgba(37,99,235,.26))!important; border-color:rgba(103,232,249,.34)!important; box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 6px 14px rgba(14,165,233,.12); }
 #mateusAiModal .eva-attach:hover { transform:translateY(-2px) scale(1.04); filter:brightness(1.12); }
 </style>
-<script id="mw-dashboard-functions-and-scroll">
+<script id="mw-scroll-topo-js">
 (() => {
   const app=document.getElementById('app'), main=document.querySelector('#app .main');
   let lastY=0, timer=0;
@@ -14060,7 +14090,7 @@ body.light #app .mw-dev-tool h4 { color:#153651; } body.light #app .mw-dev-tool 
     const type=button.dataset.dashboardGo, nav=document.querySelector(`#nav [data-view="${type}"]`);
     nav?.click(); setTimeout(()=>document.querySelector(`[data-add="${type}"]`)?.click(),60);
   });
-  // O curso passou a viver em data.college (ver mw-final-behavior), que já
+  // O curso passou a viver em data.college (ver mw-faculdade-identidade-js), que já
   // cuida de #collegeCourseLabel com o fallback "Seu curso" — este bloco
   // escrevia direto o valor do campo (sem fallback) numa chave antiga
   // ("mwCollegePrefs") que ninguém mais lê, e sobrescrevia o rótulo com
@@ -18001,7 +18031,15 @@ html:root{
   /* aliases das peles antigas, reancorados no mesmo conjunto */
   --mw-bg:#020617;       --mw-surface:#0a1730;   --mw-surface-2:#102244;
   --mw-solid:#0a1730;    --mw-solid-2:#102244;   --mw-soft:#0d1c3a;
-  --mw-border:#22406e;   --mw-text:#f2f7ff;      --mw-muted:#9db2d4;
+  --mw-border:#22406e;   --mw-text:#f2f7ff;
+  /* --mw-muted era #9db2d4. Medido no pixel, dava 4,41:1 contra a
+     superfície mais clara em que ele cai (o .section-card, que é um
+     gradiente de branco a 9% sobre o fundo) — abaixo dos 4,5:1 que a
+     WCAG pede para texto de 11px. #a9b6d6 mede 4,68:1 ali, e é o
+     mesmo valor de --ds-txt-2: dois tokens que sempre quiseram dizer
+     a mesma coisa passam a dizer. No tema claro o token é outro
+     (#4d6486, logo abaixo) e não muda. */
+  --mw-muted:#a9b6d6;
   --mw-accent:#38bdf8;
 }
 
@@ -22906,7 +22944,7 @@ html body.light{
 }
 </style>
 
-<style id="mw-identidade-superficies">
+<style id="mw-identidade-cartoes">
 /* ---- CARTÕES -------------------------------------------------------
    A pele ciano anterior pintava os cartões com um gradiente esverdeado
    e um brilho radial no canto. A referência é mais sóbria: uma
@@ -24802,7 +24840,7 @@ html body.light #app .mw-id-embreve-selo{ background:#ffe0a3; }
 </script>
 
 
-<style id="mw-identidade-superficies">
+<style id="mw-identidade-formularios">
 /* Duas correções que valem para todas as telas de formulário (Perfil,
    Faculdade, Configurações, Suporte), não só para os campos novos:
 
@@ -30645,7 +30683,7 @@ html body #app .mw-insight-action{
   /* O carimbo entra depois do preloader para não brigar com a abertura
      da marca, e sai sozinho. window.MW_PREVIA fica disponível para
      conferir a versão pelo console sem depender de ver o carimbo. */
-  window.MW_PREVIA = '81';
+  window.MW_PREVIA = '82';
   function mostra(){
     if (document.getElementById('mwPreviaCarimbo')) return;
     var el = document.createElement('div');
