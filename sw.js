@@ -1,3 +1,21 @@
+/* v72 (BETA — cadastro em etapas e cinco níveis de senha):
+   Os campos são os MESMOS de antes, com os mesmos id: mudou só quando
+   cada um aparece. Isso é deliberado — quem grava a conta é um handler
+   com correção documentada de um bug do iOS, e ele não podia ser
+   reescrito só para mudar a apresentação. As etapas são uma casca por
+   cima; nenhuma regra nova de validação foi inventada nelas, para a
+   etapa não barrar um cadastro que o formulário aceitaria.
+   Entrou um campo que faltava: confirmar a senha. Como não existe
+   verificação por e-mail neste fluxo, um erro de digitação trancava a
+   pessoa para fora de uma conta recém-criada, sem caminho de volta.
+   A etapa de faculdade é opcional e escreve direto no college da conta
+   nova; em branco, entra vazio, e não com um valor inventado.
+   O medidor de senha foi de três para cinco degraus, e agora reconhece
+   repetição ("aaaaaaaa") e as senhas mais comuns — oito caracteres sem
+   resistência nenhuma não podiam continuar sendo chamados de "média".
+   NÃO existe etapa de verificação por código. O fluxo não envia e-mail
+   nem SMS; uma etapa que só mostrasse um campo bonito seria exatamente
+   a mentira que este projeto não faz. */
 /* v71 (BETA — Relatórios):
    A tentação de uma tela de relatórios é preencher o espaço. A regra
    aqui é a oposta: só entra número que possa ser MEDIDO nos dados que
@@ -797,7 +815,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v71-beta';
+const CACHE_NAME = 'mw-shell-v72-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
