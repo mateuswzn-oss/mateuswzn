@@ -29022,8 +29022,16 @@ html body #app #view-files .mw-arq-aviso strong{ display: block; color: var(--ds
    Medido: sobre a parte mais clara do gradiente do cartão de Perfil ele
    dava 4,48:1 — 0,4% abaixo do AA, no limite exato. Em vez de mexer no
    token global (que passa em todo o resto), sobe só esta classe, que é
-   subtítulo de seção: texto que se lê, não sussurro. */
-html body #app .section-head span{ color: var(--ds-txt-2); }
+   subtítulo de seção: texto que se lê, não sussurro.
+
+   Precisa de !important e do âncora .main: existe uma regra antiga em
+   "html body #app .main .section-head span" com !important e cor
+   terciária. Na primeira tentativa eu escrevi sem os dois e a regra
+   simplesmente não aplicou — a auditoria reprovou de novo no mesmo
+   elemento, com a MESMA cor de antes. Aqui a especificidade é igual à
+   dela e este bloco vem depois, então este vence. */
+html body #app .section-head span{ color: var(--ds-txt-2) !important; }
+html body #app .main .section-head span{ color: var(--ds-txt-2) !important; }
 
 html body #app #view-files .mw-arq-link{
   border: 0; padding: 0; background: none; cursor: pointer;
@@ -29993,6 +30001,190 @@ html body #app #activitiesList .mw-agenda-titulo[hidden]{ display: none !importa
     window.showView = function(v){
       mostrarAntes(v);
       if (v === 'activities') setTimeout(function(){ try { organiza(); } catch(e){} }, 30);
+    };
+  }
+})();
+</script>
+
+<style id="mw-ordem">
+/* =====================================================================
+   §18 ORDEM EM DISCIPLINAS E PROJETOS
+   =====================================================================
+   Mesmo defeito que Atividades tinha, em grau menor: as duas listas
+   saíam na ordem de cadastro. Aqui a resposta é diferente em cada uma,
+   porque a pergunta é diferente.
+
+   Disciplinas: agrupa por semestre. O campo já existia desde que o
+   modelo foi generalizado, mas não aparecia em lugar nenhum da lista —
+   agrupar por ele mostra uma informação que estava guardada e invisível.
+
+   Projetos: só ordena, sem títulos. O quadro de cinco colunas JÁ é a
+   visão agrupada; dois agrupamentos na mesma área competiriam. A lista
+   responde outra coisa — "o que vence primeiro" — e o prazo já está
+   visível em cada cartão, então a ordem se explica sozinha.
+   ===================================================================== */
+html body #app #subjectsList .mw-ordem-titulo{
+  display: flex; align-items: baseline; gap: 9px;
+  margin: 18px 0 8px; padding: 0 2px;
+}
+html body #app #subjectsList .mw-ordem-titulo:first-child{ margin-top: 2px; }
+html body #app #subjectsList .mw-ordem-titulo strong{
+  font-size: 11.5px; font-weight: 750; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--ds-txt-2);
+}
+html body #app #subjectsList .mw-ordem-titulo span{
+  font-size: 11px; color: var(--ds-txt-3); font-variant-numeric: tabular-nums;
+}
+html body #app #subjectsList .mw-ordem-titulo::after{
+  content: ''; flex: 1; height: 1px;
+  background: color-mix(in srgb, var(--ds-txt-3) 22%, transparent);
+}
+/* O semestre em que a pessoa está agora é o que ela abre a área para
+   ver; os outros são histórico ou planejamento. */
+html body #app #subjectsList .mw-ordem-titulo[data-atual="1"] strong{ color: var(--ds-ac); }
+html body #app #subjectsList .mw-ordem-titulo[hidden]{ display: none !important; }
+</style>
+
+<script id="mw-ordem-js">
+(function(){
+  'use strict';
+  /* Ordem em Disciplinas e Projetos.
+
+     Vale a mesma regra da agenda de Atividades: isto é APRESENTAÇÃO.
+     Não reordena data.subjects nem data.projects, porque os botões
+     Editar e Excluir guardam o índice da posição original no array —
+     reordenar o array os faria agir sobre o item errado.
+
+     E, como lá, só roda com a área visível: medir e mover em lista
+     escondida não tem efeito útil. */
+
+  function indiceDe(item){
+    var b = item.querySelector('[data-index]');
+    return b ? Number(b.getAttribute('data-index')) : -1;
+  }
+  function visivel(lista){
+    return !!lista && getComputedStyle(lista).display !== 'none' && !!lista.offsetParent;
+  }
+  function limpa(lista){
+    lista.querySelectorAll('.mw-ordem-titulo').forEach(function(t){ t.remove(); });
+  }
+  /* localeCompare com 'pt-BR' para "Álgebra" não cair depois de "Zoologia":
+     comparação binária ordena por código, e as acentuadas ficam no fim. */
+  function porNome(a, b){
+    return String(a || '').localeCompare(String(b || ''), 'pt-BR', { sensitivity: 'base' });
+  }
+
+  /* --- Disciplinas ------------------------------------------------------- */
+  function ordenaDisciplinas(){
+    var lista = document.getElementById('subjectsList');
+    if (!visivel(lista)) return;
+    var itens = [].slice.call(lista.querySelectorAll('.list-item'));
+    if (itens.length < 2) { limpa(lista); return; }
+
+    var dados = (window.data && Array.isArray(window.data.subjects)) ? window.data.subjects : [];
+    var atual = Number((window.data && window.data.college && window.data.college.semester) || 0) || 0;
+
+    var comChave = itens.map(function(item){
+      var s = dados[indiceDe(item)] || {};
+      var sem = Number(s.semester);
+      return { item: item, sem: (isFinite(sem) && sem > 0) ? sem : 0, nome: s.name || '' };
+    });
+    comChave.sort(function(a, b){
+      /* Sem semestre vai para o fim: é ausência de informação, não
+         semestre zero. */
+      if (a.sem !== b.sem){
+        if (!a.sem) return 1;
+        if (!b.sem) return -1;
+        return a.sem - b.sem;
+      }
+      return porNome(a.nome, b.nome);
+    });
+
+    limpa(lista);
+    var grupos = {};
+    comChave.forEach(function(x){ grupos[x.sem] = (grupos[x.sem] || 0) + 1; });
+    /* Um título só, para tudo, não informa nada. Os títulos aparecem
+       quando existe mais de um semestre para separar. */
+    var separar = Object.keys(grupos).length > 1;
+
+    var pedaco = document.createDocumentFragment();
+    var ultimo = null;
+    comChave.forEach(function(x){
+      if (separar && x.sem !== ultimo){
+        ultimo = x.sem;
+        var t = document.createElement('div');
+        t.className = 'mw-ordem-titulo';
+        if (x.sem && x.sem === atual) t.setAttribute('data-atual', '1');
+        t.innerHTML = '<strong></strong><span></span>';
+        t.querySelector('strong').textContent = x.sem
+          ? (x.sem + 'º semestre' + (x.sem === atual ? ' · atual' : ''))
+          : 'Sem semestre';
+        t.querySelector('span').textContent = grupos[x.sem];
+        pedaco.appendChild(t);
+      }
+      pedaco.appendChild(x.item);
+    });
+    lista.appendChild(pedaco);
+  }
+
+  /* --- Projetos ----------------------------------------------------------- */
+  function deIso(txt){
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(txt || ''));
+    return m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).getTime() : null;
+  }
+  function ordenaProjetos(){
+    var lista = document.getElementById('projectsList');
+    if (!visivel(lista)) return;
+    var itens = [].slice.call(lista.querySelectorAll('.list-item'));
+    if (itens.length < 2) return;
+
+    var dados = (window.data && Array.isArray(window.data.projects)) ? window.data.projects : [];
+    var comChave = itens.map(function(item){
+      var p = dados[indiceDe(item)] || {};
+      return { item: item, quando: deIso(p.deadline), nome: p.name || '' };
+    });
+    comChave.sort(function(a, b){
+      if (a.quando === null && b.quando === null) return porNome(a.nome, b.nome);
+      if (a.quando === null) return 1;   // sem prazo por último
+      if (b.quando === null) return -1;
+      if (a.quando !== b.quando) return a.quando - b.quando;
+      return porNome(a.nome, b.nome);
+    });
+    var pedaco = document.createDocumentFragment();
+    comChave.forEach(function(x){ pedaco.appendChild(x.item); });
+    lista.appendChild(pedaco);
+  }
+
+  function organiza(){
+    try { ordenaDisciplinas(); } catch(e){}
+    try { ordenaProjetos(); } catch(e){}
+  }
+
+  /* O quadro de Projetos esconde a lista; ao voltar para o modo lista
+     ela reaparece e só então dá para ordenar. */
+  document.addEventListener('click', function(ev){
+    if (!ev.target.closest) return;
+    if (ev.target.closest('.mw-proj-modos') ||
+        ev.target.closest('[data-view="subjects"],[data-view="projects"]') ||
+        ev.target.closest('[data-ir="subjects"],[data-ir="projects"]')){
+      setTimeout(organiza, 60);
+    }
+  });
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', organiza);
+  else organiza();
+
+  var anterior = window.mwDashRefresh;
+  window.mwDashRefresh = function(d){
+    if (typeof anterior === 'function') { try { anterior(d); } catch(e){} }
+    organiza();
+  };
+
+  var mostrarAntes = window.showView;
+  if (typeof mostrarAntes === 'function') {
+    window.showView = function(v){
+      mostrarAntes(v);
+      if (v === 'subjects' || v === 'projects') setTimeout(organiza, 30);
     };
   }
 })();

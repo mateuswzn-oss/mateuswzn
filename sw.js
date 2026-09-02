@@ -1,3 +1,24 @@
+/* v77 (BETA — ordem em Disciplinas e Projetos, e um conserto que não
+   tinha consertado):
+   Mesmo defeito de Atividades, em grau menor: as duas listas saíam na
+   ordem de cadastro. A resposta é diferente em cada uma, porque a
+   pergunta é diferente.
+   Disciplinas agrupa por semestre — campo que já existia desde a
+   generalização do modelo, mas que não aparecia em lugar nenhum da
+   lista. O semestre atual vem marcado. Sem semestre preenchido em
+   nenhuma, os títulos somem e sobra uma lista alfabética, que já é
+   melhor que ordem de cadastro. A comparação usa localeCompare pt-BR:
+   comparação binária põe "Álgebra" depois de "Zoologia".
+   Projetos só ordena por prazo, sem títulos: o quadro de cinco colunas
+   JÁ é a visão agrupada, e dois agrupamentos competiriam. O prazo está
+   visível em cada cartão, então a ordem se explica sozinha.
+   CORREÇÃO DE UMA CORREÇÃO: a v75 afirmou ter consertado o contraste do
+   subtítulo de seção. Não tinha. A regra nova não levava !important e
+   perdia para "html body #app .main .section-head span" — uma regra
+   antiga com !important no âncora .main, a mesma armadilha que já
+   apareceu neste arquivo. A auditoria reprovou de novo no mesmo
+   elemento, com a mesma cor de antes. Agora a especificidade é igual e
+   o bloco vem depois; medido, a cor final mudou de fato. */
 /* v76 (BETA — Atividades em ordem de prazo):
    Segundo achado da auditoria sob carga, e o mais sério dos dois: a
    lista de atividades saía na ORDEM DE CADASTRO. Uma entrega de amanhã
@@ -895,7 +916,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v76-beta';
+const CACHE_NAME = 'mw-shell-v77-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
