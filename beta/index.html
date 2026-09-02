@@ -5404,10 +5404,14 @@ window.toast = toast;
   function authenticate(rawValue, passValue){const raw=String(rawValue||'').trim(),pass=String(passValue||''),u=users();if(!raw||!pass)return false;const key=raw.includes('@')?raw.toLowerCase():Object.keys(u).find(k=>u[k].username?.toLowerCase()===raw.toLowerCase());if(!key){notify('Conta não encontrada. Verifique os dados ou crie uma conta.',true);return false}Promise.resolve(window.mwSenha?window.mwSenha.confere(u[key],pass):(u[key].password===pass)).then(function(ok){if(!ok){notify('Senha incorreta. Tente novamente.',true);return}hydrateSession(key,u[key].data||defaultData(u[key].name||u[key].username||'Mateus',u[key].email||key));notify('');enterApp();});return true}
   if(loginBtn){const clean=loginBtn.cloneNode(true);loginBtn.replaceWith(clean);const btn=q('#loginButton');btn.addEventListener('click',()=>{if(btn.disabled)return;authenticate(userInput.value,passInput.value)});}
 
-  /* Account creation */
-  const create=q('#createAccountLink');
-  function authModal(title,html){let m=q('#accountModal');if(!m){m=document.createElement('div');m.id='accountModal';m.className='modal';document.body.appendChild(m)}m.innerHTML=`<div class="modal-box auth-modal-card"><div class="modal-head"><h3>${title}</h3><button class="close" data-close>×</button></div>${html}</div>`;m.classList.remove('hidden');m.querySelector('[data-close]').onclick=()=>m.classList.add('hidden');return m}
-  create?.addEventListener('click',()=>{const m=authModal('Criar sua conta',`<form id="createForm"><div class="form-field"><label for="newName">Nome completo</label><input id="newName" required placeholder="Ex.: Mateus Silva"></div><div class="form-field"><label for="newUsername">Nome de usuário</label><input id="newUsername" required pattern="[A-Za-z0-9._\-]{3,20}" placeholder="Ex.: mateus.dev"><small class="field-hint">3–20 caracteres: letras, números, ponto, hífen ou sublinhado.</small></div><div class="form-field"><label for="newEmail">E-mail</label><input id="newEmail" type="email" required placeholder="voce@exemplo.com"></div><div class="form-field"><label for="newPass">Senha</label><input id="newPass" type="password" required placeholder="Escolha uma senha segura"></div><div class="form-field"><label for="newPass2">Confirmar senha</label><input id="newPass2" type="password" required placeholder="Digite a senha novamente"></div><div class="form-error" id="createError"></div><div class="profile-actions"><button class="save-btn" type="submit">Criar conta</button></div><p style="color:var(--muted);font-size:12px">Sua conta e seus dados ficam separados por usuário neste navegador.</p></form>`);m.querySelector('#createForm').onsubmit=e=>{e.preventDefault();const u=users(),name=m.querySelector('#newName').value.trim(),username=m.querySelector('#newUsername').value.trim(),email=m.querySelector('#newEmail').value.trim().toLowerCase(),p=m.querySelector('#newPass').value,p2=m.querySelector('#newPass2').value,err=m.querySelector('#createError');const usernames=Object.values(u).map(x=>(x.username||'').toLowerCase());if(!/^[A-Za-z0-9._-]{3,20}$/.test(username)){err.textContent='Nome de usuário inválido. Use 3–20 caracteres.';return}if(usernames.includes(username.toLowerCase())){err.textContent='Esse nome de usuário já está em uso. Escolha outro.';return}if(u[email]){err.textContent='Este e-mail já possui uma conta.';return}if(p!==p2){err.textContent='As senhas não coincidem.';return}if(!p||p.length<6){err.textContent='A senha precisa ter pelo menos 6 caracteres.';return}const nova={name,username,email,data:defaultData(name,email)};Promise.resolve(window.mwSenha?window.mwSenha.grava(nova,p):(nova.password=p)).then(function(){u[email]=nova;saveUsers(u);m.classList.add('hidden');userInput.value=email;passInput.value='';refreshLogin();notify('Conta criada com sucesso. Agora você pode entrar.');});};});
+  /* Aqui morava um segundo formulário de criar conta, num modal, que
+     dependia de #createAccountLink — um botão que não existe mais no
+     HTML. O handler nunca chegava a ser ligado e o modal nunca abria;
+     ainda assim ele carregava ids iguais aos do formulário vivo
+     (newUsername, newEmail, newPass, newPass2), o que obrigou o
+     cadastro em etapas a buscar tudo escopado no próprio formulário
+     para não arriscar pegar o campo errado. Removido junto com a
+     função authModal, que só ele usava. */
 
   /* legacy recovery modal disabled; login-only OTP controller handles recovery */
 
@@ -19265,7 +19269,7 @@ body.light .mw-transfere-nota b{color:#0b1830}
   /* O botão "Privacidade" no rodapé já existia no HTML, mas sem
      nenhum clique ligado a ele — não fazia nada. Reaproveita as
      mesmas classes .modal/.modal-box já usadas no resto do app (ver
-     authModal, no login), então não precisa de CSS novo. */
+     #modal, o de adicionar item), então não precisa de CSS novo. */
   /* querySelectorAll, não querySelector: além do botão do rodapé existe
      agora um link "Política de Privacidade" dentro de Configurações ›
      Privacidade, e ele aparece ANTES no DOM — com o singular, o clique
@@ -30218,7 +30222,7 @@ html body #app #subjectsList .mw-ordem-titulo[hidden]{ display: none !important;
   /* O carimbo entra depois do preloader para não brigar com a abertura
      da marca, e sai sozinho. window.MW_PREVIA fica disponível para
      conferir a versão pelo console sem depender de ver o carimbo. */
-  window.MW_PREVIA = 'v77 · ordem em Disciplinas e Projetos';
+  window.MW_PREVIA = 'v78 · limpeza do código morto';
   function mostra(){
     if (document.getElementById('mwPreviaCarimbo')) return;
     var el = document.createElement('div');
