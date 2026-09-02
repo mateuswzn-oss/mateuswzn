@@ -128,7 +128,11 @@ const PROPRIO = {
      que muda. */
   settings:   ['mw-diagnostico', 'mw-transfere-style', 'mw-preferencias',
                'mw-faceid-style', 'mw-conta-style', 'mw-pin-style',
-               'mw-perfil-publico', 'mw-perfil-config-separados']
+               'mw-perfil-publico', 'mw-perfil-config-separados'],
+  college:    [],
+  reports:    ['mw-relatorios'],
+  focus:      ['mw-foco'],
+  calendar:   ['mw-calendario', 'mw-cal-semana', 'mw-agenda']
 };
 const meus = new Set(PROPRIO[area] || []);
 

@@ -1,21 +1,34 @@
-/* Teste de ÁREA para Perfil e Configurações — o "antes e depois" da
- * migração destas duas.
+/* Teste das áreas que NÃO são coleção.
  *
- * O teste 15 não serve aqui: ele mede uma COLEÇÃO (lista, formulário de
- * criar, linha com Editar/Excluir). Perfil e Configurações não têm
- * lista nenhuma; são telas de campos e interruptores, e o que pode se
- * perder numa migração é outra coisa — um campo que deixa de gravar, um
- * rótulo que se solta do controle, uma categoria que some, um
- * interruptor que volta ao valor antigo depois de recarregar.
+ * O teste 15 mede uma coleção: lista, formulário de criar, linha com
+ * Editar/Excluir. Seis áreas do app não têm nada disso — Perfil,
+ * Configurações, Faculdade, Relatórios, Foco e Calendário — e o que uma
+ * migração pode fazer sumir nelas é outra coisa: um campo que deixa de
+ * gravar, um rótulo que se solta do controle, uma categoria que
+ * desaparece, um número que para de ler o dado, um cronômetro que não
+ * anda mais.
  *
- * Uso: node tools/testes/16-ajustes.mjs [profile|settings]
+ * As checagens comuns valem para todas; a última é própria de cada área,
+ * porque "funcionar" quer dizer uma coisa diferente em cada uma.
+ *
+ * Uso: node tools/testes/16-ajustes.mjs [profile|settings|college|reports|focus|calendar]
  */
 import { abre, vaiPara, esperaParar } from './ajuda.mjs';
 
 const area = process.argv[2] || 'profile';
 
+const dia = n => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0,10); };
+
+/* Relatórios e Calendário só mostram alguma coisa quando existe dado.
+   Semeados vazios, os dois passariam em qualquer checagem exibindo zero
+   — e é justamente "o número ainda lê o dado?" que se quer medir. */
 const SEMENTE = {
-  subjects: [], projects: [], activities: [], notes: [], institutions: [],
+  subjects: [{ name: 'Cálculo I', description: 'Limites', progress: 62, semester: 1 },
+             { name: 'Física II', description: 'Ondas', progress: 23, semester: 2 }],
+  projects: [{ name: 'TCC', description: 'Plataforma', status: 'Em andamento' }],
+  activities: [{ name: 'Lista 4', description: '', date: dia(2), priority: 'Alta' },
+               { name: 'Prova', description: '', date: dia(-1) }],
+  notes: [], institutions: [],
   profile: { name: 'Mateus Souza', email: 'mateus@exemplo.com', photo: '',
              username: 'mateus.wzn', bio: 'Estudo e construo.', skills: ['JS'],
              links: [], visibility: {} },
@@ -44,14 +57,35 @@ const base = await p.evaluate(a => {
   return {
     altura: v.offsetHeight,
     controles: controles.length,
-    /* Grupo é a unidade de leitura destas telas: um assunto por caixa. */
-    grupos: v.querySelectorAll('[data-mw-grupo], .settings-group, .ds-cartao').length,
+    texto: (v.textContent || '').replace(/\s+/g, ' ').trim().length,
+    /* A unidade de leitura destas telas é a CAIXA: um assunto por caixa.
+       Em Perfil e Configurações ela se chama grupo de ajuste; em
+       Faculdade, Relatórios, Foco e Calendário ela é um cartão. O nome
+       muda com a migração, então conta-se pelos dois nomes e pelo gancho
+       durável. */
+    caixas: v.querySelectorAll('[data-mw-grupo], .settings-group, .ds-cartao, .card').length,
     categorias: [...v.querySelectorAll('[data-mw-categoria], .mw-settings-categoria, .ds-tela-titulo')]
       .map(e => e.textContent.trim()).filter(Boolean)
   };
 }, area);
-ok('a tela tem conteúdo', base.altura > 400 && base.controles >= 5, base);
-ok('os assuntos estão em grupos', base.grupos >= 4, base.grupos);
+/* Mínimos por área, e não um número só: Faculdade é um cartão de quatro
+   campos; Configurações tem catorze grupos. Um limiar único ou aprovaria
+   uma tela vazia ou reprovaria uma tela pequena que está certa. */
+const MINIMO = {
+  profile:  { caixas: 4, controles: 5 },
+  settings: { caixas: 8, controles: 8 },
+  college:  { caixas: 1, controles: 4 },
+  reports:  { caixas: 4, controles: 4 },
+  focus:    { caixas: 3, controles: 5 },
+  calendar: { caixas: 1, controles: 8 }
+}[area] || { caixas: 1, controles: 1 };
+
+/* Altura e controles, não quantidade de texto: o Calendário tem 34
+   controles e 171 caracteres, porque quase tudo nele é um número de dia
+   dentro de um botão. Medir "tem texto" reprovava uma tela cheia. */
+ok('a tela tem conteúdo',
+   base.altura > 200 && base.controles >= MINIMO.controles, base);
+ok('os assuntos estão em caixas', base.caixas >= MINIMO.caixas, { caixas: base.caixas, minimo: MINIMO.caixas });
 
 if (area === 'settings') {
   const ESPERADAS = ['Conta', 'Aparência', 'Notificações', 'Segurança', 'IA', 'Privacidade', 'Aplicativo'];
@@ -157,6 +191,113 @@ if (area === 'settings') {
   ok('e o carimbo do <html> acompanha',
      depoisDoClique.carimbo === (depoisDoClique.corpo ? 'claro' : 'escuro'), depoisDoClique);
   await p.evaluate(() => { document.body.classList.toggle('light', false); });
+}
+
+/* ---- 4c. Faculdade: o que se edita grava ------------------------------ */
+if (area === 'college') {
+  const NOVO = 'Universidade Trocada No Teste';
+  const gravou = await p.evaluate(async novo => {
+    const campo = document.getElementById('collegeInstitution');
+    if (!campo) return { erro: 'não achei #collegeInstitution' };
+    campo.value = novo;
+    campo.dispatchEvent(new Event('input', { bubbles: true }));
+    const salvar = [...document.querySelectorAll('#view-college button')]
+      .find(b => /salvar/i.test(b.textContent || ''));
+    if (!salvar) return { erro: 'não achei o botão de salvar' };
+    salvar.click();
+    await new Promise(r => setTimeout(r, 700));
+    return { noDado: (window.data.college || {}).institution };
+  }, NOVO);
+  ok('editar e salvar grava no dado', gravou.noDado === NOVO, gravou);
+
+  await p.reload({ waitUntil: 'domcontentloaded' });
+  await p.waitForTimeout(2200);
+  await vaiPara(p, 'college');
+  await p.waitForTimeout(700);
+  const depois = await p.evaluate(() => ({
+    noDado: (window.data.college || {}).institution,
+    naTela: (document.getElementById('collegeInstitution') || {}).value
+  }));
+  ok('e continua lá depois de recarregar', depois.noDado === NOVO && depois.naTela === NOVO, depois);
+}
+
+/* ---- 4d. Relatórios: os números ainda leem o dado ---------------------
+   A área é só leitura, então o defeito que uma migração produz aqui é
+   silencioso: os cartões continuam bonitos e passam a mostrar zero.
+   A semente tem 2 disciplinas, 1 projeto e 2 atividades — se nada disso
+   aparecer, a conta parou de ler. */
+if (area === 'reports') {
+  const r = await p.evaluate(() => {
+    const v = document.getElementById('view-reports');
+    const txt = (v.textContent || '').replace(/\s+/g, ' ');
+    const numeros = [...v.querySelectorAll('strong, b')]
+      .map(e => (e.textContent || '').trim())
+      .filter(t => /^\d/.test(t));
+    return { txt: txt.slice(0, 120), numeros: numeros.slice(0, 14),
+             algumNaoZero: numeros.some(t => /^[1-9]/.test(t)) };
+  });
+  ok('os números leem o dado (nem tudo é zero)', r.algumNaoZero, r);
+
+  const filtro = await p.evaluate(async () => {
+    const bts = [...document.querySelectorAll('#view-reports button')]
+      .filter(b => /dias|tudo/i.test(b.textContent || ''));
+    if (bts.length < 2) return { erro: 'não achei os filtros de período' };
+    const antes = document.getElementById('view-reports').textContent;
+    bts[bts.length - 1].click();
+    await new Promise(r => setTimeout(r, 500));
+    return { filtros: bts.length,
+             mudou: document.getElementById('view-reports').textContent !== antes };
+  });
+  ok('os filtros de período existem', !filtro.erro && filtro.filtros >= 2, filtro);
+}
+
+/* ---- 4e. Foco: o cronômetro anda -------------------------------------- */
+if (area === 'focus') {
+  const t = await p.evaluate(async () => {
+    const v = document.getElementById('view-focus');
+    const mostrador = [...v.querySelectorAll('*')]
+      .filter(e => !e.children.length && /^\d{1,2}:\d{2}$/.test((e.textContent || '').trim()))[0];
+    if (!mostrador) return { erro: 'não achei o mostrador do cronômetro' };
+    const antes = mostrador.textContent.trim();
+    const iniciar = [...v.querySelectorAll('button')]
+      .find(b => /iniciar|começar/i.test(b.textContent || ''));
+    if (!iniciar) return { erro: 'não achei o botão de iniciar' };
+    iniciar.click();
+    await new Promise(r => setTimeout(r, 1600));
+    const depois = mostrador.textContent.trim();
+    /* deixa parado de novo, para o teste não seguir com um cronômetro
+       correndo por baixo das medições de layout */
+    const parar = [...v.querySelectorAll('button')]
+      .find(b => /pausar|parar/i.test(b.textContent || ''));
+    if (parar) parar.click();
+    return { antes, depois, andou: antes !== depois };
+  });
+  ok('o cronômetro anda quando se manda iniciar', t.andou, t);
+}
+
+/* ---- 4f. Calendário: mês e semana, e a navegação anda ----------------- */
+if (area === 'calendar') {
+  const c = await p.evaluate(async () => {
+    const v = document.getElementById('view-calendar');
+    const modos = [...v.querySelectorAll('button')].filter(b => /^(mês|mes|semana)$/i.test((b.textContent || '').trim()));
+    const titulo = () => (v.textContent || '').replace(/\s+/g, ' ').slice(0, 60);
+    const antesTitulo = titulo();
+    const proximo = [...v.querySelectorAll('button')].find(b => /^[›>]$/.test((b.textContent || '').trim()));
+    if (proximo) { proximo.click(); await new Promise(r => setTimeout(r, 400)); }
+    const mudouMes = titulo() !== antesTitulo;
+    let mudouModo = false;
+    if (modos.length >= 2) {
+      const antes = v.textContent;
+      modos[1].click();
+      await new Promise(r => setTimeout(r, 500));
+      mudouModo = v.textContent !== antes;
+      modos[0].click();
+      await new Promise(r => setTimeout(r, 400));
+    }
+    return { modos: modos.length, mudouMes, mudouModo };
+  });
+  ok('mês e semana são dois modos de verdade', c.modos >= 2 && c.mudouModo, c);
+  ok('a navegação de período anda', c.mudouMes, c);
 }
 
 /* ---- 5. nada vaza, em três larguras e dois temas ---------------------- */

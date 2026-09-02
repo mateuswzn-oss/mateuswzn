@@ -1,3 +1,53 @@
+/* v91 (BETA — Faculdade, Relatórios, Foco e Calendário no Design System):
+
+   DOZE DE CATORZE
+   Sobram Início, e o login/cadastro com a barra lateral e a de baixo —
+   que são as três últimas da ordem justamente porque tocam todas as
+   outras.
+
+   Estas quatro têm layout próprio em cada uma: uma grade de seis cartões
+   em Relatórios, um relógio com anel de progresso em Foco, uma malha de
+   dias no Calendário, um formulário em Faculdade. Migrar aqui não é
+   trocar o layout — é trocar a CASCA por componentes do sistema (cartão,
+   cabeçalho de seção, campo, botão, controle segmentado) e deixar o que
+   só existe naquela tela onde está, lendo os tokens do sistema.
+
+   O CALENDÁRIO É MONTADO POR JS
+   A área é uma <section> vazia no HTML; a barra Mês/Semana e o cartão da
+   semana nascem em tempo de execução. Então a escolha do material
+   também: o gerador pergunta ao DOM se a área está migrada e emite um
+   conjunto de nomes ou o outro, nunca os dois — a mesma regra que o
+   quadro de Projetos e os filtros já seguiam.
+
+   O CICLO MEDIR → RESTRINGIR → MEDIR, DE NOVO
+   O legado que ainda alcançava estas quatro era o de sempre: seletor
+   amplo, por elemento ou por id, com !important. Foram 2 regras em
+   Faculdade, 11 em Relatórios, 18 em Foco e 98 no Calendário, em oito
+   passadas — a cada passada, tirada a regra da frente, aparece a que
+   estava atrás dela. As quatro terminaram com zero regras legadas
+   vencendo lá dentro, nos dois temas.
+
+   UM DEFEITO DE ACESSIBILIDADE QUE A MIGRAÇÃO REVELOU
+   As setas de mês do Calendário tinham menos de 24px. O tamanho vinha de
+   uma regra legada ampla; restringi-la (que é o que o protocolo manda)
+   deixou as setas no tamanho padrão do navegador. Agora são botões de
+   ícone do sistema, que carregam o alvo mínimo por definição.
+
+   O TESTE DE ÁREA VIROU O DAS SEIS QUE NÃO SÃO COLEÇÃO
+   Perfil, Configurações, Faculdade, Relatórios, Foco e Calendário. As
+   checagens comuns valem para todas; a última é própria de cada uma,
+   porque "funcionar" quer dizer coisa diferente em cada tela: em
+   Relatórios é o número ainda ler o dado, em Foco é o cronômetro andar,
+   no Calendário é mês e semana serem dois modos de verdade.
+
+   E uma armadilha do próprio teste: um limiar único de "tem conteúdo"
+   reprovava Faculdade (341px, e está certa) e teria aprovado uma tela
+   vazia. Os mínimos passaram a ser por área.
+
+   SUÍTE
+   17 execuções verdes. Contraste: 0 falhas em 3 larguras x 2 temas, mais
+   os dois temas da galeria. */
+
 /* v90 (BETA — Perfil e Configurações no Design System, e o legado que
    mira por id):
 
@@ -1414,7 +1464,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v90-beta';
+const CACHE_NAME = 'mw-shell-v91-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

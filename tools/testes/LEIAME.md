@@ -59,7 +59,7 @@ node tools/testes/1-regressao.mjs mobile
 | 13 | `13-ds.mjs` | o Design System carrega **sem o app** (galeria, 2 temas × 4 larguras), pinta **exatamente** as áreas migradas e nenhuma outra, e nenhum nome `ds-*` anda solto fora delas | o sistema depender de regra legada, a folha mexer em área não migrada, uma área migrada não mudar ao desligar a folha, ou um `ds-*` aparecer onde o sistema não alcança |
 | 14 | `14-suporte.mjs` | a área migrada faz tudo o que fazia: abrir atendimento, validar, conversar, anexar, encerrar, persistir — e nenhuma regra legada vence lá dentro | uma função perder-se na migração, ou o legado voltar a pintar a área |
 | 15 | `15-area.mjs <área>` | o teste de área genérico, o "antes e depois" de cada migração: estado vazio, formulário com foco e rótulos, criar pela interface, botões do item ao alcance, **agrupamento e ordem de pé com seis itens**, e nada vazando em 3 larguras × 2 temas. Roda nas seis coleções | qualquer um deles, em qualquer área — migrada ou não |
-| 16 | `16-ajustes.mjs <área>` | Perfil e Configurações: conteúdo em grupos, as sete categorias, nome acessível em todo controle, alvo de 24px, o que se edita grava e sobrevive ao recarregamento, o tema muda a tela e carimba o `<html>`, e nada vaza em 3 larguras × 2 temas | qualquer um deles |
+| 16 | `16-ajustes.mjs <área>` | as **seis** áreas que não são coleção (Perfil, Configurações, Faculdade, Relatórios, Foco, Calendário): conteúdo em caixas, nome acessível em todo controle, alvo de 24px, e nada vazando em 3 larguras × 2 temas — mais uma checagem própria de cada uma (o que se edita grava e sobrevive ao recarregamento; as sete categorias; o tema carimba o `<html>`; os números leem o dado; o cronômetro anda; mês e semana são dois modos de verdade) | qualquer um deles |
 
 ### Por que o contraste é medido em duas etapas
 
@@ -191,6 +191,12 @@ resumidas aqui para quem for escrever um teste novo.
   que só existem numa tela: o interruptor do Face ID virou um retângulo de
   0px. Campo de formulário é genérico; botão, muitas vezes, é componente da
   área.
+- **Um limiar único reprova tela pequena e aprova tela vazia.** O teste 16
+  começou exigindo 400px de altura e 5 controles para toda área. Faculdade
+  tem 341px e está certa; o Calendário tem 34 controles e 171 caracteres de
+  texto, porque quase tudo nele é um número de dia dentro de um botão. Os
+  mínimos passaram a ser por área, e a medida de "tem conteúdo" é altura
+  mais controles — não quantidade de texto.
 - **Seletor que não casa não levanta erro.** É o defeito de migração mais
   comum e o mais silencioso: um `querySelector` preso a uma classe que a
   migração renomeou devolve `null`, o bloco desiste, e não há erro no
