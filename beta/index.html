@@ -4484,7 +4484,24 @@ body.light .mw-faceid-gate-card p{color:#526988}
       <!-- Diagnóstico: existe porque o desenvolvimento é verificado no
            Chromium e o Safari do iPhone tem diferenças reais justamente
            no que este app usa. Em vez de afirmar por leitura de
-           especificação, esta tela MEDE no aparelho de quem abriu. -->
+           especificação, esta tela MEDE no aparelho de quem abriu.
+
+           ISTO É FERRAMENTA DE MANUTENÇÃO, NÃO FUNCIONALIDADE DO MW.
+           Decidido com o Mateus em 02/09/2026, e escrito aqui porque
+           combinado que só existe na conversa se perde:
+
+             fica visível ENQUANTO durar a reformulação e os testes;
+
+             quando a reformulação estiver fechada e validada em Safari,
+             Chrome, iOS, Android, tablet e desktop, esta seção SAI da
+             interface principal;
+
+             se ainda for útil para manutenção, ela vai para
+             Suporte › Diagnóstico avançado — escondida, não como um
+             recurso normal do produto.
+
+           Quem for mexer aqui depois: o critério de saída é a validação
+           nos seis ambientes, não uma data. -->
       <div class="settings-group"><h4>Diagnóstico deste aparelho</h4>
         <p>Roda uma verificação do que este navegador realmente suporta e mostra o resultado. Serve para quando algo parecer errado: o relatório diz o que falhou, em vez de a gente ficar adivinhando.</p>
         <p class="mw-diag-resumo" id="mwDiagResumo">Nada verificado ainda.</p>
@@ -30557,6 +30574,49 @@ html body #app #view-settings #mwDiagBruto{
 })();
 </script>
 
+<style id="mw-alvos">
+/* =====================================================================
+   §19 ALVOS DE TOQUE PEQUENOS DEMAIS
+   =====================================================================
+   A auditoria de acessibilidade acusou oito ações com 13 a 15 pixels de
+   altura. São links de texto, e texto de 11px desenha uma caixa de 13px
+   — o dedo não tem essa pontaria.
+
+   Seis são defeito de verdade e estão corrigidos aqui: "Abrir projetos"
+   no painel, e os cinco "Alterar em Configurações" / "Editar em
+   Faculdade" do Perfil. Cada um é uma ação solta, sozinha na sua linha.
+
+   Os outros dois — "Configurações › Backup", em Relatórios e em
+   Arquivos — ficaram como estão de propósito. A WCAG 2.5.8 abre exceção
+   explícita para link DENTRO de uma frase: ali o tamanho é imposto pela
+   entrelinha do texto ao redor, e engordar o alvo desalinharia o
+   parágrafo. Essa exceção foi para dentro do teste (3-acessibilidade),
+   que antes acusava os dois.
+
+   A técnica é preenchimento com margem negativa do mesmo tamanho, para
+   a área clicável crescer sem empurrar o layout. Nos chips do Perfil
+   fecha exato: 88px de altura antes e depois, com o alvo indo de 14
+   para 24. No cartão do painel sobraram 2px (160 → 162) — resto de
+   arredondamento de linha que não vale mais tempo, em troca de um alvo
+   que sai de 13 para 25.
+   ===================================================================== */
+html body #app .mw-perfil-chip a{
+  display: inline-block;
+  padding: 5px 0;
+  margin: -3px 0 -5px;   /* -5 anula o padding; +2 preserva o respiro que já havia */
+}
+html body #app .mw-insight-action{
+  /* display:block mata a folga de descendente que um inline-block
+     reserva abaixo da linha de base. Sem isso o cartão crescia 3px; com
+     isso, 2. */
+  display: block; width: fit-content;
+  padding: 6px 0;
+  /* 9 que havia menos os 6 de padding de cima; e -6 embaixo, porque é o
+     último filho do cartão. */
+  margin: 3px 0 -6px;
+}
+</style>
+
 <style id="mw-previa-carimbo">
 #mwPreviaCarimbo{
   position: fixed; top: 8px; left: 50%; transform: translateX(-50%);
@@ -30585,7 +30645,7 @@ html body #app #view-settings #mwDiagBruto{
   /* O carimbo entra depois do preloader para não brigar com a abertura
      da marca, e sai sozinho. window.MW_PREVIA fica disponível para
      conferir a versão pelo console sem depender de ver o carimbo. */
-  window.MW_PREVIA = 'v80 · medido no iPhone';
+  window.MW_PREVIA = '81';
   function mostra(){
     if (document.getElementById('mwPreviaCarimbo')) return;
     var el = document.createElement('div');
