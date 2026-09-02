@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="pt-BR" data-mw-tema="escuro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MW Design System</title>
+<link rel="stylesheet" href="mw-ds.css">
+<style>
+  /* Estilos DA GALERIA, não do sistema. Ficam aqui de propósito: se
+     morassem no mw-ds.css, o sistema carregaria peso que nenhuma tela do
+     app usa. */
+  html, body{ margin:0; }
+  body{
+    background: var(--mw-chao, #020617);
+    min-height:100vh;
+    transition: background 240ms cubic-bezier(.2,.8,.2,1);
+  }
+  /* A canvas do app: dois brilhos frios sobre o azul-marinho. O vidro
+     precisa de algo atrás para ter o que desfocar — sobre um fundo chapado,
+     Liquid Glass é indistinguível de um retângulo cinza. */
+  body::before{
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:-1;
+    background:
+      radial-gradient(circle at 82% 14%, rgba(139,92,246,.20), transparent 34%),
+      radial-gradient(circle at 12% 86%, rgba(79,91,255,.22), transparent 38%);
+  }
+  body.claro::before{
+    background:
+      radial-gradient(circle at 82% 14%, rgba(139,92,246,.14), transparent 34%),
+      radial-gradient(circle at 12% 86%, rgba(79,91,255,.16), transparent 38%);
+  }
+  .g-topo{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+    padding:14px 20px;
+    background: color-mix(in srgb, var(--mw-chao) 78%, transparent);
+    backdrop-filter: blur(14px) saturate(150%);
+    border-bottom:1px solid var(--mw-borda);
+  }
+  .g-corpo{ max-width:1180px; margin:0 auto; padding:26px 20px 90px; }
+  .g-secao{ margin:0 0 44px; }
+  .g-secao > h2{
+    margin:0 0 4px; font-size:12px; font-weight:700; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--mw-txt-3);
+  }
+  .g-secao > p.g-nota{
+    margin:0 0 18px; font-size:13px; color:var(--mw-txt-2); max-width:70ch;
+    line-height:1.6;
+  }
+  .g-amostra{
+    display:flex; flex-wrap:wrap; gap:12px; align-items:center;
+    padding:18px; border:1px dashed var(--mw-borda); border-radius:16px;
+  }
+  .g-amostra-col{ flex-direction:column; align-items:stretch; }
+  .g-legenda{ font-size:11px; color:var(--mw-txt-3); width:100%; margin:0 0 -4px; }
+  .g-quadro{
+    width:100%; border:1px solid var(--mw-borda); border-radius:18px;
+    background:var(--mw-chao); overflow:hidden; resize:horizontal;
+  }
+  .g-quadro iframe{ width:100%; height:520px; border:0; display:block; }
+  .g-fichas{ display:flex; gap:10px; flex-wrap:wrap; }
+  .g-ficha{
+    display:flex; flex-direction:column; gap:6px; align-items:center;
+    font-size:10px; color:var(--mw-txt-3); font-family:ui-monospace,monospace;
+  }
+  .g-ficha i{
+    display:block; width:64px; height:44px; border-radius:10px;
+    border:1px solid var(--mw-borda);
+  }
+</style>
+</head>
+<body class="mw-ds">
+
+<header class="g-topo">
+  <strong style="font-size:14px">MW Design System</strong>
+  <span class="mw-selo mw-selo-acento mw-selo-liso">v1</span>
+  <span class="mw-espremer"></span>
+  <div class="mw-abas" role="tablist" aria-label="Tema">
+    <button class="mw-aba" role="tab" aria-selected="true" data-tema="escuro">Escuro</button>
+    <button class="mw-aba" role="tab" aria-selected="false" data-tema="claro">Claro</button>
+  </div>
+  <div class="mw-abas" role="tablist" aria-label="Largura">
+    <button class="mw-aba" role="tab" aria-selected="false" data-larg="390">Celular</button>
+    <button class="mw-aba" role="tab" aria-selected="false" data-larg="834">Tablet</button>
+    <button class="mw-aba" role="tab" aria-selected="false" data-larg="1280">Desktop</button>
+    <button class="mw-aba" role="tab" aria-selected="true" data-larg="0">Livre</button>
+  </div>
+</header>
+
+<main class="g-corpo">
+
+<section class="g-secao">
+  <h2>Cores</h2>
+  <p class="g-nota">Dois níveis: primitivos (a paleta bruta) e semânticos (o papel que
+    a cor cumpre). Componente nenhum lê um primitivo — é isso que faz trocar de tema
+    ser trocar variáveis, e não caçar declarações.</p>
+  <div class="g-amostra">
+    <div class="g-fichas" id="gCores"></div>
+  </div>
+</section>
+
+<section class="g-secao">
+  <h2>Tipografia</h2>
+  <p class="g-nota">A escala é fechada: seis tamanhos, cada um com um papel. Quem escreve
+    uma tela escolhe "isto é um título de área", não "isto tem 22px".</p>
+  <div class="g-amostra g-amostra-col">
+    <h1 class="mw-tela-titulo">Título de área</h1>
+    <h3 class="mw-titulo">Título de cartão</h3>
+    <p class="mw-corpo-g">Leitura corrida, com largura limitada a 68 caracteres — acima disso o olho perde a linha ao voltar.</p>
+    <p class="mw-corpo">Texto do app, o tamanho mais comum.</p>
+    <p class="mw-micro">Apoio e metadado.</p>
+    <p class="mw-rotulo">Etiqueta em caixa alta</p>
+    <span class="mw-numero">42</span>
+  </div>
+</section>
+
+<section class="g-secao">
+  <h2>Superfícies · Liquid Glass</h2>
+  <p class="g-nota">O vidro é feito de quatro coisas: cor translúcida, desfoque <em>com</em>
+    saturação (só o desfoque deixa o vidro cinzento), um brilho de 1px na borda de cima —
+    que é o que separa "vidro" de "retângulo transparente" — e um contorno discreto.
+    Onde <code>backdrop-filter</code> não existe, vira superfície sólida: muda o efeito,
+    não a legibilidade.</p>
+  <div class="g-amostra">
+    <div class="mw-vidro" style="padding:18px;min-width:180px">
+      <strong class="mw-titulo">Vidro</strong>
+      <p class="mw-micro" style="margin-top:6px">o material padrão</p>
+    </div>
+    <div class="mw-vidro mw-vidro-2" style="padding:18px;min-width:180px">
+      <strong class="mw-titulo">Vidro 2</strong>
+      <p class="mw-micro" style="margin-top:6px">mais presente</p>
+    </div>
+    <div class="mw-sup mw-elev-2" style="padding:18px;min-width:180px">
+      <strong class="mw-titulo">Sólido</strong>
+      <p class="mw-micro" style="margin-top:6px">para texto denso</p>
+    </div>
+  </div>
+</section>
+
+<section class="g-secao">
+  <h2>Botões · todos os estados</h2>
+  <p class="g-nota">Quatro tons, três tamanhos, e os seis estados que um botão precisa ter.
+    O de carregando não muda de tamanho: se mudasse, o layout pularia no clique e a mão
+    perderia o lugar.</p>
+  <div class="g-amostra">
+    <p class="g-legenda">normal</p>
+    <button class="mw-btn mw-btn-primario">Salvar</button>
+    <button class="mw-btn mw-btn-secundario">Cancelar</button>
+    <button class="mw-btn mw-btn-fantasma">Ver mais</button>
+    <button class="mw-btn mw-btn-perigo">Excluir</button>
+  </div>
+  <div class="g-amostra" style="margin-top:10px">
+    <p class="g-legenda">tamanhos, desabilitado, carregando, só ícone</p>
+    <button class="mw-btn mw-btn-primario mw-btn-p">Pequeno</button>
+    <button class="mw-btn mw-btn-primario">Médio</button>
+    <button class="mw-btn mw-btn-primario mw-btn-g">Grande</button>
+    <button class="mw-btn mw-btn-primario" disabled>Desabilitado</button>
+    <button class="mw-btn mw-btn-primario" data-mw-carregando="1">Salvando</button>
+    <button class="mw-btn mw-btn-secundario mw-btn-icone" aria-label="Configurações">⚙</button>
+  </div>
+</section>
+
+<section class="g-secao">
+  <h2>Campos</h2>
+  <p class="g-nota">Rótulo sempre acima e sempre visível. Placeholder não é rótulo: some ao
+    digitar, e quem volta ao formulário depois não sabe mais o que aquele campo era. No
+    celular a fonte sobe para 16px, porque abaixo disso o Safari do iOS dá zoom ao focar.</p>
+  <div class="g-amostra g-amostra-col" style="max-width:520px">
+    <div class="mw-campo mw-campo-obrigatorio">
+      <label for="gA">Nome da disciplina</label>
+      <input id="gA" class="mw-entrada" placeholder="Ex.: Programação Web">
+    </div>
+    <div class="mw-campo">
+      <label for="gB">Instituição</label>
+      <select id="gB">
+        <option>Universidade Federal do Pará</option>
+        <option>Instituto Federal</option>
+      </select>
+    </div>
+    <div class="mw-campo">
+      <label for="gC">Objetivo</label>
+      <textarea id="gC" placeholder="O que você quer alcançar nesta disciplina?"></textarea>
+    </div>
+    <div class="mw-campo mw-campo-erro">
+      <label for="gD">Semestre</label>
+      <input id="gD" class="mw-entrada" value="0" aria-describedby="gDerro">
+      <p class="mw-campo-aviso" id="gDerro">O semestre precisa ser 1 ou maior.</p>
+    </div>
+    <div class="mw-campo">
+      <label for="gE">Desabilitado</label>
+      <input id="gE" class="mw-entrada" value="Não editável" disabled>
+    </div>
+    <div class="mw-linha">
+      <input type="checkbox" class="mw-chave" id="gF" checked>
+      <label for="gF" class="mw-corpo">Avisar quando faltar um dia para a entrega</label>
+    </div>
+  </div>
+</section>
+
+<section class="g-secao">
+  <h2>Selos e filtros</h2>
+  <p class="g-nota">Estado em forma, não só em cor: cada selo tem um ponto à esquerda, para
+    quem não distingue as cores continuar diferenciando.</p>
+  <div class="g-amostra">
+    <span class="mw-selo mw-selo-ok">Concluído</span>
+    <span class="mw-selo mw-selo-info">Em andamento</span>
+    <span class="mw-selo mw-selo-alerta">Em revisão</span>
+    <span class="mw-selo mw-selo-perigo">Atrasada</span>
+    <span class="mw-selo">Arquivado</span>
+    <span class="mw-selo mw-selo-acento mw-selo-liso">Beta</span>
+  </div>
+  <div class="g-amostra" style="margin-top:10px">
+    <button class="mw-filtro" aria-pressed="true">Todas</button>
+    <button class="mw-filtro" aria-pressed="false">Atrasadas</button>
+    <button class="mw-filtro" aria-pressed="false">Com prazo</button>
+  </div>
+</section>
+
+<section class="g-secao">
+  <h2>Cartões e listas</h2>
+  <p class="g-nota">A lista usa <em>container query</em>: numa coluna estreita as ações descem
+    para baixo do texto em vez de espremê-lo. Depende do cartão, não da janela — que é o que
+    o olho espera.</p>
+  <div class="mw-grade-2">
+    <article class="mw-cartao">
+      <div class="mw-cartao-cabeca">
+        <div>
+          <h3 class="mw-titulo">Disciplinas</h3>
+          <p class="mw-micro">6 no semestre</p>
+        </div>
+        <button class="mw-btn mw-btn-secundario mw-btn-p">+ Adicionar</button>
+      </div>
+      <div class="mw-lista">
+        <div class="mw-item">
+          <div class="mw-item-texto">
+            <span class="mw-item-titulo">Cálculo I</span>
+            <span class="mw-item-apoio">Limites e derivadas · 62%</span>
+          </div>
+          <div class="mw-item-acoes">
+            <button class="mw-btn mw-btn-fantasma mw-btn-p">Editar</button>
+            <button class="mw-btn mw-btn-fantasma mw-btn-p">Excluir</button>
+          </div>
+        </div>
+        <div class="mw-item">
+          <div class="mw-item-texto">
+            <span class="mw-item-titulo">Estruturas de Dados e Algoritmos Avançados</span>
+            <span class="mw-item-apoio">Árvores, grafos e complexidade · 30%</span>
+          </div>
+          <div class="mw-item-acoes">
+            <button class="mw-btn mw-btn-fantasma mw-btn-p">Editar</button>
+            <button class="mw-btn mw-btn-fantasma mw-btn-p">Excluir</button>
+          </div>
+        </div>
+      </div>
+      <div class="mw-progresso" role="progressbar" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso do semestre">
+        <i style="width:62%"></i>
+      </div>
+    </article>
+
+    <article class="mw-cartao mw-cartao-solido">
+      <div class="mw-secao-cabeca">
+        <div>
+          <h3 class="mw-titulo">Resumo</h3>
+          <p class="mw-micro">superfície sólida, para conteúdo denso</p>
+        </div>
+      </div>
+      <div class="mw-grade">
+        <div class="mw-resumo">
+          <span class="mw-rotulo">Atrasadas</span>
+          <span class="mw-numero">3</span>
+          <span class="mw-resumo-delta" data-mw-sinal="-">−2 desde ontem</span>
+        </div>
+        <div class="mw-resumo">
+          <span class="mw-rotulo">Entregas</span>
+          <span class="mw-numero">12</span>
+          <span class="mw-resumo-delta" data-mw-sinal="+">+4 esta semana</span>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="g-secao">
+  <h2>Navegação</h2>
+  <p class="g-nota">O mesmo componente serve à barra lateral no desktop e à barra de baixo no
+    celular: muda a direção e o que aparece, não o material nem os estados.</p>
+  <div class="g-amostra" style="align-items:stretch">
+    <nav class="mw-nav mw-vidro" style="padding:8px;min-width:220px" aria-label="Exemplo lateral">
+      <button class="mw-nav-item" aria-current="page">Início</button>
+      <button class="mw-nav-item">Faculdade</button>
+      <button class="mw-nav-item">Atividades</button>
+      <button class="mw-nav-item">Anotações</button>
+    </nav>
+    <nav class="mw-nav mw-nav-baixo mw-vidro" style="flex:1;min-width:280px" aria-label="Exemplo inferior">
+      <button class="mw-nav-item" aria-current="page">Início</button>
+      <button class="mw-nav-item">Faculdade</button>
+      <button class="mw-nav-item">Arquivos</button>
+      <button class="mw-nav-item">Perfil</button>
+    </nav>
+  </div>
+</section>
+
+<section class="g-secao">
+  <h2>Tabela</h2>
+  <p class="g-nota">Sempre dentro de um container que rola na horizontal: tabela é o conteúdo
+    que mais estoura a largura no celular, e o corpo da página nunca deve rolar de lado.</p>
+  <div class="mw-cartao mw-cartao-solido">
+    <div class="mw-rolagem-h">
+      <table class="mw-tabela">
+        <thead><tr><th>Disciplina</th><th>Instituição</th><th>Semestre</th><th data-mw-num>Progresso</th></tr></thead>
+        <tbody>
+          <tr><td>Cálculo I</td><td>UFPA</td><td>3º</td><td data-mw-num>62%</td></tr>
+          <tr><td>Estruturas de Dados</td><td>UFPA</td><td>4º</td><td data-mw-num>30%</td></tr>
+          <tr><td>Banco de Dados</td><td>UFPA</td><td>4º</td><td data-mw-num>85%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="g-secao">
+  <h2>Estado vazio, esqueleto e aviso</h2>
+  <p class="g-nota">Vazio é uma tela, não um espaço em branco: diz o que falta e oferece a ação.
+    O esqueleto reserva o lugar do conteúdo, para a página não pular quando o dado chega.</p>
+  <div class="mw-grade-2">
+    <div class="mw-vazio">
+      <span class="mw-vazio-icone" aria-hidden="true">＋</span>
+      <h4>Nenhuma disciplina ainda</h4>
+      <p>Cadastre as matérias do semestre para acompanhar prazos e progresso.</p>
+      <button class="mw-btn mw-btn-primario">Adicionar disciplina</button>
+    </div>
+    <div class="mw-cartao mw-cartao-solido">
+      <div class="mw-pilha-2">
+        <div class="mw-esqueleto" style="height:14px;width:45%"></div>
+        <div class="mw-esqueleto" style="height:11px;width:80%"></div>
+        <div class="mw-esqueleto" style="height:11px;width:65%"></div>
+        <div class="mw-esqueleto" style="height:40px;width:100%;border-radius:14px"></div>
+      </div>
+    </div>
+  </div>
+  <div class="g-amostra" style="margin-top:14px;position:relative;min-height:76px">
+    <div class="mw-aviso" style="position:static;transform:none;animation:none">Disciplina salva.</div>
+    <div class="mw-aviso mw-aviso-ok" style="position:static;transform:none;animation:none">Backup exportado.</div>
+    <div class="mw-aviso mw-aviso-perigo" style="position:static;transform:none;animation:none">Não foi possível salvar.</div>
+  </div>
+</section>
+
+<section class="g-secao">
+  <h2>Diálogo</h2>
+  <p class="g-nota"><code>aria-modal="true"</code> é uma declaração, não um comportamento: o
+    navegador não move o foco, não prende o Tab e não fecha no Escape sozinho. Quem faz isso
+    no app é o bloco <code>mw-teclado</code>. Aqui está só a aparência. No celular o diálogo
+    vira folha subindo de baixo, que é onde o polegar alcança.</p>
+  <div class="g-amostra">
+    <button class="mw-btn mw-btn-secundario" id="gAbrir">Abrir diálogo</button>
+    <span class="mw-micro">(Escape fecha; o Tab circula dentro)</span>
+  </div>
+</section>
+
+<section class="g-secao">
+  <h2>Nas quatro larguras</h2>
+  <p class="g-nota">A mesma página, em celular, tablet e desktop. Puxe a borda direita do
+    quadro para ver o sistema reagir de verdade — é assim que os pontos de quebra foram
+    escolhidos, e não por números redondos.</p>
+  <div class="g-quadro" id="gQuadro">
+    <iframe title="Prévia responsiva" src="amostra.html"></iframe>
+  </div>
+</section>
+
+</main>
+
+<script>
+(function(){
+  'use strict';
+  // ---- fichas de cor, geradas a partir dos tokens de verdade -------------
+  var SEMANTICOS = [
+    ['--mw-chao','chão'], ['--mw-sup-1','sup-1'], ['--mw-sup-2','sup-2'], ['--mw-sup-3','sup-3'],
+    ['--mw-txt-1','txt-1'], ['--mw-txt-2','txt-2'], ['--mw-txt-3','txt-3'],
+    ['--mw-ac','acento'], ['--mw-ac-txt','ac-txt'],
+    ['--mw-ok','ok'], ['--mw-alerta','alerta'], ['--mw-perigo','perigo'], ['--mw-info','info'], ['--mw-neutro','neutro']
+  ];
+  var caixa = document.getElementById('gCores');
+  SEMANTICOS.forEach(function(par){
+    var d = document.createElement('div');
+    d.className = 'g-ficha';
+    d.innerHTML = '<i style="background:var(' + par[0] + ')"></i><span>' + par[1] + '</span>';
+    caixa.appendChild(d);
+  });
+
+  // ---- tema ---------------------------------------------------------------
+  document.querySelectorAll('[data-tema]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var t = b.dataset.tema;
+      document.documentElement.setAttribute('data-mw-tema', t);
+      document.body.classList.toggle('claro', t === 'claro');
+      document.querySelectorAll('[data-tema]').forEach(function(o){
+        o.setAttribute('aria-selected', String(o === b));
+      });
+      var f = document.querySelector('#gQuadro iframe');
+      if (f) f.contentWindow.postMessage({ tema: t }, '*');
+    });
+  });
+
+  // ---- largura ------------------------------------------------------------
+  document.querySelectorAll('[data-larg]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var q = document.getElementById('gQuadro');
+      var v = Number(b.dataset.larg);
+      q.style.width = v ? v + 'px' : '100%';
+      q.style.maxWidth = '100%';
+      document.querySelectorAll('[data-larg]').forEach(function(o){
+        o.setAttribute('aria-selected', String(o === b));
+      });
+      q.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    });
+  });
+
+  // ---- diálogo: aparência do DS, comportamento escrito aqui --------------
+  document.getElementById('gAbrir').addEventListener('click', function(abridor){
+    var quem = document.activeElement;
+    var cob = document.createElement('div');
+    cob.className = 'mw-cobertura';
+    cob.innerHTML =
+      '<div class="mw-dialogo" role="dialog" aria-modal="true" aria-labelledby="gDlgT">' +
+      '<div><h3 class="mw-titulo" id="gDlgT">Excluir Cálculo I?</h3>' +
+      '<p class="mw-corpo" style="margin-top:6px">Esta ação remove a disciplina e o histórico de progresso dela. Não dá para desfazer.</p></div>' +
+      '<div class="mw-dialogo-acoes">' +
+      '<button class="mw-btn mw-btn-secundario" data-fechar>Cancelar</button>' +
+      '<button class="mw-btn mw-btn-perigo" data-fechar>Excluir</button>' +
+      '</div></div>';
+    document.body.appendChild(cob);
+    var focaveis = cob.querySelectorAll('button');
+    focaveis[0].focus();
+    function fecha(){
+      cob.remove();
+      document.removeEventListener('keydown', tecla, true);
+      if (quem && quem.isConnected) quem.focus();
+    }
+    function tecla(e){
+      if (e.key === 'Escape'){ e.preventDefault(); fecha(); return; }
+      if (e.key !== 'Tab') return;
+      var pri = focaveis[0], ult = focaveis[focaveis.length - 1];
+      if (!cob.contains(document.activeElement)){ e.preventDefault(); pri.focus(); return; }
+      if (e.shiftKey && document.activeElement === pri){ e.preventDefault(); ult.focus(); }
+      else if (!e.shiftKey && document.activeElement === ult){ e.preventDefault(); pri.focus(); }
+    }
+    cob.addEventListener('click', function(e){ if (e.target === cob) fecha(); });
+    cob.querySelectorAll('[data-fechar]').forEach(function(b){ b.addEventListener('click', fecha); });
+    document.addEventListener('keydown', tecla, true);
+  });
+})();
+</script>
+</body>
+</html>

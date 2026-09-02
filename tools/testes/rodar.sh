@@ -66,6 +66,7 @@ declare -a NOMES=(
   "10 offline · service worker"
   "11 dados · criar, editar, excluir"
   "12 teclado · operar sem mouse"
+  "13 design system · isolado e inerte"
 )
 declare -a CMDS=(
   "node tools/testes/1-regressao.mjs"
@@ -81,6 +82,7 @@ declare -a CMDS=(
   "node tools/testes/10-offline.mjs"
   "node tools/testes/11-dados.mjs"
   "node tools/testes/12-teclado.mjs"
+  "node tools/testes/13-ds.mjs && python3 tools/testes/7-contraste-medir.py"
 )
 
 SO_ESTES=("$@")

@@ -23,6 +23,14 @@ try {
      porque esse fundo so existe depois de o CSS ser lido. Com
      color-scheme:dark a canvas ja nasce escura. -->
 <meta name="color-scheme" content="dark">
+<!-- O Design System novo (ds/mw-ds.css). Enquanto nenhuma área foi migrada
+     ele é INERTE: cada regra dele está sob `.mw-ds`, e não existe nenhum
+     `.mw-ds` dentro do #app ainda. O teste 13 comprova isso comparando o app
+     com a folha ligada e desligada — se um pixel de layout mudasse, ela não
+     estaria inerte.
+     Fica em <head> e render-blocking de propósito: assim não há lampejo de
+     conteúdo sem estilo quando a primeira área migrar. -->
+<link rel="stylesheet" href="ds/mw-ds.css">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">

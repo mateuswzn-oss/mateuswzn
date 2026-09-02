@@ -36,6 +36,14 @@ def parse(c):
     n = [float(x) for x in re.findall(r'[\d.]+', c)]
     return tuple(int(x) for x in n[:3])
 
+def invisivel(c):
+    """Texto com alpha zero não é texto: é o rótulo do botão em estado
+    "carregando", que fica transparente de propósito enquanto o giro roda no
+    lugar dele. Medir contraste ali dá 3,3:1 contra o fundo do botão e
+    reporta um defeito que não existe — parse() joga o alpha fora."""
+    n = [float(x) for x in re.findall(r'[\d.]+', c)]
+    return len(n) >= 4 and n[3] == 0
+
 def fundo_proprio(im, box, fg):
     """Elemento com preenchimento próprio: o fundo é a cor mais comum do
     MIOLO da caixa, descartando as que são a cor do texto (e as muito
@@ -68,17 +76,19 @@ def fundo(im, box):
 
 total = 0
 achou_arquivo = False
-for tema in ('dark', 'light'):
-    for larg in (1440, 834, 390):
-        caminho = os.path.join(SAIDA, f'contraste-{larg}-{tema}.json')
-        if not os.path.exists(caminho):
-            continue
+# Qualquer contraste-*.json que tenha sido colhido: o do app (por largura e
+# tema) e o do Design System (contraste-ds-escuro/claro), sem precisar de uma
+# lista fixa aqui que sai de sincronia com quem colhe.
+import glob
+for caminho in sorted(glob.glob(os.path.join(SAIDA, 'contraste-*.json'))):
+        rotulo = os.path.basename(caminho)[len('contraste-'):-len('.json')]
         achou_arquivo = True
         d = json.load(open(caminho))
         falhas = []
         for bloco in d['saida']:
             im = Image.open(bloco['png']).convert('RGB')
             for c in bloco['cands']:
+                if invisivel(c['cor']): continue
                 fg = parse(c['cor'])
                 bg = fundo_proprio(im, c['box'], fg) if c.get('pintado') else fundo(im, c['box'])
                 if bg is None or fg == bg: continue
@@ -89,7 +99,7 @@ for tema in ('dark', 'light'):
                 if r < m:
                     falhas.append((bloco['v'], c['t'], round(r,2), round(c['px']), m, fg, bg))
         total += len(falhas)
-        print(f"=== {larg}px {tema}: {len(falhas)} falha(s) ===")
+        print(f"=== {rotulo}: {len(falhas)} falha(s) ===")
         for f in falhas[:8]:
             print(f"    {f[0]:<13} {f[1][:30]:<32} {f[2]:>5}:1 (mín {f[4]}) txt{f[5]} / bg{f[6]}")
 

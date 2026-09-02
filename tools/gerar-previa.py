@@ -15,6 +15,7 @@ Três diferenças em relação ao app de verdade, e só três:
 
 Uso: python3 tools/gerar-previa.py <index.html da beta> <destino> <versao>
 """
+import os
 import re
 import sys
 
@@ -27,6 +28,19 @@ def main():
 
     with open(origem, encoding='utf-8') as f:
         html = f.read()
+
+    # O Design System vive num arquivo separado; a prévia precisa dele ao
+    # lado, senão o <link> aponta para o nada dentro de /beta/.
+    import shutil
+    raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    ds_origem = os.path.join(raiz, 'ds', 'mw-ds.css')
+    ds_destino = os.path.join(os.path.dirname(os.path.abspath(destino)), 'ds', 'mw-ds.css')
+    if os.path.exists(ds_origem):
+        os.makedirs(os.path.dirname(ds_destino), exist_ok=True)
+        shutil.copyfile(ds_origem, ds_destino)
+        print('design system copiado para', os.path.relpath(ds_destino, raiz))
+    else:
+        raise SystemExit('ds/mw-ds.css não encontrado — a prévia sairia sem o sistema.')
 
     # 1) sem service worker
     alvo = "navigator.serviceWorker.register('sw.js').catch(() => {});"

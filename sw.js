@@ -1,3 +1,54 @@
+/* v86 (BETA — o Design System novo, completo e ainda sem tocar em tela nenhuma):
+   Primeira metade da reformulação combinada: construir o sistema inteiro
+   ANTES de migrar qualquer área, para a transformação visual não acontecer
+   sobre base instável.
+
+   O QUE ENTROU
+   ds/mw-ds.css     o sistema: 189 regras
+   ds/index.html    a galeria: todo componente, nos dois temas, em 4 larguras
+   ds/amostra.html  uma tela do MW montada só com o sistema
+   ds/LEIAME.md     arquitetura, nomes e o protocolo de migração
+   tools/ds/dependencias.py   mapeia o CSS legado que pinta cada área
+   tools/testes/13-ds.mjs     mede o sistema isolado e a inércia dele no app
+
+   TRÊS REGRAS QUE FAZEM O "NÃO EMPILHAR" SER VERIFICÁVEL
+   1. Tudo vive sob `.mw-ds`. Sem nenhum `.mw-ds` no documento, o arquivo é
+      inerte — e o teste 13 comprova isso comparando o app com a folha ligada
+      e desligada, área por área: zero diferença nas catorze.
+   2. Nenhum !important de componente. A ordem interna é resolvida por
+      @layer, que ordena sem inflar especificidade. Os oito do arquivo estão
+      fora da estilização (leitor de tela, movimento reduzido, impressão).
+   3. Componente não conhece cor: só tokens semânticos. Trocar de tema é
+      trocar variáveis, não caçar declarações.
+
+   O QUE O SISTEMA COBRE
+   Tokens de cor, espaço, tipo, raio, sombra, movimento, camada e alvo de
+   toque. Liquid Glass com desfoque E saturação, brilho de 1px na borda de
+   cima, e superfície sólida onde backdrop-filter não existe. Botão (4 tons x
+   3 tamanhos x 6 estados), campo, cartão, lista, selo, filtro, cartão de
+   número, progresso, avatar, navegação lateral e inferior, abas, tabela,
+   estado vazio, esqueleto, diálogo (folha no celular) e aviso. Mais
+   prefers-reduced-motion, prefers-contrast e impressão.
+
+   UM DEFEITO DE CONTRASTE, ACHADO E CORRIGIDO NO PRÓPRIO SISTEMA
+   No tema claro os selos tinham fundo translúcido a 12-14%. Isso não pinta o
+   suficiente para dominar: quem estabelecia o contraste era a PÁGINA atrás
+   deles, e "Concluído" media 3,98:1. Os fundos viraram opacos — a mesma
+   mistura sobre branco, congelada — e o âmbar desceu de #b45309 para
+   #92400e, porque 4,58:1 é passar raspando. Agora zero falha nos dois temas,
+   com 169 textos medidos no pixel em sete rolagens da galeria.
+
+   E DOIS DEFEITOS NA MEDIÇÃO, QUE QUASE VIRARAM DEFEITO NO CÓDIGO
+   1. O teste acusou o DS de estar vazando no app: tudo 1,2% maior com a
+      folha ligada. Não era. O #app tem uma mola de scroll que anima sozinha,
+      e getBoundingClientRect() inclui transformações — eu estava medindo a
+      animação. offsetWidth ignora transform, que é o que se quer comparar.
+   2. O contador de regras dizia 14 num arquivo de 189: desde o CSS Nesting,
+      TODA CSSStyleRule tem um `cssRules` (vazio), então "tem cssRules? é
+      agrupamento" virou falso. O que distingue é `style.length`.
+
+   A folha já entra no <head> do app e no cache do service worker, inerte.
+   Migração das áreas na próxima rodada, uma por vez, na ordem do LEIAME. */
 /* v85 (BETA — operar o app sem mouse, e a agenda que cabia em 54 telas):
    Rodada de estabilização. Três frentes, todas medidas antes e depois.
 
@@ -1132,7 +1183,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v85-beta';
+const CACHE_NAME = 'mw-shell-v86-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
@@ -1145,6 +1196,10 @@ const SHELL_URLS = [
   './icon-192-maskable.png', './icon-512-maskable.png',
   './apple-touch-icon.png',
   './vendor/supabase.js',
+  /* O Design System é uma folha separada, então precisa entrar no cache do
+     shell explicitamente — senão o app abre sem estilo quando estiver
+     offline, a partir da primeira área migrada. */
+  './ds/mw-ds.css',
 ];
 
 self.addEventListener('install', (event) => {

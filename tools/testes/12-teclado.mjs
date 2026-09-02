@@ -15,7 +15,7 @@
      4. o foco não voltava para onde estava depois de fechar o diálogo.
 
    Uso: node tools/testes/12-teclado.mjs */
-import { abre, vaiPara } from './ajuda.mjs';
+import { abre, vaiPara, esperaParar } from './ajuda.mjs';
 
 const dia = n => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0,10); };
 
@@ -37,7 +37,11 @@ const ok = (rotulo, certo, detalhe) => {
 /* ---- 1. o primeiro Tab oferece o atalho, e ele aparece de verdade ------- */
 await p.evaluate(() => { if (document.activeElement !== document.body) document.activeElement.blur(); });
 await p.keyboard.press('Tab');
-await p.waitForTimeout(350);
+/* O atalho entra deslizando (160ms). Um tempo fixo mede o meio do
+   caminho quando a máquina está ocupada — foi assim que este teste
+   falhou dentro da suíte e passou sozinho, reportando topo:-16. */
+await p.waitForTimeout(200);
+await esperaParar(p, 'body');
 const atalho = await p.evaluate(() => {
   const e = document.querySelector('.mw-pular');
   if (!e) return null;

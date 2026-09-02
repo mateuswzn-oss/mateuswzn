@@ -1,0 +1,1064 @@
+/* =============================================================================
+   MW DESIGN SYSTEM
+   =============================================================================
+   Sistema de interface do Mateus Workspace. Escrito para substituir as folhas
+   legadas por área, não para se empilhar sobre elas.
+
+   TRÊS REGRAS QUE FAZEM ISSO SER VERDADE, E NÃO PROMESSA
+   ------------------------------------------------------
+   1. TUDO vive sob `.mw-ds`. Sem nenhum `.mw-ds` no documento, este arquivo é
+      inerte — não pinta um pixel. É isso que permite migrar uma área por vez
+      sem que as outras sintam.
+
+   2. NENHUM `!important` DE COMPONENTE. O app legado tem cerca de sete mil
+      deles; entrar nessa disputa seria repetir o problema com outro nome. A
+      ordem aqui é resolvida por CAMADAS (@layer), que ordenam sem inflar
+      especificidade. Quem migra uma área desliga as regras antigas daquela
+      área (ver o LEIAME), em vez de gritar mais alto que elas.
+
+      Existem oito `!important` no arquivo, e todos estão fora da estilização:
+      são a classe que esconde conteúdo de tudo menos do leitor de tela, o
+      bloco de movimento reduzido e o de impressão. Esses três precisam vencer
+      qualquer regra por definição — se um componente pudesse sobrepô-los, a
+      preferência da pessoa deixaria de valer. Nenhum outro lugar do sistema
+      usa a palavra.
+
+   3. COMPONENTE NÃO CONHECE COR. Só existem dois níveis de token: os
+      primitivos (a paleta bruta) e os semânticos (o papel que a cor cumpre).
+      Nenhuma regra de componente escreve um valor de cor — todas leem um token
+      semântico. Trocar de tema, portanto, é trocar um punhado de variáveis, e
+      não caçar declarações pelo arquivo.
+
+   ONDE ISTO É VISTO E MEDIDO
+   --------------------------
+   ds/index.html      galeria: todo componente, nos dois temas, em quatro larguras
+   ds/LEIAME.md       arquitetura, convenção de nomes e o protocolo de migração
+   tools/testes/13-ds.mjs  contraste no pixel, alvos de toque, foco e vazamento
+
+   Nomes em português, como o resto do projeto. Prefixo `mw-` em tudo, para
+   nunca colidir com as classes legadas.
+   ============================================================================= */
+
+@layer mw.base, mw.superficie, mw.componente, mw.utilidade;
+
+/* =============================================================================
+   TOKENS
+   ============================================================================= */
+@layer mw.base {
+
+/* ---- PRIMITIVOS -------------------------------------------------------------
+   A paleta bruta. Nada de componente lê daqui: estes valores existem para
+   alimentar os semânticos logo abaixo. Vêm da identidade que o app já usa
+   (os tokens --id-*), preservada de propósito — o sistema novo é uma
+   arquitetura nova para a MESMA marca, não uma marca nova.
+   ---------------------------------------------------------------------------- */
+:root{
+  /* azul-violeta: o acento do MW */
+  --mw-p-azul-300:#93a3ff;
+  --mw-p-azul-400:#6b7cff;
+  --mw-p-azul-500:#5b6cff;
+  --mw-p-azul-600:#4f5bff;
+  --mw-p-violeta-500:#8b5cf6;
+
+  /* neutros frios: a canvas azul-marinho e as superfícies sobre ela */
+  --mw-p-noite-950:#050b1c;
+  --mw-p-noite-900:#0a1226;
+  --mw-p-noite-800:#101a33;
+  --mw-p-noite-700:#17233f;
+  --mw-p-noite-600:#22314f;
+
+  --mw-p-nevoa-50:#f7f9fe;
+  --mw-p-nevoa-100:#eef2fb;
+  --mw-p-nevoa-200:#e2e8f6;
+  --mw-p-nevoa-300:#cbd5ea;
+
+  --mw-p-tinta-900:#101a2e;
+  --mw-p-tinta-700:#2d3a55;
+  --mw-p-tinta-500:#4a5878;
+
+  --mw-p-gelo-100:#e9eefb;
+  --mw-p-gelo-300:#a6b2ce;
+  --mw-p-gelo-500:#7b88a6;
+
+  /* semânticas de estado */
+  --mw-p-verde-400:#34d399;
+  --mw-p-verde-700:#047857;
+  --mw-p-ambar-400:#fbbf24;
+  --mw-p-ambar-700:#b45309;
+  --mw-p-ambar-800:#92400e;
+  --mw-p-rubro-400:#f87171;
+  --mw-p-rubro-700:#b91c1c;
+  --mw-p-ceu-400:#60a5fa;
+  --mw-p-ceu-700:#1d4ed8;
+  --mw-p-cinza-400:#94a3b8;
+  --mw-p-cinza-700:#475569;
+}
+
+/* ---- SEMÂNTICOS: TEMA ESCURO (o padrão) -------------------------------------
+   Os tokens ficam em `.mw-ds`, e não em `:root`, para que a folha continue
+   inerte fora do escopo — inclusive as variáveis.
+   ---------------------------------------------------------------------------- */
+.mw-ds{
+  color-scheme: dark;
+
+  /* superfícies, do chão para cima */
+  --mw-chao:#020617;
+  --mw-sup-1:var(--mw-p-noite-900);
+  --mw-sup-2:var(--mw-p-noite-800);
+  --mw-sup-3:var(--mw-p-noite-700);
+  --mw-sup-afundada:var(--mw-p-noite-950);
+
+  /* traços */
+  --mw-borda:rgba(140,165,220,.14);
+  --mw-borda-forte:rgba(140,165,220,.26);
+  --mw-divisor:rgba(140,165,220,.10);
+
+  /* texto, em três níveis de ênfase */
+  --mw-txt-1:var(--mw-p-gelo-100);
+  --mw-txt-2:var(--mw-p-gelo-300);
+  --mw-txt-3:var(--mw-p-gelo-500);
+  --mw-txt-sobre-acento:#ffffff;
+
+  /* acento */
+  --mw-ac:var(--mw-p-azul-500);
+  --mw-ac-2:var(--mw-p-violeta-500);
+  --mw-ac-txt:var(--mw-p-azul-300);
+  --mw-ac-suave:rgba(91,108,255,.16);
+  --mw-ac-grad:linear-gradient(135deg, var(--mw-p-azul-600) 0%, var(--mw-p-violeta-500) 100%);
+  /* Um véu escuro sobre o gradiente. Texto branco sobre o acento puro mede
+     4,0–4,4:1; com o véu passa de 4,5:1 sem mudar a cor percebida. */
+  --mw-ac-grad-forte:linear-gradient(rgba(0,0,0,.16), rgba(0,0,0,.16)), var(--mw-ac-grad);
+
+  /* estados: cada um já com o trio cor / fundo / borda resolvido */
+  --mw-ok:var(--mw-p-verde-400);      --mw-ok-bg:rgba(16,185,129,.15);   --mw-ok-bd:rgba(16,185,129,.28);
+  --mw-alerta:var(--mw-p-ambar-400);  --mw-alerta-bg:rgba(245,158,11,.15); --mw-alerta-bd:rgba(245,158,11,.28);
+  --mw-perigo:var(--mw-p-rubro-400);  --mw-perigo-bg:rgba(239,68,68,.15);  --mw-perigo-bd:rgba(239,68,68,.30);
+  --mw-info:var(--mw-p-ceu-400);      --mw-info-bg:rgba(59,130,246,.16);   --mw-info-bd:rgba(59,130,246,.30);
+  --mw-neutro:var(--mw-p-cinza-400);  --mw-neutro-bg:rgba(148,163,184,.13);--mw-neutro-bd:rgba(148,163,184,.24);
+
+  /* vidro (ver a seção Liquid Glass) */
+  --mw-vidro-cor:rgba(255,255,255,.055);
+  --mw-vidro-cor-2:rgba(255,255,255,.085);
+  --mw-vidro-brilho:rgba(255,255,255,.10);
+  --mw-vidro-borda:rgba(255,255,255,.12);
+  --mw-vidro-desfoque:18px;
+  --mw-vidro-saturacao:150%;
+  --mw-vidro-solido:var(--mw-p-noite-800);   /* quando não há backdrop-filter */
+
+  /* elevação */
+  --mw-sombra-1:0 1px 2px rgba(2,6,20,.28);
+  --mw-sombra-2:0 1px 2px rgba(2,6,20,.28), 0 12px 32px rgba(2,6,20,.34);
+  --mw-sombra-3:0 2px 4px rgba(2,6,20,.32), 0 20px 48px rgba(2,6,20,.44);
+}
+
+/* ---- SEMÂNTICOS: TEMA CLARO -------------------------------------------------
+   Não é o escuro invertido. As superfícies claras precisam de texto MAIS
+   escuro do que a inversão daria: o par anterior media 3,3–3,6:1 sobre branco,
+   abaixo do mínimo AA. Aqui os três níveis de texto foram escurecidos até
+   7,1 / 5,0 / 4,6:1, preservando a hierarquia entre eles.
+
+   `body.light .mw-ds` existe para o app: ele já marca o tema claro assim.
+   ---------------------------------------------------------------------------- */
+.mw-ds[data-mw-tema="claro"],
+[data-mw-tema="claro"] .mw-ds,
+body.light .mw-ds{
+  color-scheme: light;
+
+  --mw-chao:#eef4ff;
+  --mw-sup-1:#ffffff;
+  --mw-sup-2:var(--mw-p-nevoa-50);
+  --mw-sup-3:var(--mw-p-nevoa-100);
+  --mw-sup-afundada:var(--mw-p-nevoa-200);
+
+  --mw-borda:rgba(18,38,80,.11);
+  --mw-borda-forte:rgba(18,38,80,.22);
+  --mw-divisor:rgba(18,38,80,.08);
+
+  --mw-txt-1:var(--mw-p-tinta-900);
+  --mw-txt-2:var(--mw-p-tinta-700);
+  --mw-txt-3:var(--mw-p-tinta-500);
+  --mw-txt-sobre-acento:#ffffff;
+
+  --mw-ac:var(--mw-p-azul-600);
+  --mw-ac-txt:#3a49d8;
+  --mw-ac-suave:rgba(91,108,255,.10);
+
+  /* Medido no pixel: com fundo translúcido (12-14%), o selo no tema claro
+     não pinta o suficiente para dominar — quem estabelece o contraste vira a
+     PÁGINA atrás dele, e "Concluído" caía para 3,98:1. Aqui os fundos são
+     OPACOS: a mesma mistura sobre branco, congelada. O selo passa a valer o
+     mesmo sobre qualquer superfície, que é o que um selo deve fazer.
+     O âmbar também desceu de #b45309 para #92400e: no fundo próprio dava
+     4,58:1, e 4,58 é passar raspando. Agora dá 6,46:1. */
+  --mw-ok:var(--mw-p-verde-700); --mw-ok-bg:#e2f7f0;  --mw-ok-bd:rgba(4,120,87,.26);
+  --mw-alerta:var(--mw-p-ambar-800); --mw-alerta-bg:#fef3e2;  --mw-alerta-bd:rgba(146,64,14,.26);
+  --mw-perigo:var(--mw-p-rubro-700); --mw-perigo-bg:#fde9e9;  --mw-perigo-bd:rgba(185,28,28,.26);
+  --mw-info:var(--mw-p-ceu-700); --mw-info-bg:#e7f0fe;  --mw-info-bd:rgba(29,78,216,.26);
+  --mw-neutro:var(--mw-p-cinza-700); --mw-neutro-bg:#f2f4f6;  --mw-neutro-bd:rgba(71,85,105,.22);
+
+  --mw-vidro-cor:rgba(255,255,255,.62);
+  --mw-vidro-cor-2:rgba(255,255,255,.78);
+  --mw-vidro-brilho:rgba(255,255,255,.85);
+  --mw-vidro-borda:rgba(18,38,80,.10);
+  --mw-vidro-solido:#ffffff;
+
+  --mw-sombra-1:0 1px 2px rgba(15,40,90,.06);
+  --mw-sombra-2:0 1px 2px rgba(15,40,90,.06), 0 12px 30px rgba(15,40,90,.10);
+  --mw-sombra-3:0 2px 4px rgba(15,40,90,.08), 0 22px 48px rgba(15,40,90,.14);
+}
+
+/* Sem escolha explícita em lugar nenhum, segue o sistema. Vale sobretudo para
+   a galeria e para quem embutir o DS fora do app. */
+@media (prefers-color-scheme: light){
+  html:not([data-mw-tema]) body:not(.light) .mw-ds:not([data-mw-tema="escuro"]):not([data-mw-tema="claro"]){
+    color-scheme: light;
+    --mw-chao:#eef4ff;
+    --mw-sup-1:#ffffff;
+    --mw-sup-2:var(--mw-p-nevoa-50);
+    --mw-sup-3:var(--mw-p-nevoa-100);
+    --mw-sup-afundada:var(--mw-p-nevoa-200);
+    --mw-borda:rgba(18,38,80,.11);
+    --mw-borda-forte:rgba(18,38,80,.22);
+    --mw-divisor:rgba(18,38,80,.08);
+    --mw-txt-1:var(--mw-p-tinta-900);
+    --mw-txt-2:var(--mw-p-tinta-700);
+    --mw-txt-3:var(--mw-p-tinta-500);
+    --mw-ac:var(--mw-p-azul-600);
+    --mw-ac-txt:#3a49d8;
+    --mw-ac-suave:rgba(91,108,255,.10);
+    --mw-ok:var(--mw-p-verde-700); --mw-ok-bg:#e2f7f0;  --mw-ok-bd:rgba(4,120,87,.26);
+    --mw-alerta:var(--mw-p-ambar-800); --mw-alerta-bg:#fef3e2;  --mw-alerta-bd:rgba(146,64,14,.26);
+    --mw-perigo:var(--mw-p-rubro-700); --mw-perigo-bg:#fde9e9;  --mw-perigo-bd:rgba(185,28,28,.26);
+    --mw-info:var(--mw-p-ceu-700); --mw-info-bg:#e7f0fe;  --mw-info-bd:rgba(29,78,216,.26);
+    --mw-neutro:var(--mw-p-cinza-700); --mw-neutro-bg:#f2f4f6;  --mw-neutro-bd:rgba(71,85,105,.22);
+    --mw-vidro-cor:rgba(255,255,255,.62);
+    --mw-vidro-cor-2:rgba(255,255,255,.78);
+    --mw-vidro-brilho:rgba(255,255,255,.85);
+    --mw-vidro-borda:rgba(18,38,80,.10);
+    --mw-vidro-solido:#ffffff;
+    --mw-sombra-1:0 1px 2px rgba(15,40,90,.06);
+    --mw-sombra-2:0 1px 2px rgba(15,40,90,.06), 0 12px 30px rgba(15,40,90,.10);
+    --mw-sombra-3:0 2px 4px rgba(15,40,90,.08), 0 22px 48px rgba(15,40,90,.14);
+  }
+}
+
+/* ---- MEDIDAS: valem nos dois temas ------------------------------------------ */
+.mw-ds{
+  /* Escala de espaçamento em passos de 4px. Um componente nunca escreve um
+     número solto: escolhe um degrau. É o que mantém o ritmo entre áreas
+     escritas em momentos diferentes. */
+  --mw-e-0:0;
+  --mw-e-1:4px;
+  --mw-e-2:8px;
+  --mw-e-3:12px;
+  --mw-e-4:16px;
+  --mw-e-5:20px;
+  --mw-e-6:24px;
+  --mw-e-8:32px;
+  --mw-e-10:40px;
+  --mw-e-12:48px;
+  --mw-e-16:64px;
+
+  /* Tipografia. A escala é fechada: seis tamanhos, cada um com seu papel.
+     Fora dela não há tamanho legítimo. */
+  --mw-fonte:'Inter var','Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  --mw-fonte-num:'Inter var','Inter',ui-monospace,'SF Mono',Menlo,monospace;
+  --mw-t-rotulo:10.5px;   /* etiqueta em caixa alta */
+  --mw-t-micro:11.5px;    /* apoio, metadado */
+  --mw-t-corpo:13px;      /* o texto do app */
+  --mw-t-corpo-g:14.5px;  /* leitura corrida */
+  --mw-t-titulo:17px;     /* título de cartão */
+  --mw-t-tela:22px;       /* título de área */
+  --mw-t-numero:30px;     /* o número dos cartões de resumo */
+  --mw-l-apertada:1.25;
+  --mw-l-normal:1.5;
+  --mw-l-solta:1.65;
+
+  /* Raios */
+  --mw-r-1:8px;
+  --mw-r-2:11px;   /* ícone, tile */
+  --mw-r-3:14px;   /* linha de lista, campo */
+  --mw-r-4:20px;   /* cartão */
+  --mw-r-5:26px;   /* folha, diálogo */
+  --mw-r-total:999px;
+
+  /* Movimento. Duração e curva também são tokens: animação inventada caso a
+     caso é o que faz uma interface parecer costurada de retalhos. */
+  --mw-d-instante:90ms;
+  --mw-d-rapida:160ms;
+  --mw-d-media:240ms;
+  --mw-d-lenta:380ms;
+  --mw-curva:cubic-bezier(.2,.8,.2,1);
+  --mw-curva-entrada:cubic-bezier(.16,1,.3,1);
+  --mw-curva-mola:cubic-bezier(.34,1.56,.64,1);
+
+  /* Camadas de empilhamento, nomeadas. Número mágico em z-index é como
+     começa a guerra de quem fica por cima. */
+  --mw-z-base:0;
+  --mw-z-elevado:10;
+  --mw-z-fixo:100;
+  --mw-z-nav:200;
+  --mw-z-cobertura:900;
+  --mw-z-dialogo:1000;
+  --mw-z-aviso:1100;
+
+  /* Alvo de toque mínimo (WCAG 2.5.8) */
+  --mw-alvo:24px;
+  --mw-alvo-confortavel:44px;
+
+  /* Foco: um anel só, o mesmo em tudo */
+  --mw-foco:0 0 0 2px var(--mw-chao), 0 0 0 4px var(--mw-ac);
+}
+}
+
+/* =============================================================================
+   SUPERFÍCIES E LIQUID GLASS
+   ============================================================================= */
+@layer mw.superficie {
+
+/* Base do escopo. Não mexe em html nem em body — o DS não é dono do
+   documento, é dono do que está dentro dele. */
+.mw-ds{
+  font-family: var(--mw-fonte);
+  font-size: var(--mw-t-corpo);
+  line-height: var(--mw-l-normal);
+  color: var(--mw-txt-1);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+.mw-ds *,
+.mw-ds *::before,
+.mw-ds *::after{ box-sizing: border-box; }
+
+/* ---- LIQUID GLASS -----------------------------------------------------------
+   O vidro é feito de quatro coisas, e as quatro importam:
+
+   1. uma cor translúcida, para o que está atrás aparecer;
+   2. backdrop-filter com desfoque E saturação — só o desfoque deixa o vidro
+      cinzento e morto; a saturação é o que devolve vida à cor que passa;
+   3. um brilho de 1px na borda de cima, que é como a luz pega numa lâmina de
+      vidro real e o que separa "vidro" de "retângulo transparente";
+   4. uma borda inteira, discreta, para o cartão ter contorno mesmo sobre um
+      fundo da mesma luminância.
+
+   O @supports não é enfeite: onde backdrop-filter não existe, um retângulo
+   translúcido sobre um fundo qualquer vira texto ilegível. Ali o vidro vira
+   superfície sólida — muda o efeito, não a legibilidade.
+   ---------------------------------------------------------------------------- */
+.mw-ds .mw-vidro{
+  position: relative;
+  background: var(--mw-vidro-cor);
+  border: 1px solid var(--mw-vidro-borda);
+  border-radius: var(--mw-r-4);
+  backdrop-filter: blur(var(--mw-vidro-desfoque)) saturate(var(--mw-vidro-saturacao));
+  -webkit-backdrop-filter: blur(var(--mw-vidro-desfoque)) saturate(var(--mw-vidro-saturacao));
+  box-shadow: var(--mw-sombra-2), inset 0 1px 0 var(--mw-vidro-brilho);
+}
+.mw-ds .mw-vidro-2{
+  background: var(--mw-vidro-cor-2);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))){
+  .mw-ds .mw-vidro,
+  .mw-ds .mw-vidro-2{
+    background: var(--mw-vidro-solido);
+    border-color: var(--mw-borda);
+  }
+}
+
+/* Superfícies opacas, para quando o conteúdo precisa de fundo previsível
+   (tabela, formulário longo, qualquer coisa com muito texto pequeno). */
+.mw-ds .mw-sup{
+  background: var(--mw-sup-1);
+  border: 1px solid var(--mw-borda);
+  border-radius: var(--mw-r-4);
+}
+.mw-ds .mw-sup-2{ background: var(--mw-sup-2); }
+.mw-ds .mw-sup-3{ background: var(--mw-sup-3); }
+.mw-ds .mw-elev-1{ box-shadow: var(--mw-sombra-1); }
+.mw-ds .mw-elev-2{ box-shadow: var(--mw-sombra-2); }
+.mw-ds .mw-elev-3{ box-shadow: var(--mw-sombra-3); }
+
+/* ---- TIPOGRAFIA -------------------------------------------------------------
+   Papéis, não tamanhos. Quem escreve uma tela escolhe "isto é um título de
+   área", e não "isto tem 22px" — é assim que o sistema consegue reajustar a
+   escala inteira depois sem caçar número por número.
+   ---------------------------------------------------------------------------- */
+.mw-ds .mw-tela-titulo{
+  margin: 0; font-size: var(--mw-t-tela); font-weight: 700;
+  letter-spacing: -.02em; line-height: var(--mw-l-apertada);
+  color: var(--mw-txt-1); text-wrap: balance;
+}
+.mw-ds .mw-titulo{
+  margin: 0; font-size: var(--mw-t-titulo); font-weight: 650;
+  letter-spacing: -.01em; line-height: var(--mw-l-apertada);
+  color: var(--mw-txt-1); text-wrap: balance;
+}
+.mw-ds .mw-corpo{ margin: 0; font-size: var(--mw-t-corpo); color: var(--mw-txt-2); }
+.mw-ds .mw-corpo-g{ margin: 0; font-size: var(--mw-t-corpo-g); line-height: var(--mw-l-solta); color: var(--mw-txt-2); max-width: 68ch; }
+.mw-ds .mw-micro{ margin: 0; font-size: var(--mw-t-micro); color: var(--mw-txt-3); }
+.mw-ds .mw-rotulo{
+  margin: 0; font-size: var(--mw-t-rotulo); font-weight: 650;
+  letter-spacing: .09em; text-transform: uppercase; color: var(--mw-txt-3);
+}
+.mw-ds .mw-numero{
+  font-family: var(--mw-fonte-num);
+  font-size: var(--mw-t-numero); font-weight: 700;
+  line-height: 1; letter-spacing: -.03em;
+  font-variant-numeric: tabular-nums; color: var(--mw-txt-1);
+}
+/* Onde dígitos se alinham em coluna, eles têm de ter a mesma largura. */
+.mw-ds .mw-tabular{ font-variant-numeric: tabular-nums; }
+
+/* ---- LAYOUT -----------------------------------------------------------------
+   Espaçamento é trabalho do container, com gap — nunca margem por elemento,
+   que colapsa, duplica e some quando o filho é escondido.
+   ---------------------------------------------------------------------------- */
+.mw-ds .mw-pilha{ display: flex; flex-direction: column; gap: var(--mw-e-4); }
+.mw-ds .mw-pilha-2{ gap: var(--mw-e-2); }
+.mw-ds .mw-pilha-6{ gap: var(--mw-e-6); }
+.mw-ds .mw-linha{ display: flex; align-items: center; gap: var(--mw-e-3); }
+.mw-ds .mw-linha-topo{ align-items: flex-start; }
+.mw-ds .mw-espremer{ margin-left: auto; }
+/* min-width:0 num filho de flex é o que impede o texto longo de empurrar o
+   irmão para fora do cartão. Foi assim que "Excluir" já virou "Exc". */
+.mw-ds .mw-crescer{ flex: 1 1 auto; min-width: 0; }
+.mw-ds .mw-fixo{ flex: 0 0 auto; }
+
+/* Grade que se adapta ao ESPAÇO QUE TEM, não à largura da janela: um cartão
+   dentro de uma coluna estreita se comporta como se estivesse num celular,
+   que é o que o olho espera. */
+.mw-ds .mw-grade{
+  display: grid;
+  gap: var(--mw-e-4);
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+}
+.mw-ds .mw-grade-2{ grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); }
+.mw-ds .mw-grade-fixa-2{ display: grid; gap: var(--mw-e-4); grid-template-columns: 1fr; }
+@media (min-width: 640px){
+  .mw-ds .mw-grade-fixa-2{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.mw-ds .mw-largo{ grid-column: 1 / -1; }
+
+/* Conteúdo largo (tabela, código, quadro) rola dentro do próprio container.
+   O corpo da página nunca rola na horizontal. */
+.mw-ds .mw-rolagem-h{
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+}
+
+/* =============================================================================
+   COMPONENTES
+   ============================================================================= */
+@layer mw.componente {
+
+/* ---- FOCO: uma regra, para tudo ---------------------------------------------
+   :focus-visible e não :focus — o anel aparece para quem navega por teclado e
+   não pisca a cada clique de mouse. O anel é desenhado com box-shadow em duas
+   camadas (uma do tom do chão, outra do acento) para permanecer visível tanto
+   sobre superfície clara quanto escura.
+   ---------------------------------------------------------------------------- */
+.mw-ds :focus-visible{
+  outline: none;
+  box-shadow: var(--mw-foco);
+  border-radius: var(--mw-r-1);
+}
+
+/* ---- BOTÃO ------------------------------------------------------------------
+   Uma base, quatro tons, três tamanhos, e os seis estados completos.
+   ---------------------------------------------------------------------------- */
+.mw-ds .mw-btn{
+  --_alt: 38px;
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: var(--mw-e-2);
+  min-height: var(--_alt);
+  min-width: var(--mw-alvo);
+  padding: 0 var(--mw-e-4);
+  border: 1px solid transparent;
+  border-radius: var(--mw-r-2);
+  font: inherit; font-size: var(--mw-t-corpo); font-weight: 600;
+  line-height: 1; white-space: nowrap;
+  cursor: pointer;
+  position: relative;
+  transition: background var(--mw-d-rapida) var(--mw-curva),
+              border-color var(--mw-d-rapida) var(--mw-curva),
+              color var(--mw-d-rapida) var(--mw-curva),
+              transform var(--mw-d-instante) var(--mw-curva),
+              box-shadow var(--mw-d-rapida) var(--mw-curva);
+}
+.mw-ds .mw-btn:active:not(:disabled){ transform: translateY(1px) scale(.99); }
+
+/* primário: o gradiente da marca, com o véu que garante contraste */
+.mw-ds .mw-btn-primario{
+  background: var(--mw-ac-grad-forte);
+  color: var(--mw-txt-sobre-acento);
+  box-shadow: var(--mw-sombra-1);
+}
+.mw-ds .mw-btn-primario:hover:not(:disabled){ filter: brightness(1.08); box-shadow: var(--mw-sombra-2); }
+
+/* secundário: superfície, para a ação que acompanha a principal */
+.mw-ds .mw-btn-secundario{
+  background: var(--mw-sup-2);
+  border-color: var(--mw-borda);
+  color: var(--mw-txt-1);
+}
+.mw-ds .mw-btn-secundario:hover:not(:disabled){ background: var(--mw-sup-3); border-color: var(--mw-borda-forte); }
+
+/* fantasma: sem peso visual, para ação terciária dentro de um cartão */
+.mw-ds .mw-btn-fantasma{ background: transparent; color: var(--mw-txt-2); }
+.mw-ds .mw-btn-fantasma:hover:not(:disabled){ background: var(--mw-ac-suave); color: var(--mw-txt-1); }
+
+/* perigo: só para o que destrói dado, e nunca como ação padrão de um diálogo */
+.mw-ds .mw-btn-perigo{
+  background: var(--mw-perigo-bg);
+  border-color: var(--mw-perigo-bd);
+  color: var(--mw-perigo);
+}
+.mw-ds .mw-btn-perigo:hover:not(:disabled){ background: color-mix(in srgb, var(--mw-perigo) 22%, transparent); }
+
+.mw-ds .mw-btn-p{ --_alt: 30px; padding: 0 var(--mw-e-3); font-size: var(--mw-t-micro); }
+.mw-ds .mw-btn-g{ --_alt: 46px; padding: 0 var(--mw-e-6); font-size: var(--mw-t-corpo-g); }
+.mw-ds .mw-btn-largo{ width: 100%; }
+
+/* desabilitado: opacidade E cursor E pointer-events fora, porque só um dos
+   três deixa o botão parecendo clicável para alguém */
+.mw-ds .mw-btn:disabled,
+.mw-ds .mw-btn[aria-disabled="true"]{
+  opacity: .48; cursor: not-allowed; transform: none; filter: none; pointer-events: none;
+}
+
+/* carregando: o rótulo some mas o botão NÃO muda de tamanho — senão o layout
+   pula no clique, e a pessoa perde o lugar da mão */
+.mw-ds .mw-btn[data-mw-carregando="1"]{ color: transparent; pointer-events: none; }
+.mw-ds .mw-btn[data-mw-carregando="1"]::after{
+  content: ''; position: absolute;
+  width: 15px; height: 15px; border-radius: 50%;
+  border: 2px solid currentColor; border-top-color: transparent;
+  color: var(--mw-txt-sobre-acento);
+  animation: mw-girar 620ms linear infinite;
+}
+.mw-ds .mw-btn-secundario[data-mw-carregando="1"]::after,
+.mw-ds .mw-btn-fantasma[data-mw-carregando="1"]::after{ color: var(--mw-txt-2); }
+@keyframes mw-girar{ to{ transform: rotate(360deg); } }
+
+/* botão só de ícone: quadrado e no mínimo confortável para o dedo */
+.mw-ds .mw-btn-icone{
+  padding: 0; width: var(--_alt); min-width: var(--_alt);
+  border-radius: var(--mw-r-2);
+}
+
+/* ---- CAMPO ------------------------------------------------------------------
+   Rótulo sempre visível, acima. Placeholder não é rótulo: some ao digitar,
+   e quem voltar ao formulário depois não sabe mais o que aquele campo era.
+   ---------------------------------------------------------------------------- */
+.mw-ds .mw-campo{ display: flex; flex-direction: column; gap: var(--mw-e-2); }
+.mw-ds .mw-campo > label{
+  font-size: var(--mw-t-micro); font-weight: 600; color: var(--mw-txt-2);
+}
+.mw-ds .mw-campo-obrigatorio > label::after{
+  content: ' *'; color: var(--mw-perigo); font-weight: 700;
+}
+.mw-ds .mw-entrada,
+.mw-ds .mw-campo input:not([type="checkbox"]):not([type="radio"]),
+.mw-ds .mw-campo select,
+.mw-ds .mw-campo textarea{
+  width: 100%;
+  min-height: 40px;
+  padding: 10px var(--mw-e-3);
+  background: var(--mw-sup-2);
+  border: 1px solid var(--mw-borda);
+  border-radius: var(--mw-r-3);
+  color: var(--mw-txt-1);
+  font: inherit; font-size: var(--mw-t-corpo);
+  transition: border-color var(--mw-d-rapida) var(--mw-curva),
+              background var(--mw-d-rapida) var(--mw-curva);
+}
+/* 16px no celular: abaixo disso o Safari do iOS dá zoom ao focar o campo, e a
+   tela inteira sai do lugar. */
+@media (max-width: 640px){
+  .mw-ds .mw-entrada,
+  .mw-ds .mw-campo input:not([type="checkbox"]):not([type="radio"]),
+  .mw-ds .mw-campo select,
+  .mw-ds .mw-campo textarea{ font-size: 16px; }
+}
+.mw-ds .mw-campo textarea{ min-height: 96px; resize: vertical; line-height: var(--mw-l-normal); }
+.mw-ds .mw-entrada::placeholder,
+.mw-ds .mw-campo ::placeholder{ color: var(--mw-txt-3); }
+.mw-ds .mw-entrada:hover:not(:disabled),
+.mw-ds .mw-campo input:hover:not(:disabled),
+.mw-ds .mw-campo textarea:hover:not(:disabled){ border-color: var(--mw-borda-forte); }
+.mw-ds .mw-entrada:focus-visible,
+.mw-ds .mw-campo input:focus-visible,
+.mw-ds .mw-campo select:focus-visible,
+.mw-ds .mw-campo textarea:focus-visible{ border-color: var(--mw-ac); }
+.mw-ds .mw-entrada:disabled,
+.mw-ds .mw-campo input:disabled,
+.mw-ds .mw-campo textarea:disabled{ opacity: .55; cursor: not-allowed; }
+.mw-ds .mw-campo-erro .mw-entrada,
+.mw-ds .mw-campo-erro input,
+.mw-ds .mw-campo-erro textarea{ border-color: var(--mw-perigo); }
+/* A mensagem de erro é ligada ao campo por aria-describedby na marcação; a
+   cor sozinha não comunica erro para quem não distingue vermelho. */
+.mw-ds .mw-campo-aviso{ font-size: var(--mw-t-micro); color: var(--mw-txt-3); }
+.mw-ds .mw-campo-erro .mw-campo-aviso{ color: var(--mw-perigo); }
+
+/* interruptor */
+.mw-ds .mw-chave{
+  appearance: none; -webkit-appearance: none;
+  position: relative; flex: 0 0 auto;
+  width: 44px; height: 26px; border-radius: var(--mw-r-total);
+  background: var(--mw-sup-3); border: 1px solid var(--mw-borda);
+  cursor: pointer;
+  transition: background var(--mw-d-rapida) var(--mw-curva), border-color var(--mw-d-rapida) var(--mw-curva);
+}
+.mw-ds .mw-chave::after{
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--mw-txt-2);
+  transition: transform var(--mw-d-media) var(--mw-curva-mola), background var(--mw-d-rapida) var(--mw-curva);
+}
+.mw-ds .mw-chave:checked{ background: var(--mw-ac); border-color: transparent; }
+.mw-ds .mw-chave:checked::after{ transform: translateX(18px); background: #fff; }
+.mw-ds .mw-chave:disabled{ opacity: .5; cursor: not-allowed; }
+
+/* ---- CARTÃO -----------------------------------------------------------------
+   Duas variantes de material: vidro (padrão, o material do MW) e sólido, para
+   conteúdo denso onde a translucidez atrapalha a leitura.
+   ---------------------------------------------------------------------------- */
+.mw-ds .mw-cartao{
+  display: flex; flex-direction: column; gap: var(--mw-e-4);
+  padding: var(--mw-e-5);
+  background: var(--mw-vidro-cor);
+  border: 1px solid var(--mw-vidro-borda);
+  border-radius: var(--mw-r-4);
+  backdrop-filter: blur(var(--mw-vidro-desfoque)) saturate(var(--mw-vidro-saturacao));
+  -webkit-backdrop-filter: blur(var(--mw-vidro-desfoque)) saturate(var(--mw-vidro-saturacao));
+  box-shadow: var(--mw-sombra-2), inset 0 1px 0 var(--mw-vidro-brilho);
+  /* container query: o conteúdo se ajusta ao cartão, não à janela */
+  container-type: inline-size;
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))){
+  .mw-ds .mw-cartao{ background: var(--mw-vidro-solido); border-color: var(--mw-borda); }
+}
+.mw-ds .mw-cartao-solido{
+  background: var(--mw-sup-1);
+  border-color: var(--mw-borda);
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+  box-shadow: var(--mw-sombra-1);
+}
+.mw-ds .mw-cartao-compacto{ padding: var(--mw-e-4); gap: var(--mw-e-3); }
+/* cartão clicável: só ele reage ao ponteiro; cartão de leitura não deve
+   sugerir que se clica */
+.mw-ds .mw-cartao-acionavel{
+  cursor: pointer; text-align: left; width: 100%;
+  transition: transform var(--mw-d-rapida) var(--mw-curva), box-shadow var(--mw-d-rapida) var(--mw-curva), border-color var(--mw-d-rapida) var(--mw-curva);
+}
+.mw-ds .mw-cartao-acionavel:hover{ transform: translateY(-2px); box-shadow: var(--mw-sombra-3); border-color: var(--mw-borda-forte); }
+.mw-ds .mw-cartao-acionavel:active{ transform: translateY(0); }
+
+.mw-ds .mw-cartao-cabeca{
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: var(--mw-e-3);
+}
+.mw-ds .mw-cartao-cabeca > div:first-child{ min-width: 0; }
+
+}
+
+@layer mw.componente {
+
+/* ---- LISTA ------------------------------------------------------------------
+   O padrão que mais aparece no app: um item com texto de um lado e ações do
+   outro. O min-width:0 no bloco de texto não é detalhe — sem ele o texto longo
+   espreme os botões até o rótulo virar "Exc".
+   ---------------------------------------------------------------------------- */
+.mw-ds .mw-lista{ display: flex; flex-direction: column; gap: var(--mw-e-2); }
+.mw-ds .mw-item{
+  display: flex; align-items: center; gap: var(--mw-e-4);
+  padding: var(--mw-e-3) var(--mw-e-4);
+  background: var(--mw-sup-2);
+  border: 1px solid var(--mw-borda);
+  border-radius: var(--mw-r-3);
+  transition: border-color var(--mw-d-rapida) var(--mw-curva), background var(--mw-d-rapida) var(--mw-curva);
+}
+.mw-ds .mw-item:hover{ border-color: var(--mw-borda-forte); }
+.mw-ds .mw-item-texto{ flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.mw-ds .mw-item-titulo{
+  font-size: var(--mw-t-corpo); font-weight: 600; color: var(--mw-txt-1);
+  overflow-wrap: anywhere;
+}
+.mw-ds .mw-item-apoio{ font-size: var(--mw-t-micro); color: var(--mw-txt-3); }
+.mw-ds .mw-item-acoes{ flex: 0 0 auto; display: flex; align-items: center; gap: var(--mw-e-2); }
+.mw-ds .mw-item-acoes .mw-btn{ white-space: nowrap; }
+/* Numa coluna estreita, as ações descem para baixo do texto em vez de
+   espremê-lo. Container query: depende do cartão, não da janela. */
+@container (max-width: 380px){
+  .mw-ds .mw-item{ flex-direction: column; align-items: stretch; }
+  .mw-ds .mw-item-acoes{ justify-content: flex-end; }
+}
+
+/* corte de texto: n linhas e reticências */
+.mw-ds .mw-cortar-1{ overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mw-ds .mw-cortar-2,
+.mw-ds .mw-cortar-3{
+  display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
+}
+.mw-ds .mw-cortar-2{ -webkit-line-clamp: 2; line-clamp: 2; }
+.mw-ds .mw-cortar-3{ -webkit-line-clamp: 3; line-clamp: 3; }
+
+/* ---- SELO / CHIP ------------------------------------------------------------
+   Estado em forma, não só em cor: cada selo tem um ponto à esquerda, para
+   quem não distingue as cores continuar diferenciando pelo texto e pela
+   posição na sequência.
+   ---------------------------------------------------------------------------- */
+.mw-ds .mw-selo{
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 9px 3px 7px;
+  border: 1px solid var(--mw-neutro-bd);
+  background: var(--mw-neutro-bg);
+  color: var(--mw-neutro);
+  border-radius: var(--mw-r-total);
+  font-size: var(--mw-t-micro); font-weight: 600; line-height: 1.4;
+  white-space: nowrap;
+}
+.mw-ds .mw-selo::before{
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: currentColor; flex: 0 0 auto;
+}
+.mw-ds .mw-selo-ok{ background: var(--mw-ok-bg); border-color: var(--mw-ok-bd); color: var(--mw-ok); }
+.mw-ds .mw-selo-alerta{ background: var(--mw-alerta-bg); border-color: var(--mw-alerta-bd); color: var(--mw-alerta); }
+.mw-ds .mw-selo-perigo{ background: var(--mw-perigo-bg); border-color: var(--mw-perigo-bd); color: var(--mw-perigo); }
+.mw-ds .mw-selo-info{ background: var(--mw-info-bg); border-color: var(--mw-info-bd); color: var(--mw-info); }
+.mw-ds .mw-selo-acento{ background: var(--mw-ac-suave); border-color: var(--mw-ac); color: var(--mw-ac-txt); }
+.mw-ds .mw-selo-liso::before{ display: none; }
+
+/* filtro: selo que é botão, com estado ligado */
+.mw-ds .mw-filtro{
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 30px; padding: 0 var(--mw-e-3);
+  background: var(--mw-sup-2); border: 1px solid var(--mw-borda);
+  border-radius: var(--mw-r-total);
+  color: var(--mw-txt-2); font: inherit; font-size: var(--mw-t-micro); font-weight: 600;
+  cursor: pointer;
+  transition: background var(--mw-d-rapida) var(--mw-curva), color var(--mw-d-rapida) var(--mw-curva), border-color var(--mw-d-rapida) var(--mw-curva);
+}
+.mw-ds .mw-filtro:hover{ border-color: var(--mw-borda-forte); color: var(--mw-txt-1); }
+.mw-ds .mw-filtro[aria-pressed="true"]{
+  background: var(--mw-ac-suave); border-color: var(--mw-ac); color: var(--mw-ac-txt);
+}
+
+/* ---- CARTÃO DE NÚMERO ------------------------------------------------------- */
+.mw-ds .mw-resumo{
+  display: flex; flex-direction: column; gap: var(--mw-e-1);
+  padding: var(--mw-e-4);
+  background: var(--mw-sup-2); border: 1px solid var(--mw-borda);
+  border-radius: var(--mw-r-3);
+}
+.mw-ds .mw-resumo .mw-numero{ margin-top: var(--mw-e-1); }
+.mw-ds .mw-resumo-delta{ font-size: var(--mw-t-micro); font-weight: 600; }
+.mw-ds .mw-resumo-delta[data-mw-sinal="+"]{ color: var(--mw-ok); }
+.mw-ds .mw-resumo-delta[data-mw-sinal="-"]{ color: var(--mw-perigo); }
+
+/* ---- BARRA DE PROGRESSO ----------------------------------------------------- */
+.mw-ds .mw-progresso{
+  height: 6px; border-radius: var(--mw-r-total);
+  background: var(--mw-sup-afundada); overflow: hidden;
+}
+.mw-ds .mw-progresso > i{
+  display: block; height: 100%; border-radius: inherit;
+  background: var(--mw-ac-grad);
+  transition: width var(--mw-d-lenta) var(--mw-curva-entrada);
+}
+
+/* ---- AVATAR ----------------------------------------------------------------- */
+.mw-ds .mw-avatar{
+  flex: 0 0 auto;
+  width: 40px; height: 40px; border-radius: 50%;
+  display: grid; place-items: center; overflow: hidden;
+  background: var(--mw-ac-grad); color: #fff;
+  font-size: var(--mw-t-micro); font-weight: 700; letter-spacing: .02em;
+  border: 1px solid var(--mw-vidro-borda);
+}
+.mw-ds .mw-avatar img{ width: 100%; height: 100%; object-fit: cover; display: block; }
+.mw-ds .mw-avatar-p{ width: 28px; height: 28px; font-size: 10px; }
+.mw-ds .mw-avatar-g{ width: 64px; height: 64px; font-size: var(--mw-t-corpo-g); }
+
+/* ---- NAVEGAÇÃO --------------------------------------------------------------
+   O mesmo componente serve à barra lateral no desktop e à barra de baixo no
+   celular: muda a direção e o que aparece, não o material nem os estados.
+   ---------------------------------------------------------------------------- */
+.mw-ds .mw-nav{ display: flex; flex-direction: column; gap: 2px; }
+.mw-ds .mw-nav-item{
+  display: flex; align-items: center; gap: var(--mw-e-3);
+  min-height: var(--mw-alvo-confortavel);
+  padding: 0 var(--mw-e-3);
+  border: 1px solid transparent; border-radius: var(--mw-r-2);
+  background: transparent; color: var(--mw-txt-2);
+  font: inherit; font-size: var(--mw-t-corpo); font-weight: 550;
+  text-align: left; cursor: pointer;
+  transition: background var(--mw-d-rapida) var(--mw-curva), color var(--mw-d-rapida) var(--mw-curva);
+}
+.mw-ds .mw-nav-item:hover{ background: var(--mw-sup-2); color: var(--mw-txt-1); }
+.mw-ds .mw-nav-item[aria-current="page"],
+.mw-ds .mw-nav-item.mw-ativo{
+  background: var(--mw-ac-grad-forte); color: var(--mw-txt-sobre-acento);
+  box-shadow: var(--mw-sombra-1);
+}
+.mw-ds .mw-nav-item svg{ width: 19px; height: 19px; flex: 0 0 auto; }
+/* Barra de baixo: horizontal, com a área segura do notch respeitada. */
+.mw-ds .mw-nav-baixo{
+  flex-direction: row; justify-content: space-around; gap: 0;
+  padding: var(--mw-e-1) var(--mw-e-2);
+  padding-bottom: calc(var(--mw-e-1) + env(safe-area-inset-bottom, 0px));
+}
+.mw-ds .mw-nav-baixo .mw-nav-item{
+  flex-direction: column; gap: 3px; flex: 1 1 0; min-width: 0;
+  justify-content: center; font-size: 10px; font-weight: 600;
+}
+
+/* ---- ABAS ------------------------------------------------------------------- */
+.mw-ds .mw-abas{
+  display: flex; gap: var(--mw-e-1); padding: 3px;
+  background: var(--mw-sup-afundada); border: 1px solid var(--mw-borda);
+  border-radius: var(--mw-r-total); width: fit-content; max-width: 100%;
+  overflow-x: auto; scrollbar-width: none;
+}
+.mw-ds .mw-abas::-webkit-scrollbar{ display: none; }
+.mw-ds .mw-aba{
+  min-height: 30px; padding: 0 var(--mw-e-4);
+  border: 0; border-radius: var(--mw-r-total); background: transparent;
+  color: var(--mw-txt-2); font: inherit; font-size: var(--mw-t-micro); font-weight: 600;
+  white-space: nowrap; cursor: pointer;
+  transition: background var(--mw-d-rapida) var(--mw-curva), color var(--mw-d-rapida) var(--mw-curva);
+}
+.mw-ds .mw-aba:hover{ color: var(--mw-txt-1); }
+.mw-ds .mw-aba[aria-selected="true"]{ background: var(--mw-sup-1); color: var(--mw-txt-1); box-shadow: var(--mw-sombra-1); }
+
+/* ---- TABELA -----------------------------------------------------------------
+   Sempre dentro de .mw-rolagem-h: tabela é o conteúdo que mais estoura a
+   largura no celular.
+   ---------------------------------------------------------------------------- */
+.mw-ds .mw-tabela{ width: 100%; border-collapse: collapse; font-size: var(--mw-t-corpo); }
+.mw-ds .mw-tabela th{
+  text-align: left; padding: var(--mw-e-2) var(--mw-e-3);
+  font-size: var(--mw-t-rotulo); font-weight: 650; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--mw-txt-3);
+  border-bottom: 1px solid var(--mw-borda); white-space: nowrap;
+}
+.mw-ds .mw-tabela td{
+  padding: var(--mw-e-3);
+  border-bottom: 1px solid var(--mw-divisor); color: var(--mw-txt-2);
+}
+.mw-ds .mw-tabela tbody tr:last-child td{ border-bottom: 0; }
+.mw-ds .mw-tabela tbody tr:hover td{ background: var(--mw-sup-2); }
+.mw-ds .mw-tabela [data-mw-num]{ text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ---- ESTADO VAZIO -----------------------------------------------------------
+   Vazio é uma tela, não um espaço em branco: diz o que falta e oferece a ação.
+   ---------------------------------------------------------------------------- */
+.mw-ds .mw-vazio{
+  display: flex; flex-direction: column; align-items: center; gap: var(--mw-e-3);
+  padding: var(--mw-e-10) var(--mw-e-5);
+  text-align: center;
+  border: 1px dashed var(--mw-borda-forte); border-radius: var(--mw-r-4);
+  color: var(--mw-txt-3);
+}
+.mw-ds .mw-vazio-icone{
+  width: 44px; height: 44px; border-radius: var(--mw-r-3);
+  display: grid; place-items: center;
+  background: var(--mw-ac-suave); color: var(--mw-ac-txt);
+}
+.mw-ds .mw-vazio h4{ margin: 0; font-size: var(--mw-t-titulo); color: var(--mw-txt-1); }
+.mw-ds .mw-vazio p{ margin: 0; font-size: var(--mw-t-corpo); max-width: 42ch; }
+
+/* ---- ESQUELETO --------------------------------------------------------------
+   Enquanto carrega, o lugar do conteúdo já existe — a página não pula quando
+   o dado chega.
+   ---------------------------------------------------------------------------- */
+.mw-ds .mw-esqueleto{
+  border-radius: var(--mw-r-1);
+  background: linear-gradient(90deg,
+    var(--mw-sup-2) 25%, var(--mw-sup-3) 37%, var(--mw-sup-2) 63%);
+  background-size: 400% 100%;
+  animation: mw-brilho 1.4s ease-in-out infinite;
+}
+@keyframes mw-brilho{ from{ background-position: 100% 0; } to{ background-position: -100% 0; } }
+
+}
+
+@layer mw.componente {
+
+/* ---- DIÁLOGO ----------------------------------------------------------------
+   aria-modal="true" é uma declaração, não um comportamento: o navegador não
+   move o foco, não prende o Tab e não fecha no Escape sozinho. Quem faz isso
+   no app é o bloco mw-teclado. Aqui está só a aparência — e a nota, para
+   ninguém achar que o CSS resolve.
+
+   No celular o diálogo vira folha subindo de baixo, que é onde o polegar
+   alcança; no desktop, cartão centralizado.
+   ---------------------------------------------------------------------------- */
+.mw-ds .mw-cobertura{
+  position: fixed; inset: 0; z-index: var(--mw-z-dialogo);
+  display: grid; place-items: center;
+  padding: var(--mw-e-4);
+  background: rgba(2,6,23,.58);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  animation: mw-surgir var(--mw-d-rapida) var(--mw-curva) both;
+}
+.mw-ds .mw-dialogo{
+  width: min(480px, 100%);
+  max-height: min(86vh, 720px);
+  overflow-y: auto; overscroll-behavior: contain;
+  display: flex; flex-direction: column; gap: var(--mw-e-4);
+  padding: var(--mw-e-6);
+  background: var(--mw-sup-1);
+  border: 1px solid var(--mw-borda);
+  border-radius: var(--mw-r-5);
+  box-shadow: var(--mw-sombra-3);
+  animation: mw-entrar-dialogo var(--mw-d-media) var(--mw-curva-entrada) both;
+}
+.mw-ds .mw-dialogo-acoes{
+  display: flex; justify-content: flex-end; gap: var(--mw-e-2);
+  flex-wrap: wrap;
+}
+@media (max-width: 640px){
+  .mw-ds .mw-cobertura{ place-items: end stretch; padding: 0; }
+  .mw-ds .mw-dialogo{
+    width: 100%; max-width: none;
+    border-radius: var(--mw-r-5) var(--mw-r-5) 0 0;
+    padding-bottom: calc(var(--mw-e-6) + env(safe-area-inset-bottom, 0px));
+    animation-name: mw-subir-folha;
+  }
+  .mw-ds .mw-dialogo-acoes .mw-btn{ flex: 1 1 auto; }
+}
+
+/* ---- AVISO (toast) ---------------------------------------------------------- */
+.mw-ds .mw-aviso{
+  position: fixed; z-index: var(--mw-z-aviso);
+  left: 50%; bottom: calc(var(--mw-e-6) + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: var(--mw-e-3);
+  max-width: min(440px, calc(100vw - 32px));
+  padding: var(--mw-e-3) var(--mw-e-4);
+  background: var(--mw-sup-1); border: 1px solid var(--mw-borda);
+  border-radius: var(--mw-r-3); box-shadow: var(--mw-sombra-3);
+  color: var(--mw-txt-1); font-size: var(--mw-t-corpo);
+  animation: mw-subir var(--mw-d-media) var(--mw-curva-entrada) both;
+}
+.mw-ds .mw-aviso::before{
+  content: ''; width: 3px; align-self: stretch; border-radius: 2px;
+  background: var(--mw-ac); flex: 0 0 auto;
+}
+.mw-ds .mw-aviso-ok::before{ background: var(--mw-ok); }
+.mw-ds .mw-aviso-perigo::before{ background: var(--mw-perigo); }
+
+/* ---- SEÇÃO ------------------------------------------------------------------
+   O cabeçalho que o app repete em toda área: título, apoio e ação à direita.
+   ---------------------------------------------------------------------------- */
+.mw-ds .mw-secao-cabeca{
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: var(--mw-e-4); flex-wrap: wrap;
+}
+.mw-ds .mw-secao-cabeca > div:first-child{ min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.mw-ds .mw-secao-acoes{ display: flex; align-items: center; gap: var(--mw-e-2); flex: 0 0 auto; }
+
+/* ---- ANIMAÇÕES --------------------------------------------------------------
+   Uma entrada só, reutilizada, para as coisas aparecerem do mesmo jeito.
+   ---------------------------------------------------------------------------- */
+@keyframes mw-surgir{ from{ opacity: 0; } to{ opacity: 1; } }
+@keyframes mw-subir{ from{ opacity: 0; transform: translate(-50%, 12px); } to{ opacity: 1; transform: translate(-50%, 0); } }
+@keyframes mw-subir-folha{ from{ transform: translateY(100%); } to{ transform: translateY(0); } }
+@keyframes mw-entrar-dialogo{ from{ opacity: 0; transform: translateY(10px) scale(.98); } to{ opacity: 1; transform: none; } }
+@keyframes mw-entrar{ from{ opacity: 0; transform: translateY(8px); } to{ opacity: 1; transform: none; } }
+
+.mw-ds .mw-entra{ animation: mw-entrar var(--mw-d-media) var(--mw-curva-entrada) both; }
+/* Escada curta: além do quarto item o atraso vira espera, não elegância. */
+.mw-ds .mw-entra-escada > *{ animation: mw-entrar var(--mw-d-media) var(--mw-curva-entrada) both; }
+.mw-ds .mw-entra-escada > *:nth-child(1){ animation-delay: 0ms; }
+.mw-ds .mw-entra-escada > *:nth-child(2){ animation-delay: 40ms; }
+.mw-ds .mw-entra-escada > *:nth-child(3){ animation-delay: 80ms; }
+.mw-ds .mw-entra-escada > *:nth-child(n+4){ animation-delay: 120ms; }
+
+}
+
+/* =============================================================================
+   UTILIDADES
+   ============================================================================= */
+@layer mw.utilidade {
+
+/* Visível só para leitor de tela. O clip-path junto do clip cobre navegador
+   antigo e novo; width/height de 1px em vez de 0 porque alguns leitores
+   ignoram elemento de dimensão zero. */
+.mw-ds .mw-so-leitor{
+  position: absolute !important;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  overflow: hidden; white-space: nowrap;
+  clip: rect(0 0 0 0); clip-path: inset(50%);
+}
+/* Um ".mw-so-leitor" que reaparece ao receber foco — é assim que se faz um
+   atalho de "pular para o conteúdo". */
+.mw-ds .mw-so-leitor-foco:focus,
+.mw-ds .mw-so-leitor-foco:focus-visible{
+  position: static !important;
+  width: auto; height: auto; margin: 0; overflow: visible;
+  white-space: normal; clip: auto; clip-path: none;
+}
+
+.mw-ds .mw-oculto{ display: none; }
+.mw-ds .mw-invisivel{ visibility: hidden; }
+.mw-ds .mw-centro{ display: grid; place-items: center; }
+.mw-ds .mw-texto-1{ color: var(--mw-txt-1); }
+.mw-ds .mw-texto-2{ color: var(--mw-txt-2); }
+.mw-ds .mw-texto-3{ color: var(--mw-txt-3); }
+
+/* ---- MOVIMENTO REDUZIDO -----------------------------------------------------
+   Não é "desligar animação": é entregar o estado final sem o percurso. Uma
+   duração de 1ms (e não 0) preserva os eventos animationend/transitionend de
+   que algum código pode depender para saber que terminou.
+   ---------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce){
+  .mw-ds *,
+  .mw-ds *::before,
+  .mw-ds *::after{
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---- MAIS CONTRASTE ---------------------------------------------------------
+   Quem pede mais contraste no sistema não quer vidro: quer a borda visível e
+   o fundo resolvido.
+   ---------------------------------------------------------------------------- */
+@media (prefers-contrast: more){
+  .mw-ds .mw-cartao,
+  .mw-ds .mw-vidro,
+  .mw-ds .mw-vidro-2{
+    background: var(--mw-vidro-solido);
+    backdrop-filter: none; -webkit-backdrop-filter: none;
+    border-color: var(--mw-borda-forte);
+  }
+  .mw-ds{ --mw-txt-2: var(--mw-txt-1); --mw-borda: var(--mw-borda-forte); }
+}
+
+/* ---- IMPRESSÃO --------------------------------------------------------------
+   Relatório impresso não tem vidro nem sombra, e ninguém quer imprimir
+   navegação.
+   ---------------------------------------------------------------------------- */
+@media print{
+  .mw-ds .mw-nav,
+  .mw-ds .mw-cobertura,
+  .mw-ds .mw-aviso{ display: none !important; }
+  .mw-ds .mw-cartao,
+  .mw-ds .mw-vidro{
+    background: none; box-shadow: none; backdrop-filter: none;
+    border-color: #999;
+  }
+  .mw-ds{ --mw-txt-1:#000; --mw-txt-2:#222; --mw-txt-3:#444; }
+}
+
+}

@@ -56,6 +56,7 @@ node tools/testes/1-regressao.mjs mobile
 | 10 | `10-offline.mjs` | instala o service worker de verdade, desliga a rede e recarrega | o app não abrir, os dados sumirem, ou faltar folha de estilo |
 | 11 | `11-dados.mjs` | o ciclo completo nas cinco entidades: criar com todos os campos, recarregar, editar sem apagar o resto, excluir o item certo com a lista reordenada | um campo não chegar ao dado, sumir no reload, a edição zerar campos, ou a exclusão pegar o item errado |
 | 12 | `12-teclado.mjs` | operar sem mouse: atalho para o conteúdo, Escape fechando formulário e diálogo, Tab preso dentro do modal, foco voltando para quem abriu | qualquer um deles |
+| 13 | `13-ds.mjs` | o Design System carrega **sem o app** (galeria, 2 temas × 4 larguras) e está **inerte dentro dele** enquanto nenhuma área foi migrada | o sistema depender de regra legada, ou a folha mexer no app antes da migração |
 
 ### Por que o contraste é medido em duas etapas
 
@@ -90,6 +91,25 @@ resumidas aqui para quem for escrever um teste novo.
 - **`p.dragTo()` emite eventos de mouse.** Num celular o caminho é
   `PointerEvent` de tipo `touch`, que é outro código. O teste 5 monta o
   gesto à mão por isso.
+- **`getBoundingClientRect()` inclui transformações; `offsetWidth` não.** O
+  `#app` carrega uma mola de scroll que anima sozinha — `matrix(1.00221…)`
+  num quadro, `matrix(0.99997…)` no seguinte. Comparar o rect antes e depois
+  de mexer no CSS pega essa animação e acusa o CSS por uma diferença de 1%.
+  Foi assim que o teste 13 "provou" que o Design System estava vazando no
+  app, sendo que ele não encosta em nada. Para comparar LAYOUT, a caixa de
+  layout.
+- **Comparar dois momentos não é comparar dois estados.** O app continua
+  trabalhando entre uma medição e outra (o painel recalcula, o gráfico
+  desenha), então "com o CSS" e "sem o CSS" medidos em sequência diferem por
+  causa do tempo. O teste 13 mede ligada → desligada → ligada e só acusa o
+  que muda e VOLTA — se as duas medições ligadas já discordarem, o ruído é
+  maior que o sinal e ele diz isso em vez de acusar.
+- **Desde o CSS Nesting, toda `CSSStyleRule` tem um `cssRules`** (vazio, para
+  as regras aninhadas). A pergunta clássica "tem `cssRules`? então é regra de
+  agrupamento" virou falsa: um contador escrito assim desce em toda regra
+  comum e conta zero. O que distingue de verdade é `style.length` — regra
+  comum tem declarações, `@layer`/`@media` não têm. Isso fez o teste 13
+  reportar 14 regras num arquivo com 189.
 - **`aria-modal="true"` não faz nada sozinho.** É uma declaração para a
   tecnologia assistiva, não um comportamento: o navegador não move o
   foco para dentro, não prende o Tab e não fecha no Escape. Onze
