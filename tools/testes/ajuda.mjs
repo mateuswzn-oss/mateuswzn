@@ -118,5 +118,36 @@ export async function vaiPara(p, area){
   }, area);
 }
 
+/**
+ * Espera a área parar de se mexer antes de medir.
+ *
+ * Existe porque o teste de contraste falhou uma vez em quatro num texto
+ * do Suporte, medindo branco sobre cinza-claro — cor que não existe no
+ * tema escuro. O culpado é fotografar durante a animação de entrada: o
+ * pixel amostrado é um quadro intermediário, e o número sai inventado.
+ * Um tempo fixo maior não resolve, só torna a falha mais rara.
+ *
+ * getAnimations() cobre transição de CSS e animação de CSS, que é o que
+ * este app usa. O teto de 1200ms é para não travar numa animação
+ * infinita (o pulso do status "online", por exemplo).
+ */
+export async function esperaParar(p, seletor, teto = 1200){
+  await p.evaluate(async ([sel, teto]) => {
+    const alvo = document.querySelector(sel);
+    if (!alvo || !document.getAnimations) return;
+    const limite = Date.now() + teto;
+    while (Date.now() < limite){
+      const correndo = document.getAnimations()
+        .filter(a => a.playState === 'running'
+                  && a.effect && a.effect.target
+                  && alvo.contains(a.effect.target)
+                  /* animação sem fim não é transição de entrada: ignora */
+                  && (a.effect.getComputedTiming().iterations || 1) !== Infinity);
+      if (!correndo.length) return;
+      await new Promise(r => requestAnimationFrame(r));
+    }
+  }, [seletor, teto]);
+}
+
 /* Um PNG de 1x1 válido, para os testes que precisam de um arquivo real. */
 export const PNG_1X1 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';

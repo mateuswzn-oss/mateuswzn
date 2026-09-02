@@ -61,6 +61,8 @@ declare -a NOMES=(
   "5 android · toque real"
   "6 iphone · 393x695"
   "7 contraste · coleta + medida"
+  "8 estrutura · IDs e rótulos"
+  "9 criação · todos os caminhos"
 )
 declare -a CMDS=(
   "node tools/testes/1-regressao.mjs"
@@ -71,6 +73,8 @@ declare -a CMDS=(
   "node tools/testes/5-android-toque.mjs"
   "node tools/testes/6-iphone-tamanho.mjs"
   "for l in 1440 834 390; do for t in dark light; do node tools/testes/7-contraste-coleta.mjs \$l \$t || exit 1; done; done; python3 tools/testes/7-contraste-medir.py"
+  "node tools/testes/8-estrutura.mjs"
+  "node tools/testes/9-criacao.mjs"
 )
 
 SO_ESTES=("$@")

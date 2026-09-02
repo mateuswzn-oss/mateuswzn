@@ -1,3 +1,45 @@
+/* v82 (BETA — dois formulários para a mesma coisa, e o celular pegava o pior):
+   A auditoria desta rodada saiu à procura de controle morto — botão que
+   não faz nada e não avisa nada — e achou coisa pior: um que fazia a
+   coisa errada em silêncio.
+   O app tinha DOIS formulários de nova disciplina. O "+ Adicionar" de
+   dentro da área abre o completo: nome, objetivo, progresso, código,
+   instituição e semestre. Já o atalho "Adicionar" do painel e o "+" da
+   barra de baixo no celular chamavam getElementById('quickAdd').click(),
+   e o #quickAdd abria um modal legado de três campos. Ou seja: no
+   telefone, o caminho principal de criar entregava o formulário menor, e
+   nada na tela dizia isso — os dois abriam "um formulário".
+   Agora os quatro caminhos levam ao mesmo lugar, e o teste 9 confere os
+   CAMPOS, não só se abriu algo.
+   O modal legado saiu junto. Ele já era inalcançável pelo "+ Adicionar":
+   o bloco de criação novo escuta o clique na fase de captura do document
+   e chama stopImmediatePropagation(), então o onclick que o trecho antigo
+   pendurava em cada [data-add] nunca rodava. Só o #quickAdd ainda chegava
+   lá. Saíram o markup do #modal, o openModal e o closeModal; as regras de
+   CSS que citam #modal ficaram, inertes, porque estão espalhadas por
+   cinco folhas antigas em regras de vários seletores.
+
+   Outras duas correções desta rodada:
+
+   1. Contraste. O token --mw-muted (#9db2d4) media 4,41:1 contra a
+      superfície mais clara em que ele cai — o .section-card, que é um
+      gradiente de branco a 9% — abaixo dos 4,5:1 que a WCAG pede para
+      texto de 11px. Virou #a9b6d6, que mede 4,68:1 e é o mesmo valor de
+      --ds-txt-2: dois tokens que sempre quiseram dizer a mesma coisa
+      agora dizem. Ele governa todo o texto secundário do app (.kicker,
+      .project p, .list-item small, .settings-group p, .empty, small).
+      A falha só apareceu depois que o colhedor passou a ESPERAR a
+      animação de entrada terminar antes de fotografar: antes disso ele
+      media um quadro intermediário e o número saía melhor do que é.
+   2. Seis blocos <style>/<script> dividiam id com outro bloco
+      (mw-final-polish aparecia três vezes). Nada os referenciava, mas o
+      id repetido destruía a única informação que ele carregava: qual
+      bloco é qual, num arquivo de trinta mil linhas. Agora cada um tem
+      nome próprio, e os dois "guarda-tudo" ganharam um comentário no
+      topo listando o que mora lá dentro.
+      O teste 8 mede isso no DOM vivo, e não com grep: grep acha id="x"
+      dentro de comentário de CSS e de string de JS, e foi assim que eu
+      persegui dois IDs duplicados que não existiam. */
 /* v81 (BETA — a suíte de testes sai do temporário e entra no repositório):
    Até aqui, todo teste desta reformulação vivia num diretório que morre
    quando a sessão acaba. Isso significava que a validação não podia ser
@@ -1003,7 +1045,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v81-beta';
+const CACHE_NAME = 'mw-shell-v82-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

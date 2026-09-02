@@ -51,6 +51,8 @@ node tools/testes/1-regressao.mjs mobile
 | 5 | `5-android-toque.mjs` | Pixel 7 com `hasTouch`: arrastar cartão do quadro com o dedo, tocar nos controles novos, anexar arquivo | o cartão não se move, um alvo some, vazamento |
 | 6 | `6-iphone-tamanho.mjs` | o viewport **real** de um iPhone (393×695) contra o nominal (390×844) | vazamento, ou controle escondido atrás da barra de baixo |
 | 7 | `7-contraste-coleta.mjs` + `7-contraste-medir.py` | razão de contraste WCAG medida **no pixel**, em 3 larguras × 2 temas | qualquer texto abaixo de 4.5:1 (3.0:1 se grande) |
+| 8 | `8-estrutura.mjs` | invariantes do DOM: IDs duplicados, `label[for]` órfão, `aria-labelledby` apontando para o nada | qualquer um deles |
+| 9 | `9-criacao.mjs` | os quatro caminhos de criar (o "+ Adicionar" da área, o atalho do painel, o "+" do topo, o "+" da barra de baixo) abrem o **mesmo** formulário | qualquer um deles abrir outro, ou o modal legado voltar |
 
 ### Por que o contraste é medido em duas etapas
 
@@ -85,6 +87,16 @@ resumidas aqui para quem for escrever um teste novo.
 - **`p.dragTo()` emite eventos de mouse.** Num celular o caminho é
   `PointerEvent` de tipo `touch`, que é outro código. O teste 5 monta o
   gesto à mão por isso.
+- **Um controle que "não faz nada" pode estar fazendo a coisa errada.** O
+  "+" da barra de baixo abria um formulário de três campos enquanto o
+  "+ Adicionar" da mesma entidade abria um de seis. Nada na tela
+  denunciava: os dois abriam *um* formulário. É por isso que o teste 9
+  compara os campos, não só se abriu algo.
+- **Grep no arquivo não serve para achar ID duplicado.** Ele acha `id="x"`
+  dentro de comentário de CSS e dentro de string de JS, e reporta
+  duplicata onde não existe nenhuma. O teste 8 mede no DOM depois de o
+  app subir e de todas as áreas terem sido abertas, porque parte do
+  conteúdo só é escrita quando a área abre.
 
 ## Onde cada ambiente está validado
 

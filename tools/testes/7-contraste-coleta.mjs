@@ -9,7 +9,7 @@
    7-contraste-medir.py, que abre as fotos.
 
    Uso: node tools/testes/7-contraste-coleta.mjs [largura] [dark|light] */
-import { abre, AREAS, vaiPara, pastaSaida } from './ajuda.mjs';
+import { abre, AREAS, vaiPara, pastaSaida, esperaParar } from './ajuda.mjs';
 import fs from 'fs';
 import path from 'path';
 
@@ -59,6 +59,9 @@ for (const v of AREAS) {
   await vaiPara(p, v);
   await p.evaluate(() => window.scrollTo(0, 0));
   await p.waitForTimeout(340);
+  /* Fotografar durante a animação de entrada dá cor de quadro
+     intermediário — e um número de contraste inventado. */
+  await esperaParar(p, '#view-' + v);
   const cands = await p.evaluate(nome => {
     const view = document.getElementById('view-' + nome);
     if (!view) return [];
