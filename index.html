@@ -4290,7 +4290,50 @@ body.light .mw-faceid-gate-card p{color:#526988}
       </section>
     </section>
     <section class="view" id="view-notes"><section class="card section"><div class="section-head"><h3>Anotações</h3><button class="add-btn" data-add="notes">+ Nova anotação</button></div><div class="list" id="notesList"></div></section></section>
-    <section class="view" id="view-files"><section class="card section"><div class="section-head"><h3>Arquivos</h3><span>Área preparada para seus materiais</span></div><div class="empty"><strong>Nenhum arquivo adicionado</strong><span>Os arquivos ainda não fazem parte dos dados locais deste protótipo.</span></div></section></section>
+    <!-- Arquivos. Os arquivos são guardados de verdade, no IndexedDB
+         deste navegador: entram, ficam, voltam depois de fechar o app e
+         saem quando você apaga. O que ainda NÃO acontece é ir para o
+         servidor — por isso a área diz isso na cara, em vez de deixar
+         você supor que trocar de aparelho traz os arquivos junto. -->
+    <section class="view" id="view-files">
+      <section class="card section mw-arq-topo">
+        <div class="section-head">
+          <h3>Arquivos</h3>
+          <span id="mwArqContagem"></span>
+        </div>
+
+        <label class="mw-arq-solta" id="mwArqSolta" for="mwArqInput" tabindex="0">
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 16.5V4.2"/><path d="M7.4 8.8 12 4.2l4.6 4.6"/>
+            <path d="M4 15.4v2.9a2.3 2.3 0 0 0 2.3 2.3h11.4a2.3 2.3 0 0 0 2.3-2.3v-2.9"/>
+          </svg>
+          <strong>Arraste arquivos aqui</strong>
+          <span>ou toque para escolher no aparelho</span>
+          <input type="file" id="mwArqInput" multiple hidden>
+        </label>
+
+        <div class="mw-arq-uso" id="mwArqUso" hidden>
+          <div class="mw-arq-uso-trilho"><i id="mwArqUsoBarra"></i></div>
+          <span id="mwArqUsoTexto"></span>
+        </div>
+
+        <p class="mw-arq-aviso">
+          <strong>Estes arquivos ficam neste aparelho.</strong>
+          Eles não sobem para o servidor ainda, então não aparecem se você
+          abrir sua conta em outro celular ou computador — e some se você
+          limpar os dados do navegador. Guarde uma cópia do que for
+          importante.
+        </p>
+      </section>
+
+      <section class="card section mw-arq-lista-card">
+        <div class="section-head">
+          <h3>Seus materiais</h3>
+          <select id="mwArqFiltro" aria-label="Filtrar por disciplina"><option value="">Todas as disciplinas</option></select>
+        </div>
+        <div class="list" id="mwArqLista"></div>
+      </section>
+    </section>
     <section class="view" id="view-support">
       <section class="card section mw-support-panel" id="mwSupportList">
         <div class="section-head">
@@ -28894,6 +28937,462 @@ body.light .mw-etapa-nota{ color: rgba(15,35,70,.55) }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', inicia);
   else inicia();
+})();
+</script>
+
+<style id="mw-arquivos">
+/* =====================================================================
+   §15 ARQUIVOS
+   =====================================================================
+   Área que até aqui era uma promessa ("preparada para seus materiais").
+   Agora guarda arquivo de verdade — e diz, no lugar mais visível dela,
+   exatamente até onde essa verdade vai.
+   ===================================================================== */
+html body #app #view-files.active{
+  display: grid;
+  grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+/* --- Área de soltar ------------------------------------------------------
+   É um <label> por cima de um input de arquivo: assim o clique, o toque,
+   o Tab e o Enter funcionam sem uma linha de JS, e o leitor de tela
+   anuncia um campo de arquivo em vez de uma caixa misteriosa. */
+html body #app #view-files .mw-arq-solta{
+  display: grid; place-items: center; gap: 6px;
+  padding: 30px 18px; cursor: pointer; text-align: center;
+  border-radius: var(--ds-r-2);
+  background: var(--ds-vidro-3);
+  box-shadow: var(--ds-fio), inset 0 0 0 2px color-mix(in srgb, var(--ds-txt-3) 22%, transparent);
+  transition: box-shadow .18s var(--ds-suave), background .18s var(--ds-suave);
+}
+html body #app #view-files .mw-arq-solta svg{
+  width: 30px; height: 30px; color: var(--ds-txt-3);
+  transition: color .18s var(--ds-suave), transform .22s var(--ds-mola);
+}
+html body #app #view-files .mw-arq-solta strong{ font-size: 13.5px; font-weight: 650; color: var(--ds-txt); }
+html body #app #view-files .mw-arq-solta span{ font-size: 12px; color: var(--ds-txt-3); }
+html body #app #view-files .mw-arq-solta:hover,
+html body #app #view-files .mw-arq-solta:focus-visible{
+  background: var(--ds-vidro-2);
+  box-shadow: var(--ds-fio), inset 0 0 0 2px color-mix(in srgb, var(--ds-ac) 45%, transparent);
+  outline: none;
+}
+html body #app #view-files .mw-arq-solta:hover svg,
+html body #app #view-files .mw-arq-solta.is-sobre svg{ color: var(--ds-ac); transform: translateY(-3px); }
+html body #app #view-files .mw-arq-solta.is-sobre{
+  background: color-mix(in srgb, var(--ds-ac) 12%, transparent);
+  box-shadow: var(--ds-fio), inset 0 0 0 2px var(--ds-ac);
+}
+
+/* --- Uso de espaço -------------------------------------------------------- */
+html body #app #view-files .mw-arq-uso{
+  display: flex; align-items: center; gap: 10px; margin-top: 14px;
+}
+html body #app #view-files .mw-arq-uso-trilho{
+  flex: 1; height: 5px; border-radius: 999px; overflow: hidden;
+  background: color-mix(in srgb, var(--ds-txt-3) 22%, transparent);
+}
+html body #app #view-files .mw-arq-uso-trilho i{
+  display: block; height: 100%; width: 0; border-radius: inherit;
+  background: var(--ds-ac-grad); transition: width .4s var(--ds-suave);
+}
+html body #app #view-files .mw-arq-uso[data-tom="cheio"] .mw-arq-uso-trilho i{
+  background: linear-gradient(90deg,#f87171,#fb923c);
+}
+html body #app #view-files .mw-arq-uso span{
+  font-size: 11px; color: var(--ds-txt-3); font-variant-numeric: tabular-nums;
+}
+
+html body #app #view-files .mw-arq-aviso{
+  margin: 16px 0 0; padding: 12px 14px; border-radius: var(--ds-r-1);
+  font-size: 12px; line-height: 1.6; color: var(--ds-txt-3);
+  background: color-mix(in srgb, #f0b429 10%, transparent);
+  box-shadow: inset 3px 0 0 #f0b429;
+}
+html body #app #view-files .mw-arq-aviso strong{ display: block; color: var(--ds-txt-2); font-weight: 640; }
+
+/* --- Filtro ---------------------------------------------------------------- */
+html body #app #view-files #mwArqFiltro{
+  border: 0; border-radius: 999px; padding: 7px 13px;
+  background: var(--ds-vidro-2); box-shadow: var(--ds-fio);
+  color: var(--ds-txt-2); font: inherit; font-size: 12px; font-weight: 620;
+  max-width: 190px;
+}
+
+/* --- Lista ----------------------------------------------------------------- */
+html body #app #view-files .mw-arq-item{
+  display: grid;
+  grid-template-columns: 44px minmax(0,1fr) auto;
+  gap: 12px; align-items: center;
+  padding: 11px 13px; border-radius: var(--ds-r-1);
+  background: var(--ds-vidro-3); box-shadow: var(--ds-fio);
+}
+/* A miniatura de imagem é a própria imagem; os outros tipos ganham a
+   extensão escrita. Ícone genérico de "documento" em tudo não diferencia
+   um PDF de um zip, e diferenciar é o serviço que a lista presta. */
+html body #app #view-files .mw-arq-cara{
+  width: 44px; height: 44px; border-radius: 11px; overflow: hidden;
+  display: grid; place-items: center; flex: 0 0 auto;
+  background: color-mix(in srgb, var(--ds-ac) 16%, transparent);
+  color: var(--ds-ac);
+  font-size: 10px; font-weight: 750; letter-spacing: .03em; text-transform: uppercase;
+}
+html body #app #view-files .mw-arq-cara img{ width: 100%; height: 100%; object-fit: cover; }
+html body #app #view-files .mw-arq-item[data-familia="imagem"] .mw-arq-cara{ background: color-mix(in srgb, #34d399 18%, transparent); color: #34d399; }
+html body #app #view-files .mw-arq-item[data-familia="pdf"] .mw-arq-cara{ background: color-mix(in srgb, #f87171 18%, transparent); color: #f87171; }
+html body #app #view-files .mw-arq-item[data-familia="planilha"] .mw-arq-cara{ background: color-mix(in srgb, #34d399 16%, transparent); color: #22c55e; }
+html body #app #view-files .mw-arq-item[data-familia="compactado"] .mw-arq-cara{ background: color-mix(in srgb, #f0b429 18%, transparent); color: #f0b429; }
+
+html body #app #view-files .mw-arq-txt{ min-width: 0; }
+html body #app #view-files .mw-arq-txt strong{
+  display: block; font-size: 13px; font-weight: 620; color: var(--ds-txt);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+html body #app #view-files .mw-arq-txt small{
+  display: block; margin-top: 2px; font-size: 11px; color: var(--ds-txt-3);
+}
+html body #app #view-files .mw-arq-acoes{ display: flex; gap: 6px; flex: 0 0 auto; }
+html body #app #view-files .mw-arq-acoes button,
+html body #app #view-files .mw-arq-acoes a{
+  border: 0; cursor: pointer; width: 32px; height: 32px; border-radius: 10px;
+  display: grid; place-items: center; text-decoration: none;
+  background: var(--ds-vidro-2); box-shadow: var(--ds-fio);
+  color: var(--ds-txt-2);
+  transition: color .16s var(--ds-suave), background .16s var(--ds-suave);
+}
+html body #app #view-files .mw-arq-acoes svg{ width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+html body #app #view-files .mw-arq-acoes button:hover,
+html body #app #view-files .mw-arq-acoes a:hover{ color: var(--ds-txt); background: var(--ds-vidro-1); }
+html body #app #view-files .mw-arq-apagar:hover{ color: #ff9aab !important; }
+
+html body #app #view-files .mw-arq-vazio{
+  padding: 30px 18px; text-align: center; border-radius: var(--ds-r-2);
+  background: var(--ds-vidro-3); box-shadow: var(--ds-fio);
+  color: var(--ds-txt-3); font-size: 12px; line-height: 1.55;
+}
+html body #app #view-files .mw-arq-vazio strong{
+  display: block; color: var(--ds-txt-2); font-size: 13px; margin-bottom: 4px;
+}
+
+@media (max-width: 1080px){
+  html body #app #view-files.active{ grid-template-columns: minmax(0,1fr); }
+}
+@media (max-width: 560px){
+  html body #app #view-files .mw-arq-solta{ padding: 24px 14px; }
+  html body #app #view-files #mwArqFiltro{ max-width: 150px; font-size: 11.5px; }
+  html body #app #view-files .mw-arq-item{ grid-template-columns: 40px minmax(0,1fr) auto; gap: 10px; }
+  html body #app #view-files .mw-arq-cara{ width: 40px; height: 40px; }
+}
+</style>
+
+<script id="mw-arquivos-js">
+(function(){
+  'use strict';
+  /* A área de Arquivos.
+
+     Os arquivos são guardados no IndexedDB deste navegador. Não é
+     localStorage por um motivo concreto: localStorage guarda texto, tem
+     teto de poucos megabytes e é síncrono — um PDF de 3 MB viraria uns
+     4 MB de base64 e travaria a interface enquanto grava. O IndexedDB
+     guarda o Blob como ele é, é assíncrono e tem o espaço do site
+     inteiro.
+
+     O que NÃO acontece: nada disso sobe para o servidor. O app já fala
+     com o Supabase (conta, perfil, workspace), mas o Storage não está
+     configurado ainda — a migração está pronta em
+     supabase/ajuste-05-arquivos.sql e é ela que liga isso quando você
+     quiser. Enquanto não estiver ligada, a área diz na cara que os
+     arquivos são deste aparelho, em vez de deixar você supor que trocar
+     de celular traz os materiais junto.
+
+     A lista NÃO vive no blob do workspace de propósito. Se a lista
+     sincronizasse e os arquivos não, o outro aparelho mostraria nomes de
+     arquivos que não consegue abrir — pior que não mostrar nada. */
+
+  var BANCO = 'mwArquivos', LOJA = 'arquivos', VERSAO = 1;
+  var TETO_ARQUIVO = 25 * 1024 * 1024;   // 25 MB por arquivo
+  var db = null;
+  var urls = [];                          // object URLs a revogar no redesenho
+
+  function esc(v){ return String(v == null ? '' : v).replace(/[&<>'"]/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]; }); }
+  function $(id){ return document.getElementById(id); }
+  function fala(msg){ if (typeof window.toast === 'function') window.toast(msg); }
+
+  function tamanho(bytes){
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' KB';
+    if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1).replace('.0','') + ' MB';
+    return (bytes / (1024 * 1024 * 1024)).toFixed(1) + ' GB';
+  }
+  function extensao(nome){
+    var m = /\.([A-Za-z0-9]{1,8})$/.exec(String(nome || ''));
+    return m ? m[1].toLowerCase() : '';
+  }
+  function familia(tipo, nome){
+    var t = String(tipo || ''), e = extensao(nome);
+    if (t.indexOf('image/') === 0) return 'imagem';
+    if (t === 'application/pdf' || e === 'pdf') return 'pdf';
+    if (['xls','xlsx','csv','ods'].indexOf(e) !== -1) return 'planilha';
+    if (['zip','rar','7z','tar','gz'].indexOf(e) !== -1) return 'compactado';
+    return 'arquivo';
+  }
+
+  /* --- Banco -------------------------------------------------------------- */
+  function abre(){
+    if (db) return Promise.resolve(db);
+    return new Promise(function(ok, falha){
+      var req;
+      try { req = indexedDB.open(BANCO, VERSAO); }
+      catch(e){ falha(e); return; }
+      req.onupgradeneeded = function(){
+        var d = req.result;
+        if (!d.objectStoreNames.contains(LOJA)){
+          var loja = d.createObjectStore(LOJA, { keyPath: 'id' });
+          loja.createIndex('criadoEm', 'criadoEm');
+        }
+      };
+      req.onsuccess = function(){ db = req.result; ok(db); };
+      req.onerror = function(){ falha(req.error || new Error('IndexedDB indisponível')); };
+    });
+  }
+  function transacao(modo){
+    return abre().then(function(d){ return d.transaction(LOJA, modo).objectStore(LOJA); });
+  }
+  function todos(){
+    return transacao('readonly').then(function(loja){
+      return new Promise(function(ok, falha){
+        var req = loja.getAll();
+        req.onsuccess = function(){ ok(req.result || []); };
+        req.onerror = function(){ falha(req.error); };
+      });
+    });
+  }
+  function guarda(reg){
+    return transacao('readwrite').then(function(loja){
+      return new Promise(function(ok, falha){
+        var req = loja.put(reg);
+        req.onsuccess = function(){ ok(true); };
+        req.onerror = function(){ falha(req.error); };
+      });
+    });
+  }
+  function remove(id){
+    return transacao('readwrite').then(function(loja){
+      return new Promise(function(ok, falha){
+        var req = loja.delete(id);
+        req.onsuccess = function(){ ok(true); };
+        req.onerror = function(){ falha(req.error); };
+      });
+    });
+  }
+
+  /* --- Entrada de arquivos ------------------------------------------------- */
+  function recebe(arquivos){
+    var lista = [].slice.call(arquivos || []);
+    if (!lista.length) return;
+    var grandes = lista.filter(function(f){ return f.size > TETO_ARQUIVO; });
+    var cabem = lista.filter(function(f){ return f.size <= TETO_ARQUIVO; });
+    if (grandes.length){
+      fala(grandes.length === 1
+        ? '"' + grandes[0].name + '" passa de ' + tamanho(TETO_ARQUIVO) + ' e não foi guardado.'
+        : grandes.length + ' arquivos passam de ' + tamanho(TETO_ARQUIVO) + ' e não foram guardados.');
+    }
+    if (!cabem.length) return;
+
+    var disciplina = ($('mwArqFiltro') && $('mwArqFiltro').value) || '';
+    var agora = Date.now();
+    Promise.all(cabem.map(function(f, i){
+      return guarda({
+        id: 'a' + (agora + i) + Math.random().toString(36).slice(2,7),
+        nome: f.name || 'arquivo',
+        tipo: f.type || '',
+        bytes: f.size,
+        criadoEm: agora + i,
+        subject: disciplina,
+        blob: f
+      });
+    })).then(function(){
+      fala(cabem.length === 1 ? 'Arquivo guardado.' : cabem.length + ' arquivos guardados.');
+      pinta();
+    }).catch(function(e){
+      /* Falha típica aqui é cota estourada. Dizer "não deu" sem dizer o
+         que fazer não ajuda ninguém. */
+      console.error('Arquivos:', e);
+      fala('Não foi possível guardar. O espaço do navegador pode estar cheio — apague algo e tente de novo.');
+      pinta();
+    });
+  }
+
+  /* --- Desenho -------------------------------------------------------------- */
+  function opcoesDisciplina(usados){
+    var sel = $('mwArqFiltro'); if (!sel) return;
+    var d = window.data || {};
+    var nomes = (Array.isArray(d.subjects) ? d.subjects : [])
+      .map(function(s){ return (s && s.name) ? String(s.name) : ''; }).filter(Boolean);
+    /* Disciplinas que já marcaram algum arquivo mas foram apagadas do
+       workspace continuam na lista: senão os arquivos delas ficariam
+       inalcançáveis pelo filtro. */
+    usados.forEach(function(n){ if (n && nomes.indexOf(n) === -1) nomes.push(n); });
+    var assinatura = nomes.join('|');
+    if (sel.dataset.mwAssinatura === assinatura) return;
+    var escolhido = sel.value;
+    sel.innerHTML = '<option value="">Todas as disciplinas</option>' +
+      nomes.map(function(n){ return '<option value="' + esc(n) + '">' + esc(n) + '</option>'; }).join('');
+    sel.dataset.mwAssinatura = assinatura;
+    if (escolhido && nomes.indexOf(escolhido) !== -1) sel.value = escolhido;
+  }
+
+  /* O número usado é a soma dos ARQUIVOS desta área, e não o usage que o
+     navegador reporta. Medido: logo depois de gravar, o Chromium ainda
+     devolvia 3 KB enquanto a lista já somava 299 KB — dois números
+     discordando na mesma tela, e o errado era o do navegador, que
+     atualiza com atraso. Do estimate() fica só o teto, que é do site
+     inteiro; por isso a frase separa as duas contas em vez de fingir que
+     são a mesma. */
+  function pintaUso(bytesDosArquivos){
+    var caixa = $('mwArqUso'), barra = $('mwArqUsoBarra'), texto = $('mwArqUsoTexto');
+    if (!caixa || !navigator.storage || !navigator.storage.estimate) return;
+    navigator.storage.estimate().then(function(e){
+      if (!e || !e.quota) return;
+      var pct = Math.min(100, (bytesDosArquivos / e.quota) * 100);
+      caixa.hidden = false;
+      barra.style.width = Math.max(pct, bytesDosArquivos ? 1.5 : 0).toFixed(1) + '%';
+      texto.textContent = tamanho(bytesDosArquivos) + ' em arquivos · cabem cerca de ' +
+                          tamanho(e.quota) + ' neste navegador';
+      if (pct >= 80) caixa.setAttribute('data-tom','cheio');
+      else caixa.removeAttribute('data-tom');
+    }).catch(function(){});
+  }
+
+  var ICONE_BAIXAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11"/><path d="M7.6 10.6 12 15l4.4-4.4"/><path d="M4.5 19.4h15"/></svg>';
+  var ICONE_ABRIR  = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4.6h5.4V10"/><path d="M19.4 4.6 11 13"/><path d="M18.4 14.2v4.1a1.6 1.6 0 0 1-1.6 1.6H5.7a1.6 1.6 0 0 1-1.6-1.6V7.2a1.6 1.6 0 0 1 1.6-1.6h4.1"/></svg>';
+  var ICONE_APAGAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.8 6.8h14.4"/><path d="M9.4 6.8V5.2a1.2 1.2 0 0 1 1.2-1.2h2.8a1.2 1.2 0 0 1 1.2 1.2v1.6"/><path d="M6.6 6.8 7.5 19a1.4 1.4 0 0 0 1.4 1.3h6.2a1.4 1.4 0 0 0 1.4-1.3l.9-12.2"/></svg>';
+
+  function pinta(){
+    var lista = $('mwArqLista');
+    if (!lista) return;
+    /* Revogar os object URLs do desenho anterior antes de criar novos:
+       sem isso cada redesenho vaza memória, e uma área de arquivos é
+       justamente onde isso pesa. */
+    urls.forEach(function(u){ try { URL.revokeObjectURL(u); } catch(e){} });
+    urls = [];
+
+    todos().then(function(regs){
+      var usados = regs.map(function(r){ return r.subject; }).filter(Boolean);
+      opcoesDisciplina(usados);
+      var filtro = ($('mwArqFiltro') && $('mwArqFiltro').value) || '';
+      var vistos = regs
+        .filter(function(r){ return !filtro || r.subject === filtro; })
+        .sort(function(a,b){ return b.criadoEm - a.criadoEm; });
+
+      var total = regs.reduce(function(t,r){ return t + (r.bytes || 0); }, 0);
+      var contagem = $('mwArqContagem');
+      if (contagem){
+        contagem.textContent = regs.length
+          ? regs.length + (regs.length === 1 ? ' arquivo · ' : ' arquivos · ') + tamanho(total)
+          : '';
+      }
+
+      if (!vistos.length){
+        lista.innerHTML = '<div class="mw-arq-vazio"><strong>' +
+          (regs.length ? 'Nenhum arquivo nesta disciplina' : 'Nenhum arquivo ainda') + '</strong>' +
+          (regs.length
+            ? 'Troque o filtro para ver os outros.'
+            : 'Arraste um PDF, uma foto do quadro ou o slide da aula para a área acima.') +
+          '</div>';
+        pintaUso(total);
+        return;
+      }
+
+      lista.innerHTML = vistos.map(function(r){
+        var fam = familia(r.tipo, r.nome);
+        var url = URL.createObjectURL(r.blob);
+        urls.push(url);
+        var cara = fam === 'imagem'
+          ? '<img src="' + url + '" alt="" loading="lazy">'
+          : esc(extensao(r.nome) || 'arq');
+        var d = new Date(r.criadoEm);
+        var quando = String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear();
+        var meta = [tamanho(r.bytes || 0), quando, r.subject].filter(Boolean).join(' · ');
+        return '<div class="mw-arq-item" data-familia="' + fam + '">' +
+          '<span class="mw-arq-cara">' + cara + '</span>' +
+          '<span class="mw-arq-txt"><strong title="' + esc(r.nome) + '">' + esc(r.nome) + '</strong>' +
+          '<small>' + esc(meta) + '</small></span>' +
+          '<span class="mw-arq-acoes">' +
+            '<a href="' + url + '" target="_blank" rel="noopener" title="Abrir" aria-label="Abrir ' + esc(r.nome) + '">' + ICONE_ABRIR + '</a>' +
+            '<a href="' + url + '" download="' + esc(r.nome) + '" title="Baixar" aria-label="Baixar ' + esc(r.nome) + '">' + ICONE_BAIXAR + '</a>' +
+            '<button type="button" class="mw-arq-apagar" data-apagar="' + esc(r.id) + '" title="Apagar" aria-label="Apagar ' + esc(r.nome) + '">' + ICONE_APAGAR + '</button>' +
+          '</span></div>';
+      }).join('');
+      pintaUso(total);
+    }).catch(function(e){
+      console.error('Arquivos:', e);
+      lista.innerHTML = '<div class="mw-arq-vazio"><strong>Não foi possível abrir seus arquivos</strong>' +
+        'O navegador recusou o armazenamento local. Numa janela anônima isso é esperado.</div>';
+    });
+  }
+
+  /* --- Ligações -------------------------------------------------------------- */
+  function liga(){
+    var view = $('view-files');
+    if (!view || view.dataset.mwLigado === '1') return;
+    view.dataset.mwLigado = '1';
+
+    var entrada = $('mwArqInput');
+    if (entrada) entrada.addEventListener('change', function(){
+      recebe(entrada.files);
+      entrada.value = '';   // permite escolher o MESMO arquivo de novo
+    });
+
+    var solta = $('mwArqSolta');
+    if (solta){
+      ['dragenter','dragover'].forEach(function(ev){
+        solta.addEventListener(ev, function(e){ e.preventDefault(); solta.classList.add('is-sobre'); });
+      });
+      ['dragleave','drop'].forEach(function(ev){
+        solta.addEventListener(ev, function(e){ e.preventDefault(); solta.classList.remove('is-sobre'); });
+      });
+      solta.addEventListener('drop', function(e){
+        if (e.dataTransfer && e.dataTransfer.files) recebe(e.dataTransfer.files);
+      });
+      /* Enter/Espaço num <label> não abrem o seletor sozinhos. */
+      solta.addEventListener('keydown', function(e){
+        if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); entrada && entrada.click(); }
+      });
+    }
+    /* Soltar um arquivo FORA da área não pode fazer o navegador abrir o
+       arquivo por cima do app — isso descarta o que estiver na tela. */
+    ['dragover','drop'].forEach(function(ev){
+      view.addEventListener(ev, function(e){ e.preventDefault(); });
+    });
+
+    var filtro = $('mwArqFiltro');
+    if (filtro) filtro.addEventListener('change', pinta);
+
+    view.addEventListener('click', function(ev){
+      var apagar = ev.target.closest('[data-apagar]');
+      if (!apagar) return;
+      var id = apagar.getAttribute('data-apagar');
+      remove(id).then(function(){ fala('Arquivo apagado.'); pinta(); })
+                .catch(function(){ fala('Não foi possível apagar.'); });
+    });
+  }
+
+  function inicia(){ liga(); pinta(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', inicia);
+  else inicia();
+
+  /* A corrente do mwDashRefresh: capturar o anterior e chamá-lo é o que
+     mantém vivo tudo o que foi registrado antes deste bloco. Aqui só
+     interessa quando as disciplinas mudam — o filtro lê delas. */
+  var anterior = window.mwDashRefresh;
+  window.mwDashRefresh = function(d){
+    if (typeof anterior === 'function') { try { anterior(d); } catch(e){} }
+    try { if ($('mwArqFiltro')) opcoesDisciplina([]); } catch(e){}
+  };
 })();
 </script>
 

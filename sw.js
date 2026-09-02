@@ -1,3 +1,23 @@
+/* v73 (BETA — Arquivos guardam arquivo de verdade):
+   A área dizia "preparada para seus materiais" e não guardava nada. Agora
+   guarda: arrastar ou escolher um arquivo o grava no IndexedDB deste
+   navegador, ele volta depois de fechar o app, abre, baixa e some quando
+   você apaga.
+   IndexedDB e não localStorage por um motivo concreto: localStorage
+   guarda texto, tem teto de poucos megabytes e é síncrono — um PDF de
+   3 MB viraria uns 4 MB de base64 e travaria a tela enquanto grava. O
+   IndexedDB guarda o Blob como ele é.
+   O que NÃO acontece: nada sobe para o servidor. O aviso está no lugar
+   mais visível da área, porque a suposição natural de quem usa um app com
+   conta é que o material acompanha a conta — e aqui ainda não acompanha.
+   A lista também não entra no blob que sincroniza: se os nomes fossem e
+   os arquivos não, o outro aparelho mostraria uma lista que não consegue
+   abrir, o que é pior do que não mostrar nada.
+   O lado do servidor está pronto e desligado em
+   supabase/ajuste-05-arquivos.sql: balde privado, teto de 25 MB e quatro
+   políticas isolando a pasta de cada pessoa. Rodar o arquivo não liga a
+   sincronização — o código de cliente que a usaria não foi escrito, para
+   não entregar rede não testada como se estivesse funcionando. */
 /* v72 (BETA — cadastro em etapas e cinco níveis de senha):
    Os campos são os MESMOS de antes, com os mesmos id: mudou só quando
    cada um aparece. Isso é deliberado — quem grava a conta é um handler
@@ -815,7 +835,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v72-beta';
+const CACHE_NAME = 'mw-shell-v73-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
