@@ -56,8 +56,9 @@ node tools/testes/1-regressao.mjs mobile
 | 10 | `10-offline.mjs` | instala o service worker de verdade, desliga a rede e recarrega | o app não abrir, os dados sumirem, ou faltar folha de estilo |
 | 11 | `11-dados.mjs` | o ciclo completo nas cinco entidades: criar com todos os campos, recarregar, editar sem apagar o resto, excluir o item certo com a lista reordenada | um campo não chegar ao dado, sumir no reload, a edição zerar campos, ou a exclusão pegar o item errado |
 | 12 | `12-teclado.mjs` | operar sem mouse: atalho para o conteúdo, Escape fechando formulário e diálogo, Tab preso dentro do modal, foco voltando para quem abriu | qualquer um deles |
-| 13 | `13-ds.mjs` | o Design System carrega **sem o app** (galeria, 2 temas × 4 larguras) e está **inerte dentro dele** enquanto nenhuma área foi migrada | o sistema depender de regra legada, ou a folha mexer no app antes da migração |
+| 13 | `13-ds.mjs` | o Design System carrega **sem o app** (galeria, 2 temas × 4 larguras), pinta **exatamente** as áreas migradas e nenhuma outra, e nenhum nome `ds-*` anda solto fora delas | o sistema depender de regra legada, a folha mexer em área não migrada, uma área migrada não mudar ao desligar a folha, ou um `ds-*` aparecer onde o sistema não alcança |
 | 14 | `14-suporte.mjs` | a área migrada faz tudo o que fazia: abrir atendimento, validar, conversar, anexar, encerrar, persistir — e nenhuma regra legada vence lá dentro | uma função perder-se na migração, ou o legado voltar a pintar a área |
+| 15 | `15-area.mjs <área>` | o teste de área genérico, o "antes e depois" de cada migração: estado vazio, formulário com foco e rótulos, criar pela interface, botões do item ao alcance, e nada vazando em 3 larguras × 2 temas. Roda nas seis coleções | qualquer um deles, em qualquer área — migrada ou não |
 
 ### Por que o contraste é medido em duas etapas
 
@@ -133,6 +134,41 @@ resumidas aqui para quem for escrever um teste novo.
   "+ Adicionar" da mesma entidade abria um de seis. Nada na tela
   denunciava: os dois abriam *um* formulário. É por isso que o teste 9
   compara os campos, não só se abriu algo.
+- **Renomear prefixo de classe alcança o markup, o gerador e a folha — os
+  três de uma vez.** A troca `mw-` → `ds-` do Design System pegou de raspão
+  nomes do LEGADO (`mw-item-acoes`, `mw-selo`, `mw-resumo-chip`). O CSS
+  legado continuou dizendo `.mw-item-acoes`, o DS só pinta sob `.ds`, e
+  aqueles elementos ficaram sem regra nenhuma: em Projetos, *Editar* e
+  *Excluir* viraram um `<div>` de 0×0 — invisíveis, sem erro no console. O
+  teste 13 agora confere estaticamente se todo `ds-*` usado no app existe na
+  folha, e no DOM se todo elemento com `ds-*` está dentro de
+  `[data-mw-migrada]`.
+- **Um teste que só conta elementos aprova elemento invisível.** O que
+  denunciou o 0×0 acima foi medir o TAMANHO do botão, não a presença no DOM.
+  `querySelectorAll(...).length` estava certo o tempo todo.
+- **Trocar de seletor sem `assert` faz o script mentir.** Uma substituição
+  que não casa com nada não é erro em Python: `s.replace()` devolve a string
+  intacta e o script imprime "pronto". Toda troca em arquivo grande vai com
+  contagem esperada e `assert` — foi assim que uma correção "aplicada" ficou
+  duas rodadas sem existir.
+- **A área escolhe como apresenta seus itens.** Projetos mostra um quadro
+  Kanban por padrão e mantém `#projectsList` no DOM com `display:none`, com
+  um botão *Lista* ao lado. Medir a lista escondida dava item de 0×0 e o
+  teste acusava "os botões sumiram" — sumira a lista inteira, de propósito.
+  O teste 15 pede o modo lista antes de medir.
+- **Fundo animado torna a medição de contraste irreprodutível.** O
+  `#app::before` é um gradiente de acento a 62% que translada e escala num
+  ciclo de 34 s, e o vidro deixa passar. Duas fotos da mesma tela em
+  instantes diferentes davam razões diferentes — a mesma área apareceu com 3
+  falhas numa rodada e nenhuma na seguinte, sem uma linha ter mudado. A
+  `esperaParar` ignora animação infinita de propósito (esperar por ela é
+  esperar para sempre); quem resolve é a `congelaDecoracao`, que para essas
+  animações num instante escolhido. A coleta fotografa os dois extremos do
+  ciclo, que cercam o pior caso.
+- **Vidro sobre vidro não tem fundo previsível.** Um `.ds-cartao` dentro de
+  outro compõe duas translucidezes sobre o gradiente animado: o mesmo texto
+  que dá 4,9:1 na galeria (chão `#020617`, parado) caiu para 3,4:1 dentro do
+  app. Cartão dentro de cartão agora é superfície opaca.
 - **Grep no arquivo não serve para achar ID duplicado.** Ele acha `id="x"`
   dentro de comentário de CSS e dentro de string de JS, e reporta
   duplicata onde não existe nenhuma. O teste 8 mede no DOM depois de o

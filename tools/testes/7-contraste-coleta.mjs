@@ -9,7 +9,7 @@
    7-contraste-medir.py, que abre as fotos.
 
    Uso: node tools/testes/7-contraste-coleta.mjs [largura] [dark|light] */
-import { abre, AREAS, vaiPara, pastaSaida, esperaParar } from './ajuda.mjs';
+import { abre, AREAS, vaiPara, pastaSaida, esperaParar, congelaDecoracao } from './ajuda.mjs';
 import fs from 'fs';
 import path from 'path';
 
@@ -89,9 +89,18 @@ for (const v of AREAS) {
     return out;
   }, v);
   if (!cands.length) continue;
-  const png = path.join(saida, `contraste-${larg}-${tema}-${v}.png`);
-  await p.screenshot({ path: png });
-  colhido.push({ v, png, cands });
+  /* Dois instantes do ciclo do fundo animado, e não um. O gradiente de
+     trás translada e escala; o vidro deixa passar; o pixel atrás do
+     texto muda com ele. Uma foto só mede um momento e chama de verdade.
+     Os dois extremos do ciclo cercam o pior caso — e, congelados, dão
+     sempre o mesmo número. */
+  for (const [rot, fase] of [['a', 0], ['b', 1]]) {
+    await congelaDecoracao(p, fase);
+    await p.waitForTimeout(180);
+    const png = path.join(saida, `contraste-${larg}-${tema}-${v}-${rot}.png`);
+    await p.screenshot({ path: png });
+    colhido.push({ v, png, cands });
+  }
 }
 
 fs.writeFileSync(path.join(saida, `contraste-${larg}-${tema}.json`), JSON.stringify({ larg, tema, erros, saida: colhido }));

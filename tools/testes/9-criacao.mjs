@@ -20,7 +20,7 @@ const CAMPOS_ESPERADOS = ['Nome da disciplina','Objetivo ou descrição','Progre
 
 async function estado(p){
   return p.evaluate(() => {
-    const f = document.querySelector('.workspace-form.is-open');
+    const f = document.querySelector('[data-workspace-form].is-open');
     return {
       area: [...document.querySelectorAll('.view.active')].map(v => v.id)[0] || null,
       formulario: f ? f.getAttribute('data-workspace-form') : null,
@@ -32,7 +32,7 @@ async function estado(p){
   });
 }
 const fecha = p => p.evaluate(() => {
-  document.querySelectorAll('.workspace-form.is-open').forEach(f => f.classList.remove('is-open'));
+  document.querySelectorAll('[data-workspace-form].is-open').forEach(f => f.classList.remove('is-open'));
 });
 
 let ruins = 0;
@@ -51,7 +51,7 @@ function confere(rotulo, r){
   console.log('DESKTOP 1440px');
 
   await vaiPara(p, 'subjects'); await p.waitForTimeout(450);
-  await p.evaluate(() => document.querySelector('#view-subjects .add-btn').click());
+  await p.evaluate(() => document.querySelector('#view-subjects [data-add]').click());
   await p.waitForTimeout(600);
   confere('"+ Adicionar" da área', await estado(p));
   await fecha(p);

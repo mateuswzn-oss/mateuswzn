@@ -33,7 +33,7 @@ estilo, porque o navegador não desenha até a folha chegar.
 
 ## As três regras da arquitetura
 
-**1. Tudo vive sob `.mw-ds`.** Sem nenhum `.mw-ds` no documento, o arquivo é inerte: não
+**1. Tudo vive sob `.ds`.** Sem nenhum `.ds` no documento, o arquivo é inerte: não
 pinta um pixel. É isso que permite migrar uma área por vez sem que as outras sintam, e é
 verificado pelo teste 13.
 
@@ -60,16 +60,43 @@ cor — se alguma escrever, o tema claro vai ter um buraco.
 
 ## Convenção de nomes
 
-Tudo em português, prefixo `mw-`, sem colisão com o legado.
+Tudo em português. **Classe do sistema começa com `ds-`; a raiz do escopo é `.ds`.**
 
 ```
-.mw-ds                 o escopo (raiz da área migrada)
-.mw-btn .mw-btn-primario .mw-btn-p     bloco, tom, tamanho
-.mw-campo .mw-campo-erro               bloco, estado
+.ds                    o escopo (raiz da área migrada)
+.ds-btn .ds-btn-primario .ds-btn-p     bloco, tom, tamanho
+.ds-campo .ds-campo-erro               bloco, estado
 --mw-p-*               token primitivo
 --mw-e-4 --mw-t-corpo --mw-r-3 --mw-d-media     espaço, tipo, raio, duração
-[data-mw-carregando] [data-mw-tema]    estado que o JS liga/desliga
+[data-mw-carregando] [data-ds-tema]    estado que o JS liga/desliga
 ```
+
+O prefixo começou como `mw-`, que era o erro óbvio em retrospecto: o app **já é** o
+MW e já era dono de `mw-`. Uma auditoria de colisão encontrou `.mw-selo` (18 regras
+legadas), `.mw-btn` (12), `.mw-resumo` (16), `.mw-item` (5), `.mw-filtro` (6) e
+`.mw-entrada` (1) — nomes que o sistema também queria. Não havia como escapar
+renomeando um por um: renomear é a operação que **cria** o problema seguinte, porque
+o mesmo nome aparece em markup estático, em template de JS e em folha de estilo, e
+uma substituição cega acerta os três.
+
+Foi o que aconteceu, e vale como aviso. A troca `mw-` → `ds-` alcançou nomes de
+classe do **legado** no meio dos geradores: `mw-item-acoes` virou `ds-item-acoes`,
+`mw-selo` virou `ds-selo`, `mw-resumo-chip` virou `ds-resumo-chip`. O CSS legado
+continuou dizendo `.mw-item-acoes`; o DS só pinta sob `.ds`; então aqueles elementos
+ficaram sem regra nenhuma. Em Projetos, os botões *Editar* e *Excluir* viraram um
+`<div>` de 0×0 — sumiram da tela sem erro no console e sem falhar nenhum teste de
+layout. Quem pegou foi o teste 15, medindo o item pelo tamanho em vez de pela
+presença no DOM.
+
+Desde então o teste 13 faz duas perguntas estáticas a cada rodada: todo nome `ds-*`
+usado no `index.html` existe mesmo na folha do sistema, e todo elemento que carrega
+um `ds-*` está dentro de `[data-mw-migrada]`. As duas juntas fecham essa porta.
+
+**Cuidado com os tokens:** as *variáveis* do sistema continuam `--mw-*` (não houve
+colisão nenhuma ali), enquanto as variáveis próprias do app legado passaram a
+`--ds-*` na mesma troca. Fica invertido em relação às classes, e é confuso: classe
+`ds-` = sistema, variável `--mw-` = sistema. É dívida conhecida, registrada aqui para
+não ser redescoberta com um bug.
 
 Estado que vem do DOM usa o atributo que já significa aquilo (`aria-pressed`,
 `aria-current`, `aria-selected`, `disabled`) em vez de uma classe paralela — assim o
@@ -116,7 +143,7 @@ Uma área por vez. Sem exceção — migrar duas juntas é como o legado virou o
 
 ### Migrar
 
-4. Marcar a raiz da área com `class="mw-ds"` e `data-mw-migrada="1"`.
+4. Marcar a raiz da área com `class="ds"` e `data-mw-migrada="1"`.
 5. **Desligar o legado daquela área**, em `<style id="mw-legado-desligado">`:
 
    ```css
@@ -131,7 +158,25 @@ Uma área por vez. Sem exceção — migrar duas juntas é como o legado virou o
    Onde a regra legada usa `!important` e `all: unset` não basta, a saída é **apagar a
    regra legada** — não empilhar outra por cima. Se ela ainda serve a uma área não migrada,
    restringir o seletor àquela área.
-6. Reescrever a marcação com as classes do sistema.
+6. Reescrever a marcação com as classes do sistema — **um conjunto OU o outro, nunca os
+   dois.** Onde o mesmo gerador de JS serve área migrada e área legada, ele escolhe:
+
+   ```js
+   const migrada = view.hasAttribute('data-mw-migrada');
+   const cls = (novo, velho) => migrada ? novo : velho;
+   ```
+
+   A primeira tentativa foi emitir os dois nomes juntos, para a área migrada continuar
+   sendo alcançada pelo legado "caso faltasse alguma coisa". Medido: **35 regras legadas
+   continuavam vencendo** dentro da área dita migrada. Contra
+   `html body #app .main .card{ … !important }` não existe regra *acrescentada* que ganhe —
+   carregar o nome antigo é continuar sendo pintado por ele. A área migrada não pode
+   carregar o nome antigo.
+
+   Pelo mesmo motivo, o que o JS precisa encontrar depois vira **atributo**, não classe:
+   `[data-workspace-form]`, `[data-add]`, `[data-mw-linha]`. O nome da classe muda com a
+   migração; um teste ou um `querySelector` preso a ele quebra sem que nada tenha
+   quebrado no app.
 7. Rodar a suíte + o teste da área.
 8. **Conferir quem está ganhando dentro da área.** Passar no teste prova que
    nada quebrou; não prova que o sistema é quem pinta.
@@ -159,7 +204,7 @@ Uma área por vez. Sem exceção — migrar duas juntas é como o legado virou o
 
 ### O fallback
 
-Área não migrada continua com o CSS de hoje, intacto — o `.mw-ds` não a alcança e o
+Área não migrada continua com o CSS de hoje, intacto — o `.ds` não a alcança e o
 desligamento é escopado por `#view-<area>`. Se uma migração der errado, reverter é tirar a
 classe da raiz daquela área: as regras legadas voltam a valer sozinhas, porque nunca foram
 apagadas globalmente.
@@ -171,7 +216,7 @@ Da menor superfície de risco para a maior. Cada uma é uma rodada.
 | # | área | por que nesta posição |
 |---|---|---|
 | ✅ 1 | ~~Suporte~~ | **migrada.** 25 verificações de funcionalidade antes e depois, idênticas; zero regra legada vencendo lá dentro |
-| 2 | Instituições | CRUD puro, já testado ponta a ponta pelo teste 11 |
+| ✅ 2 | ~~Instituições~~ | **migrada.** 14 verificações do teste 15 antes e depois, idênticas; zero regra legada vencendo lá dentro, nos dois temas |
 | 3 | Disciplinas · Projetos · Atividades · Anotações | mesmo formulário e mesma lista; migram juntas ou brigam entre si |
 | 4 | Configurações · Perfil | muitos campos, pouca lógica |
 | 5 | Faculdade · Relatórios · Foco · Calendário | layout próprio em cada uma |

@@ -86,6 +86,13 @@ for caminho in sorted(glob.glob(os.path.join(SAIDA, 'contraste-*.json'))):
         d = json.load(open(caminho))
         falhas = []
         for bloco in d['saida']:
+            if not os.path.exists(bloco['png']):
+                # JSON de uma coleta anterior apontando para uma foto que já
+                # não existe: medir o que sobrou daria um relatório parcial
+                # com cara de completo.
+                raise SystemExit('foto ausente: %s\n'
+                                 'O JSON %s é de uma coleta antiga. Rode a coleta de novo.'
+                                 % (bloco['png'], rotulo))
             im = Image.open(bloco['png']).convert('RGB')
             for c in bloco['cands']:
                 if invisivel(c['cor']): continue

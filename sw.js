@@ -1,3 +1,64 @@
+/* v88 (BETA — Instituições migrada, e três defeitos que a migração revelou):
+
+   A ÁREA
+   Instituições é a segunda tela inteiramente sob o Design System. Mesmo
+   protocolo: levantamento de dependências, teste da área verde ANTES de
+   tocar em nada, marcação reescrita com os componentes, legado desligado
+   por escopo, mesmo teste verde DEPOIS. quem-vence.mjs: 25 elementos
+   examinados, zero regras legadas vencendo, nos dois temas.
+
+   O teste da área virou genérico (tools/testes/15-area.mjs <área>) e roda
+   nas seis coleções, migradas ou não — é o "antes" da próxima migração
+   sem escrever uma linha nova.
+
+   TRÊS DEFEITOS QUE ESTA RODADA REVELOU
+
+   1. UM CONJUNTO DE CLASSES, NÃO OS DOIS.
+      O gerador compartilhado das cinco áreas emitia os nomes novos E os
+      antigos, para a área migrada "continuar coberta caso faltasse
+      alguma coisa". Medido: 35 regras legadas continuavam vencendo lá
+      dentro. Contra html body #app .main .card{ … !important } não existe
+      regra ACRESCENTADA que ganhe — carregar o nome antigo é continuar
+      sendo pintado por ele. Agora o gerador escolhe um conjunto ou o
+      outro, e o que o JS precisa achar depois virou atributo
+      ([data-workspace-form], [data-add], [data-mw-linha]), que não muda
+      com a migração.
+
+   2. BOTÕES DE 0x0 EM PROJETOS, DISCIPLINAS, ATIVIDADES E ANOTAÇÕES.
+      O prefixo do Design System mudou de mw- para ds- porque o app já era
+      dono de mw- (.mw-selo tinha 18 regras legadas, .mw-btn 12, .mw-resumo
+      16). A troca alcançou, sem querer, nomes de classe do LEGADO no meio
+      dos geradores: mw-item-acoes virou ds-item-acoes, mw-selo virou
+      ds-selo, mw-resumo-chip virou ds-resumo-chip. O CSS legado continuou
+      dizendo .mw-item-acoes; o sistema só pinta sob .ds; então aqueles
+      elementos ficaram sem regra nenhuma. Editar e Excluir viraram um div
+      de 0x0 — sumiram da tela sem erro no console. Catorze trechos
+      restaurados. O teste 13 agora confere que todo nome ds-* usado no app
+      existe na folha do sistema, e que todo elemento com ds-* está dentro
+      de área migrada.
+
+   3. CONTRASTE MEDIDO SOBRE FUNDO ANIMADO NÃO SE REPETE.
+      O #app::before é um gradiente de acento a 62% que translada e escala
+      num ciclo de 34 s, e o vidro deixa passar. A mesma tela dava 3 falhas
+      numa rodada e nenhuma na seguinte, sem uma linha ter mudado. A coleta
+      agora congela as animações infinitas e fotografa os dois extremos do
+      ciclo, que cercam o pior caso. Com a medição reprodutível apareceram
+      duas correções reais: cartão dentro de cartão deixou de ser vidro
+      sobre vidro (fundo imprevisível: 3,4:1 dentro do app contra 4,9:1 na
+      galeria), e o texto de apoio do app (--mw-muted / --ds-txt-2) passou
+      de #a9b6d6 para #b8c4e0, que mede 4,7:1 sobre a superfície mais clara
+      onde ele de fato aparece. Contraste: 0 falhas em 3 larguras x 2 temas,
+      mais os dois temas da galeria.
+
+   4. O SELETOR DE TEMA DA GALERIA NÃO PEGAVA HAVIA UMA RODADA.
+      O carimbo do tema mudou de data-mw-tema para data-ds-tema, e o teste
+      13 continuou setando o antigo: as duas passagens mediram o tema
+      escuro, e o relatório dizia "claro ok" com a mesma cor de fundo do
+      escuro. Um seletor de tema que não pega não levanta erro — só mede
+      duas vezes a mesma coisa. Agora os dois temas TÊM de dar fundos
+      diferentes, senão o teste acusa. Com o tema claro aplicado de
+      verdade: 0 falhas de contraste também nele. */
+
 /* v87 (BETA — Suporte é a primeira área no Design System):
    Migração de verdade: o CSS antigo da área SAIU, não foi coberto.
 
@@ -1229,7 +1290,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v87-beta';
+const CACHE_NAME = 'mw-shell-v88-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

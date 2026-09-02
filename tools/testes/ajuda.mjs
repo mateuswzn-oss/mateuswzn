@@ -151,3 +151,29 @@ export async function esperaParar(p, seletor, teto = 1200){
 
 /* Um PNG de 1x1 válido, para os testes que precisam de um arquivo real. */
 export const PNG_1X1 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+
+/* As animações INFINITAS são decoração: o gradiente que deriva atrás do
+   conteúdo, o pulso do status. A `esperaParar` as ignora de propósito —
+   esperar por elas seria esperar para sempre.
+ *
+ * Só que elas mexem no PIXEL que está atrás do texto. O fundo do app é
+ * um gradiente de acento a 62% de opacidade que translada e escala num
+ * ciclo de 34 s; o vidro deixa passar. Duas medições de contraste da
+ * mesma tela, tiradas em momentos diferentes do ciclo, dão números
+ * diferentes — e foi assim que a mesma área apareceu com 3 falhas numa
+ * rodada e nenhuma na seguinte, sem que uma linha tivesse mudado.
+ *
+ * `congelaDecoracao` para essas animações num instante escolhido, para
+ * que a foto seja reprodutível. Medindo os dois extremos do ciclo mede-se
+ * o pior caso, que é o que precisa passar. */
+export async function congelaDecoracao(p, fracao = 0){
+  await p.evaluate(f => {
+    if (!document.getAnimations) return;
+    for (const a of document.getAnimations()){
+      const t = a.effect && a.effect.getComputedTiming();
+      if (!t || t.iterations !== Infinity) continue;
+      const dur = t.duration || 0;
+      try { a.currentTime = dur * f; a.pause(); } catch(e){}
+    }
+  }, fracao);
+}

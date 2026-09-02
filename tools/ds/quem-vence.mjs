@@ -1,6 +1,6 @@
 /* Quem ainda vence dentro de uma área migrada?
  *
- * Depois de marcar a raiz com `mw-ds` e desligar o legado por escopo,
+ * Depois de marcar a raiz com `ds` e desligar o legado por escopo,
  * sobram as regras legadas que miram o ELEMENTO (h2, p, button) em vez de
  * uma classe — a lista de :where() do desligamento não as alcança, e as
  * que têm !important vencem o sistema.

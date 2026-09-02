@@ -70,7 +70,7 @@ const lista = tipo => p.evaluate(t => JSON.parse(JSON.stringify(window.data[t] |
 console.log('CRIAR');
 for (const [tipo, valores] of Object.entries(CASOS)) {
   await vaiPara(p, tipo); await p.waitForTimeout(400);
-  await p.evaluate(t => document.querySelector(`#view-${t} .add-btn`).click(), tipo);
+  await p.evaluate(t => document.querySelector(`#view-${t} [data-add]`).click(), tipo);
   await p.waitForTimeout(500);
   const { usados, erro } = await preenche(tipo, valores);
   if (erro) { falha(tipo + ': ' + erro); continue; }

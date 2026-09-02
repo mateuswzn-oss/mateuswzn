@@ -68,6 +68,7 @@ declare -a NOMES=(
   "12 teclado · operar sem mouse"
   "13 design system · isolado e inerte"
   "14 suporte · área migrada"
+  "15 área · estrutura das seis coleções"
 )
 declare -a CMDS=(
   "node tools/testes/1-regressao.mjs"
@@ -85,6 +86,7 @@ declare -a CMDS=(
   "node tools/testes/12-teclado.mjs"
   "node tools/testes/13-ds.mjs && python3 tools/testes/7-contraste-medir.py"
   "node tools/testes/14-suporte.mjs && node tools/ds/quem-vence.mjs support claro | tail -3 && node tools/ds/quem-vence.mjs support escuro | tail -3"
+  "for a in institutions subjects projects activities notes; do node tools/testes/15-area.mjs \$a || exit 1; done; node tools/ds/quem-vence.mjs institutions claro | tail -3 && node tools/ds/quem-vence.mjs institutions escuro | tail -3"
 )
 
 SO_ESTES=("$@")

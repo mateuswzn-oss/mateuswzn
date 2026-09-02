@@ -59,16 +59,16 @@ ok('Enter leva o foco ao conteúdo', /MAIN|DIV\.main/.test(destino), destino);
 
 /* ---- 2. Escape fecha o formulário de criação e devolve o foco ----------- */
 await vaiPara(p, 'subjects'); await p.waitForTimeout(450);
-await p.evaluate(() => document.querySelector('#view-subjects .add-btn').click());
+await p.evaluate(() => document.querySelector('#view-subjects [data-add]').click());
 await p.waitForTimeout(600);
 ok('o formulário abre com o foco no primeiro campo',
    await p.evaluate(() => document.activeElement.id === 'ws-subjects-name'));
 await p.keyboard.press('Escape');
 await p.waitForTimeout(400);
 ok('Escape fecha o formulário',
-   await p.evaluate(() => !document.querySelector('.workspace-form.is-open')));
+   await p.evaluate(() => !document.querySelector('[data-workspace-form].is-open')));
 ok('e o foco volta para o "+ Adicionar"',
-   await p.evaluate(() => document.activeElement.classList.contains('add-btn')));
+   await p.evaluate(() => document.activeElement.matches('[data-add]')));
 
 /* ---- 3. Enter envia o formulário --------------------------------------- */
 await p.evaluate(() => {

@@ -9,7 +9,7 @@
       foco e vazamento horizontal, nos dois temas e em quatro larguras.
 
    2. O DS está INERTE no app? Enquanto nenhuma área foi migrada, não
-      existe `.mw-ds` dentro do #app, e a folha não pode ter mudado nada.
+      existe `.ds` dentro do #app, e a folha não pode ter mudado nada.
       A comprovação é comparar o app com a folha ligada e desligada: se
       um pixel de layout mudar, ela não estava inerte.
 
@@ -26,6 +26,7 @@ const falha = (m, x) => { console.log('  FALHOU ' + m + (x !== undefined ? ' ' +
 /* ========== 1. A GALERIA, SOZINHA ======================================== */
 console.log('=== o sistema sem o app ===');
 const b = await chromium.launch(exe ? { executablePath: exe } : {});
+const fundoPorTema = {};
 
 for (const tema of ['escuro', 'claro']) {
   for (const [rot, larg] of [['desktop', 1280], ['tablet', 834], ['celular', 390], ['estreito', 320]]) {
@@ -39,7 +40,7 @@ for (const tema of ['escuro', 'claro']) {
     p.on('response', r => { if (r.url().endsWith('mw-ds.css') && !r.ok()) folhaOk = false; });
 
     await p.goto(ENDERECO + '/ds/index.html');
-    await p.evaluate(t => document.documentElement.setAttribute('data-mw-tema', t), tema);
+    await p.evaluate(t => document.documentElement.setAttribute('data-ds-tema', t), tema);
     await p.waitForTimeout(500);
     await esperaParar(p, 'body');
 
@@ -47,7 +48,7 @@ for (const tema of ['escuro', 'claro']) {
       const rolaH = e => { let n = e.parentElement;
         while (n && n !== document.body) { const o = getComputedStyle(n).overflowX;
           if (o === 'auto' || o === 'scroll') return true; n = n.parentElement; } return false; };
-      const fora = [...document.querySelectorAll('.mw-ds *')].filter(e => {
+      const fora = [...document.querySelectorAll('.ds *')].filter(e => {
         const r = e.getBoundingClientRect();
         if (!r.width && !r.height) return false;
         return !rolaH(e) && (r.right > innerWidth + 1 || r.left < -1);
@@ -61,7 +62,7 @@ for (const tema of ['escuro', 'claro']) {
         return getComputedStyle(e).display.startsWith('inline')
           && [...pai.childNodes].some(n => n.nodeType === 3 && n.textContent.trim().length > 2);
       };
-      const pequenos = [...document.querySelectorAll('.mw-ds button, .mw-ds a[href], .mw-ds [role="button"]')]
+      const pequenos = [...document.querySelectorAll('.ds button, .ds a[href], .ds [role="button"]')]
         .filter(e => { const r = e.getBoundingClientRect(); return r.width > 1 && r.height > 1
           && (r.height < 24 || r.width < 24) && !dentroDeFrase(e); })
         .map(e => (e.className || e.tagName).toString().slice(0, 30) + ' ' + Math.round(e.getBoundingClientRect().width) + 'x' + Math.round(e.getBoundingClientRect().height));
@@ -90,13 +91,15 @@ for (const tema of ['escuro', 'claro']) {
       for (const f of document.styleSheets) {
         try { if ((f.href || '').includes('mw-ds.css')) regras = contaFundo(f.cssRules); } catch(e){}
       }
-      return { fora, pequenos, regras,
+      const noSistema = document.querySelectorAll('.ds *').length;
+      return { fora, pequenos, regras, noSistema,
                corpoRola: document.documentElement.scrollWidth > innerWidth + 1,
                fundo: getComputedStyle(document.body).backgroundColor };
     });
 
     const alerta = [];
     if (!folhaOk) alerta.push('a folha não carregou');
+    if (m.noSistema < 100) alerta.push('a galeria tem só ' + m.noSistema + ' elementos sob a raiz .ds — o seletor mudou de nome e o teste estaria medindo o vazio');
     if (m.regras < 150) alerta.push('poucas regras (' + m.regras + ') — a folha carregou vazia?');
     if (m.fora.length) alerta.push('fora da tela: ' + JSON.stringify(m.fora.slice(0, 3)));
     if (m.corpoRola) alerta.push('o corpo rola na horizontal');
@@ -108,6 +111,7 @@ for (const tema of ['escuro', 'claro']) {
                 alerta.length ? '\n      <<< ' + alerta.join('\n      <<< ') : 'ok');
     if (alerta.length) ruins += alerta.length;
 
+    if (larg === 1280) fundoPorTema[tema] = m.fundo;
     if (larg === 1280) await p.screenshot({ path: path.join(pastaSaida(), `ds-galeria-${tema}.png`), fullPage: true });
     await p.close();
   }
@@ -121,7 +125,7 @@ console.log('\n=== contraste dos componentes (coleta) ===');
 
 const colhe = pag => pag.evaluate(() => {
   const out = [];
-  document.querySelectorAll('.mw-ds p,.mw-ds span,.mw-ds strong,.mw-ds h1,.mw-ds h2,.mw-ds h3,.mw-ds h4,.mw-ds label,.mw-ds button,.mw-ds td,.mw-ds th').forEach(e => {
+  document.querySelectorAll('.ds p,.ds span,.ds strong,.ds h1,.ds h2,.ds h3,.ds h4,.ds label,.ds button,.ds td,.ds th').forEach(e => {
     if (e.children.length) return;
     const t = (e.textContent || '').trim(); if (t.length < 3) return;
     const cs = getComputedStyle(e), r = e.getBoundingClientRect();
@@ -144,7 +148,7 @@ const colhe = pag => pag.evaluate(() => {
 for (const tema of ['escuro', 'claro']) {
   const p = await b.newPage({ viewport: { width: 1280, height: 900 } });
   await p.goto(ENDERECO + '/ds/index.html');
-  await p.evaluate(t => document.documentElement.setAttribute('data-mw-tema', t), tema);
+  await p.evaluate(t => document.documentElement.setAttribute('data-ds-tema', t), tema);
   await p.waitForTimeout(600);
   await esperaParar(p, 'body');
 
@@ -165,6 +169,15 @@ for (const tema of ['escuro', 'claro']) {
 }
 
 await b.close();
+
+/* O carimbo do tema mudou de nome uma vez (`data-mw-tema` -> `data-ds-tema`)
+   e este teste continuou setando o antigo: as duas passagens mediram o tema
+   escuro, e o relatório dizia "claro ok" com a mesma cor de fundo do escuro.
+   Um seletor de tema que não pega não levanta erro — só mede duas vezes a
+   mesma coisa. Os dois temas TÊM de dar fundos diferentes. */
+if (fundoPorTema.escuro && fundoPorTema.escuro === fundoPorTema.claro)
+  falha('a galeria tem o mesmo fundo nos dois temas — a troca de tema não pegou',
+        fundoPorTema);
 
 /* ========== 2. INERTE DENTRO DO APP ====================================== */
 console.log('\n=== a folha está inerte no app? ===');
@@ -249,6 +262,42 @@ console.log('\n=== a folha está inerte no app? ===');
     if (!vazam.length && !inertes.length)
       console.log('  ' + migradas.length + ' migrada(s) pintada(s) pelo sistema, ' +
                   (Object.keys(ligada1).length - migradas.length) + ' legada(s) intocada(s)');
+  }
+
+  /* ---- 3. nome de classe do sistema fora de área migrada ---------------
+     A migração renomeou o prefixo do sistema de `mw-` para `ds-` porque o
+     app já era dono de `mw-`. A troca alcançou, sem querer, nomes de
+     classe do LEGADO no meio do markup e dos geradores: `mw-item-acoes`
+     virou `ds-item-acoes`, `mw-selo` virou `ds-selo`, e por aí. O CSS
+     legado continuou dizendo `.mw-item-acoes` — então aqueles elementos
+     ficaram sem regra nenhuma. Nas áreas não migradas o DS também não os
+     alcança (ele só pinta sob a raiz `.ds`), e o resultado foi um <div>
+     de 0x0: os botões Editar/Excluir de Projetos sumiram da tela sem
+     erro no console e sem falha em nenhum teste de layout.
+
+     Duas perguntas, e as duas são baratas:
+     a) todo nome `ds-*` usado no app existe mesmo na folha do sistema?
+     b) todo elemento que carrega um `ds-*` está dentro de área migrada? */
+  {
+    const folha = fs.readFileSync('ds/mw-ds.css', 'utf-8');
+    const html  = fs.readFileSync('index.html', 'utf-8');
+    const noDS  = new Set([...folha.matchAll(/\.(ds-[a-z0-9-]+)/g)].map(m => m[1]));
+    const semRegra = new Set();
+    for (const m of html.matchAll(/(?<!-)\bds-[a-z0-9-]+/g)) {
+      if (html.slice(Math.max(0, m.index - 2), m.index) === '--') continue;  /* custom property */
+      if (!noDS.has(m[0])) semRegra.add(m[0]);
+    }
+    semRegra.delete('ds-deriva');  /* nome de @keyframes, não de classe */
+    if (semRegra.size) falha('nome ds-* usado no app que a folha do sistema não define', [...semRegra]);
+
+    const foraDeArea = await p.evaluate(() =>
+      [...document.querySelectorAll('[class]')]
+        .filter(e => [...e.classList].some(c => c.startsWith('ds-')) && !e.closest('[data-mw-migrada]'))
+        .map(e => (e.id ? '#' + e.id + ' ' : '') + [...e.classList].filter(c => c.startsWith('ds-')).join('.'))
+        .slice(0, 12));
+    if (foraDeArea.length) falha('classe do sistema fora de área migrada (o legado não a alcança mais)', foraDeArea);
+    if (!semRegra.size && !foraDeArea.length)
+      console.log('  nenhum nome do sistema solto fora de área migrada');
   }
 
   if (erros.length) falha('erros de JS no app', erros);
