@@ -16250,7 +16250,17 @@ html body .mw-lente-vidro{
 /* Reforço com o filtro de distorção de verdade — cai por cima do
    fallback acima só em quem entende backdrop-filter:url(#...). Ver o
    comentário grande no JS: onde não entende, o navegador ignora esta
-   declaração inteira e o fallback simples continua valendo. */
+   declaração inteira e o fallback simples continua valendo.
+
+   MEDIDO em setembro de 2026, num iPhone com iOS 18.7 (Safari 27):
+   CSS.supports('backdrop-filter','url(#x)') devolve TRUE. Ou seja, a
+   premissa deste fallback — "o Safari recusa a sintaxe e fica com o
+   blur simples" — não vale mais. Se o Safari aceita a declaração mas
+   não desenha o deslocamento, o fallback é engolido e não sobra blur
+   nenhum. Não virou bug visível porque a lente inteira está escondida
+   com display:none desde que a barra de baixo foi reescrita (ver
+   mw-ds-bottomnav). Fica registrado para quem for reativá-la: a
+   estratégia de fallback precisa ser refeita antes. */
 html body .mw-lente-vidro{
   backdrop-filter:url(#mwLenteFiltro) saturate(130%)!important;
 }
@@ -30473,9 +30483,17 @@ html body #app #view-settings #mwDiagBruto{
        jeito específico, e é bom saber qual. */
     junta('Vidro (backdrop-filter)', suporta('backdrop-filter', 'blur(4px)') ? 'ok' : 'falha',
           suporta('backdrop-filter', 'blur(4px)') ? 'funciona' : 'sem suporte: os painéis ficam opacos');
-    junta('Lente com filtro SVG', suporta('backdrop-filter', 'url(#x)') ? 'ok' : 'aviso',
-          suporta('backdrop-filter', 'url(#x)') ? 'funciona'
-            : 'sem suporte: a barra de baixo fica lisa, sem deformar (previsto)');
+    /* Aqui havia uma linha "Lente com filtro SVG". Saiu por dois
+       motivos, os dois descobertos com o primeiro relatório vindo de um
+       iPhone de verdade: ela media a coisa errada (CSS.supports só diz
+       que a SINTAXE é aceita, não que o filtro desenha) e reportava um
+       recurso que este app não usa mais — a lente está escondida por
+       "display:none" desde que a barra de baixo foi reescrita. Um
+       diagnóstico que informa sobre o que não está na tela gasta a
+       atenção de quem lê. No lugar entrou aspect-ratio, que sustenta o
+       anel do cronômetro e é usado de verdade. */
+    junta('Proporção fixa (aspect-ratio)', suporta('aspect-ratio', '1') ? 'ok' : 'aviso',
+          suporta('aspect-ratio', '1') ? 'funciona' : 'sem suporte: o anel do cronômetro sai oval');
     junta('Mistura de cor (color-mix)', suporta('color', 'color-mix(in srgb, red 50%, blue)') ? 'ok' : 'falha',
           suporta('color', 'color-mix(in srgb, red 50%, blue)') ? 'funciona'
             : 'sem suporte: cores e bordas do app saem erradas');
@@ -30567,7 +30585,7 @@ html body #app #view-settings #mwDiagBruto{
   /* O carimbo entra depois do preloader para não brigar com a abertura
      da marca, e sai sozinho. window.MW_PREVIA fica disponível para
      conferir a versão pelo console sem depender de ver o carimbo. */
-  window.MW_PREVIA = 'v79 · diagnóstico do aparelho';
+  window.MW_PREVIA = 'v80 · medido no iPhone';
   function mostra(){
     if (document.getElementById('mwPreviaCarimbo')) return;
     var el = document.createElement('div');
