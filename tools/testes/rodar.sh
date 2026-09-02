@@ -73,6 +73,7 @@ declare -a NOMES=(
   "17 entrada · login e cadastro"
   "18 pele · quem veste os componentes do sistema"
   "19 contraste · tela de entrada"
+  "20 navegação · lateral, baixo e topo"
 )
 declare -a CMDS=(
   "node tools/testes/1-regressao.mjs"
@@ -95,6 +96,7 @@ declare -a CMDS=(
   "node tools/testes/17-login.mjs && node tools/ds/quem-vence.mjs login claro | sed -n 2p && node tools/ds/quem-vence.mjs login escuro | sed -n 2p"
   "for a in login home files profile settings college reports focus calendar institutions subjects projects activities notes support; do for t in escuro claro; do node tools/ds/quem-veste.mjs \$a \$t | sed -n 2p || exit 1; done; done"
   "for l in 1440 834 390; do for t in dark light; do node tools/testes/7b-contraste-login.mjs \$l \$t || exit 1; done; done; python3 tools/testes/7-contraste-medir.py"
+  "for m in desktop celular instalado; do node tools/testes/20-navegacao.mjs \$m || exit 1; done"
 )
 
 SO_ESTES=("$@")

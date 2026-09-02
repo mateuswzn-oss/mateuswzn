@@ -79,6 +79,12 @@ export async function abre(dados, opcoes = {}) {
     localStorage.setItem('mwSession', '1');
   }, [dados]);
 
+  /* Um teste pode precisar mexer no ambiente ANTES de a página abrir —
+     fingir que o app está instalado, por exemplo, o que se faz trocando
+     o matchMedia. Isso não dá para fazer depois: a marca `mw-standalone`
+     é decidida uma vez, na primeira linha de script da página. */
+  if (opcoes.init) await p.addInitScript(opcoes.init);
+
   await p.goto(ENDERECO + '/index.html');
 
   if (opcoes.debug) {

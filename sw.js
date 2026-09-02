@@ -1,3 +1,72 @@
+/* v96 (BETA — a navegação ganha teste próprio, antes de ser migrada):
+
+   POR QUE UM TESTE ANTES
+   A barra lateral, a barra de baixo e a barra do topo são a última
+   superfície a migrar, e a única que toca TODAS as telas. O
+   levantamento diz o tamanho: 351 regras em 68 folhas, quase todas com
+   !important — contra as 44 folhas da tela de entrada, que já parecia
+   pesada. Um defeito aqui não estraga uma área: estraga o caminho para
+   todas elas. Foi aqui, também, que apareceu o defeito relatado com duas
+   fotos (a barra de baixo por cima da tela de login).
+
+   O teste 20 é a medida "antes": 13 verificações no desktop, 10 no
+   navegador do celular e 12 no app instalado.
+
+   TRÊS MOLDURAS, NÃO TRÊS TAMANHOS
+   Escrever o teste obrigou a separar o que eu tratava como um só:
+
+     desktop    barra lateral sempre à vista; sem barra de baixo
+     celular    a lateral vira gaveta, aberta pelo botão de menu
+     instalado  não há botão de menu; quem manda é a barra de baixo
+
+   A diferença entre os dois últimos não é largura, é a regra
+   `html:not(.mw-standalone) ... #mwBottomNav{display:none!important}` —
+   e é escolha de produto: no navegador a pessoa tem a lateral e o
+   hambúrguer; a barra de baixo existe para o app instalado, onde não há
+   barra de endereço nem aba.
+
+   UM ACHADO REAL: 42px onde a plataforma pede 44
+   Os botões da barra de baixo saíam com 42px de altura. A barra tem 73px
+   e 13,4px de recheio vertical — folga de sobra; um `min-height: 44px`
+   resolve sem mexer em mais nada, nem na lente, que se posiciona pela
+   coluna e não pela altura. É o alvo principal de toque de um app
+   instalado; dois pixels contam.
+
+   E CINCO VEZES EM QUE O TESTE ESTAVA ERRADO, NÃO O APP
+   Todas viraram comentário no próprio teste, porque todas são fáceis de
+   repetir:
+
+   1. "a barra do topo não mostra o perfil" — no desktop `#profileBtn`,
+      `#themeToggle` e `#quickAdd` são display:none DE PROPÓSITO: perfil
+      e tema moram na lateral, que está sempre à vista. Duplicá-los no
+      topo é que seria o defeito. A pergunta certa não é "o botão X está
+      no topo?", é "a função X está ao alcance em algum lugar?".
+   2. "o menu do sino é invisível" — medido no meio da transição de
+      abertura, com opacidade ainda em 0. E o fundo dele vem de
+      `background-image` (um degradê), não de `background-color`: olhar
+      só a cor dá alpha 0 num menu sólido.
+   3. "a barra de baixo não aparece no celular" — ver acima: ela é do app
+      instalado.
+   4. "a barra de baixo sumiu" — o teste tinha acabado de abrir
+      Configurações, que é uma TELA-FOLHA: ali o app marca
+      `body.mw-tela-folha`, esconde a barra e mostra a seta de voltar. O
+      teste agora afirma esse comportamento em vez de tropeçar nele.
+   5. "o perfil da barra de baixo não navega" — ele abre a GAVETA. Foi
+      decisão de uma rodada anterior: no app instalado o hambúrguer foi
+      substituído pela foto de perfil, e ela virou a porta do menu.
+
+   E uma armadilha de ambiente: acrescentar `mw-standalone` à mão depois
+   da abertura não pega — a marca é decidida uma vez, na primeira linha
+   de script, a partir de `matchMedia('(display-mode: standalone)')`. O
+   modo instalado finge o matchMedia ANTES de a página carregar, pelo
+   mesmo caminho do teste 4. O `ajuda.abre()` ganhou a opção `init` para
+   isso.
+
+   A migração da navegação em si é a próxima rodada. Esta entrega o que
+   protege ela.
+
+   Suíte: 20 de 20.
+
 /* v95 (BETA — o contraste da tela de entrada, medido por pixel pela
    primeira vez, e corrigido):
 
@@ -1702,7 +1771,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v95-beta';
+const CACHE_NAME = 'mw-shell-v96-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

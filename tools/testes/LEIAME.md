@@ -333,3 +333,23 @@ ser suposição.
   e com a última linha do log parecendo um teste que passou. Uma falha de
   verdade ficou escondida assim por uma execução inteira. Cada comando
   roda num subshell — `( eval "..." )`.
+
+- **"O botão X está na barra?" é quase sempre a pergunta errada.** No
+  desktop `#profileBtn`, `#themeToggle` e `#quickAdd` são `display:none`
+  de propósito — perfil e tema moram na lateral, que está sempre à
+  vista. Duplicá-los no topo é que seria o defeito. Pergunte o que a
+  pessoa pergunta: **a função continua ao alcance em algum lugar?**
+
+- **`mw-standalone` é decidida uma vez, na abertura.** Acrescentar a
+  classe à mão depois não pega. Para testar o app instalado, finja
+  `matchMedia('(display-mode: standalone)')` ANTES de a página carregar
+  — é para isso que o `abre()` tem a opção `init`. E lembre que ali o
+  botão de menu some: quem abre a gaveta é a foto de perfil da barra de
+  baixo.
+
+- **Um teste que navega deixa o app onde parou.** Perfil e Configurações
+  são telas-folha: marcam `body.mw-tela-folha`, escondem a barra de
+  baixo e mostram a seta de voltar. Medir a barra logo depois de abrir
+  uma delas relata "a barra sumiu" para um app que está fazendo
+  exatamente o que deve. Volte a uma área comum antes de medir — e,
+  melhor, afirme o comportamento da tela-folha em vez de tropeçar nele.
