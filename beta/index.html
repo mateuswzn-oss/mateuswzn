@@ -36,8 +36,8 @@ try {
    o sistema operacional em vez de seguir a escolha da pessoa. */
 (function(){try{
   var d = JSON.parse(localStorage.getItem('mateusWorkspaceV4') || '{}');
-  document.documentElement.setAttribute('data-mw-tema', d.theme === 'light' ? 'claro' : 'escuro');
-}catch(e){ document.documentElement.setAttribute('data-mw-tema','escuro'); }})();
+  document.documentElement.setAttribute('data-ds-tema', d.theme === 'light' ? 'claro' : 'escuro');
+}catch(e){ document.documentElement.setAttribute('data-ds-tema','escuro'); }})();
 </script>
 <link rel="stylesheet" href="ds/mw-ds.css">
 <link rel="manifest" href="manifest.json">
@@ -4189,7 +4189,22 @@ body.light .mw-faceid-gate-card p{color:#526988}
          coleção como qualquer outra do workspace, com a mesma mecânica
          de cadastrar/editar/excluir — e nada aqui vem de lista fixa no
          código: o nome, o tipo e o curso são digitados pela pessoa. -->
-    <section class="view" id="view-institutions"><section class="card section"><div class="section-head"><h3>Instituições</h3><button class="add-btn" data-add="institutions">+ Adicionar</button></div><div class="list" id="institutionsList"></div></section></section>
+    <section class="view ds" id="view-institutions" data-mw-migrada="1">
+  <section class="ds-cartao">
+    <div class="ds-secao-cabeca">
+      <div><h2 class="ds-titulo">Instituições</h2>
+      <p class="ds-micro">Onde você estuda. Cada disciplina aponta para a sua.</p></div>
+      <div class="ds-secao-acoes">
+        <!-- data-add é o gancho do fluxo de criação (bloco de captura no
+             document). A classe .add-btn saiu: o legado a alcança com
+             `html body #app .add-btn{...!important}`, e contra isso não
+             existe regra que se acrescente — só não carregar o nome. -->
+        <button type="button" class="ds-btn ds-btn-primario ds-btn-p" data-add="institutions">+ Adicionar</button>
+      </div>
+    </div>
+    <div class="ds-lista" id="institutionsList"></div>
+  </section>
+</section>
     <section class="view" id="view-subjects"><section class="card section"><div class="section-head"><h3>Disciplinas</h3><button class="add-btn" data-add="subjects">+ Adicionar</button></div><div class="list" id="subjectsList"></div></section></section>
     <section class="view" id="view-projects"><section class="card section"><div class="section-head"><h3>Projetos</h3><button class="add-btn" data-add="projects">+ Adicionar</button></div><div class="list" id="projectsList"></div></section></section>
     <section class="view" id="view-activities"><section class="card section"><div class="section-head"><h3>Atividades</h3><button class="add-btn" data-add="activities">+ Adicionar</button></div><div class="list" id="activitiesList"></div></section></section>
@@ -4363,42 +4378,42 @@ body.light .mw-faceid-gate-card p{color:#526988}
      `data-mw-migrada="1"` (que o desligamento do legado usa como escopo).
      Todos os ids continuam os mesmos: o comportamento é do bloco
      mw-support-system, e migração de visual não mexe em comportamento. -->
-<section class="view mw-ds" id="view-support" data-mw-migrada="1">
+<section class="view ds" id="view-support" data-mw-migrada="1">
 
-  <section class="mw-cartao mw-support-panel" id="mwSupportList">
-    <div class="mw-secao-cabeca">
+  <section class="ds-cartao mw-support-panel" id="mwSupportList">
+    <div class="ds-secao-cabeca">
       <div>
-        <h2 class="mw-titulo">Suporte</h2>
-        <p class="mw-micro">Abra um atendimento e acompanhe a conversa por aqui. O histórico fica salvo neste navegador.</p>
+        <h2 class="ds-titulo">Suporte</h2>
+        <p class="ds-micro">Abra um atendimento e acompanhe a conversa por aqui. O histórico fica salvo neste navegador.</p>
       </div>
-      <div class="mw-secao-acoes">
-        <button type="button" class="mw-btn mw-btn-primario mw-btn-p" id="mwSupportNewBtn">+ Novo atendimento</button>
+      <div class="ds-secao-acoes">
+        <button type="button" class="ds-btn ds-btn-primario ds-btn-p" id="mwSupportNewBtn">+ Novo atendimento</button>
       </div>
     </div>
-    <div class="mw-lista" id="mwSupportTicketList"></div>
+    <div class="ds-lista" id="mwSupportTicketList"></div>
   </section>
 
-  <form class="mw-cartao mw-support-panel hidden" id="mwSupportForm" novalidate>
-    <div class="mw-secao-cabeca">
-      <div><h2 class="mw-titulo">Novo atendimento</h2></div>
-      <div class="mw-secao-acoes">
-        <button type="button" class="mw-btn mw-btn-fantasma mw-btn-p" id="mwSupportFormBack">← Voltar</button>
+  <form class="ds-cartao mw-support-panel hidden" id="mwSupportForm" novalidate>
+    <div class="ds-secao-cabeca">
+      <div><h2 class="ds-titulo">Novo atendimento</h2></div>
+      <div class="ds-secao-acoes">
+        <button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwSupportFormBack">← Voltar</button>
       </div>
     </div>
-    <div class="mw-grade-fixa-2">
-      <div class="mw-campo mw-campo-obrigatorio">
+    <div class="ds-grade-fixa-2">
+      <div class="ds-campo ds-campo-obrigatorio">
         <label for="sfName">Nome</label>
-        <input id="sfName" class="mw-entrada" required placeholder="Seu nome">
+        <input id="sfName" class="ds-entrada" required placeholder="Seu nome">
       </div>
-      <div class="mw-campo mw-campo-obrigatorio">
+      <div class="ds-campo ds-campo-obrigatorio">
         <label for="sfUsername">Nome de usuário</label>
-        <input id="sfUsername" class="mw-entrada" required placeholder="Como te chamam no Workspace">
+        <input id="sfUsername" class="ds-entrada" required placeholder="Como te chamam no Workspace">
       </div>
-      <div class="mw-campo mw-campo-obrigatorio mw-largo">
+      <div class="ds-campo ds-campo-obrigatorio ds-largo">
         <label for="sfEmail">E-mail</label>
-        <input id="sfEmail" class="mw-entrada" type="email" required placeholder="seu@email.com">
+        <input id="sfEmail" class="ds-entrada" type="email" required placeholder="seu@email.com">
       </div>
-      <div class="mw-campo">
+      <div class="ds-campo">
         <label for="sfType">Tipo de suporte</label>
         <select id="sfType">
           <option>Problema técnico</option><option>Conta e acesso</option>
@@ -4407,53 +4422,53 @@ body.light .mw-faceid-gate-card p{color:#526988}
           <option>Bug</option><option>Outro</option>
         </select>
       </div>
-      <div class="mw-campo">
+      <div class="ds-campo">
         <label for="sfPriority">Prioridade</label>
         <select id="sfPriority">
           <option>Baixa</option><option selected>Média</option><option>Alta</option>
         </select>
       </div>
-      <div class="mw-campo mw-campo-obrigatorio mw-largo">
+      <div class="ds-campo ds-campo-obrigatorio ds-largo">
         <label for="sfSubject">Assunto</label>
-        <input id="sfSubject" class="mw-entrada" required placeholder="Resuma em poucas palavras">
+        <input id="sfSubject" class="ds-entrada" required placeholder="Resuma em poucas palavras">
       </div>
-      <div class="mw-campo mw-campo-obrigatorio mw-largo">
+      <div class="ds-campo ds-campo-obrigatorio ds-largo">
         <label for="sfDescription">Descrição do problema</label>
         <textarea id="sfDescription" required placeholder="Conte com detalhes o que está acontecendo"></textarea>
       </div>
-      <div class="mw-campo mw-largo">
+      <div class="ds-campo ds-largo">
         <label for="sfAttachment">Anexo (opcional)</label>
-        <input type="file" id="sfAttachment" class="mw-entrada">
+        <input type="file" id="sfAttachment" class="ds-entrada">
       </div>
     </div>
     <!-- aria-live: quem usa leitor de tela precisa OUVIR o erro, e não
          descobrir que ele existe tateando de volta pelo formulário -->
-    <p class="mw-campo-aviso" id="mwSupportFormError" role="alert" aria-live="polite"></p>
-    <div class="mw-dialogo-acoes">
-      <button type="submit" class="mw-btn mw-btn-primario">Abrir atendimento</button>
+    <p class="ds-campo-aviso" id="mwSupportFormError" role="alert" aria-live="polite"></p>
+    <div class="ds-dialogo-acoes">
+      <button type="submit" class="ds-btn ds-btn-primario">Abrir atendimento</button>
     </div>
   </form>
 
-  <section class="mw-cartao mw-support-panel mw-support-chat hidden" id="mwSupportChat">
+  <section class="ds-cartao mw-support-panel mw-support-chat hidden" id="mwSupportChat">
     <div class="mw-support-chat-head">
-      <button type="button" class="mw-btn mw-btn-secundario mw-btn-p" id="mwSupportChatBack" aria-label="Voltar para a lista de atendimentos">
+      <button type="button" class="ds-btn ds-btn-secundario ds-btn-p" id="mwSupportChatBack" aria-label="Voltar para a lista de atendimentos">
         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
         <span class="mw-back-label">Voltar</span>
       </button>
       <div class="mw-support-chat-id">
-        <strong class="mw-item-titulo mw-cortar-1" id="mwSupportChatSubject">Assunto</strong>
-        <small class="mw-micro"><span id="mwSupportChatTicketId">#MW-000000</span> · <span class="mw-support-status" id="mwSupportChatStatus">Aberto</span></small>
+        <strong class="ds-item-titulo ds-cortar-1" id="mwSupportChatSubject">Assunto</strong>
+        <small class="ds-micro"><span id="mwSupportChatTicketId">#MW-000000</span> · <span class="mw-support-status" id="mwSupportChatStatus">Aberto</span></small>
       </div>
-      <button type="button" id="mwSupportCloseBtn" class="mw-btn mw-btn-perigo mw-btn-p">Encerrar</button>
+      <button type="button" id="mwSupportCloseBtn" class="ds-btn ds-btn-perigo ds-btn-p">Encerrar</button>
     </div>
     <div class="mw-support-chat-messages" id="mwSupportChatMessages"></div>
     <form class="mw-support-chat-form" id="mwSupportChatForm">
-      <button type="button" class="mw-btn mw-btn-fantasma mw-btn-icone mw-btn-p" id="mwSupportChatAttachBtn" aria-label="Anexar arquivo">
+      <button type="button" class="ds-btn ds-btn-fantasma ds-btn-icone ds-btn-p" id="mwSupportChatAttachBtn" aria-label="Anexar arquivo">
         <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21.44 11.05l-8.49 8.49a5.25 5.25 0 0 1-7.43-7.43l8.49-8.49a3.5 3.5 0 0 1 4.95 4.95l-8.49 8.49a1.75 1.75 0 1 1-2.47-2.47l7.78-7.78"/></svg>
       </button>
       <input type="file" id="mwSupportChatFile" hidden>
-      <input type="text" class="mw-entrada" id="mwSupportChatInput" placeholder="Escreva sua mensagem..." autocomplete="off" aria-label="Mensagem">
-      <button type="submit" class="mw-btn mw-btn-primario mw-btn-icone mw-btn-p" id="mwSupportChatSend" aria-label="Enviar">
+      <input type="text" class="ds-entrada" id="mwSupportChatInput" placeholder="Escreva sua mensagem..." autocomplete="off" aria-label="Mensagem">
+      <button type="submit" class="ds-btn ds-btn-primario ds-btn-icone ds-btn-p" id="mwSupportChatSend" aria-label="Enviar">
         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg>
       </button>
     </form>
@@ -5416,7 +5431,7 @@ function renderAll(){const p=progress();$('#statSubjects').textContent=data.subj
    operacional. Achado na migração de Suporte: o app estava no escuro e o
    cartão veio com o vidro do tema claro.
    Agora o tema é CARIMBADO no <html>, positivamente, nos dois sentidos. */
-function applyTheme(){document.documentElement.setAttribute('data-mw-tema',data.theme==='light'?'claro':'escuro');document.body.classList.toggle('light',data.theme==='light');const tt=$('#themeToggle');if(tt)tt.classList.toggle('is-light',data.theme==='light');$('#darkModeBtn').classList.toggle('active',data.theme==='dark');$('#lightModeBtn').classList.toggle('active',data.theme==='light')}
+function applyTheme(){document.documentElement.setAttribute('data-ds-tema',data.theme==='light'?'claro':'escuro');document.body.classList.toggle('light',data.theme==='light');const tt=$('#themeToggle');if(tt)tt.classList.toggle('is-light',data.theme==='light');$('#darkModeBtn').classList.toggle('active',data.theme==='dark');$('#lightModeBtn').classList.toggle('active',data.theme==='light')}
 function setTheme(theme){data.theme=theme;if(persistWorkspace())applyTheme();toast(theme==='light'?'Modo claro ativado':'Modo escuro ativado')}
 $('#themeToggle').onclick=()=>setTheme(data.theme==='light'?'dark':'light');$('#darkModeBtn').onclick=()=>setTheme('dark');$('#lightModeBtn').onclick=()=>setTheme('light');
 function loadProfileFields(){const p=data.profile||defaults.profile;$('#profileName').value=p.name||'';$('#profileEmail').value=p.email||'';$('#profilePhoto').value=p.photo||''}/* Atribuir data.profile = {name,email,photo} SUBSTITUÍA o objeto
@@ -7061,7 +7076,7 @@ body.light .profile-photo-card{background:rgba(0,0,0,.025);border-color:rgba(0,0
   --mw-panel-2:#102244;
   --mw-border:#22406e;
   --mw-text:#f2f7ff;
-  --mw-muted:#a9b6d6;   /* ver a nota na paleta canônica */
+  --mw-muted:#b8c4e0;   /* ver a nota na paleta canônica */
 }
 
 html,body{
@@ -13803,6 +13818,12 @@ html body.light .eva-chips button{
 #app .workspace-metric { min-width:78px; padding:9px 11px; border-radius:12px; background:rgba(4,14,29,.42); border:1px solid rgba(125,211,252,.12); }
 #app .workspace-metric b { display:block; font-size:16px; color:var(--area-a); }
 #app .workspace-metric span { display:block; margin-top:2px; font-size:10px; color:#9fb1c4; text-transform:uppercase; letter-spacing:.06em; }
+/* O display:none aqui é MECANISMO, não aparência: é ele que mantém o
+   formulário fechado até alguém clicar em Adicionar. Por isso passa a
+   valer pelo atributo, que existe migrado ou não — a classe some nas
+   áreas migradas. */
+#app [data-workspace-form] { display:none; }
+#app [data-workspace-form].is-open { display:block; }
 #app .workspace-form { display:none; margin:0 0 16px; padding:18px; border:1px solid rgba(103,232,249,.22); border-radius:18px; background:linear-gradient(135deg,rgba(14,39,66,.86),rgba(7,18,35,.82)); box-shadow:0 14px 30px rgba(2,8,23,.22),inset 0 1px 0 rgba(224,251,255,.06); }
 #app .workspace-form.is-open { display:block; animation:mw-workspace-in .22s ease both; }
 @keyframes mw-workspace-in { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
@@ -13901,11 +13922,30 @@ body.light #app .workspace-form input,body.light #app .workspace-form textarea,b
   const label = type => ({institutions:'instituições',subjects:'disciplinas',projects:'projetos',activities:'atividades',notes:'anotações'})[type];
   const renderWorkspace = type => {
     const view = document.getElementById(`view-${type}`), list = document.getElementById(`${type}List`), c = configs[type];
-    if (!view || !list || !c || view.querySelector('.workspace-hero')) return;
-    const hero = document.createElement('div'); hero.className = 'workspace-hero';
-    hero.innerHTML = `<div><h4>${c.title}</h4><p>${c.intro}</p></div><div class="workspace-metrics" data-workspace-metrics="${type}"></div>`;
-    const panel = document.createElement('form'); panel.className = 'workspace-form'; panel.dataset.workspaceForm = type;
-    panel.innerHTML = `<div class="workspace-form-head"><div><h4>${c.action}</h4><p>Preencha o essencial; você poderá continuar organizando depois.</p></div></div><div class="workspace-form-grid">${c.fields.map(([id,name,kind,placeholder,required,options]) => `<div class="${kind==='textarea'?'full':''}"><label for="ws-${type}-${id}">${name}</label>${kind==='textarea'?`<textarea id="ws-${type}-${id}" placeholder="${esc(placeholder)}" ${required?'required':''}></textarea>`:kind==='select'?`<select id="ws-${type}-${id}"${typeof options==='string'?` data-opcoes="${esc(options)}"`:''}>${(typeof options==='string'?mwOpcoesDinamicas(options):options).map(o=>`<option ${o===placeholder?'selected':''}>${esc(o)}</option>`).join('')}</select>`:`<input id="ws-${type}-${id}" type="${kind}" placeholder="${esc(placeholder)}" ${kind==='number'?(id==='progress'?'min="0" max="100" value="0"':'min="1" max="99" step="1"'):''} ${required?'required':''}>`}</div>`).join('')}</div><div class="workspace-form-actions"><button type="button" class="workspace-cancel">Cancelar</button><button type="submit" class="workspace-submit">Salvar ${c.title.slice(0,-1)}</button></div>`;
+    if (!view || !list || !c || view.querySelector('[data-workspace-hero]')) return;
+    /* Este gerador serve CINCO áreas (instituições, disciplinas, projetos,
+       atividades, anotações). Migrar uma delas sozinha exigiria ou migrar
+       as cinco de uma vez, ou escolher o conjunto de classes por área.
+
+       A primeira tentativa foi emitir os DOIS conjuntos no mesmo elemento,
+       contando com o desligamento por escopo para calar o legado. Não
+       funciona: contra `html body #app .main .card{...!important}` não
+       existe regra que se ACRESCENTE — a especificidade do legado é maior
+       e !important de camada perde para !important sem camada. Medido:
+       35 regras legadas ainda venciam dentro da área "migrada".
+
+       O que funciona é o elemento NÃO CARREGAR o nome antigo. Então a
+       escolha é por área, aqui, num lugar só. Os ganchos que o JS e os
+       testes usam continuam nos dois casos, como data-* ou id. */
+    const migrada = view.hasAttribute('data-mw-migrada');
+    const cls = (novo, velho) => migrada ? novo : velho;
+
+    const hero = document.createElement('div');
+    hero.className = cls('ds-cartao ds-cartao-compacto', 'workspace-hero');
+    hero.dataset.workspaceHero = type;
+    hero.innerHTML = `<div class="${cls('ds-secao-cabeca','')}"><div><h4 class="${cls('ds-titulo','')}">${c.title}</h4><p class="${cls('ds-micro','')}">${c.intro}</p></div><div class="${cls('ds-secao-acoes','workspace-metrics')}" data-workspace-metrics="${type}"></div></div>`;
+    const panel = document.createElement('form'); panel.className = cls('ds-cartao','workspace-form'); panel.dataset.workspaceForm = type;
+    panel.innerHTML = `<div class="${cls('ds-secao-cabeca','workspace-form-head')}"><div><h4 class="${cls('ds-titulo','')}">${c.action}</h4><p class="${cls('ds-micro','')}">Preencha o essencial; você poderá continuar organizando depois.</p></div></div><div class="${cls('ds-grade-fixa-2','workspace-form-grid')}">${c.fields.map(([id,name,kind,placeholder,required,options]) => `<div class="${kind==='textarea'?cls('ds-largo','full'):''} ${cls('ds-campo'+(required?' ds-campo-obrigatorio':''),'')}"><label for="ws-${type}-${id}">${name}</label>${kind==='textarea'?`<textarea id="ws-${type}-${id}" placeholder="${esc(placeholder)}" ${required?'required':''}></textarea>`:kind==='select'?`<select id="ws-${type}-${id}"${typeof options==='string'?` data-opcoes="${esc(options)}"`:''}>${(typeof options==='string'?mwOpcoesDinamicas(options):options).map(o=>`<option ${o===placeholder?'selected':''}>${esc(o)}</option>`).join('')}</select>`:`<input id="ws-${type}-${id}" class="${cls('ds-entrada','')}" type="${kind}" placeholder="${esc(placeholder)}" ${kind==='number'?(id==='progress'?'min="0" max="100" value="0"':'min="1" max="99" step="1"'):''} ${required?'required':''}>`}</div>`).join('')}</div><div class="${cls('ds-dialogo-acoes','workspace-form-actions')}"><button type="button" data-workspace-cancel class="${cls('ds-btn ds-btn-secundario','workspace-cancel')}">Cancelar</button><button type="submit" data-workspace-submit class="${cls('ds-btn ds-btn-primario','workspace-submit')}">Salvar ${c.title.slice(0,-1)}</button></div>`;
     list.before(hero, panel);
     panel.addEventListener('submit', event => {
       event.preventDefault();
@@ -13919,20 +13959,20 @@ body.light #app .workspace-form input,body.light #app .workspace-form textarea,b
       if (emEdicao !== undefined && emEdicao !== '' && data[type][Number(emEdicao)]) {
         Object.assign(data[type][Number(emEdicao)], item);
         delete panel.dataset.editIndex;
-        const botao = panel.querySelector('.workspace-submit');
+        const botao = panel.querySelector('[data-workspace-submit]');
         if (botao) botao.textContent = `Salvar ${c.title.slice(0,-1)}`;
       } else {
         data[type].push(item);
       }
       save(); panel.reset(); panel.classList.remove('is-open'); updateMetrics(type); toast('Salvo no seu workspace.');
     });
-    panel.querySelector('.workspace-cancel').addEventListener('click', () => {
+    panel.querySelector('[data-workspace-cancel]').addEventListener('click', () => {
       panel.classList.remove('is-open');
       panel.reset();
       // Cancelar precisa desfazer o modo de edição também, senão o
       // próximo "adicionar" sobrescreveria o item que estava aberto.
       delete panel.dataset.editIndex;
-      const botao = panel.querySelector('.workspace-submit');
+      const botao = panel.querySelector('[data-workspace-submit]');
       if (botao) botao.textContent = `Salvar ${c.title.slice(0,-1)}`;
     });
     updateMetrics(type);
@@ -13951,7 +13991,12 @@ body.light #app .workspace-form input,body.light #app .workspace-form textarea,b
       : type==='projects' ? `${items.filter(x=>String(x.status||'')==='Em andamento').length}`
       : `${items.filter(x=>String(x.category||'')==='Estudos').length}`;
     const legenda = type==='subjects'?'média':type==='activities'?'com prazo':type==='institutions'?'disciplinas ligadas':type==='projects'?'em andamento':'de estudos';
-    box.innerHTML = `<div class="workspace-metric"><b>${items.length}</b><span>${label(type)}</span></div><div class="workspace-metric"><b>${extra}</b><span>${legenda}</span></div>`;
+    /* Mesmo conjunto-ou-conjunto do gerador: dentro de uma área migrada o
+       elemento não pode carregar `workspace-metric`, senão continua sendo
+       alcançado por `html body #app .workspace-metric{...!important}`. */
+    const migrada = !!(box.closest('[data-mw-migrada]'));
+    const c2 = (novo, velho) => migrada ? novo : velho;
+    box.innerHTML = `<div class="${c2('ds-selo ds-selo-liso','workspace-metric')}"><b>${items.length}</b><span>${label(type)}</span></div><div class="${c2('ds-selo ds-selo-liso','workspace-metric')}"><b>${extra}</b><span>${legenda}</span></div>`;
   };
   Object.keys(configs).forEach(renderWorkspace);
 
@@ -15622,7 +15667,7 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
   padding: var(--mw-e-3) var(--mw-e-4);
   border-top: 1px solid var(--mw-divisor);
 }
-#view-support[data-mw-migrada="1"] .mw-support-chat-form .mw-entrada{
+#view-support[data-mw-migrada="1"] .mw-support-chat-form .ds-entrada{
   flex: 1 1 auto; min-width: 0;
   border-radius: var(--mw-r-total);
 }
@@ -15673,7 +15718,13 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
    ===================================================================== */
 #view-support[data-mw-migrada="1"] :where(.card, .section, .section-head,
   .list, .list-item, .small-btn, .save-btn, .add-btn, .form-field,
-  .profile-form, .profile-actions, .form-error, .empty, .kicker){
+  .profile-form, .profile-actions, .form-error, .empty, .kicker),
+#view-institutions[data-mw-migrada="1"] :where(.card, .section, .section-head,
+  .list, .list-item, .small-btn, .save-btn, .add-btn, .form-field,
+  .empty, .empty-state, .kicker, .workspace-hero, .workspace-form,
+  .workspace-form-head, .workspace-form-grid, .workspace-form-actions,
+  .workspace-cancel, .workspace-submit, .workspace-metrics,
+  .mw-inst-selo, .mw-inst-vinculo){
   all: revert-layer;
 }
 </style>
@@ -15735,8 +15786,8 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
     if (!tickets.length) {
       /* Estado vazio do Design System: diz o que falta e oferece a ação,
          em vez de deixar um retângulo em branco. */
-      wrap.innerHTML = '<div class="mw-vazio">' +
-        '<span class="mw-vazio-icone" aria-hidden="true">?</span>' +
+      wrap.innerHTML = '<div class="ds-vazio">' +
+        '<span class="ds-vazio-icone" aria-hidden="true">?</span>' +
         '<h4>Nenhum atendimento aberto</h4>' +
         '<p>Abra um atendimento para falar com a gente. A conversa fica salva aqui neste navegador.</p>' +
         '</div>';
@@ -15744,15 +15795,15 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
     }
     /* .mw-item e .mw-selo vêm do sistema; mw-support-ticket fica só como
        gancho para o JS e para o teste da área encontrarem a linha. */
-    const SELO = { aberto: 'mw-selo-info', em_andamento: 'mw-selo-alerta', encerrado: 'mw-selo' };
+    const SELO = { aberto: 'ds-selo-info', em_andamento: 'ds-selo-alerta', encerrado: 'ds-selo' };
     wrap.innerHTML = tickets.map(t => `
-      <button type="button" class="mw-item mw-support-ticket" data-open-ticket="${t.id}" data-mw-ticket>
-        <span class="mw-item-texto">
-          <strong class="mw-item-titulo">${esc(t.subject)}</strong>
-          <small class="mw-item-apoio">#${esc(t.id)} · ${esc(t.type)} · ${fmtTime(t.updatedAt)}</small>
+      <button type="button" class="ds-item mw-support-ticket" data-open-ticket="${t.id}" data-mw-ticket>
+        <span class="ds-item-texto">
+          <strong class="ds-item-titulo">${esc(t.subject)}</strong>
+          <small class="ds-item-apoio">#${esc(t.id)} · ${esc(t.type)} · ${fmtTime(t.updatedAt)}</small>
         </span>
-        <span class="mw-item-acoes">
-          <span class="mw-selo ${SELO[t.status] || 'mw-selo'}">${esc(STATUS_LABEL[t.status] || t.status)}</span>
+        <span class="ds-item-acoes">
+          <span class="ds-selo ${SELO[t.status] || 'ds-selo'}">${esc(STATUS_LABEL[t.status] || t.status)}</span>
         </span>
       </button>
     `).join('');
@@ -18207,11 +18258,11 @@ html:root{
   /* --mw-muted era #9db2d4. Medido no pixel, dava 4,41:1 contra a
      superfície mais clara em que ele cai (o .section-card, que é um
      gradiente de branco a 9% sobre o fundo) — abaixo dos 4,5:1 que a
-     WCAG pede para texto de 11px. #a9b6d6 mede 4,68:1 ali, e é o
+     WCAG pede para texto de 11px. #b8c4e0 mede 4,68:1 ali, e é o
      mesmo valor de --ds-txt-2: dois tokens que sempre quiseram dizer
      a mesma coisa passam a dizer. No tema claro o token é outro
      (#4d6486, logo abaixo) e não muda. */
-  --mw-muted:#a9b6d6;
+  --mw-muted:#b8c4e0;
   --mw-accent:#38bdf8;
 }
 
@@ -22634,7 +22685,7 @@ body.light .eva-sugestao{background:rgba(109,40,217,.09);color:#6d28d9;border-co
       if (Object.prototype.hasOwnProperty.call(item, id2)) campo.value = item[id2] == null ? '' : item[id2];
     });
     painel.dataset.editIndex = String(indice);
-    var enviar = painel.querySelector('.workspace-submit');
+    var enviar = painel.querySelector('[data-workspace-submit]');
     if (enviar) enviar.textContent = 'Salvar alterações';
     painel.classList.add('is-open');
     painel.querySelector('input,textarea,select')?.focus();
@@ -24368,10 +24419,17 @@ html body.light #app .mw-inst-vinculo{ color:#101a30; }
   function pinta(dados){
     var lista = document.getElementById('institutionsList');
     if (!lista) return;
+    var raiz = document.getElementById('view-institutions');
+    var migrada = !!(raiz && raiz.hasAttribute('data-mw-migrada'));
+    var cls = function(novo, velho){ return migrada ? novo : velho; };
     var itens = (dados && Array.isArray(dados.institutions)) ? dados.institutions : [];
     var disciplinas = (dados && Array.isArray(dados.subjects)) ? dados.subjects : [];
     if (!itens.length){
-      lista.innerHTML = '<div class="empty-state">Nenhuma instituição cadastrada. Adicione onde você estuda para poder ligar suas disciplinas a ela.</div>';
+      lista.innerHTML = '<div class="' + cls('ds-vazio', 'empty-state') + '">'
+        + '<span class="ds-vazio-icone" aria-hidden="true">+</span>'
+        + '<h4>Nenhuma instituição cadastrada</h4>'
+        + '<p>Adicione onde você estuda para poder ligar suas disciplinas a ela.</p>'
+        + '</div>';
       return;
     }
     lista.innerHTML = itens.map(function(inst, i){
@@ -24381,15 +24439,20 @@ html body.light #app .mw-inst-vinculo{ color:#101a30; }
       }).length;
       var detalhe = [inst.course, inst.city].map(function(x){ return String(x||'').trim(); }).filter(Boolean).join(' · ');
       var sigla = String(inst.short || '').trim();
-      return '<div class="list-item">'
-        + '<div><strong>' + esc(nome) + (sigla ? ' <small>(' + esc(sigla) + ')</small>' : '') + '</strong>'
-        + '<small>' + esc(detalhe || 'Sem curso ou cidade informados') + '</small>'
-        + '<span class="mw-inst-selo"><b>' + esc(String(inst.kind || 'Instituição')) + '</b></span>'
-        + (ligadas ? '<span class="mw-inst-vinculo">' + ligadas + ' disciplina' + (ligadas === 1 ? '' : 's') + '</span>' : '')
+      /* Um conjunto OU o outro, pelo mesmo motivo do gerador do formulário:
+         carregar o nome antigo é continuar sendo alcançado por ele. */
+      /* data-mw-linha é o gancho durável: o nome da classe muda conforme a
+         área esteja migrada ou não, e teste que depende de classe quebra
+         na migração sem que nada tenha quebrado no app. */
+      return '<div data-mw-linha class="' + cls('ds-item', 'list-item') + '">'
+        + '<div class="' + cls('ds-item-texto', '') + '"><strong class="' + cls('ds-item-titulo', '') + '">' + esc(nome) + (sigla ? ' <small>(' + esc(sigla) + ')</small>' : '') + '</strong>'
+        + '<small class="' + cls('ds-item-apoio', '') + '">' + esc(detalhe || 'Sem curso ou cidade informados') + '</small>'
+        + '<span class="' + cls('ds-selo ds-selo-info', 'mw-inst-selo') + '"><b>' + esc(String(inst.kind || 'Instituição')) + '</b></span>'
+        + (ligadas ? '<span class="' + cls('ds-selo ds-selo-liso', 'mw-inst-vinculo') + '">' + ligadas + ' disciplina' + (ligadas === 1 ? '' : 's') + '</span>' : '')
         + '</div>'
-        + '<div class="mw-item-acoes">'
-        + '<button class="small-btn" data-edit="institutions" data-index="' + i + '">Editar</button>'
-        + '<button class="small-btn" data-delete="institutions" data-index="' + i + '">Excluir</button>'
+        + '<div class="' + cls('ds-item-acoes', 'mw-item-acoes') + '">'
+        + '<button class="' + cls('ds-btn ds-btn-fantasma ds-btn-p', 'small-btn') + '" data-edit="institutions" data-index="' + i + '">Editar</button>'
+        + '<button class="' + cls('ds-btn ds-btn-fantasma ds-btn-p', 'small-btn') + '" data-delete="institutions" data-index="' + i + '">Excluir</button>'
         + '</div></div>';
     }).join('');
   }
@@ -25394,7 +25457,7 @@ html body #app .mw-settings-em-breve{ color:var(--id-txt-3,#7b88a6) !important; 
   --ds-alt-3: 0 2px 4px rgba(2,6,20,.40), 0 18px 44px rgba(2,6,20,.38), 0 48px 110px rgba(2,6,20,.34);
 
   --ds-txt:   #eef2ff;
-  --ds-txt-2: #a9b6d6;
+  --ds-txt-2: #b8c4e0;
   /* #7c8aad media entre 3,7 e 4,2:1 sobre as superfícies de vidro mais
      claras — abaixo do mínimo de leitura para texto pequeno, que é onde
      este tom é usado (legendas, dicas, contadores). #8a99c1 é o tom mais
@@ -30597,7 +30660,7 @@ html body #app #view-settings #mwDiagBruto{
   padding: 10px 12px; border: 0; border-radius: var(--ds-r-1, 12px);
   background: var(--ds-vidro-2, rgba(255,255,255,.07));
   box-shadow: var(--ds-fio, none);
-  color: var(--ds-txt-2, #a9b6d6);
+  color: var(--ds-txt-2, #b8c4e0);
   font: 11.5px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
   resize: vertical;
 }
@@ -31049,7 +31112,7 @@ html body .mw-pular:focus{ transform: translateY(0); }
       }
       /* Escape também fecha o formulário de criação, que não é diálogo
          mas ocupa a tela do mesmo jeito. */
-      var form = document.querySelector('.workspace-form.is-open');
+      var form = document.querySelector('[data-workspace-form].is-open');
       if (form){
         e.preventDefault();
         form.classList.remove('is-open');
@@ -31134,7 +31197,7 @@ html body .mw-pular:focus{ transform: translateY(0); }
   /* O carimbo entra depois do preloader para não brigar com a abertura
      da marca, e sai sozinho. window.MW_PREVIA fica disponível para
      conferir a versão pelo console sem depender de ver o carimbo. */
-  window.MW_PREVIA = '87';
+  window.MW_PREVIA = 'v88-beta';
   function mostra(){
     if (document.getElementById('mwPreviaCarimbo')) return;
     var el = document.createElement('div');

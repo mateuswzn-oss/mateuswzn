@@ -6,7 +6,7 @@
 
    TRÊS REGRAS QUE FAZEM ISSO SER VERDADE, E NÃO PROMESSA
    ------------------------------------------------------
-   1. TUDO vive sob `.mw-ds`. Sem nenhum `.mw-ds` no documento, este arquivo é
+   1. TUDO vive sob `.ds`. Sem nenhum `.ds` no documento, este arquivo é
       inerte — não pinta um pixel. É isso que permite migrar uma área por vez
       sem que as outras sintam.
 
@@ -101,10 +101,10 @@
 }
 
 /* ---- SEMÂNTICOS: TEMA ESCURO (o padrão) -------------------------------------
-   Os tokens ficam em `.mw-ds`, e não em `:root`, para que a folha continue
+   Os tokens ficam em `.ds`, e não em `:root`, para que a folha continue
    inerte fora do escopo — inclusive as variáveis.
    ---------------------------------------------------------------------------- */
-.mw-ds{
+.ds{
   color-scheme: dark;
 
   /* superfícies, do chão para cima */
@@ -163,11 +163,11 @@
    abaixo do mínimo AA. Aqui os três níveis de texto foram escurecidos até
    7,1 / 5,0 / 4,6:1, preservando a hierarquia entre eles.
 
-   `body.light .mw-ds` existe para o app: ele já marca o tema claro assim.
+   `body.light .ds` existe para o app: ele já marca o tema claro assim.
    ---------------------------------------------------------------------------- */
-.mw-ds[data-mw-tema="claro"],
-[data-mw-tema="claro"] .mw-ds,
-body.light .mw-ds{
+.ds[data-ds-tema="claro"],
+[data-ds-tema="claro"] .ds,
+body.light .ds{
   color-scheme: light;
 
   --mw-chao:#eef4ff;
@@ -216,7 +216,7 @@ body.light .mw-ds{
 /* Sem escolha explícita em lugar nenhum, segue o sistema. Vale sobretudo para
    a galeria e para quem embutir o DS fora do app. */
 @media (prefers-color-scheme: light){
-  html:not([data-mw-tema]) body:not(.light) .mw-ds:not([data-mw-tema="escuro"]):not([data-mw-tema="claro"]){
+  html:not([data-ds-tema]) body:not(.light) .ds:not([data-ds-tema="escuro"]):not([data-ds-tema="claro"]){
     color-scheme: light;
     --mw-chao:#eef4ff;
     --mw-sup-1:#ffffff;
@@ -249,7 +249,7 @@ body.light .mw-ds{
 }
 
 /* ---- MEDIDAS: valem nos dois temas ------------------------------------------ */
-.mw-ds{
+.ds{
   /* Escala de espaçamento em passos de 4px. Um componente nunca escreve um
      número solto: escolhe um degrau. É o que mantém o ritmo entre áreas
      escritas em momentos diferentes. */
@@ -324,7 +324,7 @@ body.light .mw-ds{
 
 /* Base do escopo. Não mexe em html nem em body — o DS não é dono do
    documento, é dono do que está dentro dele. */
-.mw-ds{
+.ds{
   font-family: var(--mw-fonte);
   font-size: var(--mw-t-corpo);
   line-height: var(--mw-l-normal);
@@ -332,9 +332,9 @@ body.light .mw-ds{
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
-.mw-ds *,
-.mw-ds *::before,
-.mw-ds *::after{ box-sizing: border-box; }
+.ds *,
+.ds *::before,
+.ds *::after{ box-sizing: border-box; }
 
 /* ---- LIQUID GLASS -----------------------------------------------------------
    O vidro é feito de quatro coisas, e as quatro importam:
@@ -351,7 +351,7 @@ body.light .mw-ds{
    translúcido sobre um fundo qualquer vira texto ilegível. Ali o vidro vira
    superfície sólida — muda o efeito, não a legibilidade.
    ---------------------------------------------------------------------------- */
-.mw-ds .mw-vidro{
+.ds .ds-vidro{
   position: relative;
   background: var(--mw-vidro-cor);
   border: 1px solid var(--mw-vidro-borda);
@@ -360,12 +360,12 @@ body.light .mw-ds{
   -webkit-backdrop-filter: blur(var(--mw-vidro-desfoque)) saturate(var(--mw-vidro-saturacao));
   box-shadow: var(--mw-sombra-2), inset 0 1px 0 var(--mw-vidro-brilho);
 }
-.mw-ds .mw-vidro-2{
+.ds .ds-vidro-2{
   background: var(--mw-vidro-cor-2);
 }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))){
-  .mw-ds .mw-vidro,
-  .mw-ds .mw-vidro-2{
+  .ds .ds-vidro,
+  .ds .ds-vidro-2{
     background: var(--mw-vidro-solido);
     border-color: var(--mw-borda);
   }
@@ -373,81 +373,81 @@ body.light .mw-ds{
 
 /* Superfícies opacas, para quando o conteúdo precisa de fundo previsível
    (tabela, formulário longo, qualquer coisa com muito texto pequeno). */
-.mw-ds .mw-sup{
+.ds .ds-sup{
   background: var(--mw-sup-1);
   border: 1px solid var(--mw-borda);
   border-radius: var(--mw-r-4);
 }
-.mw-ds .mw-sup-2{ background: var(--mw-sup-2); }
-.mw-ds .mw-sup-3{ background: var(--mw-sup-3); }
-.mw-ds .mw-elev-1{ box-shadow: var(--mw-sombra-1); }
-.mw-ds .mw-elev-2{ box-shadow: var(--mw-sombra-2); }
-.mw-ds .mw-elev-3{ box-shadow: var(--mw-sombra-3); }
+.ds .ds-sup-2{ background: var(--mw-sup-2); }
+.ds .ds-sup-3{ background: var(--mw-sup-3); }
+.ds .ds-elev-1{ box-shadow: var(--mw-sombra-1); }
+.ds .ds-elev-2{ box-shadow: var(--mw-sombra-2); }
+.ds .ds-elev-3{ box-shadow: var(--mw-sombra-3); }
 
 /* ---- TIPOGRAFIA -------------------------------------------------------------
    Papéis, não tamanhos. Quem escreve uma tela escolhe "isto é um título de
    área", e não "isto tem 22px" — é assim que o sistema consegue reajustar a
    escala inteira depois sem caçar número por número.
    ---------------------------------------------------------------------------- */
-.mw-ds .mw-tela-titulo{
+.ds .ds-tela-titulo{
   margin: 0; font-size: var(--mw-t-tela); font-weight: 700;
   letter-spacing: -.02em; line-height: var(--mw-l-apertada);
   color: var(--mw-txt-1); text-wrap: balance;
 }
-.mw-ds .mw-titulo{
+.ds .ds-titulo{
   margin: 0; font-size: var(--mw-t-titulo); font-weight: 650;
   letter-spacing: -.01em; line-height: var(--mw-l-apertada);
   color: var(--mw-txt-1); text-wrap: balance;
 }
-.mw-ds .mw-corpo{ margin: 0; font-size: var(--mw-t-corpo); color: var(--mw-txt-2); }
-.mw-ds .mw-corpo-g{ margin: 0; font-size: var(--mw-t-corpo-g); line-height: var(--mw-l-solta); color: var(--mw-txt-2); max-width: 68ch; }
-.mw-ds .mw-micro{ margin: 0; font-size: var(--mw-t-micro); color: var(--mw-txt-3); }
-.mw-ds .mw-rotulo{
+.ds .ds-corpo{ margin: 0; font-size: var(--mw-t-corpo); color: var(--mw-txt-2); }
+.ds .ds-corpo-g{ margin: 0; font-size: var(--mw-t-corpo-g); line-height: var(--mw-l-solta); color: var(--mw-txt-2); max-width: 68ch; }
+.ds .ds-micro{ margin: 0; font-size: var(--mw-t-micro); color: var(--mw-txt-3); }
+.ds .ds-rotulo{
   margin: 0; font-size: var(--mw-t-rotulo); font-weight: 650;
   letter-spacing: .09em; text-transform: uppercase; color: var(--mw-txt-3);
 }
-.mw-ds .mw-numero{
+.ds .ds-numero{
   font-family: var(--mw-fonte-num);
   font-size: var(--mw-t-numero); font-weight: 700;
   line-height: 1; letter-spacing: -.03em;
   font-variant-numeric: tabular-nums; color: var(--mw-txt-1);
 }
 /* Onde dígitos se alinham em coluna, eles têm de ter a mesma largura. */
-.mw-ds .mw-tabular{ font-variant-numeric: tabular-nums; }
+.ds .ds-tabular{ font-variant-numeric: tabular-nums; }
 
 /* ---- LAYOUT -----------------------------------------------------------------
    Espaçamento é trabalho do container, com gap — nunca margem por elemento,
    que colapsa, duplica e some quando o filho é escondido.
    ---------------------------------------------------------------------------- */
-.mw-ds .mw-pilha{ display: flex; flex-direction: column; gap: var(--mw-e-4); }
-.mw-ds .mw-pilha-2{ gap: var(--mw-e-2); }
-.mw-ds .mw-pilha-6{ gap: var(--mw-e-6); }
-.mw-ds .mw-linha{ display: flex; align-items: center; gap: var(--mw-e-3); }
-.mw-ds .mw-linha-topo{ align-items: flex-start; }
-.mw-ds .mw-espremer{ margin-left: auto; }
+.ds .ds-pilha{ display: flex; flex-direction: column; gap: var(--mw-e-4); }
+.ds .ds-pilha-2{ gap: var(--mw-e-2); }
+.ds .ds-pilha-6{ gap: var(--mw-e-6); }
+.ds .ds-linha{ display: flex; align-items: center; gap: var(--mw-e-3); }
+.ds .ds-linha-topo{ align-items: flex-start; }
+.ds .ds-espremer{ margin-left: auto; }
 /* min-width:0 num filho de flex é o que impede o texto longo de empurrar o
    irmão para fora do cartão. Foi assim que "Excluir" já virou "Exc". */
-.mw-ds .mw-crescer{ flex: 1 1 auto; min-width: 0; }
-.mw-ds .mw-fixo{ flex: 0 0 auto; }
+.ds .ds-crescer{ flex: 1 1 auto; min-width: 0; }
+.ds .ds-fixo{ flex: 0 0 auto; }
 
 /* Grade que se adapta ao ESPAÇO QUE TEM, não à largura da janela: um cartão
    dentro de uma coluna estreita se comporta como se estivesse num celular,
    que é o que o olho espera. */
-.mw-ds .mw-grade{
+.ds .ds-grade{
   display: grid;
   gap: var(--mw-e-4);
   grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
 }
-.mw-ds .mw-grade-2{ grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); }
-.mw-ds .mw-grade-fixa-2{ display: grid; gap: var(--mw-e-4); grid-template-columns: 1fr; }
+.ds .ds-grade-2{ grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); }
+.ds .ds-grade-fixa-2{ display: grid; gap: var(--mw-e-4); grid-template-columns: 1fr; }
 @media (min-width: 640px){
-  .mw-ds .mw-grade-fixa-2{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ds .ds-grade-fixa-2{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-.mw-ds .mw-largo{ grid-column: 1 / -1; }
+.ds .ds-largo{ grid-column: 1 / -1; }
 
 /* Conteúdo largo (tabela, código, quadro) rola dentro do próprio container.
    O corpo da página nunca rola na horizontal. */
-.mw-ds .mw-rolagem-h{
+.ds .ds-rolagem-h{
   overflow-x: auto;
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
@@ -466,7 +466,7 @@ body.light .mw-ds{
    camadas (uma do tom do chão, outra do acento) para permanecer visível tanto
    sobre superfície clara quanto escura.
    ---------------------------------------------------------------------------- */
-.mw-ds :focus-visible{
+.ds :focus-visible{
   outline: none;
   box-shadow: var(--mw-foco);
   border-radius: var(--mw-r-1);
@@ -475,7 +475,7 @@ body.light .mw-ds{
 /* ---- BOTÃO ------------------------------------------------------------------
    Uma base, quatro tons, três tamanhos, e os seis estados completos.
    ---------------------------------------------------------------------------- */
-.mw-ds .mw-btn{
+.ds .ds-btn{
   --_alt: 38px;
   display: inline-flex; align-items: center; justify-content: center;
   gap: var(--mw-e-2);
@@ -494,63 +494,63 @@ body.light .mw-ds{
               transform var(--mw-d-instante) var(--mw-curva),
               box-shadow var(--mw-d-rapida) var(--mw-curva);
 }
-.mw-ds .mw-btn:active:not(:disabled){ transform: translateY(1px) scale(.99); }
+.ds .ds-btn:active:not(:disabled){ transform: translateY(1px) scale(.99); }
 
 /* primário: o gradiente da marca, com o véu que garante contraste */
-.mw-ds .mw-btn-primario{
+.ds .ds-btn-primario{
   background: var(--mw-ac-grad-forte);
   color: var(--mw-txt-sobre-acento);
   box-shadow: var(--mw-sombra-1);
 }
-.mw-ds .mw-btn-primario:hover:not(:disabled){ filter: brightness(1.08); box-shadow: var(--mw-sombra-2); }
+.ds .ds-btn-primario:hover:not(:disabled){ filter: brightness(1.08); box-shadow: var(--mw-sombra-2); }
 
 /* secundário: superfície, para a ação que acompanha a principal */
-.mw-ds .mw-btn-secundario{
+.ds .ds-btn-secundario{
   background: var(--mw-sup-2);
   border-color: var(--mw-borda);
   color: var(--mw-txt-1);
 }
-.mw-ds .mw-btn-secundario:hover:not(:disabled){ background: var(--mw-sup-3); border-color: var(--mw-borda-forte); }
+.ds .ds-btn-secundario:hover:not(:disabled){ background: var(--mw-sup-3); border-color: var(--mw-borda-forte); }
 
 /* fantasma: sem peso visual, para ação terciária dentro de um cartão */
-.mw-ds .mw-btn-fantasma{ background: transparent; color: var(--mw-txt-2); }
-.mw-ds .mw-btn-fantasma:hover:not(:disabled){ background: var(--mw-ac-suave); color: var(--mw-txt-1); }
+.ds .ds-btn-fantasma{ background: transparent; color: var(--mw-txt-2); }
+.ds .ds-btn-fantasma:hover:not(:disabled){ background: var(--mw-ac-suave); color: var(--mw-txt-1); }
 
 /* perigo: só para o que destrói dado, e nunca como ação padrão de um diálogo */
-.mw-ds .mw-btn-perigo{
+.ds .ds-btn-perigo{
   background: var(--mw-perigo-bg);
   border-color: var(--mw-perigo-bd);
   color: var(--mw-perigo);
 }
-.mw-ds .mw-btn-perigo:hover:not(:disabled){ background: color-mix(in srgb, var(--mw-perigo) 22%, transparent); }
+.ds .ds-btn-perigo:hover:not(:disabled){ background: color-mix(in srgb, var(--mw-perigo) 22%, transparent); }
 
-.mw-ds .mw-btn-p{ --_alt: 30px; padding: 0 var(--mw-e-3); font-size: var(--mw-t-micro); }
-.mw-ds .mw-btn-g{ --_alt: 46px; padding: 0 var(--mw-e-6); font-size: var(--mw-t-corpo-g); }
-.mw-ds .mw-btn-largo{ width: 100%; }
+.ds .ds-btn-p{ --_alt: 30px; padding: 0 var(--mw-e-3); font-size: var(--mw-t-micro); }
+.ds .ds-btn-g{ --_alt: 46px; padding: 0 var(--mw-e-6); font-size: var(--mw-t-corpo-g); }
+.ds .ds-btn-largo{ width: 100%; }
 
 /* desabilitado: opacidade E cursor E pointer-events fora, porque só um dos
    três deixa o botão parecendo clicável para alguém */
-.mw-ds .mw-btn:disabled,
-.mw-ds .mw-btn[aria-disabled="true"]{
+.ds .ds-btn:disabled,
+.ds .ds-btn[aria-disabled="true"]{
   opacity: .48; cursor: not-allowed; transform: none; filter: none; pointer-events: none;
 }
 
 /* carregando: o rótulo some mas o botão NÃO muda de tamanho — senão o layout
    pula no clique, e a pessoa perde o lugar da mão */
-.mw-ds .mw-btn[data-mw-carregando="1"]{ color: transparent; pointer-events: none; }
-.mw-ds .mw-btn[data-mw-carregando="1"]::after{
+.ds .ds-btn[data-ds-carregando="1"]{ color: transparent; pointer-events: none; }
+.ds .ds-btn[data-ds-carregando="1"]::after{
   content: ''; position: absolute;
   width: 15px; height: 15px; border-radius: 50%;
   border: 2px solid currentColor; border-top-color: transparent;
   color: var(--mw-txt-sobre-acento);
-  animation: mw-girar 620ms linear infinite;
+  animation: ds-girar 620ms linear infinite;
 }
-.mw-ds .mw-btn-secundario[data-mw-carregando="1"]::after,
-.mw-ds .mw-btn-fantasma[data-mw-carregando="1"]::after{ color: var(--mw-txt-2); }
-@keyframes mw-girar{ to{ transform: rotate(360deg); } }
+.ds .ds-btn-secundario[data-ds-carregando="1"]::after,
+.ds .ds-btn-fantasma[data-ds-carregando="1"]::after{ color: var(--mw-txt-2); }
+@keyframes ds-girar{ to{ transform: rotate(360deg); } }
 
 /* botão só de ícone: quadrado e no mínimo confortável para o dedo */
-.mw-ds .mw-btn-icone{
+.ds .ds-btn-icone{
   padding: 0; width: var(--_alt); min-width: var(--_alt);
   border-radius: var(--mw-r-2);
 }
@@ -559,17 +559,17 @@ body.light .mw-ds{
    Rótulo sempre visível, acima. Placeholder não é rótulo: some ao digitar,
    e quem voltar ao formulário depois não sabe mais o que aquele campo era.
    ---------------------------------------------------------------------------- */
-.mw-ds .mw-campo{ display: flex; flex-direction: column; gap: var(--mw-e-2); }
-.mw-ds .mw-campo > label{
+.ds .ds-campo{ display: flex; flex-direction: column; gap: var(--mw-e-2); }
+.ds .ds-campo > label{
   font-size: var(--mw-t-micro); font-weight: 600; color: var(--mw-txt-2);
 }
-.mw-ds .mw-campo-obrigatorio > label::after{
+.ds .ds-campo-obrigatorio > label::after{
   content: ' *'; color: var(--mw-perigo); font-weight: 700;
 }
-.mw-ds .mw-entrada,
-.mw-ds .mw-campo input:not([type="checkbox"]):not([type="radio"]),
-.mw-ds .mw-campo select,
-.mw-ds .mw-campo textarea{
+.ds .ds-entrada,
+.ds .ds-campo input:not([type="checkbox"]):not([type="radio"]),
+.ds .ds-campo select,
+.ds .ds-campo textarea{
   width: 100%;
   min-height: 40px;
   padding: 10px var(--mw-e-3);
@@ -584,34 +584,34 @@ body.light .mw-ds{
 /* 16px no celular: abaixo disso o Safari do iOS dá zoom ao focar o campo, e a
    tela inteira sai do lugar. */
 @media (max-width: 640px){
-  .mw-ds .mw-entrada,
-  .mw-ds .mw-campo input:not([type="checkbox"]):not([type="radio"]),
-  .mw-ds .mw-campo select,
-  .mw-ds .mw-campo textarea{ font-size: 16px; }
+  .ds .ds-entrada,
+  .ds .ds-campo input:not([type="checkbox"]):not([type="radio"]),
+  .ds .ds-campo select,
+  .ds .ds-campo textarea{ font-size: 16px; }
 }
-.mw-ds .mw-campo textarea{ min-height: 96px; resize: vertical; line-height: var(--mw-l-normal); }
-.mw-ds .mw-entrada::placeholder,
-.mw-ds .mw-campo ::placeholder{ color: var(--mw-txt-3); }
-.mw-ds .mw-entrada:hover:not(:disabled),
-.mw-ds .mw-campo input:hover:not(:disabled),
-.mw-ds .mw-campo textarea:hover:not(:disabled){ border-color: var(--mw-borda-forte); }
-.mw-ds .mw-entrada:focus-visible,
-.mw-ds .mw-campo input:focus-visible,
-.mw-ds .mw-campo select:focus-visible,
-.mw-ds .mw-campo textarea:focus-visible{ border-color: var(--mw-ac); }
-.mw-ds .mw-entrada:disabled,
-.mw-ds .mw-campo input:disabled,
-.mw-ds .mw-campo textarea:disabled{ opacity: .55; cursor: not-allowed; }
-.mw-ds .mw-campo-erro .mw-entrada,
-.mw-ds .mw-campo-erro input,
-.mw-ds .mw-campo-erro textarea{ border-color: var(--mw-perigo); }
+.ds .ds-campo textarea{ min-height: 96px; resize: vertical; line-height: var(--mw-l-normal); }
+.ds .ds-entrada::placeholder,
+.ds .ds-campo ::placeholder{ color: var(--mw-txt-3); }
+.ds .ds-entrada:hover:not(:disabled),
+.ds .ds-campo input:hover:not(:disabled),
+.ds .ds-campo textarea:hover:not(:disabled){ border-color: var(--mw-borda-forte); }
+.ds .ds-entrada:focus-visible,
+.ds .ds-campo input:focus-visible,
+.ds .ds-campo select:focus-visible,
+.ds .ds-campo textarea:focus-visible{ border-color: var(--mw-ac); }
+.ds .ds-entrada:disabled,
+.ds .ds-campo input:disabled,
+.ds .ds-campo textarea:disabled{ opacity: .55; cursor: not-allowed; }
+.ds .ds-campo-erro .ds-entrada,
+.ds .ds-campo-erro input,
+.ds .ds-campo-erro textarea{ border-color: var(--mw-perigo); }
 /* A mensagem de erro é ligada ao campo por aria-describedby na marcação; a
    cor sozinha não comunica erro para quem não distingue vermelho. */
-.mw-ds .mw-campo-aviso{ font-size: var(--mw-t-micro); color: var(--mw-txt-3); }
-.mw-ds .mw-campo-erro .mw-campo-aviso{ color: var(--mw-perigo); }
+.ds .ds-campo-aviso{ font-size: var(--mw-t-micro); color: var(--mw-txt-3); }
+.ds .ds-campo-erro .ds-campo-aviso{ color: var(--mw-perigo); }
 
 /* interruptor */
-.mw-ds .mw-chave{
+.ds .ds-chave{
   appearance: none; -webkit-appearance: none;
   position: relative; flex: 0 0 auto;
   width: 44px; height: 26px; border-radius: var(--mw-r-total);
@@ -619,21 +619,21 @@ body.light .mw-ds{
   cursor: pointer;
   transition: background var(--mw-d-rapida) var(--mw-curva), border-color var(--mw-d-rapida) var(--mw-curva);
 }
-.mw-ds .mw-chave::after{
+.ds .ds-chave::after{
   content: ''; position: absolute; top: 2px; left: 2px;
   width: 20px; height: 20px; border-radius: 50%;
   background: var(--mw-txt-2);
   transition: transform var(--mw-d-media) var(--mw-curva-mola), background var(--mw-d-rapida) var(--mw-curva);
 }
-.mw-ds .mw-chave:checked{ background: var(--mw-ac); border-color: transparent; }
-.mw-ds .mw-chave:checked::after{ transform: translateX(18px); background: #fff; }
-.mw-ds .mw-chave:disabled{ opacity: .5; cursor: not-allowed; }
+.ds .ds-chave:checked{ background: var(--mw-ac); border-color: transparent; }
+.ds .ds-chave:checked::after{ transform: translateX(18px); background: #fff; }
+.ds .ds-chave:disabled{ opacity: .5; cursor: not-allowed; }
 
 /* ---- CARTÃO -----------------------------------------------------------------
    Duas variantes de material: vidro (padrão, o material do MW) e sólido, para
    conteúdo denso onde a translucidez atrapalha a leitura.
    ---------------------------------------------------------------------------- */
-.mw-ds .mw-cartao{
+.ds .ds-cartao{
   display: flex; flex-direction: column; gap: var(--mw-e-4);
   padding: var(--mw-e-5);
   background: var(--mw-vidro-cor);
@@ -646,29 +646,44 @@ body.light .mw-ds{
   container-type: inline-size;
 }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))){
-  .mw-ds .mw-cartao{ background: var(--mw-vidro-solido); border-color: var(--mw-borda); }
+  .ds .ds-cartao{ background: var(--mw-vidro-solido); border-color: var(--mw-borda); }
 }
-.mw-ds .mw-cartao-solido{
+
+/* Vidro sobre vidro não tem fundo previsível. A superfície de baixo já é
+   translúcida, então a de cima compõe sobre o que estiver atrás das duas
+   — e no app o que está atrás é um gradiente que se move sozinho. Foi
+   exatamente assim que o texto de apoio da área migrada caiu para 3,4:1
+   medido no pixel, enquanto o MESMO componente dá 4,9:1 na galeria: lá o
+   chão é #020617 e parado; aqui são duas camadas de vidro sobre um fundo
+   claro que passa. Cartão dentro de cartão é superfície opaca — o
+   material continua sendo vidro onde o vidro tem um chão conhecido. */
+.ds .ds-cartao .ds-cartao{
+  background: var(--mw-sup-2);
+  border-color: var(--mw-borda);
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
+.ds .ds-cartao-solido{
   background: var(--mw-sup-1);
   border-color: var(--mw-borda);
   backdrop-filter: none; -webkit-backdrop-filter: none;
   box-shadow: var(--mw-sombra-1);
 }
-.mw-ds .mw-cartao-compacto{ padding: var(--mw-e-4); gap: var(--mw-e-3); }
+.ds .ds-cartao-compacto{ padding: var(--mw-e-4); gap: var(--mw-e-3); }
 /* cartão clicável: só ele reage ao ponteiro; cartão de leitura não deve
    sugerir que se clica */
-.mw-ds .mw-cartao-acionavel{
+.ds .ds-cartao-acionavel{
   cursor: pointer; text-align: left; width: 100%;
   transition: transform var(--mw-d-rapida) var(--mw-curva), box-shadow var(--mw-d-rapida) var(--mw-curva), border-color var(--mw-d-rapida) var(--mw-curva);
 }
-.mw-ds .mw-cartao-acionavel:hover{ transform: translateY(-2px); box-shadow: var(--mw-sombra-3); border-color: var(--mw-borda-forte); }
-.mw-ds .mw-cartao-acionavel:active{ transform: translateY(0); }
+.ds .ds-cartao-acionavel:hover{ transform: translateY(-2px); box-shadow: var(--mw-sombra-3); border-color: var(--mw-borda-forte); }
+.ds .ds-cartao-acionavel:active{ transform: translateY(0); }
 
-.mw-ds .mw-cartao-cabeca{
+.ds .ds-cartao-cabeca{
   display: flex; align-items: flex-start; justify-content: space-between;
   gap: var(--mw-e-3);
 }
-.mw-ds .mw-cartao-cabeca > div:first-child{ min-width: 0; }
+.ds .ds-cartao-cabeca > div:first-child{ min-width: 0; }
 
 }
 
@@ -679,8 +694,8 @@ body.light .mw-ds{
    outro. O min-width:0 no bloco de texto não é detalhe — sem ele o texto longo
    espreme os botões até o rótulo virar "Exc".
    ---------------------------------------------------------------------------- */
-.mw-ds .mw-lista{ display: flex; flex-direction: column; gap: var(--mw-e-2); }
-.mw-ds .mw-item{
+.ds .ds-lista{ display: flex; flex-direction: column; gap: var(--mw-e-2); }
+.ds .ds-item{
   display: flex; align-items: center; gap: var(--mw-e-4);
   padding: var(--mw-e-3) var(--mw-e-4);
   background: var(--mw-sup-2);
@@ -688,37 +703,37 @@ body.light .mw-ds{
   border-radius: var(--mw-r-3);
   transition: border-color var(--mw-d-rapida) var(--mw-curva), background var(--mw-d-rapida) var(--mw-curva);
 }
-.mw-ds .mw-item:hover{ border-color: var(--mw-borda-forte); }
-.mw-ds .mw-item-texto{ flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
-.mw-ds .mw-item-titulo{
+.ds .ds-item:hover{ border-color: var(--mw-borda-forte); }
+.ds .ds-item-texto{ flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.ds .ds-item-titulo{
   font-size: var(--mw-t-corpo); font-weight: 600; color: var(--mw-txt-1);
   overflow-wrap: anywhere;
 }
-.mw-ds .mw-item-apoio{ font-size: var(--mw-t-micro); color: var(--mw-txt-3); }
-.mw-ds .mw-item-acoes{ flex: 0 0 auto; display: flex; align-items: center; gap: var(--mw-e-2); }
-.mw-ds .mw-item-acoes .mw-btn{ white-space: nowrap; }
+.ds .ds-item-apoio{ font-size: var(--mw-t-micro); color: var(--mw-txt-3); }
+.ds .ds-item-acoes{ flex: 0 0 auto; display: flex; align-items: center; gap: var(--mw-e-2); }
+.ds .ds-item-acoes .ds-btn{ white-space: nowrap; }
 /* Numa coluna estreita, as ações descem para baixo do texto em vez de
    espremê-lo. Container query: depende do cartão, não da janela. */
 @container (max-width: 380px){
-  .mw-ds .mw-item{ flex-direction: column; align-items: stretch; }
-  .mw-ds .mw-item-acoes{ justify-content: flex-end; }
+  .ds .ds-item{ flex-direction: column; align-items: stretch; }
+  .ds .ds-item-acoes{ justify-content: flex-end; }
 }
 
 /* corte de texto: n linhas e reticências */
-.mw-ds .mw-cortar-1{ overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.mw-ds .mw-cortar-2,
-.mw-ds .mw-cortar-3{
+.ds .ds-cortar-1{ overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ds .ds-cortar-2,
+.ds .ds-cortar-3{
   display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
 }
-.mw-ds .mw-cortar-2{ -webkit-line-clamp: 2; line-clamp: 2; }
-.mw-ds .mw-cortar-3{ -webkit-line-clamp: 3; line-clamp: 3; }
+.ds .ds-cortar-2{ -webkit-line-clamp: 2; line-clamp: 2; }
+.ds .ds-cortar-3{ -webkit-line-clamp: 3; line-clamp: 3; }
 
 /* ---- SELO / CHIP ------------------------------------------------------------
    Estado em forma, não só em cor: cada selo tem um ponto à esquerda, para
    quem não distingue as cores continuar diferenciando pelo texto e pela
    posição na sequência.
    ---------------------------------------------------------------------------- */
-.mw-ds .mw-selo{
+.ds .ds-selo{
   display: inline-flex; align-items: center; gap: 6px;
   padding: 3px 9px 3px 7px;
   border: 1px solid var(--mw-neutro-bd);
@@ -728,19 +743,19 @@ body.light .mw-ds{
   font-size: var(--mw-t-micro); font-weight: 600; line-height: 1.4;
   white-space: nowrap;
 }
-.mw-ds .mw-selo::before{
+.ds .ds-selo::before{
   content: ''; width: 6px; height: 6px; border-radius: 50%;
   background: currentColor; flex: 0 0 auto;
 }
-.mw-ds .mw-selo-ok{ background: var(--mw-ok-bg); border-color: var(--mw-ok-bd); color: var(--mw-ok); }
-.mw-ds .mw-selo-alerta{ background: var(--mw-alerta-bg); border-color: var(--mw-alerta-bd); color: var(--mw-alerta); }
-.mw-ds .mw-selo-perigo{ background: var(--mw-perigo-bg); border-color: var(--mw-perigo-bd); color: var(--mw-perigo); }
-.mw-ds .mw-selo-info{ background: var(--mw-info-bg); border-color: var(--mw-info-bd); color: var(--mw-info); }
-.mw-ds .mw-selo-acento{ background: var(--mw-ac-suave); border-color: var(--mw-ac); color: var(--mw-ac-txt); }
-.mw-ds .mw-selo-liso::before{ display: none; }
+.ds .ds-selo-ok{ background: var(--mw-ok-bg); border-color: var(--mw-ok-bd); color: var(--mw-ok); }
+.ds .ds-selo-alerta{ background: var(--mw-alerta-bg); border-color: var(--mw-alerta-bd); color: var(--mw-alerta); }
+.ds .ds-selo-perigo{ background: var(--mw-perigo-bg); border-color: var(--mw-perigo-bd); color: var(--mw-perigo); }
+.ds .ds-selo-info{ background: var(--mw-info-bg); border-color: var(--mw-info-bd); color: var(--mw-info); }
+.ds .ds-selo-acento{ background: var(--mw-ac-suave); border-color: var(--mw-ac); color: var(--mw-ac-txt); }
+.ds .ds-selo-liso::before{ display: none; }
 
 /* filtro: selo que é botão, com estado ligado */
-.mw-ds .mw-filtro{
+.ds .ds-filtro{
   display: inline-flex; align-items: center; gap: 6px;
   min-height: 30px; padding: 0 var(--mw-e-3);
   background: var(--mw-sup-2); border: 1px solid var(--mw-borda);
@@ -749,36 +764,36 @@ body.light .mw-ds{
   cursor: pointer;
   transition: background var(--mw-d-rapida) var(--mw-curva), color var(--mw-d-rapida) var(--mw-curva), border-color var(--mw-d-rapida) var(--mw-curva);
 }
-.mw-ds .mw-filtro:hover{ border-color: var(--mw-borda-forte); color: var(--mw-txt-1); }
-.mw-ds .mw-filtro[aria-pressed="true"]{
+.ds .ds-filtro:hover{ border-color: var(--mw-borda-forte); color: var(--mw-txt-1); }
+.ds .ds-filtro[aria-pressed="true"]{
   background: var(--mw-ac-suave); border-color: var(--mw-ac); color: var(--mw-ac-txt);
 }
 
 /* ---- CARTÃO DE NÚMERO ------------------------------------------------------- */
-.mw-ds .mw-resumo{
+.ds .ds-resumo{
   display: flex; flex-direction: column; gap: var(--mw-e-1);
   padding: var(--mw-e-4);
   background: var(--mw-sup-2); border: 1px solid var(--mw-borda);
   border-radius: var(--mw-r-3);
 }
-.mw-ds .mw-resumo .mw-numero{ margin-top: var(--mw-e-1); }
-.mw-ds .mw-resumo-delta{ font-size: var(--mw-t-micro); font-weight: 600; }
-.mw-ds .mw-resumo-delta[data-mw-sinal="+"]{ color: var(--mw-ok); }
-.mw-ds .mw-resumo-delta[data-mw-sinal="-"]{ color: var(--mw-perigo); }
+.ds .ds-resumo .ds-numero{ margin-top: var(--mw-e-1); }
+.ds .ds-resumo-delta{ font-size: var(--mw-t-micro); font-weight: 600; }
+.ds .ds-resumo-delta[data-ds-sinal="+"]{ color: var(--mw-ok); }
+.ds .ds-resumo-delta[data-ds-sinal="-"]{ color: var(--mw-perigo); }
 
 /* ---- BARRA DE PROGRESSO ----------------------------------------------------- */
-.mw-ds .mw-progresso{
+.ds .ds-progresso{
   height: 6px; border-radius: var(--mw-r-total);
   background: var(--mw-sup-afundada); overflow: hidden;
 }
-.mw-ds .mw-progresso > i{
+.ds .ds-progresso > i{
   display: block; height: 100%; border-radius: inherit;
   background: var(--mw-ac-grad);
   transition: width var(--mw-d-lenta) var(--mw-curva-entrada);
 }
 
 /* ---- AVATAR ----------------------------------------------------------------- */
-.mw-ds .mw-avatar{
+.ds .ds-avatar{
   flex: 0 0 auto;
   width: 40px; height: 40px; border-radius: 50%;
   display: grid; place-items: center; overflow: hidden;
@@ -786,16 +801,16 @@ body.light .mw-ds{
   font-size: var(--mw-t-micro); font-weight: 700; letter-spacing: .02em;
   border: 1px solid var(--mw-vidro-borda);
 }
-.mw-ds .mw-avatar img{ width: 100%; height: 100%; object-fit: cover; display: block; }
-.mw-ds .mw-avatar-p{ width: 28px; height: 28px; font-size: 10px; }
-.mw-ds .mw-avatar-g{ width: 64px; height: 64px; font-size: var(--mw-t-corpo-g); }
+.ds .ds-avatar img{ width: 100%; height: 100%; object-fit: cover; display: block; }
+.ds .ds-avatar-p{ width: 28px; height: 28px; font-size: 10px; }
+.ds .ds-avatar-g{ width: 64px; height: 64px; font-size: var(--mw-t-corpo-g); }
 
 /* ---- NAVEGAÇÃO --------------------------------------------------------------
    O mesmo componente serve à barra lateral no desktop e à barra de baixo no
    celular: muda a direção e o que aparece, não o material nem os estados.
    ---------------------------------------------------------------------------- */
-.mw-ds .mw-nav{ display: flex; flex-direction: column; gap: 2px; }
-.mw-ds .mw-nav-item{
+.ds .ds-nav{ display: flex; flex-direction: column; gap: 2px; }
+.ds .ds-nav-item{
   display: flex; align-items: center; gap: var(--mw-e-3);
   min-height: var(--mw-alvo-confortavel);
   padding: 0 var(--mw-e-3);
@@ -805,91 +820,91 @@ body.light .mw-ds{
   text-align: left; cursor: pointer;
   transition: background var(--mw-d-rapida) var(--mw-curva), color var(--mw-d-rapida) var(--mw-curva);
 }
-.mw-ds .mw-nav-item:hover{ background: var(--mw-sup-2); color: var(--mw-txt-1); }
-.mw-ds .mw-nav-item[aria-current="page"],
-.mw-ds .mw-nav-item.mw-ativo{
+.ds .ds-nav-item:hover{ background: var(--mw-sup-2); color: var(--mw-txt-1); }
+.ds .ds-nav-item[aria-current="page"],
+.ds .ds-nav-item.ds-ativo{
   background: var(--mw-ac-grad-forte); color: var(--mw-txt-sobre-acento);
   box-shadow: var(--mw-sombra-1);
 }
-.mw-ds .mw-nav-item svg{ width: 19px; height: 19px; flex: 0 0 auto; }
+.ds .ds-nav-item svg{ width: 19px; height: 19px; flex: 0 0 auto; }
 /* Barra de baixo: horizontal, com a área segura do notch respeitada. */
-.mw-ds .mw-nav-baixo{
+.ds .ds-nav-baixo{
   flex-direction: row; justify-content: space-around; gap: 0;
   padding: var(--mw-e-1) var(--mw-e-2);
   padding-bottom: calc(var(--mw-e-1) + env(safe-area-inset-bottom, 0px));
 }
-.mw-ds .mw-nav-baixo .mw-nav-item{
+.ds .ds-nav-baixo .ds-nav-item{
   flex-direction: column; gap: 3px; flex: 1 1 0; min-width: 0;
   justify-content: center; font-size: 10px; font-weight: 600;
 }
 
 /* ---- ABAS ------------------------------------------------------------------- */
-.mw-ds .mw-abas{
+.ds .ds-abas{
   display: flex; gap: var(--mw-e-1); padding: 3px;
   background: var(--mw-sup-afundada); border: 1px solid var(--mw-borda);
   border-radius: var(--mw-r-total); width: fit-content; max-width: 100%;
   overflow-x: auto; scrollbar-width: none;
 }
-.mw-ds .mw-abas::-webkit-scrollbar{ display: none; }
-.mw-ds .mw-aba{
+.ds .ds-abas::-webkit-scrollbar{ display: none; }
+.ds .ds-aba{
   min-height: 30px; padding: 0 var(--mw-e-4);
   border: 0; border-radius: var(--mw-r-total); background: transparent;
   color: var(--mw-txt-2); font: inherit; font-size: var(--mw-t-micro); font-weight: 600;
   white-space: nowrap; cursor: pointer;
   transition: background var(--mw-d-rapida) var(--mw-curva), color var(--mw-d-rapida) var(--mw-curva);
 }
-.mw-ds .mw-aba:hover{ color: var(--mw-txt-1); }
-.mw-ds .mw-aba[aria-selected="true"]{ background: var(--mw-sup-1); color: var(--mw-txt-1); box-shadow: var(--mw-sombra-1); }
+.ds .ds-aba:hover{ color: var(--mw-txt-1); }
+.ds .ds-aba[aria-selected="true"]{ background: var(--mw-sup-1); color: var(--mw-txt-1); box-shadow: var(--mw-sombra-1); }
 
 /* ---- TABELA -----------------------------------------------------------------
-   Sempre dentro de .mw-rolagem-h: tabela é o conteúdo que mais estoura a
+   Sempre dentro de .ds-rolagem-h: tabela é o conteúdo que mais estoura a
    largura no celular.
    ---------------------------------------------------------------------------- */
-.mw-ds .mw-tabela{ width: 100%; border-collapse: collapse; font-size: var(--mw-t-corpo); }
-.mw-ds .mw-tabela th{
+.ds .ds-tabela{ width: 100%; border-collapse: collapse; font-size: var(--mw-t-corpo); }
+.ds .ds-tabela th{
   text-align: left; padding: var(--mw-e-2) var(--mw-e-3);
   font-size: var(--mw-t-rotulo); font-weight: 650; letter-spacing: .08em;
   text-transform: uppercase; color: var(--mw-txt-3);
   border-bottom: 1px solid var(--mw-borda); white-space: nowrap;
 }
-.mw-ds .mw-tabela td{
+.ds .ds-tabela td{
   padding: var(--mw-e-3);
   border-bottom: 1px solid var(--mw-divisor); color: var(--mw-txt-2);
 }
-.mw-ds .mw-tabela tbody tr:last-child td{ border-bottom: 0; }
-.mw-ds .mw-tabela tbody tr:hover td{ background: var(--mw-sup-2); }
-.mw-ds .mw-tabela [data-mw-num]{ text-align: right; font-variant-numeric: tabular-nums; }
+.ds .ds-tabela tbody tr:last-child td{ border-bottom: 0; }
+.ds .ds-tabela tbody tr:hover td{ background: var(--mw-sup-2); }
+.ds .ds-tabela [data-ds-num]{ text-align: right; font-variant-numeric: tabular-nums; }
 
 /* ---- ESTADO VAZIO -----------------------------------------------------------
    Vazio é uma tela, não um espaço em branco: diz o que falta e oferece a ação.
    ---------------------------------------------------------------------------- */
-.mw-ds .mw-vazio{
+.ds .ds-vazio{
   display: flex; flex-direction: column; align-items: center; gap: var(--mw-e-3);
   padding: var(--mw-e-10) var(--mw-e-5);
   text-align: center;
   border: 1px dashed var(--mw-borda-forte); border-radius: var(--mw-r-4);
   color: var(--mw-txt-3);
 }
-.mw-ds .mw-vazio-icone{
+.ds .ds-vazio-icone{
   width: 44px; height: 44px; border-radius: var(--mw-r-3);
   display: grid; place-items: center;
   background: var(--mw-ac-suave); color: var(--mw-ac-txt);
 }
-.mw-ds .mw-vazio h4{ margin: 0; font-size: var(--mw-t-titulo); color: var(--mw-txt-1); }
-.mw-ds .mw-vazio p{ margin: 0; font-size: var(--mw-t-corpo); max-width: 42ch; }
+.ds .ds-vazio h4{ margin: 0; font-size: var(--mw-t-titulo); color: var(--mw-txt-1); }
+.ds .ds-vazio p{ margin: 0; font-size: var(--mw-t-corpo); max-width: 42ch; }
 
 /* ---- ESQUELETO --------------------------------------------------------------
    Enquanto carrega, o lugar do conteúdo já existe — a página não pula quando
    o dado chega.
    ---------------------------------------------------------------------------- */
-.mw-ds .mw-esqueleto{
+.ds .ds-esqueleto{
   border-radius: var(--mw-r-1);
   background: linear-gradient(90deg,
     var(--mw-sup-2) 25%, var(--mw-sup-3) 37%, var(--mw-sup-2) 63%);
   background-size: 400% 100%;
-  animation: mw-brilho 1.4s ease-in-out infinite;
+  animation: ds-brilho 1.4s ease-in-out infinite;
 }
-@keyframes mw-brilho{ from{ background-position: 100% 0; } to{ background-position: -100% 0; } }
+@keyframes ds-brilho{ from{ background-position: 100% 0; } to{ background-position: -100% 0; } }
 
 }
 
@@ -904,16 +919,16 @@ body.light .mw-ds{
    No celular o diálogo vira folha subindo de baixo, que é onde o polegar
    alcança; no desktop, cartão centralizado.
    ---------------------------------------------------------------------------- */
-.mw-ds .mw-cobertura{
+.ds .ds-cobertura{
   position: fixed; inset: 0; z-index: var(--mw-z-dialogo);
   display: grid; place-items: center;
   padding: var(--mw-e-4);
   background: rgba(2,6,23,.58);
   backdrop-filter: blur(6px) saturate(120%);
   -webkit-backdrop-filter: blur(6px) saturate(120%);
-  animation: mw-surgir var(--mw-d-rapida) var(--mw-curva) both;
+  animation: ds-surgir var(--mw-d-rapida) var(--mw-curva) both;
 }
-.mw-ds .mw-dialogo{
+.ds .ds-dialogo{
   width: min(480px, 100%);
   max-height: min(86vh, 720px);
   overflow-y: auto; overscroll-behavior: contain;
@@ -923,25 +938,25 @@ body.light .mw-ds{
   border: 1px solid var(--mw-borda);
   border-radius: var(--mw-r-5);
   box-shadow: var(--mw-sombra-3);
-  animation: mw-entrar-dialogo var(--mw-d-media) var(--mw-curva-entrada) both;
+  animation: ds-entrar-dialogo var(--mw-d-media) var(--mw-curva-entrada) both;
 }
-.mw-ds .mw-dialogo-acoes{
+.ds .ds-dialogo-acoes{
   display: flex; justify-content: flex-end; gap: var(--mw-e-2);
   flex-wrap: wrap;
 }
 @media (max-width: 640px){
-  .mw-ds .mw-cobertura{ place-items: end stretch; padding: 0; }
-  .mw-ds .mw-dialogo{
+  .ds .ds-cobertura{ place-items: end stretch; padding: 0; }
+  .ds .ds-dialogo{
     width: 100%; max-width: none;
     border-radius: var(--mw-r-5) var(--mw-r-5) 0 0;
     padding-bottom: calc(var(--mw-e-6) + env(safe-area-inset-bottom, 0px));
-    animation-name: mw-subir-folha;
+    animation-name: ds-subir-folha;
   }
-  .mw-ds .mw-dialogo-acoes .mw-btn{ flex: 1 1 auto; }
+  .ds .ds-dialogo-acoes .ds-btn{ flex: 1 1 auto; }
 }
 
 /* ---- AVISO (toast) ---------------------------------------------------------- */
-.mw-ds .mw-aviso{
+.ds .ds-aviso{
   position: fixed; z-index: var(--mw-z-aviso);
   left: 50%; bottom: calc(var(--mw-e-6) + env(safe-area-inset-bottom, 0px));
   transform: translateX(-50%);
@@ -951,41 +966,41 @@ body.light .mw-ds{
   background: var(--mw-sup-1); border: 1px solid var(--mw-borda);
   border-radius: var(--mw-r-3); box-shadow: var(--mw-sombra-3);
   color: var(--mw-txt-1); font-size: var(--mw-t-corpo);
-  animation: mw-subir var(--mw-d-media) var(--mw-curva-entrada) both;
+  animation: ds-subir var(--mw-d-media) var(--mw-curva-entrada) both;
 }
-.mw-ds .mw-aviso::before{
+.ds .ds-aviso::before{
   content: ''; width: 3px; align-self: stretch; border-radius: 2px;
   background: var(--mw-ac); flex: 0 0 auto;
 }
-.mw-ds .mw-aviso-ok::before{ background: var(--mw-ok); }
-.mw-ds .mw-aviso-perigo::before{ background: var(--mw-perigo); }
+.ds .ds-aviso-ok::before{ background: var(--mw-ok); }
+.ds .ds-aviso-perigo::before{ background: var(--mw-perigo); }
 
 /* ---- SEÇÃO ------------------------------------------------------------------
    O cabeçalho que o app repete em toda área: título, apoio e ação à direita.
    ---------------------------------------------------------------------------- */
-.mw-ds .mw-secao-cabeca{
+.ds .ds-secao-cabeca{
   display: flex; align-items: flex-start; justify-content: space-between;
   gap: var(--mw-e-4); flex-wrap: wrap;
 }
-.mw-ds .mw-secao-cabeca > div:first-child{ min-width: 0; display: flex; flex-direction: column; gap: 3px; }
-.mw-ds .mw-secao-acoes{ display: flex; align-items: center; gap: var(--mw-e-2); flex: 0 0 auto; }
+.ds .ds-secao-cabeca > div:first-child{ min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.ds .ds-secao-acoes{ display: flex; align-items: center; gap: var(--mw-e-2); flex: 0 0 auto; }
 
 /* ---- ANIMAÇÕES --------------------------------------------------------------
    Uma entrada só, reutilizada, para as coisas aparecerem do mesmo jeito.
    ---------------------------------------------------------------------------- */
-@keyframes mw-surgir{ from{ opacity: 0; } to{ opacity: 1; } }
-@keyframes mw-subir{ from{ opacity: 0; transform: translate(-50%, 12px); } to{ opacity: 1; transform: translate(-50%, 0); } }
-@keyframes mw-subir-folha{ from{ transform: translateY(100%); } to{ transform: translateY(0); } }
-@keyframes mw-entrar-dialogo{ from{ opacity: 0; transform: translateY(10px) scale(.98); } to{ opacity: 1; transform: none; } }
-@keyframes mw-entrar{ from{ opacity: 0; transform: translateY(8px); } to{ opacity: 1; transform: none; } }
+@keyframes ds-surgir{ from{ opacity: 0; } to{ opacity: 1; } }
+@keyframes ds-subir{ from{ opacity: 0; transform: translate(-50%, 12px); } to{ opacity: 1; transform: translate(-50%, 0); } }
+@keyframes ds-subir-folha{ from{ transform: translateY(100%); } to{ transform: translateY(0); } }
+@keyframes ds-entrar-dialogo{ from{ opacity: 0; transform: translateY(10px) scale(.98); } to{ opacity: 1; transform: none; } }
+@keyframes ds-entrar{ from{ opacity: 0; transform: translateY(8px); } to{ opacity: 1; transform: none; } }
 
-.mw-ds .mw-entra{ animation: mw-entrar var(--mw-d-media) var(--mw-curva-entrada) both; }
+.ds .ds-entra{ animation: ds-entrar var(--mw-d-media) var(--mw-curva-entrada) both; }
 /* Escada curta: além do quarto item o atraso vira espera, não elegância. */
-.mw-ds .mw-entra-escada > *{ animation: mw-entrar var(--mw-d-media) var(--mw-curva-entrada) both; }
-.mw-ds .mw-entra-escada > *:nth-child(1){ animation-delay: 0ms; }
-.mw-ds .mw-entra-escada > *:nth-child(2){ animation-delay: 40ms; }
-.mw-ds .mw-entra-escada > *:nth-child(3){ animation-delay: 80ms; }
-.mw-ds .mw-entra-escada > *:nth-child(n+4){ animation-delay: 120ms; }
+.ds .ds-entra-escada > *{ animation: ds-entrar var(--mw-d-media) var(--mw-curva-entrada) both; }
+.ds .ds-entra-escada > *:nth-child(1){ animation-delay: 0ms; }
+.ds .ds-entra-escada > *:nth-child(2){ animation-delay: 40ms; }
+.ds .ds-entra-escada > *:nth-child(3){ animation-delay: 80ms; }
+.ds .ds-entra-escada > *:nth-child(n+4){ animation-delay: 120ms; }
 
 }
 
@@ -997,28 +1012,28 @@ body.light .mw-ds{
 /* Visível só para leitor de tela. O clip-path junto do clip cobre navegador
    antigo e novo; width/height de 1px em vez de 0 porque alguns leitores
    ignoram elemento de dimensão zero. */
-.mw-ds .mw-so-leitor{
+.ds .ds-so-leitor{
   position: absolute !important;
   width: 1px; height: 1px;
   margin: -1px; padding: 0; border: 0;
   overflow: hidden; white-space: nowrap;
   clip: rect(0 0 0 0); clip-path: inset(50%);
 }
-/* Um ".mw-so-leitor" que reaparece ao receber foco — é assim que se faz um
+/* Um ".ds-so-leitor" que reaparece ao receber foco — é assim que se faz um
    atalho de "pular para o conteúdo". */
-.mw-ds .mw-so-leitor-foco:focus,
-.mw-ds .mw-so-leitor-foco:focus-visible{
+.ds .ds-so-leitor-foco:focus,
+.ds .ds-so-leitor-foco:focus-visible{
   position: static !important;
   width: auto; height: auto; margin: 0; overflow: visible;
   white-space: normal; clip: auto; clip-path: none;
 }
 
-.mw-ds .mw-oculto{ display: none; }
-.mw-ds .mw-invisivel{ visibility: hidden; }
-.mw-ds .mw-centro{ display: grid; place-items: center; }
-.mw-ds .mw-texto-1{ color: var(--mw-txt-1); }
-.mw-ds .mw-texto-2{ color: var(--mw-txt-2); }
-.mw-ds .mw-texto-3{ color: var(--mw-txt-3); }
+.ds .ds-oculto{ display: none; }
+.ds .ds-invisivel{ visibility: hidden; }
+.ds .ds-centro{ display: grid; place-items: center; }
+.ds .ds-texto-1{ color: var(--mw-txt-1); }
+.ds .ds-texto-2{ color: var(--mw-txt-2); }
+.ds .ds-texto-3{ color: var(--mw-txt-3); }
 
 /* ---- MOVIMENTO REDUZIDO -----------------------------------------------------
    Não é "desligar animação": é entregar o estado final sem o percurso. Uma
@@ -1026,9 +1041,9 @@ body.light .mw-ds{
    que algum código pode depender para saber que terminou.
    ---------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce){
-  .mw-ds *,
-  .mw-ds *::before,
-  .mw-ds *::after{
+  .ds *,
+  .ds *::before,
+  .ds *::after{
     animation-duration: 1ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 1ms !important;
@@ -1041,14 +1056,14 @@ body.light .mw-ds{
    o fundo resolvido.
    ---------------------------------------------------------------------------- */
 @media (prefers-contrast: more){
-  .mw-ds .mw-cartao,
-  .mw-ds .mw-vidro,
-  .mw-ds .mw-vidro-2{
+  .ds .ds-cartao,
+  .ds .ds-vidro,
+  .ds .ds-vidro-2{
     background: var(--mw-vidro-solido);
     backdrop-filter: none; -webkit-backdrop-filter: none;
     border-color: var(--mw-borda-forte);
   }
-  .mw-ds{ --mw-txt-2: var(--mw-txt-1); --mw-borda: var(--mw-borda-forte); }
+  .ds{ --mw-txt-2: var(--mw-txt-1); --mw-borda: var(--mw-borda-forte); }
 }
 
 /* ---- IMPRESSÃO --------------------------------------------------------------
@@ -1056,15 +1071,15 @@ body.light .mw-ds{
    navegação.
    ---------------------------------------------------------------------------- */
 @media print{
-  .mw-ds .mw-nav,
-  .mw-ds .mw-cobertura,
-  .mw-ds .mw-aviso{ display: none !important; }
-  .mw-ds .mw-cartao,
-  .mw-ds .mw-vidro{
+  .ds .ds-nav,
+  .ds .ds-cobertura,
+  .ds .ds-aviso{ display: none !important; }
+  .ds .ds-cartao,
+  .ds .ds-vidro{
     background: none; box-shadow: none; backdrop-filter: none;
     border-color: #999;
   }
-  .mw-ds{ --mw-txt-1:#000; --mw-txt-2:#222; --mw-txt-3:#444; }
+  .ds{ --mw-txt-1:#000; --mw-txt-2:#222; --mw-txt-3:#444; }
 }
 
 }
