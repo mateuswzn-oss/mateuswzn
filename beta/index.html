@@ -26653,13 +26653,35 @@ html body #mwLenteFiltroSvg{
    passou a ter cinco itens, e o quinto quebrou para uma segunda linha —
    a barra dobrou de altura. Em flex os itens se acomodam em uma linha
    só, e os filhos ocultos (as lentes) continuam ocultos. */
+/* Segunda trava, no mesmo assunto: o véu da gaveta lateral.
+
+   Ele é fixo, cobre a tela inteira e tem `backdrop-filter: blur()`. Fora
+   do app não existe gaveta para ele acompanhar — e, se aparecer assim, o
+   resultado é a tela inteira borrada sem nada legível por cima e sem
+   saída visível. Enquanto o app não estiver aberto, o véu não existe. */
+html body:not(.mw-in-app) #mwSidebarScrim{ display: none !important; }
+
 /* Ancorado em body.mw-in-app porque a regra que impõe a grade também
    está — "html body.mw-in-app #mwBottomNav.mwbn{display:grid!important}",
    dentro de uma media query. Sem a mesma âncora, esta perde por uma
-   classe. */
+   classe.
+
+   O segundo seletor era `html body #mwBottomNav.mwbn`, SEM a âncora, para
+   garantir a especificidade. Só que `display` não é uma propriedade de
+   layout como as outras: declarada aqui sem a trava, ela vencia os dois
+   `#mwBottomNav{display:none!important}` que escondem a barra antes de
+   entrar — e a barra de baixo aparecia por cima da tela de login, com
+   Início, Faculdade e Perfil clicáveis sem sessão nenhuma. Tocar num
+   deles marcava uma área como ativa dentro de um #app escondido, e dali
+   dava para chegar a uma tela inteiramente borrada, sem saída visível.
+
+   Agora `display` só é imposta com a âncora; o resto, que é layout puro
+   e inofensivo fora do app, segue sem ela. */
+html body.mw-in-app #mwBottomNav.mwbn{
+  display: flex !important;
+}
 html body.mw-in-app #mwBottomNav.mwbn,
 html body #mwBottomNav.mwbn{
-  display: flex !important;
   align-items: center !important;
   grid-template-columns: none !important;
 }
@@ -30960,7 +30982,7 @@ html body .mw-pular:focus{ transform: translateY(0); }
   /* O carimbo entra depois do preloader para não brigar com a abertura
      da marca, e sai sozinho. window.MW_PREVIA fica disponível para
      conferir a versão pelo console sem depender de ver o carimbo. */
-  window.MW_PREVIA = 'v91-beta';
+  window.MW_PREVIA = 'v92-beta';
   function mostra(){
     if (document.getElementById('mwPreviaCarimbo')) return;
     var el = document.createElement('div');
