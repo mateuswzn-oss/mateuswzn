@@ -255,6 +255,31 @@ if (modo === 'instalado') {
 
 } else if (modo === 'celular') {
   ok('no navegador do celular a barra de baixo não aparece', !baixo.mostrando, baixo);
+
+  /* A GAVETA FECHADA TEM DE ESTAR FORA DA TELA.
+     ---------------------------------------------------------------
+     Esta verificação nasceu de um defeito que eu mesmo introduzi: um
+     laço de restrição alcançou a regra que dá a geometria da gaveta
+     (`position:fixed` mais `translate3d(-105%,0,0)`) porque ela também
+     declarava `background`. No telefone a lateral passou a ficar EM
+     CIMA da tela, 292px de largura, empurrando o app inteiro para
+     baixo.
+
+     Nenhum teste viu isso de frente. Quem pegou foi o teste de toque,
+     e por tabela: o cartão do quadro tinha ido parar fora da janela, e
+     o arraste falhou. Um defeito desse tamanho não pode depender de um
+     arraste para aparecer. */
+  const gavetaFechada = await p.evaluate(() => {
+    const a = document.querySelector('.sidebar');
+    const r = a.getBoundingClientRect();
+    const m = document.querySelector('.main').getBoundingClientRect();
+    return { x: Math.round(r.x), direita: Math.round(r.right), larg: Math.round(r.width),
+             mainY: Math.round(m.y), janela: innerWidth };
+  });
+  ok('com a gaveta fechada, a lateral está fora da tela',
+     gavetaFechada.direita <= 4, gavetaFechada);
+  ok('e o conteúdo começa no topo, não abaixo dela',
+     gavetaFechada.mainY < 80, gavetaFechada);
   /* A gaveta: abre pelo botão de menu, cobre com o véu, fecha no véu. */
   const gaveta = await p.evaluate(async () => {
     document.getElementById('mwMobileMenu')?.click();

@@ -1,3 +1,47 @@
+/* v98 (BETA — a gaveta do celular voltou para fora da tela: um defeito
+   que EU introduzi na v97, e a ferramenta que o deixou passar):
+
+   O DEFEITO
+   No telefone, a barra lateral passou a ficar EM CIMA da tela: 292px de
+   largura, altura inteira, empurrando o app todo para baixo (o conteúdo
+   começava em y=839, fora da janela). É a mesma classe de coisa que já
+   apareceu numa foto sua antes — um pedaço da moldura no lugar errado,
+   cobrindo o que importa.
+
+   A CAUSA, E POR QUE ELA VAI VOLTAR SE NÃO FOR CONSERTADA NA RAIZ
+   O `restringe.py` mede UMA PROPRIEDADE DE CADA VEZ (cor, fundo, raio) e,
+   quando alguma delas vence dentro da área migrada, restringe a REGRA
+   INTEIRA. Só que regra antiga costuma misturar as duas coisas: a do
+   `mw-responsive` que dá a geometria da gaveta no celular —
+   `position:fixed`, `width:min(84vw,292px)`, `transform:translate3d(-105%,0,0)`
+   — também declara `background`. O laço a alcançou pela cor e levou a
+   geometria junto.
+
+   Não existe "restringir metade de uma regra": ou ela vale, ou não vale.
+   Então o script passou a RECUSAR qualquer regra que declare geometria ou
+   comportamento (position, inset, width, height, transform, display,
+   overflow, transition, pointer-events, touch-action e parentes) e a
+   nomeá-la num relatório próprio — "MISTURAM LAYOUT COM PELE: separe à
+   mão" — que é exatamente o que o protocolo já manda fazer quando uma
+   FOLHA é as duas coisas. Agora vale para a regra também.
+
+   QUEM PEGOU, E POR QUE ISSO NÃO BASTA
+   Nenhum teste viu o defeito de frente. Quem reprovou foi o teste de
+   TOQUE (5), e por tabela: o cartão do quadro tinha ido parar fora da
+   janela e o arraste falhou. Um defeito desse tamanho não pode depender
+   de um arraste para aparecer.
+
+   O teste 20 ganhou as duas verificações que faltavam, no modo celular:
+   com a gaveta fechada, a lateral tem de estar FORA da tela, e o
+   conteúdo tem de começar no topo. Provadas do jeito de sempre —
+   reintroduzindo o defeito e vendo as duas reprovarem, depois tirando e
+   vendo as duas passarem.
+
+   E UM DETALHE DO RELATÓRIO
+   As regras recusadas apareciam também como "não localizadas no
+   index.html", o que mandava procurar à mão uma regra que o script
+   acabara de ler. Agora contam como encontradas.
+
 /* v97 (BETA — a moldura no Design System: a última superfície):
 
    Com esta rodada não sobra tela: as catorze áreas, a tela de entrada e
@@ -1837,7 +1881,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v97-beta';
+const CACHE_NAME = 'mw-shell-v98-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

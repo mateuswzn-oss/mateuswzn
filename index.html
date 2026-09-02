@@ -9163,7 +9163,15 @@ img,svg,video,canvas{max-width:100%}
     background:#070b12!important;animation:mwEnterApp .45s cubic-bezier(.22,.61,.36,1);
   }
   @keyframes mwEnterApp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-  body.light #app:not(.hidden){background:#eef1f6!important}#app .sidebar:not([data-mw-migrada]):not([data-mw-migrada] *){
+  body.light #app:not(.hidden){background:#eef1f6!important}/* SEM GUARDA, e de propósito — ver o comentário no restringe.py.
+     Esta regra não é aparência: é a GEOMETRIA da gaveta no celular. É
+     ela que tira a lateral da tela quando fechada
+     (`translate3d(-105%,0,0)`). Um laço de restrição a alcançou porque
+     ela também define `background`, e o resultado foi a lateral
+     aparecendo em cima da tela no telefone, empurrando o app inteiro
+     para baixo — exatamente a classe de defeito que já apareceu numa
+     foto sua antes. */
+#app .sidebar{
     position:fixed!important;left:0;top:0;bottom:0;z-index:100!important;
     width:min(84vw,292px)!important;height:100dvh!important;margin:0!important;
     transform:translate3d(-105%,0,0)!important;transition:transform .32s ease!important;
@@ -9375,7 +9383,8 @@ img,svg,video,canvas{max-width:100%}
   #app .top-actions{margin-left:auto; gap:6px !important}
 
   #app .stat{min-height:108px !important; padding:14px !important; overflow:visible !important}
-  #app .stat .kicker{display:block !important; margin-bottom:6px !important}html body #app .sidebar:not([data-mw-migrada]):not([data-mw-migrada] *){
+  #app .stat .kicker{display:block !important; margin-bottom:6px !important}/* também geometria da gaveta: sem guarda */
+html body #app .sidebar{
     top:0 !important; bottom:0 !important;
     padding: 64px 12px 24px !important;
     z-index: 120 !important;

@@ -96,6 +96,47 @@ def guarda(seletor):
     return ', '.join(guarda_um(x) for x in partes)
 
 
+# Propriedades que NÃO são aparência: são geometria e comportamento.
+# Uma regra que declara qualquer uma delas está posicionando, medindo ou
+# escondendo algo — não pintando.
+LAYOUT = (
+    'position', 'inset', 'top', 'right', 'bottom', 'left', 'z-index',
+    'width', 'height', 'min-width', 'min-height', 'max-width', 'max-height',
+    'transform', 'translate', 'display', 'grid-template', 'grid-column',
+    'grid-row', 'flex', 'float', 'overflow', 'visibility', 'transition',
+    'pointer-events', 'touch-action',
+)
+
+
+def e_layout(corpo):
+    """A regra carrega declaração de geometria/comportamento?
+
+    Isto existe por causa de um defeito que chegou ao app e que só um
+    teste de TOQUE pegou. O laço de restrição olha uma propriedade de
+    cada vez (cor, fundo, raio...) e, quando uma delas vence, restringe
+    a REGRA INTEIRA. Só que uma regra antiga costuma misturar as duas
+    coisas — e a regra do `mw-responsive` que dá a geometria da gaveta
+    no celular também declara `background`.
+
+    Restringi-la tirou o `position:fixed` e o
+    `transform:translate3d(-105%,0,0)` que mantêm a lateral FORA da
+    tela quando fechada. No telefone a lateral passou a ocupar 292px em
+    cima do app e empurrar o conteúdo inteiro para baixo — a mesma
+    classe de defeito que já apareceu numa foto do usuário.
+
+    Não existe "restringir só metade de uma regra": ou ela vale, ou não
+    vale. Então a regra que mistura layout com pele fica INTEIRA, e o
+    relatório a nomeia para ser separada à mão — que é o que o
+    protocolo já manda fazer com folha que é as duas coisas.
+    """
+    corpo = re.sub(r'/\*.*?\*/', ' ', corpo, flags=re.S)
+    for decl in corpo.split(';'):
+        prop = decl.split(':', 1)[0].strip().lower()
+        if prop in LAYOUT or any(prop.startswith(p + '-') for p in LAYOUT):
+            return prop
+    return None
+
+
 def regras(css, base):
     """Devolve (inicio, fim, seletor) de cada regra do bloco, ignorando
     comentário, string e regra-@ de agrupamento."""
@@ -141,7 +182,7 @@ def regras(css, base):
                 # regra de agrupamento: desce para dentro dela
                 out.extend(regras(css[corpo_ini + 1:j - 1], base + corpo_ini + 1))
             else:
-                out.append((base + ini_sel, base + i, sel))
+                out.append((base + ini_sel, base + i, sel, css[corpo_ini + 1:j - 1]))
             i = j
             ini_sel = i
             continue
@@ -223,22 +264,35 @@ def main():
 
     # cada <style id="..."> vira um bloco com seu nome
     trocas = []
+    mistas = []
     for m in re.finditer(r'<style([^>]*)>(.*?)</style>', html, re.S):
         attrs, css = m.group(1), m.group(2)
         idm = re.search(r'id="([^"]+)"', attrs)
         folha = idm.group(1) if idm else 'inline'
         base = m.start(2)
-        for ini, fim, sel in regras(css, base):
+        for ini, fim, sel, corpo in regras(css, base):
             chave = normaliza(sel)
-            if (folha, chave) in alvos:
-                trocas.append((ini, fim, sel, folha))
+            if (folha, chave) not in alvos:
+                continue
+            prop = e_layout(corpo)
+            if prop:
+                mistas.append((folha, chave, prop))
+                continue
+            trocas.append((ini, fim, sel, folha))
 
-    achadas = {(fo, normaliza(se)) for _, _, se, fo in trocas}
+    # As "mistas" FORAM encontradas — só foram recusadas. Contá-las como
+    # "não localizadas" mandaria procurar no arquivo uma regra que o
+    # script acabou de ler.
+    achadas = {(fo, normaliza(se)) for _, _, se, fo in trocas} | {(fo, se) for fo, se, _ in mistas}
     faltam = [k for k in alvos if k not in achadas]
 
     print('regras a restringir: %d de %d relatadas' % (len(trocas), len(alvos)))
     for _, _, sel, folha in trocas:
         print('  %-28s %s' % (folha, normaliza(sel)[:96]))
+    if mistas:
+        print('\nMISTURAM LAYOUT COM PELE — não dá para restringir; separe à mão:')
+        for folha, sel, prop in mistas:
+            print('  %-28s %-70s (declara %s)' % (folha, sel[:70], prop))
     if faltam:
         print('\nNÃO localizadas no index.html (conferir à mão):')
         for folha, sel in faltam:

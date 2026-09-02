@@ -369,3 +369,19 @@ ser suposição.
   falhavam com `ERR_CONNECTION_REFUSED` — que parece defeito do teste e
   é falta de servidor. Antes de investigar um erro de navegação,
   confira: `curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8795/index.html`.
+
+- **Uma regra CSS é indivisível — a ferramenta que a "restringe" precisa
+  saber disso.** O `restringe.py` mede uma propriedade de cada vez e, se
+  uma vence, desliga a regra inteira. Regra antiga mistura pele e
+  geometria: a que posiciona a gaveta do celular também declara
+  `background`. Restringi-la pela cor tirou o `position:fixed` junto, e a
+  lateral foi parar em cima da tela no telefone. Ele agora recusa
+  qualquer regra que declare geometria ou comportamento e a nomeia para
+  separação manual.
+
+- **O defeito grande apareceu por tabela, num teste de arraste.** O
+  cartão do quadro tinha ido parar fora da janela porque o layout
+  inteiro deslocou; o arraste falhou e foi isso que reprovou. Layout
+  quebrado não pode depender de um gesto para ser visto — verifique a
+  GEOMETRIA diretamente: com a gaveta fechada, a lateral está fora da
+  tela? o conteúdo começa no topo?
