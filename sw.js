@@ -1,3 +1,33 @@
+/* v81 (BETA — a suíte de testes sai do temporário e entra no repositório):
+   Até aqui, todo teste desta reformulação vivia num diretório que morre
+   quando a sessão acaba. Isso significava que a validação não podia ser
+   repetida por ninguém, nem por mim numa sessão seguinte — e o critério
+   combinado é justamente "validar em Safari, Chrome, iOS, Android,
+   tablet e desktop". Um critério que depende de um teste que não existe
+   mais não é verificável.
+   Agora são sete testes em tools/testes/, com um rodar.sh que sobe o
+   servidor, executa tudo e devolve 0 ou 1: regressão das áreas, carga
+   com um semestre inteiro de dados, acessibilidade, flash branco no
+   boot, Android com toque de verdade (arrastar cartão do quadro com o
+   dedo), o viewport REAL do iPhone (393x695), e contraste WCAG medido
+   no pixel em três larguras e dois temas.
+   O LEIAME registra também o que NÃO está validado, com o motivo:
+   Safari de desktop e iPhone instalado na tela de início continuam sem
+   medição, porque o WebKit não é instalável nesta máquina (o proxy
+   barra o host de download). Está escrito lá o que fecha essas duas
+   linhas.
+   Rodar a suíte pela primeira vez encontrou um defeito de verdade:
+   seis ações de texto com 13 a 14 pixels de altura — "Abrir projetos"
+   no painel e os cinco "Alterar em Configurações"/"Editar em Faculdade"
+   do Perfil. Agora têm 24 ou 25. A correção é preenchimento com margem
+   negativa: nos chips do Perfil fecha exato (88px de altura antes e
+   depois); no cartão do painel sobraram 2px, que é o preço de um alvo
+   que sai de 13 para 25.
+   O próprio teste também estava errado num ponto: acusava como defeito
+   os links "Configurações › Backup" que ficam no MEIO de uma frase. A
+   WCAG 2.5.8 dispensa esses explicitamente — o tamanho deles é imposto
+   pela entrelinha do texto ao redor, e engordá-los desalinharia o
+   parágrafo. A exceção entrou no teste. */
 /* v80 (BETA — o primeiro relatório vindo de um iPhone de verdade):
    iOS 18.7, Safari 27, 393x695 a 3x, aberto no navegador. Resultado:
    TUDO que o app precisa funciona. backdrop-filter, color-mix, :has,
@@ -973,7 +1003,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v80-beta';
+const CACHE_NAME = 'mw-shell-v81-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

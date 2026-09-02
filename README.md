@@ -83,6 +83,8 @@ manifest.json              metadados de instalação do PWA
 api/ai.js                  função serverless da Nyc AI
 supabase/schema.sql        esquema do banco: tabelas, políticas de acesso e funções
 vendor/supabase.js         cliente do Supabase, embutido para funcionar offline
+tools/testes/              suíte de Playwright (ver tools/testes/LEIAME.md)
+tools/gerar-previa.py      gera a prévia publicada em /beta/ a partir da branch de trabalho
 icon-*.png, splash/        ícones e telas de abertura
 ```
 
@@ -91,6 +93,23 @@ icon-*.png, splash/        ícones e telas de abertura
 O `index.html` concentra tudo. É uma decisão deliberada: sem passo de build, o que está no
 repositório é exatamente o que roda no navegador, e o deploy é copiar arquivos. O custo é um
 arquivo grande — se o projeto crescer mais, vale separar em módulos.
+
+## Testes
+
+```bash
+npm run teste            # a suíte inteira
+tools/testes/rodar.sh 1  # só o teste 1
+```
+
+O script sobe sozinho um servidor estático, roda os testes num Chromium de verdade e
+derruba o servidor no fim. Como o app não tem passo de build nem módulos, não há teste
+unitário: os defeitos que ele produz são de renderização — texto ilegível, botão espremido,
+elemento fora da tela, tela branca no boot — e nenhum deles aparece lendo o código.
+
+São sete testes: regressão das áreas, carga com um semestre inteiro de dados,
+acessibilidade, flash branco no boot, Android com toque real, o viewport real de um iPhone,
+e contraste WCAG medido no pixel. O que cada um mede, e em quais ambientes a reformulação
+já foi de fato validada, está em [`tools/testes/LEIAME.md`](tools/testes/LEIAME.md).
 
 ## Contas e sincronização
 
