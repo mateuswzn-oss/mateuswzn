@@ -30,6 +30,20 @@ for (const [rotulo, logado] of [['sem sessão (login)', false], ['com sessão (a
     localStorage.setItem('mwZerarTudo-2026-08-e', '1');
     localStorage.setItem('mateusWorkspaceV4', JSON.stringify(d));
     if (ses) localStorage.setItem('mwSession', '1');
+
+    /* Finge o app INSTALADO na tela de início. Não é capricho: a barra
+       de baixo só existe ali (`html:not(.mw-standalone) … {display:none}`),
+       então medir num navegador comum não veria nunca o defeito de a
+       barra aparecer sobre o login. Só a consulta de display-mode é
+       trocada; o resto do matchMedia segue sendo o de verdade, senão o
+       app perde prefers-color-scheme e prefers-reduced-motion no meio
+       do boot. */
+    const real = window.matchMedia.bind(window);
+    window.matchMedia = q => /display-mode:\s*standalone/.test(q)
+      ? { matches: true, media: q, onchange: null,
+          addListener(){}, removeListener(){},
+          addEventListener(){}, removeEventListener(){}, dispatchEvent(){ return false; } }
+      : real(q);
   }, [semente, logado]);
 
   /* waitUntil:'commit' devolve o controle assim que o primeiro byte
@@ -82,6 +96,40 @@ for (const [rotulo, logado] of [['sem sessão (login)', false], ['com sessão (a
      outro desfecho é regressão do boot. */
   const certo = logado ? (estado.appVisivel && !estado.loginVisivel) : estado.loginVisivel;
   if (!certo) { console.log('  <<< desfecho errado do boot'); ruins++; }
+
+  /* Antes de entrar, nada do app pode estar na tela.
+   *
+   * A barra de baixo aparecia sobre a tela de login, com Início,
+   * Faculdade e Perfil clicáveis sem sessão nenhuma. A causa era uma
+   * regra com dois seletores — um travado em `body.mw-in-app`, o outro
+   * não — e o `display:flex !important` do lado destravado vencia os
+   * dois `#mwBottomNav{display:none!important}` que escondem a barra.
+   *
+   * Tocar num daqueles itens marcava uma área como ativa dentro de um
+   * #app escondido; dali dava para chegar a uma tela inteiramente
+   * borrada (o véu da gaveta, que é fixo e tem backdrop-filter), sem
+   * nada legível e sem saída visível.
+   *
+   * Nenhum teste pegou porque todos entram no app antes de medir. Este
+   * mede o único momento em que ninguém estava olhando: a tela de login
+   * de quem ainda não entrou — e no app instalado, que é onde a barra de
+   * baixo existe. */
+  if (!logado) {
+    const sobrando = await p.evaluate(() => {
+      const vis = e => e && e.offsetWidth > 0 && e.offsetHeight > 0;
+      const fora = [];
+      const nav = document.querySelector('#mwBottomNav, .mwbn');
+      if (vis(nav)) fora.push('barra de baixo');
+      const veu = document.getElementById('mwSidebarScrim');
+      if (veu && getComputedStyle(veu).display !== 'none') fora.push('véu da gaveta');
+      if (vis(document.getElementById('app'))) fora.push('#app');
+      return fora;
+    });
+    if (sobrando.length) {
+      console.log('  <<< chrome do app na tela de login: ' + sobrando.join(', '));
+      ruins++;
+    }
+  }
   if (brancos.length) { console.log('  <<< flash branco'); ruins++; }
   if (erros.length) ruins++;
   await b.close();

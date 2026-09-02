@@ -1,3 +1,55 @@
+/* v92 (BETA — a barra de baixo não aparece mais sobre a tela de login):
+
+   O DEFEITO, RELATADO COM DUAS FOTOS
+   Na primeira, a tela inteiramente borrada, nada legível, sem saída
+   visível. Na segunda, a tela de login com a barra de baixo por cima —
+   Início, Faculdade, Arquivos e Perfil clicáveis sem sessão nenhuma.
+
+   As duas são a mesma coisa, uma atrás da outra.
+
+   A CAUSA
+   Uma regra com dois seletores, e só um deles com a trava:
+
+     html body.mw-in-app #mwBottomNav.mwbn,   -> travado no app
+     html body #mwBottomNav.mwbn{             -> sem trava
+       display: flex !important; ... }
+
+   O lado destravado existia para garantir a especificidade do LAYOUT
+   (flex em vez de grade). Só que `display` não é uma propriedade de
+   layout como as outras: declarada ali sem a trava, ela vencia os dois
+   `#mwBottomNav{display:none!important}` que escondem a barra antes de
+   entrar.
+
+   Tocar num daqueles itens marcava uma área como ativa dentro de um #app
+   escondido. Desse estado dava para chegar ao véu da gaveta lateral —
+   fixo, tela inteira, backdrop-filter: blur(6px), z-index 110 — enquanto
+   a gaveta que ele acompanha está em z-index auto. O véu cobre tudo,
+   inclusive o menu. É a primeira foto.
+
+   NÃO FOI A MIGRAÇÃO
+   A mesma sonda rodada contra o build de antes de todas as migrações
+   desta conversa (v87) dá idêntico. O defeito é antigo.
+
+   POR QUE NENHUM TESTE PEGOU
+   Todos os dezessete semeiam sessão e entram no app antes de medir.
+   Ninguém olhava o único momento em que o defeito existe: a tela de
+   login de quem ainda não entrou. E só no app INSTALADO — a barra de
+   baixo é escondida por `html:not(.mw-standalone)`, então medir num
+   navegador comum passa por um caminho que o defeito nem percorre.
+
+   O QUE MUDOU
+   1. `display` da barra só é imposta com body.mw-in-app; o resto da
+      regra, que é layout puro e inofensivo fora do app, segue sem a
+      trava.
+   2. Segunda trava, no mesmo assunto: fora do app o véu da gaveta não
+      existe (`html body:not(.mw-in-app) #mwSidebarScrim{display:none}`).
+   3. O teste 4 passou a fingir o app instalado e a conferir o que sobra
+      na tela de login. Provado contra o defeito real: reintroduzido de
+      propósito, ele acusa; corrigido, passa.
+
+   Conferido nos dois sentidos: instalado com sessão, a barra aparece;
+   instalado na tela de login, não aparece. */
+
 /* v91 (BETA — Faculdade, Relatórios, Foco e Calendário no Design System):
 
    DOZE DE CATORZE
@@ -1464,7 +1516,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v91-beta';
+const CACHE_NAME = 'mw-shell-v92-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

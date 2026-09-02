@@ -47,7 +47,7 @@ node tools/testes/1-regressao.mjs mobile
 | 1 | `1-regressao.mjs` | as 14 áreas abrem, ficam ativas, não vazam para fora da tela | qualquer área não abre, vaza ou levanta exceção |
 | 2 | `2-carga.mjs` | o mesmo, com 24 disciplinas, 30 projetos, 120 atividades, 40 notas e 140 sessões, em 1440/834/390 | vazamento, texto cortado sem reticências, exceção |
 | 3 | `3-acessibilidade.mjs` | nome acessível, alvo de toque ≥24px, `aria-*` em elemento que aceita, campo com rótulo, anel de foco | qualquer controle sem nome, rótulo ou anel |
-| 4 | `4-boot.mjs` | luminância do centro da tela a cada 120ms durante a abertura | um único quadro quase branco, ou o boot terminando na tela errada |
+| 4 | `4-boot.mjs` | luminância do centro da tela a cada 120ms durante a abertura, **como app instalado**, e o que sobra na tela de login de quem ainda não entrou | um único quadro quase branco, o boot terminando na tela errada, ou chrome do app (barra de baixo, véu da gaveta, `#app`) aparecendo antes de entrar |
 | 5 | `5-android-toque.mjs` | Pixel 7 com `hasTouch`: arrastar cartão do quadro com o dedo, tocar nos controles novos, anexar arquivo | o cartão não se move, um alvo some, vazamento |
 | 6 | `6-iphone-tamanho.mjs` | o viewport **real** de um iPhone (393×695) contra o nominal (390×844) | vazamento, ou controle escondido atrás da barra de baixo |
 | 7 | `7-contraste-coleta.mjs` + `7-contraste-medir.py` | razão de contraste WCAG medida **no pixel**, em 3 larguras × 2 temas | qualquer texto abaixo de 4.5:1 (3.0:1 se grande) |
@@ -197,6 +197,25 @@ resumidas aqui para quem for escrever um teste novo.
   texto, porque quase tudo nele é um número de dia dentro de um botão. Os
   mínimos passaram a ser por área, e a medida de "tem conteúdo" é altura
   mais controles — não quantidade de texto.
+- **Todo teste entrava no app antes de medir — e ninguém olhava a tela de
+  login.** A barra de baixo aparecia sobre o login, com Início, Faculdade e
+  Perfil clicáveis sem sessão nenhuma; tocar num deles marcava uma área como
+  ativa dentro de um `#app` escondido, e dali dava para chegar a uma tela
+  inteiramente borrada (o véu da gaveta é fixo, cobre tudo e tem
+  `backdrop-filter`), sem nada legível e sem saída visível. Dezessete testes
+  verdes e nenhum via, porque todos semeiam sessão e entram. O teste 4 passou
+  a medir também o estado de antes de entrar.
+- **Uma regra com dois seletores tem duas travas para conferir, não uma.**
+  `html body.mw-in-app #x, html body #x { display: flex !important }` — o
+  segundo lado existia só para garantir especificidade de layout, mas
+  `display` não é layout como as outras: sem a trava, ele vencia os
+  `display:none!important` que escondiam o elemento antes do login.
+- **Medir num navegador comum não vê o que só existe no app instalado.** A
+  barra de baixo é escondida por `html:not(.mw-standalone)`. Sem fingir o
+  `display-mode: standalone`, o teste passava por um caminho que o defeito
+  nem percorre. O fingimento troca só a consulta de display-mode e delega o
+  resto ao `matchMedia` de verdade — senão o app perde
+  `prefers-color-scheme` e `prefers-reduced-motion` no meio do boot.
 - **Seletor que não casa não levanta erro.** É o defeito de migração mais
   comum e o mais silencioso: um `querySelector` preso a uma classe que a
   migração renomeou devolve `null`, o bloco desiste, e não há erro no
