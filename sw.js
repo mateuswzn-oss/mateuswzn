@@ -1,3 +1,21 @@
+/* v74 (BETA — o backup passa a levar os arquivos):
+   Conserto de um buraco que a área de Arquivos abriu ontem: o exportador
+   serializava só o blob do workspace (localStorage), e os arquivos moram
+   no IndexedDB. Quem exportasse, limpasse o navegador e importasse de
+   volta perderia todos os materiais — em silêncio, com a tela dizendo
+   "Backup exportado". Backup que não leva tudo é pior que backup nenhum,
+   porque cria confiança onde não deveria.
+   Agora os arquivos entram no MESMO JSON, em base64. Infla uns 33% e não
+   é elegante, mas é um formato que qualquer versão futura lê sem
+   biblioteca, e evita escrever um gerador de ZIP à mão.
+   Compatível nos dois sentidos: backup antigo (sem a chave "arquivos")
+   importa como antes e diz que não tinha materiais; backup novo mantém o
+   "data" no lugar de sempre.
+   O aviso da área de Arquivos deixou de ser só um alerta e passou a ter
+   saída: ele aponta para Configurações › Backup.
+   O link novo trocou de cor depois de medido: sobre a tarja âmbar do
+   aviso, o azul de destaque dava 3,4:1 no escuro e 3,6:1 no claro. Num
+   fundo colorido quem marca o link é o sublinhado. */
 /* v73 (BETA — Arquivos guardam arquivo de verdade):
    A área dizia "preparada para seus materiais" e não guardava nada. Agora
    guarda: arrastar ou escolher um arquivo o grava no IndexedDB deste
@@ -835,7 +853,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v73-beta';
+const CACHE_NAME = 'mw-shell-v74-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

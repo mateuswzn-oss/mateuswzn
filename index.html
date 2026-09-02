@@ -4320,9 +4320,10 @@ body.light .mw-faceid-gate-card p{color:#526988}
         <p class="mw-arq-aviso">
           <strong>Estes arquivos ficam neste aparelho.</strong>
           Eles não sobem para o servidor ainda, então não aparecem se você
-          abrir sua conta em outro celular ou computador — e some se você
-          limpar os dados do navegador. Guarde uma cópia do que for
-          importante.
+          abrir sua conta em outro celular ou computador — e somem se você
+          limpar os dados do navegador. Para levá-los junto, use
+          <button type="button" class="mw-arq-link" data-arq-ir="settings">Configurações › Backup</button>:
+          o arquivo de backup inclui os materiais.
         </p>
       </section>
 
@@ -29012,6 +29013,16 @@ html body #app #view-files .mw-arq-aviso{
   box-shadow: inset 3px 0 0 #f0b429;
 }
 html body #app #view-files .mw-arq-aviso strong{ display: block; color: var(--ds-txt-2); font-weight: 640; }
+/* O link NÃO usa a cor de destaque: ele vive dentro da tarja âmbar do
+   aviso, e ali o azul do destaque mediu 3,4:1 no escuro e 3,6:1 no
+   claro — abaixo do AA nos dois. Sobre um fundo colorido, quem marca o
+   link é o sublinhado; a cor pode ser a do texto forte, que contrasta
+   com qualquer um dos dois fundos. */
+html body #app #view-files .mw-arq-link{
+  border: 0; padding: 0; background: none; cursor: pointer;
+  font: inherit; color: var(--ds-txt); font-weight: 680;
+  text-decoration: underline; text-underline-offset: 2px;
+}
 
 /* --- Filtro ---------------------------------------------------------------- */
 html body #app #view-files #mwArqFiltro{
@@ -29373,6 +29384,8 @@ html body #app #view-files .mw-arq-vazio strong{
     if (filtro) filtro.addEventListener('change', pinta);
 
     view.addEventListener('click', function(ev){
+      var ir = ev.target.closest('[data-arq-ir]');
+      if (ir && window.showView){ window.showView(ir.getAttribute('data-arq-ir')); return; }
       var apagar = ev.target.closest('[data-apagar]');
       if (!apagar) return;
       var id = apagar.getAttribute('data-apagar');
@@ -29393,6 +29406,247 @@ html body #app #view-files .mw-arq-vazio strong{
     if (typeof anterior === 'function') { try { anterior(d); } catch(e){} }
     try { if ($('mwArqFiltro')) opcoesDisciplina([]); } catch(e){}
   };
+})();
+</script>
+
+<script id="mw-backup-arquivos-js">
+(function(){
+  'use strict';
+  /* O backup passa a levar os ARQUIVOS junto.
+
+     Isto conserta um buraco que a área de Arquivos abriu: o exportador
+     serializava só o blob do workspace (localStorage), e os arquivos
+     moram no IndexedDB. Quem exportasse, limpasse o navegador e
+     importasse de volta perderia todos os materiais — em silêncio, com
+     a tela dizendo "Backup exportado". Um backup que não leva tudo é
+     pior que backup nenhum, porque cria confiança onde não deveria.
+
+     Formato: os arquivos entram no MESMO JSON, cada um como base64. Não
+     é elegante — infla uns 33% — mas é um formato que o importador de
+     qualquer versão futura consegue ler sem biblioteca, e não exige
+     escrever um gerador de ZIP à mão dentro de um arquivo que já tem
+     26 mil linhas.
+
+     Compatibilidade nos dois sentidos: um backup ANTIGO (sem a chave
+     "arquivos") importa exatamente como antes, e um backup NOVO aberto
+     por uma versão antiga do app ainda tem o "data" no lugar de sempre.
+
+     Os handlers são reatribuídos por propriedade (.onclick / .onchange),
+     e não por addEventListener, porque é assim que o bloco original faz:
+     atribuir substitui, somar duplicaria o comportamento. */
+
+  var BANCO = 'mwArquivos', LOJA = 'arquivos', VERSAO = 1;
+
+  function fala(msg){ if (typeof window.toast === 'function') window.toast(msg); }
+  function $(id){ return document.getElementById(id); }
+
+  function abreBanco(){
+    return new Promise(function(ok, falha){
+      var req;
+      try { req = indexedDB.open(BANCO, VERSAO); } catch(e){ falha(e); return; }
+      req.onupgradeneeded = function(){
+        var d = req.result;
+        if (!d.objectStoreNames.contains(LOJA)){
+          var loja = d.createObjectStore(LOJA, { keyPath: 'id' });
+          loja.createIndex('criadoEm', 'criadoEm');
+        }
+      };
+      req.onsuccess = function(){ ok(req.result); };
+      req.onerror = function(){ falha(req.error); };
+    });
+  }
+  function lista(){
+    return abreBanco().then(function(d){
+      return new Promise(function(ok, falha){
+        var req = d.transaction(LOJA, 'readonly').objectStore(LOJA).getAll();
+        req.onsuccess = function(){ ok(req.result || []); };
+        req.onerror = function(){ falha(req.error); };
+      });
+    }).catch(function(){ return []; });   // sem IndexedDB, backup só do workspace
+  }
+  function grava(regs){
+    if (!regs.length) return Promise.resolve(0);
+    return abreBanco().then(function(d){
+      return new Promise(function(ok, falha){
+        var tx = d.transaction(LOJA, 'readwrite'), loja = tx.objectStore(LOJA);
+        regs.forEach(function(r){ loja.put(r); });
+        tx.oncomplete = function(){ ok(regs.length); };
+        tx.onerror = function(){ falha(tx.error); };
+      });
+    });
+  }
+
+  function paraBase64(blob){
+    return new Promise(function(ok, falha){
+      var leitor = new FileReader();
+      leitor.onload = function(){
+        /* readAsDataURL devolve "data:<tipo>;base64,<conteúdo>". Só o
+           conteúdo é guardado; o tipo já vai no campo próprio. */
+        var s = String(leitor.result || '');
+        var i = s.indexOf(',');
+        ok(i === -1 ? '' : s.slice(i + 1));
+      };
+      leitor.onerror = function(){ falha(leitor.error); };
+      leitor.readAsDataURL(blob);
+    });
+  }
+  function deBase64(b64, tipo){
+    /* Em pedaços: atob de uma string de dezenas de megabytes numa
+       tacada só é onde um aparelho modesto fica sem memória. */
+    var bruto = atob(b64 || '');
+    var pedaco = 32768, partes = [];
+    for (var i = 0; i < bruto.length; i += pedaco){
+      var fatia = bruto.slice(i, i + pedaco);
+      var bytes = new Uint8Array(fatia.length);
+      for (var j = 0; j < fatia.length; j++) bytes[j] = fatia.charCodeAt(j);
+      partes.push(bytes);
+    }
+    return new Blob(partes, { type: tipo || 'application/octet-stream' });
+  }
+
+  function tamanho(bytes){
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1).replace('.0','') + ' MB';
+  }
+
+  /* --- Exportar -------------------------------------------------------- */
+  function exporta(){
+    var botao = $('exportBackup');
+    if (botao && botao.dataset.mwOcupado === '1') return;
+    if (botao) { botao.dataset.mwOcupado = '1'; botao.disabled = true; }
+
+    lista().then(function(regs){
+      var total = regs.reduce(function(t,r){ return t + (r.bytes || 0); }, 0);
+      if (total > 8 * 1024 * 1024) fala('Preparando o backup com ' + tamanho(total) + ' de arquivos…');
+      return Promise.all(regs.map(function(r){
+        return paraBase64(r.blob).then(function(b64){
+          return { id: r.id, nome: r.nome, tipo: r.tipo, bytes: r.bytes,
+                   criadoEm: r.criadoEm, subject: r.subject || '', conteudo: b64 };
+        });
+      }));
+    }).then(function(arquivos){
+      var payload = {
+        mateusWorkspaceBackup: 1,
+        exportedAt: new Date().toISOString(),
+        data: window.data,
+        arquivos: arquivos
+      };
+      var blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'mateus-workspace-backup-' + new Date().toISOString().slice(0,10) + '.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      /* Revogar no próximo quadro, e não já: em alguns navegadores
+         revogar no mesmo tick cancela o download que acabou de começar. */
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+      fala(arquivos.length
+        ? 'Backup exportado com ' + arquivos.length + (arquivos.length === 1 ? ' arquivo.' : ' arquivos.')
+        : 'Backup exportado.');
+    }).catch(function(e){
+      console.error('Backup:', e);
+      fala('Não foi possível gerar o backup.');
+    }).then(function(){
+      if (botao) { botao.dataset.mwOcupado = '0'; botao.disabled = false; }
+    });
+  }
+
+  /* --- Importar -------------------------------------------------------- */
+  function importa(ev){
+    var campo = ev.target;
+    var arquivo = campo.files && campo.files[0];
+    var erro = $('importBackupError');
+    if (erro) erro.textContent = '';
+    if (!arquivo) return;
+
+    var leitor = new FileReader();
+    leitor.onload = function(){
+      var parsed;
+      try { parsed = JSON.parse(leitor.result); }
+      catch(e){
+        if (erro) erro.textContent = 'Não foi possível ler esse arquivo de backup.';
+        campo.value = '';
+        return;
+      }
+      var entrando = (parsed && parsed.data) ? parsed.data : parsed;
+      if (!entrando || typeof entrando !== 'object'){
+        if (erro) erro.textContent = 'Não foi possível ler esse arquivo de backup.';
+        campo.value = '';
+        return;
+      }
+
+      /* O workspace primeiro: se os arquivos falharem, pelo menos as
+         disciplinas, projetos e anotações voltaram. */
+      try {
+        window.data = Object.assign({}, entrando);
+        if (typeof window.save === 'function') window.save();
+        if (typeof window.applyTheme === 'function') window.applyTheme();
+        if (typeof window.loadProfileFields === 'function') window.loadProfileFields();
+      } catch(e){
+        console.error('Backup:', e);
+        if (erro) erro.textContent = 'O backup foi lido, mas não foi possível aplicar os dados.';
+        campo.value = '';
+        return;
+      }
+
+      var arquivos = Array.isArray(parsed && parsed.arquivos) ? parsed.arquivos : [];
+      if (!arquivos.length){
+        /* Backup antigo, de antes de os arquivos existirem: não é erro,
+           e dizer isso evita a pessoa achar que perdeu os materiais. */
+        fala('Backup importado. Esse arquivo não tinha materiais salvos.');
+        campo.value = '';
+        return;
+      }
+
+      var regs = [];
+      try {
+        regs = arquivos.map(function(a){
+          return { id: a.id || ('a' + Date.now() + Math.random().toString(36).slice(2,7)),
+                   nome: a.nome || 'arquivo', tipo: a.tipo || '', bytes: a.bytes || 0,
+                   criadoEm: a.criadoEm || Date.now(), subject: a.subject || '',
+                   blob: deBase64(a.conteudo, a.tipo) };
+        });
+      } catch(e){
+        console.error('Backup:', e);
+        fala('Os dados voltaram, mas os materiais deste backup estão corrompidos.');
+        campo.value = '';
+        return;
+      }
+
+      grava(regs).then(function(n){
+        fala('Backup importado com ' + n + (n === 1 ? ' arquivo.' : ' arquivos.'));
+        /* A área de Arquivos se redesenha sozinha quando é aberta; se
+           já estiver aberta, isto atualiza na hora. */
+        var filtro = $('mwArqFiltro');
+        if (filtro) filtro.dispatchEvent(new Event('change', { bubbles: true }));
+      }).catch(function(e){
+        console.error('Backup:', e);
+        fala('Os dados voltaram, mas não foi possível gravar os materiais. O espaço do navegador pode estar cheio.');
+      }).then(function(){ campo.value = ''; });
+    };
+    leitor.onerror = function(){
+      if (erro) erro.textContent = 'Não foi possível ler esse arquivo de backup.';
+      campo.value = '';
+    };
+    leitor.readAsText(arquivo);
+  }
+
+  function liga(){
+    var exportar = $('exportBackup'), campo = $('importBackupFile');
+    if (exportar) exportar.onclick = exporta;
+    if (campo) campo.onchange = importa;
+
+    /* O texto do cartão prometia menos do que o backup agora entrega. */
+    var cartao = exportar && exportar.closest('.settings-group');
+    var p = cartao && cartao.querySelector('p');
+    if (p) p.textContent = 'Seus dados e seus arquivos ficam salvos só neste navegador. ' +
+      'Exporte um backup para não perder nada ao trocar de aparelho ou limpar os dados do navegador — ' +
+      'ele leva o workspace e os materiais da área de Arquivos no mesmo arquivo.';
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', liga);
+  else liga();
 })();
 </script>
 
