@@ -1,3 +1,24 @@
+/* v84 (BETA — Disciplinas e Anotações ganham o botão Editar):
+   Escrevi um teste que faz o ciclo inteiro nas cinco entidades: criar
+   preenchendo todos os campos, recarregar, editar, excluir. Ele achou
+   uma lacuna que estava em silêncio desde a Fase 1.
+   Instituições, Projetos e Atividades tinham "Editar". Disciplinas e
+   Anotações, não. Ou seja: para corrigir um erro de digitação no nome de
+   uma disciplina era preciso apagar e cadastrar de novo — perdendo, no
+   caminho, o progresso, o código, a instituição e o semestre. Nada na
+   tela dizia isso; simplesmente não havia o botão.
+   A máquina de edição já existia e já era genérica (data-edit="<tipo>"
+   mais o índice, com o formulário guardando editIndex). Faltava só o
+   botão nas duas listas.
+   O que o teste 11 mede, e passou nas cinco:
+   - todo campo digitado chega ao dado (6, 6, 8, 5 e 3 campos);
+   - tudo sobrevive a um recarregamento, byte a byte;
+   - editar corrige o item e NÃO zera os outros campos;
+   - excluir age no item certo mesmo com a lista reordenada. Essa última
+     parte embaralha as datas de propósito: a tela ordena por prazo, mas
+     os botões guardam o índice da posição original no array. Na
+     verificação, a ordem na tela era [2], [0], [1], e apagar o primeiro
+     da tela removeu exatamente o de índice 2. */
 /* v83 (BETA — a promessa de funcionar sem internet, medida pela primeira vez):
    O README diz que o app "continua funcionando sem internet". Isso é uma
    afirmação sobre o service worker, e até aqui ela nunca tinha sido
@@ -1069,7 +1090,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v83-beta';
+const CACHE_NAME = 'mw-shell-v84-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

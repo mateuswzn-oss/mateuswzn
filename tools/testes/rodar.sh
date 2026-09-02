@@ -64,6 +64,7 @@ declare -a NOMES=(
   "8 estrutura · IDs e rótulos"
   "9 criação · todos os caminhos"
   "10 offline · service worker"
+  "11 dados · criar, editar, excluir"
 )
 declare -a CMDS=(
   "node tools/testes/1-regressao.mjs"
@@ -77,6 +78,7 @@ declare -a CMDS=(
   "node tools/testes/8-estrutura.mjs"
   "node tools/testes/9-criacao.mjs"
   "node tools/testes/10-offline.mjs"
+  "node tools/testes/11-dados.mjs"
 )
 
 SO_ESTES=("$@")

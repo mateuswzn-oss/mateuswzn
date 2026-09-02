@@ -54,6 +54,7 @@ node tools/testes/1-regressao.mjs mobile
 | 8 | `8-estrutura.mjs` | invariantes do DOM: IDs duplicados, `label[for]` órfão, `aria-labelledby` apontando para o nada | qualquer um deles |
 | 9 | `9-criacao.mjs` | os quatro caminhos de criar (o "+ Adicionar" da área, o atalho do painel, o "+" do topo, o "+" da barra de baixo) abrem o **mesmo** formulário | qualquer um deles abrir outro, ou o modal legado voltar |
 | 10 | `10-offline.mjs` | instala o service worker de verdade, desliga a rede e recarrega | o app não abrir, os dados sumirem, ou faltar folha de estilo |
+| 11 | `11-dados.mjs` | o ciclo completo nas cinco entidades: criar com todos os campos, recarregar, editar sem apagar o resto, excluir o item certo com a lista reordenada | um campo não chegar ao dado, sumir no reload, a edição zerar campos, ou a exclusão pegar o item errado |
 
 ### Por que o contraste é medido em duas etapas
 
@@ -88,6 +89,11 @@ resumidas aqui para quem for escrever um teste novo.
 - **`p.dragTo()` emite eventos de mouse.** Num celular o caminho é
   `PointerEvent` de tipo `touch`, que é outro código. O teste 5 monta o
   gesto à mão por isso.
+- **A tela reordena, o array não.** As listas saem em ordem de prazo e de
+  semestre, mas Editar e Excluir guardam o índice da posição ORIGINAL no
+  array. É por isso que a última parte do teste 11 embaralha as datas de
+  propósito antes de excluir: se algum dia a ordenação passar a mexer no
+  array, os botões começam a agir no item errado sem avisar.
 - **`localhost` não é a mesma coisa que `127.0.0.1`.** O registro do
   service worker exigia `hostname === 'localhost'` e deixava de fora
   `127.0.0.1` e `[::1]`, que a especificação também trata como seguros.
