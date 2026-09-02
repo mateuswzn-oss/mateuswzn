@@ -80,8 +80,7 @@ try {
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--text);background:var(--bg)}button,input,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
 body{overflow-x:hidden;background:radial-gradient(circle at 20% 45%,rgba(37,99,235,.17),transparent 30%),radial-gradient(circle at 85% 15%,rgba(124,92,255,.12),transparent 28%),linear-gradient(135deg,#020617,#061226 55%,#020617)}
 body.light{--bg:#edf5ff;--bg2:#e5efff;--panel:rgba(255,255,255,.68);--panel2:rgba(255,255,255,.86);--line:rgba(37,99,235,.18);--text:#0b1830;--muted:#526988;--muted2:#7085a2;background:radial-gradient(circle at 20% 45%,rgba(37,99,235,.13),transparent 30%),linear-gradient(135deg,#eaf3ff,#f7fbff)}
-/* LOGIN */
-#loginScreen{min-height:100vh;display:grid;place-items:center;padding:28px;position:relative;overflow:hidden;background:#020617}#loginVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;filter:brightness(.34) saturate(1.08);transform:scale(1.02);pointer-events:none}#loginScreen:after{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(90deg,rgba(2,6,23,.72),rgba(2,12,28,.42) 48%,rgba(2,6,23,.72)),radial-gradient(circle at 50% 50%,transparent 20%,rgba(2,6,23,.35) 100%);pointer-events:none}#loginScreen:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 25% 50%,rgba(37,99,235,.16),transparent 30%);pointer-events:none}.login-shell{width:min(1240px,100%);display:grid;grid-template-columns:minmax(0,1fr) 470px;gap:60px;align-items:center;position:relative;z-index:1}
+/* LOGIN */#loginScreen:not([data-mw-migrada]):not([data-mw-migrada] *){min-height:100vh;display:grid;place-items:center;padding:28px;position:relative;overflow:hidden;background:#020617}#loginVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;filter:brightness(.34) saturate(1.08);transform:scale(1.02);pointer-events:none}#loginScreen:after{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(90deg,rgba(2,6,23,.72),rgba(2,12,28,.42) 48%,rgba(2,6,23,.72)),radial-gradient(circle at 50% 50%,transparent 20%,rgba(2,6,23,.35) 100%);pointer-events:none}#loginScreen:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 25% 50%,rgba(37,99,235,.16),transparent 30%);pointer-events:none}.login-shell{width:min(1240px,100%);display:grid;grid-template-columns:minmax(0,1fr) 470px;gap:60px;align-items:center;position:relative;z-index:1}
 .lamp-area{height:650px;display:grid;place-items:center;position:relative}.lamp{width:500px;height:610px;position:relative;filter:drop-shadow(0 30px 55px rgba(0,0,0,.5))}.lamp-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}.lamp-glow{position:absolute;left:55px;top:282px;width:390px;height:225px;background:radial-gradient(ellipse at 50% 30%,rgba(80,197,255,.76),rgba(37,99,235,.32) 38%,transparent 73%);filter:blur(25px);opacity:1;transition:opacity .5s ease}.lamp-floor-glow{position:absolute;left:105px;bottom:62px;width:300px;height:70px;border-radius:50%;background:radial-gradient(ellipse,rgba(37,99,235,.45),transparent 70%);filter:blur(20px);opacity:1;transition:opacity .5s}.lamp.off .lamp-glow,.lamp.off .lamp-floor-glow{opacity:0}.shade{transition:filter .5s,opacity .5s}.lamp.off .shade{filter:drop-shadow(0 18px 28px rgba(0,0,0,.65));opacity:.84}.lamp-caption{position:absolute;left:50%;bottom:4px;transform:translateX(-50%);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#718bb0;white-space:nowrap}.cord-hit{cursor:grab;touch-action:none}.cord-hit.dragging{cursor:grabbing}.cord-hit:hover #cordBall{filter:drop-shadow(0 0 12px rgba(56,189,248,.85))}
 /* GLASS LOGIN */
 .login-card{position:relative;overflow:hidden;padding:38px;border-radius:30px;background:linear-gradient(145deg,rgba(12,43,82,.62),rgba(3,16,35,.72));border:1px solid rgba(125,194,255,.32);box-shadow:none !important;backdrop-filter:blur(34px) saturate(150%);-webkit-backdrop-filter:blur(34px) saturate(150%)}.login-card:before{content:"";position:absolute;inset:0;background:linear-gradient(125deg,rgba(255,255,255,.11),transparent 24%,rgba(56,189,248,.07) 56%,transparent 78%);pointer-events:none}.login-card:after{content:"";position:absolute;right:-80px;top:-100px;width:230px;height:230px;border-radius:50%;background:rgba(56,189,248,.13);filter:blur(42px);pointer-events:none}.brand{display:flex;gap:15px;align-items:center;position:relative;z-index:1}.brand-logo{width:60px;height:60px;border-radius:18px;display:grid;place-items:center;font-weight:900;background:linear-gradient(145deg,#3b82f6,#1d4ed8);box-shadow:none !important;}.brand h1{margin:0;font-size:28px;letter-spacing:-.03em}.brand h1 span{color:#4db7ff}.subtitle{margin:8px 0 27px;color:#91a9ca;font-size:14px}.field{margin:17px 0}.field label{display:block;margin-bottom:8px;color:#91b0d5;font-size:12px}.input-wrap{height:56px;display:flex;align-items:center;gap:10px;padding:0 14px;border:1px solid rgba(104,171,245,.27);border-radius:14px;background:rgba(0,9,24,.42);transition:.2s}.input-wrap:focus-within{border-color:#3b9cff;box-shadow:none !important;}.input-wrap svg{width:20px;color:#6fb7ff}.input-wrap input{width:100%;border:0;outline:0;background:transparent;color:var(--text);font-size:14px}.input-wrap input::placeholder{color:#60789a}.toggle{border:0;background:transparent;color:#70b8ff;font-size:16px;padding:5px}.primary,.ms-button{width:100%;height:56px;border-radius:14px;font-weight:750;transition:.22s}.primary{margin-top:8px;border:0;color:#fff;background:linear-gradient(135deg,#3b9cff,#2563eb);box-shadow:none !important;}.primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:none !important;}.primary:disabled{opacity:.42}.divider{display:flex;align-items:center;gap:12px;color:#607a9e;font-size:11px;margin:18px 0}.divider:before,.divider:after{content:"";height:1px;flex:1;background:rgba(116,157,207,.18)}.ms-button{border:1px solid #d5dbe5;background:#fff;color:#202936;display:flex;align-items:center;justify-content:center;gap:12px}.ms-button:hover{background:#f5f7fa;box-shadow:none !important;transform:translateY(-1px)}.ms-button.loading{opacity:.75}.ms-logo{display:grid;grid-template-columns:1fr 1fr;gap:2px;width:18px;height:18px}.ms-logo i:nth-child(1){background:#f25022}.ms-logo i:nth-child(2){background:#7fba00}.ms-logo i:nth-child(3){background:#00a4ef}.ms-logo i:nth-child(4){background:#ffb900}.status{min-height:18px;margin-top:11px;text-align:center;color:#66c0ff;font-size:11px}.status.error{color:#fb7185}.foot,.creator{text-align:center;color:#667f9f;font-size:11px}.foot{margin-top:21px}.creator{margin-top:14px}.login-footer{text-align:center;margin-top:14px;color:#7d9abd;font-size:11px;line-height:1.45}.login-footer .credit{display:block}.login-footer .instagram-link{display:grid;place-items:center;width:30px;height:30px;margin:8px auto 0;border-radius:9px;color:#b9dcff;background:rgba(37,99,235,.10);border:1px solid rgba(104,171,245,.20);transition:transform .2s ease,background .2s ease,border-color .2s ease}.login-footer .instagram-link:hover{transform:translateY(-2px);background:rgba(37,99,235,.18);border-color:rgba(104,171,245,.38)}.login-footer svg{width:16px;height:16px}
@@ -91,7 +90,7 @@ body.light{--bg:#edf5ff;--bg2:#e5efff;--panel:rgba(255,255,255,.68);--panel2:rgb
 .auth-card{width:min(1060px,100%);min-height:620px;background:#f7f7f2;border-radius:20px;box-shadow:none !important;display:grid;grid-template-columns:1fr 1fr;position:relative;overflow:hidden;border:1px solid rgba(50,50,45,.04)}
 .auth-form-side{grid-row:1;min-width:0;display:flex;align-items:center;justify-content:center;padding:54px 70px;transition:transform .58s cubic-bezier(.22,.8,.2,1),opacity .35s ease;will-change:transform,opacity;transform:translate3d(0,0,0)}
 .auth-form-inner{width:min(100%,390px);text-align:center;position:relative;z-index:2}.auth-mini-brand{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8b8c83;margin-bottom:24px}.auth-mini-brand span{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:8px;background:#222831;color:#fff;font-weight:900;margin-right:7px;vertical-align:middle;letter-spacing:0}
-.auth-form-inner h1{margin:0;font-size:28px;letter-spacing:-.035em;color:#20252b}.social-row{display:flex;justify-content:center;gap:10px;margin:18px 0 13px}.social-row span{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#f5f5ef;box-shadow:none !important;font-size:11px;font-weight:700;color:#353a40}.auth-or{font-size:9px;letter-spacing:.1em;color:#a0a198;margin:0 0 16px}.ref-field{height:44px;margin:10px 0;border-radius:8px;background:#f4f4ee;box-shadow:none !important;}.ref-field input{width:100%;height:100%;border:0;outline:0;background:transparent;padding:0 16px;color:#34383d;font-size:12px}.ref-field input::placeholder{color:#aaa9a1}.password-ref{display:flex;align-items:center}.password-ref .toggle{border:0;background:transparent;color:#8b8b84;margin-right:7px}.ref-forgot{text-align:center;margin:9px 0 16px}.ref-forgot button,.ref-demo{border:0;background:none;color:#8d8e87;font-size:10px}.ref-forgot button:hover,.ref-demo:hover{text-decoration:underline}.ref-primary{height:44px;min-width:150px;padding:0 28px;border:0;border-radius:999px;background:#222831;color:#fff;font-size:10px;font-weight:800;letter-spacing:.12em;box-shadow:none !important;transition:.2s}.ref-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:none !important;}.ref-primary:disabled{opacity:.45;cursor:not-allowed}.ref-secondary{height:42px;margin:14px auto 0;padding:0 18px;border:1px solid #deded7;border-radius:999px;background:#f8f8f3;color:#30353b;font-size:10px;display:flex;align-items:center;justify-content:center;gap:8px}.ref-demo{display:block;margin:11px auto 0}.inline-create-form .ref-primary{margin-top:10px}.form-error:not([data-mw-migrada] *){min-height:16px;color:#b94c58;font-size:10px;margin:6px 0}
+.auth-form-inner h1{margin:0;font-size:28px;letter-spacing:-.035em;color:#20252b}.social-row{display:flex;justify-content:center;gap:10px;margin:18px 0 13px}.social-row span{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#f5f5ef;box-shadow:none !important;font-size:11px;font-weight:700;color:#353a40}.auth-or{font-size:9px;letter-spacing:.1em;color:#a0a198;margin:0 0 16px}.ref-field{height:44px;margin:10px 0;border-radius:8px;background:#f4f4ee;box-shadow:none !important;}.ref-field input{width:100%;height:100%;border:0;outline:0;background:transparent;padding:0 16px;color:#34383d;font-size:12px}.ref-field input::placeholder{color:#aaa9a1}.password-ref{display:flex;align-items:center}.password-ref .toggle{border:0;background:transparent;color:#8b8b84;margin-right:7px}.ref-forgot{text-align:center;margin:9px 0 16px}.ref-forgot button,.ref-demo{border:0;background:none;color:#8d8e87;font-size:10px}.ref-forgot button:hover,.ref-demo:hover{text-decoration:underline}.ref-primary:not([data-mw-migrada]):not([data-mw-migrada] *){height:44px;min-width:150px;padding:0 28px;border:0;border-radius:999px;background:#222831;color:#fff;font-size:10px;font-weight:800;letter-spacing:.12em;box-shadow:none !important;transition:.2s}.ref-primary:not([data-mw-migrada]):not([data-mw-migrada] *):hover:not(:disabled){transform:translateY(-1px);box-shadow:none !important;}.ref-primary:not([data-mw-migrada]):not([data-mw-migrada] *):disabled{opacity:.45;cursor:not-allowed}.ref-secondary{height:42px;margin:14px auto 0;padding:0 18px;border:1px solid #deded7;border-radius:999px;background:#f8f8f3;color:#30353b;font-size:10px;display:flex;align-items:center;justify-content:center;gap:8px}.ref-demo{display:block;margin:11px auto 0}.inline-create-form .ref-primary{margin-top:10px}.form-error:not([data-mw-migrada] *){min-height:16px;color:#b94c58;font-size:10px;margin:6px 0}
 .auth-switch-panel{position:absolute;top:0;right:0;width:50%;height:100%;z-index:5;background:#eeeee7;display:flex;align-items:center;justify-content:center;text-align:center;padding:60px;transition:transform .58s cubic-bezier(.22,.8,.2,1);will-change:transform;transform:translate3d(0,0,0);box-shadow:none !important;}.auth-switch-panel:before,.auth-switch-panel:after{content:"";position:absolute;border-radius:50%;border:1px solid rgba(80,80,70,.07);pointer-events:none}.auth-switch-panel:before{width:290px;height:290px;left:-120px;bottom:-120px}.auth-switch-panel:after{width:220px;height:220px;right:-90px;top:-100px}.switch-content{width:min(310px,100%);position:absolute;transition:opacity .35s ease,transform .55s ease}.switch-content h2{font-size:27px;margin:0 0 14px;letter-spacing:-.04em}.switch-content p{font-size:11px;line-height:1.7;color:#85867e;margin:0 auto 26px;max-width:270px}.switch-btn{height:44px;min-width:150px;border:1px solid #9d9e98;border-radius:999px;background:transparent;color:#252a30;font-size:10px;font-weight:800;letter-spacing:.12em}.switch-login-content{opacity:0;transform:translateX(25px);pointer-events:none}.switch-signup-content{opacity:1;transform:translateX(0)}
 .auth-scene.mode-signup .auth-switch-panel{transform:translateX(-100%)}.auth-scene.mode-signup .switch-login-content{opacity:1;transform:translateX(0);pointer-events:auto}.auth-scene.mode-signup .switch-signup-content{opacity:0;transform:translateX(-25px);pointer-events:none}.auth-scene.mode-signup .sign-in-side{transform:translateX(100%);opacity:0;pointer-events:none}.auth-scene.mode-signup .sign-up-side{transform:translateX(-100%)}
 .auth-decoration{position:absolute;border-radius:50%;border:1px solid rgba(90,90,80,.06);pointer-events:none}.deco-a{width:440px;height:440px;left:-260px;top:-240px}.deco-b{width:300px;height:300px;right:-160px;bottom:-170px}.deco-c{width:170px;height:170px;right:80px;top:-125px;background:rgba(255,255,255,.16)}
@@ -108,7 +107,7 @@ body.light{--bg:#edf5ff;--bg2:#e5efff;--panel:rgba(255,255,255,.68);--panel2:rgb
 #toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);padding:11px 15px;border-radius:12px;background:rgba(7,20,42,.94);border:1px solid rgba(83,157,240,.25);color:#d8ecff;font-size:11px;opacity:0;pointer-events:none;transition:.25s;z-index:200}#toast.show{opacity:1;transform:translate(-50%,0)}
 @media(max-width:1050px){.login-shell{grid-template-columns:1fr 430px;gap:25px}.lamp{transform:scale(.86)}.stats{grid-template-columns:repeat(2,1fr)}.cols{grid-template-columns:1fr}.section-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:820px){.login-shell{grid-template-columns:1fr;gap:4px}.lamp-area{height:390px}.lamp{transform:scale(.64)}.login-card{max-width:500px;margin:auto}.activity-list{grid-template-columns:1fr}.profile-form{grid-template-columns:1fr}.profile-form .full{grid-column:auto}}
-@media(max-width:560px){#loginScreen{padding:15px}.lamp-area{height:300px}.lamp{transform:scale(.48);margin-top:-25px}.login-card{padding:23px;border-radius:22px}.brand h1{font-size:23px}.brand-logo{width:54px;height:54px}.stats{grid-template-columns:1fr}.topbar{align-items:flex-start}.hello h2{font-size:23px}.top-actions .icon-btn:nth-child(-n+2){display:none}.section-grid{grid-template-columns:1fr}.main{padding:18px 14px 40px}}
+@media(max-width:560px){#loginScreen:not([data-mw-migrada]):not([data-mw-migrada] *){padding:15px}.lamp-area{height:300px}.lamp{transform:scale(.48);margin-top:-25px}.login-card{padding:23px;border-radius:22px}.brand h1{font-size:23px}.brand-logo{width:54px;height:54px}.stats{grid-template-columns:1fr}.topbar{align-items:flex-start}.hello h2{font-size:23px}.top-actions .icon-btn:nth-child(-n+2){display:none}.section-grid{grid-template-columns:1fr}.main{padding:18px 14px 40px}}
 /* === EXTENSÃO VISUAL — adicionada sem remover a base existente === */
 .search-wrap{position:relative;display:flex;align-items:center;min-width:260px}.search-wrap input{width:100%;height:42px;border-radius:14px;border:1px solid var(--line);background:rgba(8,25,50,.48);color:var(--text);padding:0 42px 0 42px;outline:none;backdrop-filter:blur(18px)}body.light .search-wrap input{background:rgba(255,255,255,.62)}.search-icon{position:absolute;left:14px;opacity:.65}.bell-btn{position:relative}.bell-dot{position:absolute;right:8px;top:7px;width:7px;height:7px;border-radius:50%;background:#38bdf8;box-shadow:none !important;}.extra-panel{margin-top:18px}.liquid-card:not([data-mw-migrada] *){background:linear-gradient(145deg,rgba(19,55,103,.58),rgba(6,20,43,.66));border:1px solid rgba(111,190,255,.18);box-shadow:none !important;backdrop-filter:blur(24px);border-radius:22px}.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}.calendar-day:not([data-mw-migrada] *){min-height:68px;border:1px solid rgba(111,190,255,.1);border-radius:12px;padding:8px;background:rgba(255,255,255,.025)}.calendar-day.today:not([data-mw-migrada] *){border-color:rgba(56,189,248,.55);box-shadow:none !important;}.calendar-day small{display:block;color:var(--muted);font-size:11px}.event-dot{display:inline-flex;margin-top:8px;padding:3px 6px;border-radius:999px;background:rgba(56,189,248,.12);color:#bdeaff;font-size:10px}.lecture-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.lecture-card{padding:16px;border-radius:17px;background:rgba(255,255,255,.035);border:1px solid rgba(111,190,255,.1);transition:.25s}.lecture-card:hover{transform:translateY(-3px);border-color:rgba(56,189,248,.35);box-shadow:none !important;}.lecture-card .lecture-meta{font-size:12px;color:var(--muted);margin-top:7px}.progress-line{height:6px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:12px}.progress-line i{display:block;height:100%;width:0;background:linear-gradient(90deg,#2563eb,#38bdf8);border-radius:inherit}.auth-links{display:flex;justify-content:space-between;margin-top:12px;font-size:12px}.auth-links button{border:0;background:none;color:#8fd8ff;padding:0}.auth-links button:hover{text-decoration:underline}.auth-modal-card{max-width:460px}.auth-step{display:none}.auth-step.active{display:block}.notification-menu{position:absolute;right:0;top:52px;width:310px;padding:14px;z-index:100;background:rgba(7,22,45,.9);border:1px solid rgba(111,190,255,.2);border-radius:18px;box-shadow:none !important;backdrop-filter:blur(24px)}.notification-menu.hidden{display:none}.notification-item{padding:12px;border-radius:12px;background:rgba(255,255,255,.035);margin-top:8px;color:var(--muted)}@media(max-width:1000px){.search-wrap{min-width:180px}.lecture-grid{grid-template-columns:1fr 1fr}}@media(max-width:700px){.search-wrap{display:flex}.calendar-grid{gap:4px}.calendar-day:not([data-mw-migrada] *){min-height:54px;padding:5px}.lecture-grid{grid-template-columns:1fr}}
 
@@ -406,8 +405,7 @@ body.light{--bg:#efefeb;--bg2:#e6e6e1;--panel:rgba(255,255,252,.76);--panel2:rgb
 html,body{background:#0b0c0e!important;color:var(--text)}
 body{background:#0b0c0e!important}
 body.light{--bg:#ecebe7;--bg2:#e3e2dd;--panel:rgba(255,255,252,.82);--panel2:rgba(255,255,252,.94);--line:rgba(25,27,30,.10);--text:#22252a;--muted:#686c73;--muted2:#858990;background:#ecebe7!important;color:var(--text)}
-/* Login: clean graphite, no blue animated backdrop */
-#loginScreen.reference-login,#loginScreen{background:#0b0c0e!important}
+/* Login: clean graphite, no blue animated backdrop */#loginScreen.reference-login:not([data-mw-migrada]):not([data-mw-migrada] *), #loginScreen:not([data-mw-migrada]):not([data-mw-migrada] *){background:#0b0c0e!important}
 #loginScreen.reference-login::before,#loginScreen.reference-login::after,#loginScreen::before,#loginScreen::after{display:none!important;animation:none!important}
 #loginVideo{display:none!important}
 #loginScreen.reference-login .auth-card{background:rgba(24,25,27,.88)!important;border-color:rgba(255,255,255,.10)!important;box-shadow:none !important;backdrop-filter:blur(14px)!important;-webkit-backdrop-filter:blur(14px)!important}
@@ -453,7 +451,7 @@ body.light .notification-menu{background:#f7f6f2!important}
 .workspace-instagram .social-profile-popover{bottom:62px!important;background:#151619!important;box-shadow:none !important;backdrop-filter:none!important}
 .workspace-instagram .creator-animated{animation:none!important}
 /* compact calendar, home only */
-#academicCalendarPanel{max-width:620px!important}#academicCalendarPanel .calendar-day:not([data-mw-migrada] *){min-height:42px!important;padding:6px!important;border-color:rgba(255,255,255,.07)!important;background:rgba(255,255,255,.025)!important}
+#academicCalendarPanel:not([data-mw-migrada]):not([data-mw-migrada] *){max-width:620px!important}#academicCalendarPanel .calendar-day:not([data-mw-migrada] *){min-height:42px!important;padding:6px!important;border-color:rgba(255,255,255,.07)!important;background:rgba(255,255,255,.025)!important}
 #academicCalendarPanel .event-dot{background:rgba(255,255,255,.08)!important;color:#ddd!important}
 /* hide calendar and lecture clutter outside home */
 #app[data-view]:not([data-view="home"]) #academicCalendarPanel{display:none!important}
@@ -576,7 +574,7 @@ body.light{--mw-bg:#f1f2f3;--mw-surface:#ffffff;--mw-surface-2:#f7f8f9;--mw-bord
 .bell-btn,.icon-btn{background:var(--mw-surface-2)!important;color:var(--mw-text)!important;border-color:var(--mw-border)!important;box-shadow:none !important;}
 .quick-add,.icon-btn:hover{background:#30363e!important}
 /* Calendar: compact and only home */
-#academicCalendarPanel{max-width:520px!important;margin:18px 0 0!important;border-radius:18px!important}
+#academicCalendarPanel:not([data-mw-migrada]):not([data-mw-migrada] *){max-width:520px!important;margin:18px 0 0!important;border-radius:18px!important}
 #academicCalendarPanel .calendar-grid{gap:5px!important}#academicCalendarPanel .calendar-day:not([data-mw-migrada] *){min-height:42px!important;padding:5px!important;border-radius:9px!important;font-size:11px!important;background:var(--mw-surface-2)!important;border-color:var(--mw-border)!important}
 #academicCalendarPanel .calendar-day small{font-size:9px!important}
 /* Lectures card */#lecturesPanel:not([data-mw-migrada] *){max-width:520px!important;border-radius:18px!important}
@@ -3528,10 +3526,10 @@ try {
 #status.status{min-height:16px;margin:2px 0 6px;text-align:left;font-size:11px}
 
 /* Entrar e Criar conta com o MESMO desenho: pílula compacta, sem sombra */
-#authScene #loginButton.ref-primary{
-  width:100%;height:52px;margin-top:4px;border-radius:100px!important;
-  font-size:11.5px;letter-spacing:.12em;box-shadow:none!important;
-}
+/* A medida do botão de entrar saiu daqui: `ds-btn-largo` dá a largura
+   inteira e `ds-btn-g` a altura, o raio e a fonte. Ficou só a distância
+   para o campo acima, que é espaçamento deste formulário. */
+#authScene #loginButton.ref-primary{ margin-top:4px; }
 #inlineCreateError.form-error{min-height:14px;margin:0 0 8px;font-size:11px}
 #inlineCreateForm{display:flex;flex-direction:column}
 #inlineCreateForm .mw-original-car-btn,
@@ -3704,7 +3702,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
    substitui a senha como proteção real da conta. Melhor avisar do que
    deixar a pessoa achar que é uma segunda camada de segurança. */.mw-faceid-limite{margin-top:8px;font-size:11.5px;line-height:1.5;color:var(--muted)}
 </style>
-<section id="loginScreen">
+<section id="loginScreen" class="ds" data-mw-migrada="1">
   <div class="mwv2-ambient a1"></div>
   <div class="mwv2-ambient a2"></div>
   <i class="sign-up-side" hidden aria-hidden="true"></i>
@@ -3786,11 +3784,11 @@ body.light .mw-faceid-gate-card p{color:#526988}
         <form id="mwLoginForm" class="mwv2-auth-pane" autocomplete="on">
           <p class="mwv2-switch-text">Não tem conta? <button type="button" data-switch="signup">Criar agora.</button></p>
 
-          <label for="username">E-mail ou usuário</label>
-          <div class="mwv2-input-wrap"><input id="username" autocomplete="username" placeholder="E-mail ou usuário"></div>
+          <label class="ds-rotulo" for="username">E-mail ou usuário</label>
+          <div class="mwv2-input-wrap ds-campo"><input id="username" autocomplete="username" placeholder="E-mail ou usuário"></div>
 
-          <label for="password">Senha</label>
-          <div class="mwv2-input-wrap"><input id="password" type="password" autocomplete="current-password" placeholder="Senha"><button class="toggle" id="togglePassword" type="button">◌</button></div>
+          <label class="ds-rotulo" for="password">Senha</label>
+          <div class="mwv2-input-wrap ds-campo"><input id="password" type="password" autocomplete="current-password" placeholder="Senha"><button class="toggle ds-btn ds-btn-fantasma ds-btn-p" id="togglePassword" type="button">◌</button></div>
 
           <div class="mwv2-forgot-row">
             <span class="mwv2-remember" title="Depois de entrar, o próprio navegador oferece salvar essa senha para as próximas vezes.">
@@ -3805,8 +3803,8 @@ body.light .mw-faceid-gate-card p{color:#526988}
           </div>
           <div class="mwv2-forgot mw-forgot-transfere"><button type="button" id="mwTrazerConta">Já tenho conta em outro lugar</button></div>
 
-          <button class="ref-primary" id="loginButton" type="button">ENTRAR</button>
-          <div class="status" id="status"></div>
+          <button class="ref-primary ds-btn ds-btn-primario ds-btn-largo ds-btn-g" id="loginButton" type="button">ENTRAR</button>
+          <div class="status ds-corpo" id="status"></div>
 
           <!-- Entrada social: os botões existem pra deixar claro pra onde
                o produto vai, mas o OAuth de verdade ainda não está
@@ -3815,16 +3813,16 @@ body.light .mw-faceid-gate-card p{color:#526988}
                parece funcionar e não vai a lugar nenhum. -->
           <div class="mw-social-sep" aria-hidden="true"><span>ou</span></div>
           <div class="mw-social-lista">
-            <button type="button" class="mw-social-btn" data-social="apple" disabled aria-disabled="true" aria-label="Continuar com Apple — em breve">
+            <button type="button" class="mw-social-btn ds-btn ds-btn-secundario" data-social="apple" disabled aria-disabled="true" aria-label="Continuar com Apple — em breve">
               <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M16.3 12.8c0-2.2 1.8-3.3 1.9-3.3-1-1.5-2.6-1.7-3.2-1.7-1.4-.1-2.7.8-3.4.8-.7 0-1.8-.8-2.9-.8-1.5 0-2.9.9-3.6 2.2-1.6 2.7-.4 6.7 1.1 8.9.7 1.1 1.6 2.3 2.7 2.2 1.1 0 1.5-.7 2.8-.7s1.7.7 2.9.7c1.2 0 1.9-1.1 2.6-2.1.8-1.2 1.2-2.4 1.2-2.5 0 0-2.2-.9-2.1-3.7zM14.1 6.3c.6-.7 1-1.7.9-2.7-.9 0-2 .6-2.6 1.3-.6.6-1.1 1.7-.9 2.6 1 .1 2-.5 2.6-1.2z"/></svg>
               Apple
             </button>
-            <button type="button" class="mw-social-btn" data-social="google" disabled aria-disabled="true" aria-label="Continuar com Google — em breve">
+            <button type="button" class="mw-social-btn ds-btn ds-btn-secundario" data-social="google" disabled aria-disabled="true" aria-label="Continuar com Google — em breve">
               <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="#4285F4" d="M21.6 12.2c0-.6-.1-1.3-.2-1.9H12v3.6h5.4a4.6 4.6 0 0 1-2 3v2.5h3.2c1.9-1.7 3-4.3 3-7.2z"/><path fill="#34A853" d="M12 22c2.7 0 5-.9 6.6-2.4l-3.2-2.5c-.9.6-2 1-3.4 1-2.6 0-4.8-1.7-5.6-4.1H3.1v2.6A10 10 0 0 0 12 22z"/><path fill="#FBBC05" d="M6.4 14c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V7.4H3.1a10 10 0 0 0 0 9.2L6.4 14z"/><path fill="#EA4335" d="M12 5.9c1.5 0 2.8.5 3.8 1.5l2.8-2.8A10 10 0 0 0 3.1 7.4L6.4 10c.8-2.4 3-4.1 5.6-4.1z"/></svg>
               Google
             </button>
           </div>
-          <p class="mw-social-nota">Entrar com Apple ou Google chega <strong>em breve</strong>.</p>
+          <p class="mw-social-nota ds-corpo">Entrar com Apple ou Google chega <strong>em breve</strong>.</p>
         </form>
 
         <!-- CRIAR CONTA -->
@@ -3846,20 +3844,20 @@ body.light .mw-faceid-gate-card p{color:#526988}
           </ol>
 
           <div class="mw-etapa" data-etapa="1">
-            <label for="newUsername">Nome de usuário</label>
-            <div class="mwv2-input-wrap"><input id="newUsername" required pattern="[A-Za-z0-9._\-]{3,20}" placeholder="Nome de usuário"></div>
+            <label class="ds-rotulo" for="newUsername">Nome de usuário</label>
+            <div class="mwv2-input-wrap ds-campo"><input id="newUsername" required pattern="[A-Za-z0-9._\-]{3,20}" placeholder="Nome de usuário"></div>
 
-            <label for="newEmail">E-mail</label>
-            <div class="mwv2-input-wrap"><input id="newEmail" type="email" required placeholder="E-mail"></div>
+            <label class="ds-rotulo" for="newEmail">E-mail</label>
+            <div class="mwv2-input-wrap ds-campo"><input id="newEmail" type="email" required placeholder="E-mail"></div>
 
             <div class="mw-etapa-acoes">
-              <button type="button" class="mw-etapa-frente" data-vai="2">Continuar</button>
+              <button type="button" class="mw-etapa-frente ds-btn ds-btn-primario" data-vai="2">Continuar</button>
             </div>
           </div>
 
           <div class="mw-etapa" data-etapa="2" hidden>
-            <label for="newPass">Senha</label>
-            <div class="mwv2-input-wrap"><input id="newPass" type="password" required placeholder="Senha"><button class="toggle" id="toggleNewPass" type="button" aria-label="Mostrar ou ocultar senha">◌</button></div>
+            <label class="ds-rotulo" for="newPass">Senha</label>
+            <div class="mwv2-input-wrap ds-campo"><input id="newPass" type="password" required placeholder="Senha"><button class="toggle ds-btn ds-btn-fantasma ds-btn-p" id="toggleNewPass" type="button" aria-label="Mostrar ou ocultar senha">◌</button></div>
             <div class="mw-forca-senha" id="mwForcaSenha" hidden>
               <div class="mw-forca-trilho"><i id="mwForcaBarra"></i></div>
               <span class="mw-forca-texto" id="mwForcaTexto" aria-live="polite"></span>
@@ -3869,29 +3867,29 @@ body.light .mw-faceid-gate-card p{color:#526988}
                  há verificação por e-mail, um erro de digitação aqui
                  tranca a pessoa para fora de uma conta que ela acabou de
                  criar, sem caminho de volta. -->
-            <label for="newPass2">Confirmar senha</label>
-            <div class="mwv2-input-wrap"><input id="newPass2" type="password" required placeholder="Digite a senha de novo"></div>
+            <label class="ds-rotulo" for="newPass2">Confirmar senha</label>
+            <div class="mwv2-input-wrap ds-campo"><input id="newPass2" type="password" required placeholder="Digite a senha de novo"></div>
 
             <div class="mw-etapa-acoes">
-              <button type="button" class="mw-etapa-voltar" data-vai="1">Voltar</button>
-              <button type="button" class="mw-etapa-frente" data-vai="3">Continuar</button>
+              <button type="button" class="mw-etapa-voltar ds-btn ds-btn-secundario" data-vai="1">Voltar</button>
+              <button type="button" class="mw-etapa-frente ds-btn ds-btn-primario" data-vai="3">Continuar</button>
             </div>
           </div>
 
           <div class="mw-etapa" data-etapa="3" hidden>
-            <p class="mw-etapa-nota">Opcional. Dá para preencher depois, em Faculdade.</p>
+            <p class="mw-etapa-nota ds-corpo">Opcional. Dá para preencher depois, em Faculdade.</p>
 
-            <label for="newInstituicao">Instituição</label>
-            <div class="mwv2-input-wrap"><input id="newInstituicao" placeholder="Ex.: a universidade onde você estuda"></div>
+            <label class="ds-rotulo" for="newInstituicao">Instituição</label>
+            <div class="mwv2-input-wrap ds-campo"><input id="newInstituicao" placeholder="Ex.: a universidade onde você estuda"></div>
 
-            <label for="newCurso">Curso</label>
-            <div class="mwv2-input-wrap"><input id="newCurso" placeholder="Ex.: o curso que você faz"></div>
+            <label class="ds-rotulo" for="newCurso">Curso</label>
+            <div class="mwv2-input-wrap ds-campo"><input id="newCurso" placeholder="Ex.: o curso que você faz"></div>
 
-            <label for="newSemestre">Semestre</label>
-            <div class="mwv2-input-wrap"><input id="newSemestre" type="number" min="1" max="99" step="1" inputmode="numeric" placeholder="Ex.: 3"></div>
+            <label class="ds-rotulo" for="newSemestre">Semestre</label>
+            <div class="mwv2-input-wrap ds-campo"><input id="newSemestre" type="number" min="1" max="99" step="1" inputmode="numeric" placeholder="Ex.: 3"></div>
 
             <div class="mw-etapa-acoes">
-              <button type="button" class="mw-etapa-voltar" data-vai="2">Voltar</button>
+              <button type="button" class="mw-etapa-voltar ds-btn ds-btn-secundario" data-vai="2">Voltar</button>
             </div>
           </div>
 
@@ -3909,7 +3907,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
                aparece, cadastro sem captcha nenhum, igual já era. -->
           <div id="mwTurnstileWidget" hidden style="margin:4px 0"></div>
 
-          <div class="form-error" id="inlineCreateError"></div>
+          <div class="form-error ds-corpo" id="inlineCreateError"></div>
 
           <button type="submit">CRIAR CONTA</button>
         </form>
@@ -3924,12 +3922,12 @@ body.light .mw-faceid-gate-card p{color:#526988}
       <div id="otpMethodStep">
         <h3 id="otpTitle">Verificação de segurança</h3>
         <p>Escolha onde deseja receber o código de verificação.</p>
-        <div class="mwv2-otp-field" id="otpEmailField">
-          <label for="otpEmailInput">E-mail</label>
+        <div class="mwv2-otp-field ds-campo" id="otpEmailField">
+          <label class="ds-rotulo" for="otpEmailInput">E-mail</label>
           <input id="otpEmailInput" type="email" placeholder="seu@email.com" autocomplete="email">
         </div>
-        <div class="mwv2-otp-field" id="otpPhoneField">
-          <label for="otpPhoneInput">Telefone (opcional)</label>
+        <div class="mwv2-otp-field ds-campo" id="otpPhoneField">
+          <label class="ds-rotulo" for="otpPhoneInput">Telefone (opcional)</label>
           <input id="otpPhoneInput" type="tel" placeholder="(00) 00000-0000" autocomplete="tel">
         </div>
         <div class="otp-methods">
@@ -6908,6 +6906,15 @@ body.light .mw-photo-hint{color:#72767a;}
     e.preventDefault();
     if(clean.dataset.mwFinalBusy==='1')return;
 
+    /* Campo-armadilha: invisível para gente, preenchido por robô. A
+       conferência existia só no caminho da nuvem (o handler lá embaixo
+       começa com `if (!temNuvem()) return;`), então quando o Supabase
+       não responde — rede fora, projeto não configurado — o cadastro
+       caía aqui e a armadilha não valia nada. É justamente o caminho
+       que sobra quando o de cima falha. Silêncio total, como lá: o robô
+       acha que deu certo e não tenta outro jeito. */
+    if((clean.querySelector('#newWebsite')?.value||''))return;
+
     const username=(q('#newUsername')?.value||'').trim();
     const email=(q('#newEmail')?.value||'').trim().toLowerCase();
     const pass=q('#newPass')?.value||'';
@@ -6927,8 +6934,12 @@ body.light .mw-photo-hint{color:#72767a;}
        estivesse aberto. */
     const pass2=(clean.querySelector('#newPass2')?.value)||'';
     if(pass!==pass2){
-      if(err)err.textContent='As duas senhas não são iguais.';
-      if(typeof window.mwVaiParaEtapa==='function')window.mwVaiParaEtapa(2);
+      const recado='As duas senhas não são iguais.';
+      /* A mensagem vai JUNTO com a troca de etapa, não antes dela: a
+         troca termina limpando a caixa de erro, e escrever primeiro era
+         escrever para ninguém. */
+      if(typeof window.mwVaiParaEtapa==='function')window.mwVaiParaEtapa(2,recado);
+      else if(err)err.textContent=recado;
       return;
     }
 
@@ -7172,9 +7183,7 @@ html,body{
   color:var(--mw-text) !important;
 }
 
-/* Login + account screens */
-#loginScreen,
-#loginScreen.reference-login{
+/* Login + account screens */#loginScreen:not([data-mw-migrada]):not([data-mw-migrada] *), #loginScreen.reference-login:not([data-mw-migrada]):not([data-mw-migrada] *){
   background:
     radial-gradient(circle at 82% 18%,rgba(56,189,248,.11),transparent 30%),
     linear-gradient(160deg,#020617 0%,#071329 50%,#0e2650 100%) !important;
@@ -9186,8 +9195,7 @@ img,svg,video,canvas{max-width:100%}
   #app.hidden,#loginScreen.hidden{display:none!important;pointer-events:none!important}
   body:has(#app:not(.hidden)) #loginScreen{display:none!important}
 
-  /* LOGIN */
-  #loginScreen,#loginScreen.reference-login{
+  /* LOGIN */#loginScreen:not([data-mw-migrada]):not([data-mw-migrada] *), #loginScreen.reference-login:not([data-mw-migrada]):not([data-mw-migrada] *){
     display:block!important;height:auto!important;
     /* svh, nao dvh: a "small viewport height" e estavel — nao encolhe
        quando o teclado virtual abre. Com dvh o container do login
@@ -9423,9 +9431,7 @@ img,svg,video,canvas{max-width:100%}
     width:100% !important; height:auto !important; min-height:0 !important;
     z-index:1 !important;
   }
-  #app.hidden{display:none !important;}
-
-  #loginScreen,#loginScreen.reference-login{
+  #app.hidden{display:none !important;}#loginScreen:not([data-mw-migrada]):not([data-mw-migrada] *), #loginScreen.reference-login:not([data-mw-migrada]):not([data-mw-migrada] *){
     padding: 20px 16px 28px !important;
     min-height: 100svh !important;
     height: auto !important;
@@ -12721,7 +12727,7 @@ html body .mw-save-html-btn:hover{ background: rgba(59,130,246,.28) !important; 
 html body #app #homeWelcome{ display:none !important; }
 
 /* Calendário: setas + mês/ano visíveis, hoje marcado, semana por extenso */
-html body #app #academicCalendarPanel{
+html body #app #academicCalendarPanel:not([data-mw-migrada]):not([data-mw-migrada] *){
   overflow: visible !important;
   min-width: 0 !important;
 }
@@ -13007,7 +13013,7 @@ html body.light .eva-id{ color:#2563eb !important; }
 </script>
 <style id="mw-last-video-fix">
 /* ===== Calendário: números redondos, hoje nítido, sem vazar ===== */
-html body #app #academicCalendarPanel{
+html body #app #academicCalendarPanel:not([data-mw-migrada]):not([data-mw-migrada] *){
   overflow: hidden !important;
   padding: 16px 16px 18px !important;
 }
@@ -14113,8 +14119,7 @@ body.light #modal .form-field input,body.light #modal .form-field textarea { bac
 #app .mw-insight-action:hover { color:#fff; text-decoration:underline; }body.light #app .mw-insight h4:not([data-mw-migrada] *){color:#173851;}body.light #app .mw-insight p:not([data-mw-migrada] *){color:#547189;}body.light #app .mw-ring::before{background:#f8fdff;}body.light #app .mw-ring b:not([data-mw-migrada] *){color:#163b56;}
 
 /* Shared palette for session and login actions. Animation wrappers remain untouched. */html body #app #logout:not([data-mw-migrada] *), html body #app #logout.mw-logout-btn:not([data-mw-migrada] *){ background:linear-gradient(135deg,rgba(14,165,233,.22),rgba(37,99,235,.34))!important; border-color:rgba(103,232,249,.30)!important; color:#e7fbff!important; box-shadow:0 8px 18px rgba(14,165,233,.12)!important; }
-html body #app #logout:hover{background:linear-gradient(135deg,#38bdf8,#2563eb)!important;color:#051727!important;border-color:transparent!important;}
-#loginScreen #loginButton:not(.mw-login-loading),#loginScreen .ref-primary:not(.mw-login-loading):not(.mw-original-car-btn){background:linear-gradient(135deg,#67e8f9,#38bdf8 48%,#2563eb)!important;color:#061525!important;border-color:transparent!important;box-shadow:0 10px 22px rgba(14,165,233,.20)!important;}
+html body #app #logout:hover{background:linear-gradient(135deg,#38bdf8,#2563eb)!important;color:#051727!important;border-color:transparent!important;}#loginScreen #loginButton:not(.mw-login-loading):not([data-mw-migrada]):not([data-mw-migrada] *), #loginScreen .ref-primary:not(.mw-login-loading):not(.mw-original-car-btn):not([data-mw-migrada]):not([data-mw-migrada] *){background:linear-gradient(135deg,#67e8f9,#38bdf8 48%,#2563eb)!important;color:#061525!important;border-color:transparent!important;box-shadow:0 10px 22px rgba(14,165,233,.20)!important;}
 #loginScreen #loginButton:hover:not(:disabled),#loginScreen .ref-primary:not(.mw-original-car-btn):hover:not(:disabled){filter:brightness(1.08);transform:translateY(-1px);}
 #loginScreen #inlineCreateForm .mw-original-car-btn:not(.mw-animating):not(.mw-success) .mw-btn-inner{background:linear-gradient(135deg,#67e8f9,#38bdf8 48%,#2563eb)!important;color:#061525!important;border-color:transparent!important;box-shadow:0 10px 22px rgba(14,165,233,.20)!important;}
 
@@ -14268,7 +14273,7 @@ body.light #app .main .hello h2{background:none;-webkit-text-fill-color:currentC
   position:relative;overflow:hidden;
   transition:transform .25s cubic-bezier(.22,.8,.2,1),box-shadow .3s ease,border-color .25s ease,background .25s ease,filter .25s ease !important;
 }
-.primary,.save-btn,.ref-primary{
+.primary:not([data-mw-migrada]):not([data-mw-migrada] *), .save-btn:not([data-mw-migrada]):not([data-mw-migrada] *), .ref-primary:not([data-mw-migrada]):not([data-mw-migrada] *){
   box-shadow:0 14px 30px -10px rgba(37,99,235,.55),0 2px 8px rgba(2,8,26,.3) !important;
 }
 .primary:hover:not(:disabled),.save-btn:hover:not(:disabled),.ref-primary:hover:not(:disabled){
@@ -14375,8 +14380,8 @@ body.light .mw-glyph{color:rgba(37,99,235,.16)}
 #loginScreen .auth-mini-brand span{box-shadow:0 8px 22px -8px rgba(56,189,248,.55)}
 #loginScreen .social-row span{transition:transform .25s cubic-bezier(.22,.8,.2,1),box-shadow .25s ease,border-color .25s ease}
 #loginScreen .social-row span:hover{transform:translateY(-2px);box-shadow:0 12px 24px -10px rgba(56,189,248,.5) !important;border-color:rgba(120,190,255,.4)}
-#loginScreen .ref-primary{box-shadow:0 16px 34px -12px rgba(37,99,235,.55) !important}
-#loginScreen .ref-primary:hover:not(:disabled){transform:translateY(-2px) !important;box-shadow:0 22px 42px -14px rgba(37,99,235,.65) !important}
+#loginScreen .ref-primary:not([data-mw-migrada]):not([data-mw-migrada] *){box-shadow:0 16px 34px -12px rgba(37,99,235,.55) !important}
+#loginScreen .ref-primary:not([data-mw-migrada]):not([data-mw-migrada] *):hover:not(:disabled){transform:translateY(-2px) !important;box-shadow:0 22px 42px -14px rgba(37,99,235,.65) !important}
 #loginScreen .ref-field{transition:border-color .25s ease,box-shadow .25s ease,transform .2s ease}
 #loginScreen .ref-field:focus-within{transform:translateY(-1px);box-shadow:0 10px 22px -12px rgba(56,159,255,.4) !important}
 #loginScreen .switch-btn{transition:transform .25s ease,background .25s ease,color .25s ease}
@@ -15265,19 +15270,15 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
    Login — neutraliza de vez as sombras antigas que ainda
    miravam no botão Entrar (mesmas seletoras, por último, pra
    ganhar no empate de especificidade)
-   ============================================================ */
-#loginScreen #loginButton:not(.mw-login-loading),
-#loginScreen .ref-primary:not(.mw-login-loading):not(.mw-original-car-btn){box-shadow:none!important}
+   ============================================================ */#loginScreen #loginButton:not(.mw-login-loading):not([data-mw-migrada]):not([data-mw-migrada] *), #loginScreen .ref-primary:not(.mw-login-loading):not(.mw-original-car-btn):not([data-mw-migrada]):not([data-mw-migrada] *){box-shadow:none!important}
 #loginScreen #inlineCreateForm .mw-original-car-btn:not(.mw-animating):not(.mw-success) .mw-btn-inner{box-shadow:none!important}
-#loginScreen .ref-primary{box-shadow:none!important}
-#loginScreen .ref-primary:hover:not(:disabled){box-shadow:none!important}
+#loginScreen .ref-primary:not([data-mw-migrada]):not([data-mw-migrada] *){box-shadow:none!important}
+#loginScreen .ref-primary:not([data-mw-migrada]):not([data-mw-migrada] *):hover:not(:disabled){box-shadow:none!important}
 #loginScreen .auth-mini-brand span{box-shadow:none!important}
 #loginScreen .social-row span,#loginScreen .social-row span:hover{box-shadow:none!important}
-#loginScreen .ref-field,#loginScreen .ref-field:focus-within{box-shadow:none!important}
-#authScene, #authScene *{box-shadow:none!important}
+#loginScreen .ref-field,#loginScreen .ref-field:focus-within{box-shadow:none!important}#authScene:not([data-mw-migrada]):not([data-mw-migrada] *), #authScene *:not([data-mw-migrada]):not([data-mw-migrada] *){box-shadow:none!important}
 
-/* Esqueci minha senha — mais bonito, sem peso visual */
-#loginScreen .mwv2-forgot button{
+/* Esqueci minha senha — mais bonito, sem peso visual */#loginScreen .mwv2-forgot button:not([data-mw-migrada]):not([data-mw-migrada] *){
   padding:4px 2px;border-radius:8px;transition:color .2s ease,background .2s ease;
 }
 #loginScreen .mwv2-forgot button:hover{background:rgba(56,189,248,.08);color:var(--blue2)}
@@ -15552,9 +15553,38 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
   .empty, .empty-state, .kicker, .workspace-hero, .workspace-form,
   .workspace-form-head, .workspace-form-grid, .workspace-form-actions,
   .workspace-cancel, .workspace-submit, .workspace-metrics,
-  .mw-item-acoes, .mw-selos, .mw-selo){
+  .mw-item-acoes, .mw-selos, .mw-selo),
+/* A tela de entrada. Aqui a separação entre "legado por substituir" e
+   "componente da área" é mais delicada que nas outras, porque as duas
+   coisas usam o mesmo prefixo `mwv2-`.
+
+   FICA (é layout desta tela, e o sistema não tem equivalente): o cartão
+   de dois painéis, a navegação lateral, o painel de mídia com o avatar
+   que acompanha a digitação, o trilho que desliza entre entrar e criar,
+   as três etapas do cadastro, a barra de força da senha, os diálogos de
+   recuperação e de sucesso.
+
+   SAI (é aparência genérica, e o sistema tem a peça certa): o campo, o
+   botão do olho, o botão primário, os textos de apoio, as mensagens de
+   erro e de status.
+
+   O trilho lateral (`.mwv2-navbtn`) chegou a virar `ds-aba` e voltou
+   atrás: as abas do sistema são um controle segmentado horizontal, e
+   isto aqui é uma coluna de dois itens com uma barra que desliza ao
+   lado. Não é a mesma peça com outra pele — é outra peça. Fica com a
+   área, como o quadro de Projetos e a agenda de Atividades. */
+#loginScreen[data-mw-migrada="1"] :where(.mwv2-input-wrap, .toggle,
+  .ref-primary, .status, .form-error,
+  .mwv2-switch-text, .mwv2-forgot, .mwv2-forgot-row, .mwv2-forgot-links,
+  .mwv2-remember, .mw-social-btn, .mw-social-nota, .mw-social-sep,
+  .mw-etapa-frente, .mw-etapa-voltar, .mw-etapa-nota,
+  input, textarea, select){
   all: revert-layer;
 }
+/* `button` fora da lista, pela mesma razão das outras áreas: o seletor
+   tem id mais atributo e venceria as regras de classe dos botões que só
+   existem aqui — o do olho da senha e, principalmente, o de criar
+   conta, que carrega a animação do carrinho dentro dele. */
 </style>
 
 <script id="mw-support-system">
@@ -16854,8 +16884,7 @@ html body #app #mwBackBtn{display:none}
 <style id="mw-login-input-depth">
 /* Os campos de login/criar conta eram uma barra achatada de cor sólida
    — mais arredondamento, uma leve profundidade em camadas e um foco
-   com brilho, consistente com o resto dos botões/cards do app. */
-html body .mwv2-input-wrap{
+   com brilho, consistente com o resto dos botões/cards do app. */html body .mwv2-input-wrap:not([data-mw-migrada]):not([data-mw-migrada] *){
   border-radius:14px!important;
   background:linear-gradient(160deg,rgba(14,28,54,.7),rgba(5,13,30,.6))!important;
   border:1px solid rgba(104,171,245,.24)!important;
@@ -16871,8 +16900,7 @@ html body .mwv2-input-wrap:focus-within{
   box-shadow:0 0 0 3px rgba(56,189,248,.15),inset 0 1px 0 rgba(255,255,255,.07)!important;
   transform:translateY(-1px);
 }
-@media(prefers-reduced-motion:reduce){
-  html body .mwv2-input-wrap{transition:border-color .15s linear!important;transform:none!important}
+@media(prefers-reduced-motion:reduce){html body .mwv2-input-wrap:not([data-mw-migrada]):not([data-mw-migrada] *){transition:border-color .15s linear!important;transform:none!important}
   html body .mwv2-input-wrap:focus-within{transform:none!important}
 }
 </style>
@@ -18794,19 +18822,17 @@ body.light .mw-transfere-onde{background:rgba(37,99,235,.08);border-color:rgba(3
 .mw-transfere-acoes{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
 /* Só um botão manda de cada vez. O outro continua ali, apagado, para
    quem estiver fazendo o caminho inverso — mas não disputa a atenção. */
-/* Especificidade alta de propósito: `.save-btn` recebe cor de folhas
-   antigas marcadas !important e com seletor mais específico, então uma
-   regra curta aqui perdia — os dois botões continuavam idênticos, que é
-   exatamente o que confundiu. */
-html body #app .mw-transfere-acoes button.mw-secundario,
-html body #app .mw-transfere-acoes .save-btn.mw-secundario{
-  background:transparent!important;
-  background-image:none!important;
-  border:1px solid var(--line)!important;
-  color:var(--muted)!important;
-  box-shadow:none!important;
-  font-weight:500!important;
-}
+/* A regra que estava aqui existia para vencer uma briga que acabou.
+   ---------------------------------------------------------------------
+   Ela dava aparência de botão secundário por cima de `.save-btn`, com
+   `html body #app` e seis !important, porque folhas antigas pintavam
+   os dois botões iguais e a diferença entre "trazer" e "enviar" sumia.
+
+   O botão agora é `ds-btn ds-btn-secundario`, e secundário é um estado
+   que o sistema já sabe desenhar — nos dois temas, com foco visível e
+   com estado desabilitado. Manter as duas coisas era deixar a antiga
+   ganhando: foi assim que o tools/ds/quem-veste.mjs a encontrou, um
+   botão anunciando `ds-btn-secundario` e pintado por esta folha. */
 .mw-transfere-nota{
   margin:12px 0 0;padding:10px 12px;border-radius:11px;
   font-size:12.5px;line-height:1.55;color:var(--muted);
@@ -20273,8 +20299,7 @@ body.light html body .mwv2-input-wrap > button.toggle:hover,
 body.light .mwv2-input-wrap > button.toggle:hover{background:rgba(15,23,42,.06)}
 </style>
 <style id="mw-trazer-login-style">
-.mw-forgot-transfere{margin-top:4px}
-#mwTrazerConta{color:var(--muted)!important}
+.mw-forgot-transfere{margin-top:4px}#mwTrazerConta:not([data-mw-migrada]):not([data-mw-migrada] *){color:var(--muted)!important}
 #mwTrazerConta:hover{color:var(--blue2)!important}
 
 /* ============================================================
@@ -23472,8 +23497,7 @@ html body.light #app .sidebar #nav button.active .mw-ico{
 }
 /* Sidebar: o tile tem 39px; a marca ocupa a área útil com folga. */
 html body #app .sidebar .mini-logo .mw-marca{ width: 25px; }
-/* Login: o recipiente é um quadrado pequeno na coluna lateral. */
-#loginScreen .mwv2-logo .mw-marca{ width: 26px; margin: 0 auto; }
+/* Login: o recipiente é um quadrado pequeno na coluna lateral. */#loginScreen .mwv2-logo .mw-marca:not([data-mw-migrada]):not([data-mw-migrada] *){ width: 26px; margin: 0 auto; }
 /* Rodapé e convite de instalação: marcas menores, de assinatura. */
 html body #app .mw-app-footer-logo .mw-marca{ width: 22px; }
 #mwv2InstallBanner .mwv2-install-icon .mw-marca{ width: 24px; margin: 0 auto; }
@@ -26356,24 +26380,25 @@ html body #loginScreen .mwv2-auth-pane{
   overflow-y: auto !important;
   display: flex !important; flex-direction: column !important; justify-content: center !important;
 }
-/* Por elemento, não por atributo: o campo de e-mail é
-   <input id="username"> SEM type, e "input[type=text]" não casa com um
-   input que não declara o atributo — o resultado era um campo cinza ao
-   lado de outro branco, no mesmo formulário. As exclusões abaixo tiram
-   caixas de seleção e botões, que não são campos de texto. */
-html body #loginScreen .ref-field,
-html body #loginScreen input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="file"]){
-  background: var(--ds-vidro-2) !important;
-  border: 0 !important;
-  box-shadow: var(--ds-fio) !important;
-  border-radius: var(--ds-r-2) !important;
-  color: var(--ds-txt) !important;
-  backdrop-filter: none !important;
-}
-html body #loginScreen input::placeholder{ color: var(--ds-txt-3) !important; }
-html body #loginScreen input:focus{
-  box-shadow: var(--ds-fio), 0 0 0 3px color-mix(in srgb, var(--ds-ac) 34%, transparent) !important;
-}
+/* O CAMPO SAIU DAQUI — agora é do Design System.
+   ---------------------------------------------------------------------
+   Havia aqui três regras que vestiam todo <input> desta tela: fundo,
+   fio, raio, cor e foco, com as variáveis `--ds-*` do app (que são as
+   ANTIGAS; as do sistema são `--mw-*`). Elas foram removidas em vez de
+   restringidas, porque restringir é para regra que ainda serve a alguma
+   tela não migrada, e esta só servia a esta.
+
+   O que as substitui é `.ds-campo` no invólucro de cada campo
+   (`.mwv2-input-wrap`), que traz altura de 40px, recheio, fio, raio,
+   foco visível e os 16px de fonte no celular que impedem o zoom do
+   Safari. A especificidade daqui (html body #id = 1,0,2, e com
+   !important) vencia o sistema em silêncio: o campo continuava com a
+   aparência antiga mesmo depois de migrado, e o quem-vence não
+   acusava — porque esta folha estava declarada como "CSS próprio da
+   área", e ela é as duas coisas ao mesmo tempo: layout do cartão (que
+   fica) e pele do campo (que sai). Folha não é a unidade certa; regra é.
+
+   O ::placeholder também sai: `.ds .ds-campo ::placeholder` já o define. */
 
 /* --- Telefone: uma coluna --------------------------------------------
    O lado da marca sai. Não é uma escolha estética: ele e o formulário
@@ -26413,7 +26438,11 @@ html body #loginScreen input:focus{
 /* O botão principal do cadastro saía com quicos retos enquanto o de
    entrar era cápsula — dois botões primários com formas diferentes na
    mesma tela, a dois cliques de distância. */
-html body #loginScreen .ref-primary,
+/* `.ref-primary` saiu desta lista: o botão de entrar agora é
+   `ds-btn ds-btn-primario`, e forma de botão é do sistema. O que
+   sobra aqui é o botão de CRIAR CONTA, que não é um botão comum —
+   ele carrega a animação do carrinho por dentro e precisa do
+   `overflow:hidden` e da cápsula para recortá-la. */
 html body #loginScreen .mw-original-car-btn,
 html body #loginScreen .mwv2-submit,
 html body #loginScreen button[type="submit"]{
@@ -27336,12 +27365,12 @@ html body #app .mw-kan-dica{
    display:block inline (regra !important vence estilo inline sem
    !important). Aqui a exceção é declarada para a área nova, e a troca
    mês/semana passa a ser feita por atributo, não por display inline. */
+/* O painel é `ds-cartao`: recheio e raio vêm do sistema. Aqui fica só o
+   que é desta tela — ocupar a largura toda da coluna, sem margem. */
 html body #app #view-calendar #academicCalendarPanel{
   display: block !important;
   max-width: none !important;
   margin: 0 !important;
-  padding: 20px !important;
-  border-radius: var(--ds-r-3) !important;
 }
 /* Com a largura toda da área, as células do mês esticaram e viraram
    elipses — um calendário se lê pela grade, e uma grade de elipses
@@ -27369,20 +27398,19 @@ html body #app #view-calendar .cal-wd{
 html body #app #view-calendar #academicCalendarPanel[data-mw-oculto="1"],
 html body #app #view-calendar #mwSemanaCard[data-mw-oculto="1"]{ display: none !important; }
 
-html body #app #view-calendar .mw-cal-modos{
-  display: inline-flex; gap: 3px; padding: 3px; margin-bottom: 14px;
-  border-radius: 999px; background: var(--ds-vidro-3); box-shadow: var(--ds-fio);
-}
-html body #app #view-calendar .mw-cal-modos button{
-  border: 0; cursor: pointer; padding: 7px 15px; border-radius: 999px;
-  background: transparent; color: var(--ds-txt-2);
-  font: inherit; font-size: 12.5px; font-weight: 650;
-  transition: color .18s var(--ds-suave), background .18s var(--ds-suave);
-}
-html body #app #view-calendar .mw-cal-modos button[aria-pressed="true"]{
-  background: var(--ds-ac-grad-forte); color: #fff;
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--ds-ac) 38%, transparent);
-}
+/* O controle de "Mês / Semana" é `ds-abas` + `ds-aba`: a peça existe no
+   sistema e é a mesma em toda tela que tem dois modos. A pele que estava
+   aqui — cápsula, degradê no ativo, sombra — foi removida em vez de
+   restringida: ela só servia a esta tela, e esta tela já migrou.
+
+   Quem apontou foi o tools/ds/quem-veste.mjs: o elemento anunciava
+   `ds-abas` na classe e era pintado por esta folha, com especificidade
+   de tag + id + id. O quem-vence não via, porque `mw-calendario` está
+   declarado como "CSS próprio da área" — e é, para o resto.
+
+   Fica só a distância até o conteúdo abaixo, que é espaçamento desta
+   tela e não forma do componente. */
+html body #app #view-calendar .mw-cal-modos{ margin-bottom: 14px; }
 
 /* --- Semana -----------------------------------------------------------
    Sete colunas no desktop; no telefone, sete LINHAS. Não é o mesmo
@@ -28859,8 +28887,19 @@ body.light .mw-etapa-nota{ color: rgba(15,35,70,.55) }
       if (primeiro) setTimeout(function(){ try { primeiro.focus({ preventScroll: true }); } catch(e){} }, 60);
     }
     /* Exposta para o handler de submit poder trazer a pessoa de volta à
-       etapa da senha quando as duas não conferem. */
-    window.mwVaiParaEtapa = function(n){ mostra(n, true); };
+       etapa da senha quando as duas não conferem.
+
+       O segundo argumento existe por causa de um defeito silencioso: o
+       submit escrevia "As duas senhas não são iguais." na caixa de erro
+       e LOGO DEPOIS chamava esta função, que termina em `diz('')` —
+       limpar a mensagem ao trocar de etapa está certo quando a troca
+       parte da pessoa, e apaga o aviso quando a troca é justamente para
+       mostrá-lo. Quem vê isso é quem aperta Enter na etapa 2 (o botão
+       de enviar fica escondido ali, mas continua sendo o alvo do
+       Enter): o formulário não fazia absolutamente nada visível.
+
+       Agora a mensagem entra DEPOIS da troca, e sobrevive a ela. */
+    window.mwVaiParaEtapa = function(n, msg){ mostra(n, true); if (msg) diz(msg); };
 
     function valor(id){ var el = form.querySelector(id); return el ? el.value.trim() : ''; }
 
@@ -30888,7 +30927,7 @@ html body .mw-pular:focus{ transform: translateY(0); }
   /* O carimbo entra depois do preloader para não brigar com a abertura
      da marca, e sai sozinho. window.MW_PREVIA fica disponível para
      conferir a versão pelo console sem depender de ver o carimbo. */
-  window.MW_PREVIA = 'v93-beta';
+  window.MW_PREVIA = 'v94-beta';
   function mostra(){
     if (document.getElementById('mwPreviaCarimbo')) return;
     var el = document.createElement('div');
