@@ -72,6 +72,22 @@ const junta = async rotulo => {
       if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity < .5) return;
       if (r.width < 10 || r.height < 6 || r.top < 0 || r.bottom > window.innerHeight ||
           r.left < 0 || r.right > window.innerWidth) return;
+      /* Estar dentro da JANELA não basta: o cartão desliza num trilho com
+         `overflow:hidden`, e o painel que saiu de vista continua com uma
+         caixa de posição perfeitamente plausível. Fotografar ali mede o
+         que está desenhado NAQUELE ponto da tela — que é outra coisa.
+         Foi assim que "Bem-vindo de volta." apareceu com 1,36:1: o texto
+         é branco sobre um painel escuro (medido: de 7:1 a 13,7:1), mas o
+         painel tinha saído e a amostra pegou o fundo claro por trás.
+         Então: o elemento tem de caber dentro de cada ancestral que
+         recorta. */
+      for (let n = e.parentElement; n && n !== document.body; n = n.parentElement){
+        const c = getComputedStyle(n);
+        if (!/hidden|clip|auto|scroll/.test(c.overflowX + c.overflowY)) continue;
+        const rp = n.getBoundingClientRect();
+        if (r.left < rp.left - 1 || r.right > rp.right + 1 ||
+            r.top  < rp.top  - 1 || r.bottom > rp.bottom + 1) return;
+      }
       /* Texto de controle DESLIGADO não entra: os botões de entrada
          social estão desabilitados de propósito ("em breve"), e a WCAG
          não exige contraste mínimo para um controle inativo. */
@@ -109,6 +125,11 @@ await p.waitForTimeout(400);
 await p.evaluate(() => {
   const e = document.getElementById('newPass');
   if (e) { e.value = 'Senha-media-1'; e.dispatchEvent(new Event('input', { bubbles: true })); }
+  /* Tirar o foco antes de fotografar. Com o campo focado, o anel de foco
+     azul fica logo abaixo do rótulo — e a amostragem de fundo, que olha
+     as faixas acima e abaixo da caixa do texto, mede o anel e não o
+     cartão. Dava 1,14:1 num rótulo que está sobre o cartão. */
+  document.activeElement && document.activeElement.blur();
 });
 await junta('criar-2');
 

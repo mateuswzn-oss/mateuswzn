@@ -17,13 +17,19 @@
  * sistema, quem o pinta tem de ser o sistema.
  *
  * Saída vazia = certo. Uso:
- *   node tools/ds/quem-veste.mjs           (tela de entrada)
- *   node tools/ds/quem-veste.mjs subjects  (uma área do app)
+ *   node tools/ds/quem-veste.mjs                  (entrada, escuro)
+ *   node tools/ds/quem-veste.mjs login claro
+ *   node tools/ds/quem-veste.mjs subjects escuro  (uma área do app)
  */
 import { chromium } from 'playwright';
 import { ENDERECO, achaNavegador } from '/home/user/mateuswzn/tools/testes/ajuda.mjs';
 const ep = achaNavegador();
 const area = process.argv[2] || 'login';
+/* O tema é argumento porque a primeira versão só media o escuro — e no
+   claro havia uma regra a mais vestindo o botão primário, que passou
+   despercebida por isso. Uma tela tem dois temas; medir um é medir
+   metade. */
+const tema = process.argv[3] || 'escuro';
 const RAIZ = area === 'login' ? '#loginScreen' : '#view-' + area;
 const b = await chromium.launch(ep ? { executablePath: ep } : {});
 const p = await b.newPage({ viewport: { width: 1280, height: 900 } });
@@ -31,11 +37,17 @@ await p.addInitScript(a => {
   localStorage.setItem('mwZerarTudo-2026-08-e','1');
   /* Para uma área do app é preciso ter sessão; para a tela de entrada,
      é preciso NÃO ter. */
-  if (a !== 'login') localStorage.setItem('mwSession','1');
-}, area);
+  if (a.area !== 'login') localStorage.setItem('mwSession','1');
+  if (a.tema === 'claro') localStorage.setItem('mwTemaPreferido','light');
+}, { area, tema });
 await p.goto(ENDERECO + '/index.html');
 await p.waitForFunction(() => !document.getElementById('mwBootLoader') && document.documentElement.classList.contains('mw-login-pronto'), null, {timeout:20000});
 await p.waitForTimeout(900);
+await p.evaluate(t => {
+  document.body.classList.toggle('light', t === 'claro');
+  document.documentElement.setAttribute('data-ds-tema', t);
+}, tema);
+await p.waitForTimeout(600);
 if (area !== 'login'){
   await p.evaluate(a => {
     const bt = document.querySelector(`#nav button[data-view="${a}"]`);
@@ -79,7 +91,7 @@ const achados = await p.evaluate(raiz => {
   return Object.entries(fora).map(([k,v])=>({regra:k, props:[...new Set(v.props)].join(','), ex:v.ex}));
 }, RAIZ);
 
-console.log('=== "' + area + '": quem veste os componentes do sistema ===');
+console.log('=== "' + area + '" (' + tema + '): quem veste os componentes do sistema ===');
 if (!achados.length) console.log('  ninguém de fora — o sistema veste todos.');
 for (const a of achados){
   console.log('\n  ' + a.regra);

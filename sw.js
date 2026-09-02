@@ -1,3 +1,80 @@
+/* v95 (BETA — o contraste da tela de entrada, medido por pixel pela
+   primeira vez, e corrigido):
+
+   POR QUE SÓ AGORA
+   O teste 7 mede contraste fotografando a tela e lendo o pixel — a
+   única medida honesta num app de gradiente sobre translucidez sobre
+   gradiente. Só que ele usa o `abre()`, que ESCONDE a tela de login
+   para chegar ao app. Resultado: a única tela que toda pessoa vê antes
+   de qualquer outra nunca tinha sido medida.
+
+   Isso passou despercebido enquanto o fundo dela era `#0b0c0e` cravado,
+   igual nos dois temas. A migração da rodada passada tirou esse carimbo
+   — a tela passou a seguir o tema, o que é uma melhora e é também um
+   motivo para medir. O `7b-contraste-login.mjs` faz isso, nas três
+   larguras e nos dois temas, e entra no rodar.sh como teste 19.
+
+   O QUE ELE ACHOU, E O QUE FOI FEITO
+   1. Os três links de "esqueci" a 10,5px em `--muted2`: 2,8 a 3,98:1.
+      O tom mais apagado da paleta antiga, no menor corpo da tela, para
+      os links que alguém trancado do lado de fora precisa achar. Agora
+      `--mw-txt-2` e 12px.
+   2. O item inativo do trilho lateral: 3,39 a 3,89:1. Era `--ds-txt-3`;
+      é um controle de navegação, não uma legenda. Agora `--mw-txt-2`.
+   3. Os links de acento sobre o cartão claro ("Criar agora.",
+      "Entrar."): 2,72:1. Eram `--blue2`, o mesmo #38bdf8 nos dois
+      temas. Agora `--mw-ac-txt`, que é o tom de acento pensado para
+      TEXTO e muda com o tema.
+   4. O botão primário no tema claro: 4,18 a 4,26:1. Uma regra da folha
+      da área trocava o degradê ESCURECIDO do sistema pelo degradê cru.
+      A regra deixou de alcançar o botão de entrar (que é `ds-btn`) e
+      continua valendo para o de criar conta, que é outro componente.
+   5. A cápsula do item ativo no celular: 4,27:1 no escuro e 4,12:1 no
+      claro (ali a folha clara pintava o texto de escuro sobre o mesmo
+      degradê). Agora `--mw-ac-grad-forte` com texto branco nos dois
+      temas — a cor de fundo é a mesma nos dois, então quem decide o
+      texto é ela, não o tema da página.
+
+   E DOIS FALSOS POSITIVOS DO PRÓPRIO MEDIDOR
+   Nenhum dos dois era defeito, e os dois teriam custado uma correção
+   errada:
+
+   - O rótulo "Senha" a 1,14:1. A amostragem de fundo olha as faixas
+     acima e abaixo da caixa do texto; com o campo FOCADO, logo abaixo
+     do rótulo está o anel de foco azul. O rótulo está sobre o cartão.
+     A coleta agora tira o foco antes de fotografar.
+
+   - "Bem-vindo de volta." a 1,36:1. O cartão desliza entre entrar e
+     criar num trilho com `overflow:hidden`, e o painel que saiu de
+     vista continua com uma caixa de posição perfeitamente plausível:
+     a amostra media o que estava desenhado naquele ponto da tela, que
+     era outra coisa. O painel, medido diretamente, vai de 7:1 a 13,7:1.
+     A coleta agora exige que o elemento caiba dentro de cada ancestral
+     que recorta — não basta estar dentro da janela.
+
+   O QUEM-VESTE PASSOU A RECEBER O TEMA
+   Ele só rodava no escuro, e foi por isso que a regra do item 4 demorou
+   a aparecer: uma tela tem dois temas, e medir um é medir metade. Agora
+   roda nos dois, para as quinze superfícies.
+
+   E UMA ARMADILHA NO PRÓPRIO RODAR.SH
+   A lista de comandos é executada com `eval`, que roda no MESMO shell —
+   e vários desses comandos são laços com `|| exit 1` dentro. Quando o
+   teste 18 acusou uma falha de verdade, esse `exit` encerrou o rodar.sh
+   no meio: sem resumo, sem derrubar o servidor, e com a última linha do
+   log ("ninguém de fora — o sistema veste todos") parecendo um teste que
+   passou. Custou uma execução inteira, de 25 minutos, para aparecer.
+   Cada comando roda agora num subshell.
+
+   A falha que ele estava escondendo era real e do mesmo tipo do item 4:
+   uma regra do tema claro pintando `label`, `p`, `span` e `small` dentro
+   do painel — e o rótulo já é `ds-rotulo`, a nota já é `ds-corpo`. As
+   três saíram da lista; o sistema veste, como deve.
+
+   Suíte: 19 de 19, com o contraste da entrada em zero falha nas três
+   larguras e nos dois temas, e o quem-veste limpo nas quinze superfícies
+   nos DOIS temas (trinta execuções).
+
 /* v94 (BETA — a tela de entrada no Design System, e dois defeitos reais
    que apareceram enquanto o teste dela era escrito):
 
@@ -1625,7 +1702,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v94-beta';
+const CACHE_NAME = 'mw-shell-v95-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

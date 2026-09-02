@@ -72,6 +72,7 @@ declare -a NOMES=(
   "16 ajustes · as oito áreas que não são coleção"
   "17 entrada · login e cadastro"
   "18 pele · quem veste os componentes do sistema"
+  "19 contraste · tela de entrada"
 )
 declare -a CMDS=(
   "node tools/testes/1-regressao.mjs"
@@ -92,7 +93,8 @@ declare -a CMDS=(
   "for a in institutions subjects projects activities notes; do node tools/testes/15-area.mjs \$a || exit 1; done; node tools/ds/quem-vence.mjs institutions claro | tail -3 && node tools/ds/quem-vence.mjs institutions escuro | tail -3"
   "for a in profile settings college reports focus calendar home files; do node tools/testes/16-ajustes.mjs \$a || exit 1; done; for a in profile settings college reports focus calendar home files; do for t in claro escuro; do node tools/ds/quem-vence.mjs \$a \$t | sed -n 2p; done; done"
   "node tools/testes/17-login.mjs && node tools/ds/quem-vence.mjs login claro | sed -n 2p && node tools/ds/quem-vence.mjs login escuro | sed -n 2p"
-  "for a in login home files profile settings college reports focus calendar institutions subjects projects activities notes support; do node tools/ds/quem-veste.mjs \$a | sed -n 2p || exit 1; done"
+  "for a in login home files profile settings college reports focus calendar institutions subjects projects activities notes support; do for t in escuro claro; do node tools/ds/quem-veste.mjs \$a \$t | sed -n 2p || exit 1; done; done"
+  "for l in 1440 834 390; do for t in dark light; do node tools/testes/7b-contraste-login.mjs \$l \$t || exit 1; done; done; python3 tools/testes/7-contraste-medir.py"
 )
 
 SO_ESTES=("$@")
@@ -109,7 +111,12 @@ for i in "${!NOMES[@]}"; do
   fi
   echo
   echo "════════ $n ════════"
-  if eval "${CMDS[$i]}"; then RESUMO+=("  ok      $n")
+  # Subshell, e não `eval` cru: vários comandos desta lista são laços com
+  # `|| exit 1` dentro. Como o eval roda no MESMO shell, esse `exit`
+  # encerrava o rodar.sh no meio — sem resumo, sem derrubar o servidor, e
+  # com a última linha do log parecendo um teste que passou. Custou uma
+  # execução inteira de 25 minutos para aparecer.
+  if ( eval "${CMDS[$i]}" ); then RESUMO+=("  ok      $n")
   else RESUMO+=("  FALHOU  $n"); FALHOU=1; fi
 done
 

@@ -306,3 +306,30 @@ ser suposição.
   isso, de uma recarga limpa, e confere que a tela de login está de pé
   antes de confiar no que mediu. Sem isso ela media `#loginScreen` com
   `display:none` e relatava "o cartão não cabe" para um cartão de 0x0.
+
+- **A caixa de um elemento pode ser plausível e mentirosa.** O cartão de
+  entrada desliza entre "entrar" e "criar" num trilho com
+  `overflow:hidden`. O painel que saiu de vista continua com uma
+  `getBoundingClientRect()` dentro da janela — e uma amostra de pixel
+  naquele ponto mede o que está desenhado ali, que é outra coisa. Foi
+  assim que "Bem-vindo de volta." (branco sobre um painel medido entre
+  7:1 e 13,7:1) apareceu com 1,36:1. Estar dentro da JANELA não basta:
+  o elemento tem de caber dentro de cada ancestral que recorta.
+
+- **Foco muda o que está em volta.** A amostragem de fundo olha as
+  faixas acima e abaixo da caixa do texto. Com o campo focado, logo
+  abaixo do rótulo está o anel de foco azul — e o rótulo, que está sobre
+  o cartão, foi relatado a 1,14:1. Tire o foco antes de fotografar.
+
+- **Uma tela tem dois temas; medir um é medir metade.** O
+  `quem-veste.mjs` nasceu sem argumento de tema e rodou só no escuro.
+  No claro havia uma regra a mais vestindo o botão primário — a que
+  trocava o degradê escurecido do sistema pelo cru, e o levava de 6,4:1
+  para 4,2:1. Ela passou despercebida por isso.
+
+- **`eval` roda no mesmo shell.** A lista de comandos do `rodar.sh` tem
+  laços com `|| exit 1` dentro. Executados por `eval` sem subshell, esse
+  `exit` encerra o rodar.sh inteiro: sem resumo, sem derrubar o servidor,
+  e com a última linha do log parecendo um teste que passou. Uma falha de
+  verdade ficou escondida assim por uma execução inteira. Cada comando
+  roda num subshell — `( eval "..." )`.

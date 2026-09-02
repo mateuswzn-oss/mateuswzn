@@ -224,6 +224,24 @@ Da menor superfície de risco para a maior. Cada uma é uma rodada.
 | ✅ 7 | ~~Login / cadastro~~ | **migrada.** A única tela cujo defeito tranca a pessoa do lado de fora, então o teste dela (17) cobre o caminho inteiro — criar conta, sair, entrar de novo — e não só a aparência. Zero regra legada vencendo, nos dois temas |
 | 8 | Barra lateral e barra de baixo | tocam todas as telas; por último, quando o resto já está no sistema |
 
+## A cor de fundo decide a cor do texto, não o tema da página
+
+Duas regras da tela de entrada pintavam o texto de escuro no tema claro
+— o que está certo para texto sobre o cartão, e errado para o texto
+DENTRO de uma cápsula de acento, que é escura nos dois temas. Medido:
+4,12:1.
+
+A regra geral que sai daí: **quem decide a cor do texto é a superfície
+imediatamente atrás dele.** Um botão primário, um selo de acento, uma
+cápsula de estado ativo — todos mantêm a mesma face nos dois temas, e
+portanto o mesmo texto. Só o que se apoia na superfície da página é que
+troca com ela. É por isso que o sistema tem um token separado
+(`--mw-txt-sobre-acento`) em vez de reaproveitar `--mw-txt-1`.
+
+O mesmo vale para o acento em TEXTO: `--mw-ac` é a cor de preenchimento,
+`--mw-ac-txt` é a de texto, e ela é mais escura no tema claro de
+propósito. Um link pintado com `--mw-ac` sobre o cartão claro dá 2,72:1.
+
 ## Folha não é a unidade; regra é
 
 O `quem-vence.mjs` separa o que encontra em três baldes, e um deles —

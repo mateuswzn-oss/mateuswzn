@@ -3485,7 +3485,10 @@ try {
 .mwv2-auth-pane::-webkit-scrollbar-thumb{background:rgba(56,189,248,.35);border-radius:10px}
 .mwv2-auth-pane::-webkit-scrollbar-thumb:hover{background:rgba(56,189,248,.55)}
 .mwv2-switch-text{margin:0 0 16px;color:var(--muted);font-size:11px;line-height:1.4}
-.mwv2-switch-text button{padding:0;border:0;background:none;color:var(--blue2);font-size:inherit;font-weight:700;cursor:pointer}
+/* `--mw-ac-txt` é o tom de acento pensado para TEXTO — mais escuro no
+   tema claro, mais claro no escuro. O `--blue2` do app é o mesmo
+   #38bdf8 nos dois, e sobre o cartão claro dava 2,72:1. */
+.mwv2-switch-text button{padding:0;border:0;background:none;color:var(--mw-ac-txt);font-size:inherit;font-weight:700;cursor:pointer}
 .mwv2-switch-text button:hover{text-decoration:underline}
 .mwv2-auth-pane label{margin:0 0 6px;color:var(--muted);font-size:11px;letter-spacing:.02em;display:block}
 .mwv2-input-wrap{position:relative;width:100%;margin-bottom:11px;border:1px solid rgba(104,171,245,.27);border-radius:12px;background:rgba(0,9,24,.42);transition:.2s}
@@ -3495,7 +3498,7 @@ try {
 .mwv2-input-wrap .toggle{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--muted2);font-size:15px;padding:6px;line-height:1;border-radius:8px}
 .mwv2-input-wrap .toggle:hover{color:var(--blue2)}
 .mwv2-forgot{text-align:right;margin:0 0 14px}
-.mwv2-forgot button{border:0;background:none;color:var(--muted2);font-size:10.5px;cursor:pointer}
+.mwv2-forgot button{border:0;background:none;color:var(--mw-txt-2);font-size:12px;cursor:pointer}
 .mwv2-forgot button:hover{color:var(--blue2);text-decoration:underline}
 
 /* "Esqueci minha senha" e "esqueci meu usuário" numa linha só — eram
@@ -3517,12 +3520,16 @@ try {
 }
 .mwv2-remember svg{flex:0 0 auto;opacity:.85}
 .mwv2-forgot-links{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-left:auto}
+/* Medido: 2,8 a 3,98:1, em todas as larguras e nos dois temas. Eram
+   10,5px em `--muted2` — o tom mais apagado da paleta antiga, no menor
+   corpo da tela, para os três links que uma pessoa trancada do lado de
+   fora precisa achar. Passa a ler `--mw-txt-2` e a 12px. */
 .mwv2-forgot-row button{
-  border:0;background:none;color:var(--muted2);font-size:10.5px;cursor:pointer;
+  border:0;background:none;color:var(--mw-txt-2);font-size:12px;cursor:pointer;
   padding:4px 6px;border-radius:8px;transition:color .2s ease,background .2s ease;
 }
-.mwv2-forgot-row button:hover{background:rgba(56,189,248,.08);color:var(--blue2)}
-.mwv2-forgot-sep{width:3px;height:3px;border-radius:50%;background:currentColor;color:var(--muted2);opacity:.45}
+.mwv2-forgot-row button:hover{background:var(--mw-ac-suave);color:var(--mw-ac-txt)}
+.mwv2-forgot-sep{width:3px;height:3px;border-radius:50%;background:currentColor;color:var(--mw-txt-2);opacity:.45}
 #status.status{min-height:16px;margin:2px 0 6px;text-align:left;font-size:11px}
 
 /* Entrar e Criar conta com o MESMO desenho: pílula compacta, sem sombra */
@@ -26317,8 +26324,11 @@ html body #loginScreen .mwv2-navbtn{
   padding: 16px 0 !important;
   display: flex !important; flex-direction: column !important;
   align-items: center !important; gap: 7px !important;
-  color: var(--ds-txt-3) !important; background: transparent !important;
-  border: 0 !important; font-size: 11.5px !important; font-weight: 650 !important;
+  /* `--mw-txt-2`, e não o terciário que estava aqui: medido, o item
+     inativo do trilho dava 3,39 a 3,89:1 sobre o vidro do cartão. É um
+     controle de navegação, não uma legenda — tem de ser lido. */
+  color: var(--mw-txt-2) !important; background: transparent !important;
+  border: 0 !important; font-size: 12px !important; font-weight: 650 !important;
   transition: color .2s var(--ds-suave) !important;
 }
 html body #loginScreen .mwv2-navbtn.active{ color: var(--ds-txt) !important; }
@@ -26427,8 +26437,18 @@ html body #loginScreen .mwv2-auth-pane{
     padding: 9px 14px !important; border-radius: 999px !important;
     margin: 0 !important;
   }
-  html body #loginScreen .mwv2-navbtn.active{
-    background: var(--ds-ac-grad) !important; color: #fff !important;
+  /* No celular o trilho vira horizontal e o item ativo ganha a cápsula
+     de acento. Medido: texto branco sobre o degradê CRU dava 4,27:1, e
+     no tema claro a folha clara pintava o texto de escuro sobre o mesmo
+     degradê — 4,12:1. Os dois abaixo dos 4,5:1.
+
+     `--ds-ac-grad-forte` é o mesmo degradê com 16% de preto por cima; a
+     face fica entre (74,76,213) e (109,77,207), e branco sobre ela passa
+     de 6:1. Branco nos DOIS temas, porque a cápsula é a mesma nos dois:
+     é a cor de fundo que decide, não o tema da página. */
+  html body #loginScreen .mwv2-navbtn.active,
+  html body.light #loginScreen .mwv2-navbtn.active{
+    background: var(--mw-ac-grad-forte) !important; color: #fff !important;
   }
   html body #loginScreen .mwv2-navbtn svg{ width: 16px !important; height: 16px !important; }
   html body #loginScreen .mwv2-activebar{ display: none !important; }
@@ -26490,11 +26510,12 @@ html body #loginScreen .mw-btn-inner{ border-radius: 999px !important; }
 html body.light #loginScreen .mwv2-form-area{
   background: rgba(255,255,255,.78) !important;
 }
+/* `label` saiu desta lista: o rótulo é `ds-rotulo`, e o sistema já o
+   pinta nos dois temas. Deixá-lo aqui era manter uma pele antiga
+   vestindo um componente do sistema — o quem-veste.mjs acusa, e com
+   razão: se o elemento anuncia que é do sistema, quem o pinta tem de
+   ser o sistema. */
 html body.light #loginScreen .mwv2-auth-pane,
-html body.light #loginScreen .mwv2-auth-pane label,
-html body.light #loginScreen .mwv2-auth-pane p,
-html body.light #loginScreen .mwv2-auth-pane span,
-html body.light #loginScreen .mwv2-auth-pane small,
 html body.light #loginScreen .signup-divider{
   color: var(--ds-txt) !important;
 }
@@ -26512,15 +26533,36 @@ html body.light #loginScreen input::placeholder{ color: #7d879f !important; }
 /* O botão principal ficava com texto escuro sobre azul claro — pouco
    mais de 2:1. Passa a ser branco sobre o degradê de destaque, que é o
    mesmo par usado no resto do app. */
+/* `.ref-primary` saiu daqui, e a razão foi MEDIDA.
+   ---------------------------------------------------------------------
+   Esta regra trocava o degradê do sistema (`--mw-ac-grad-forte`, que é o
+   degradê com 16% de preto por cima) pelo degradê cru do app. No escuro
+   ninguém via diferença; no claro a face do botão saía em (95,107,254) a
+   (129,95,248), e texto branco ali dá 4,18 a 4,26:1 — abaixo dos 4,5:1
+   que a WCAG pede para texto normal.
+
+   Quem mostrou foi o 7b-contraste-login.mjs, medindo pixel. E o motivo
+   de ter demorado é que o quem-veste.mjs só rodava no ESCURO: uma tela
+   tem dois temas, e medir um é medir metade. Ele agora recebe o tema
+   como argumento.
+
+   O botão de CRIAR CONTA continua aqui: ele não é `ds-btn`, é o botão do
+   carrinho, e a cor dele é desta tela. */
 html body.light #loginScreen .mwv2-submit,
-html body.light #loginScreen .ref-primary,
 html body.light #loginScreen button[type="submit"]{
   background: var(--ds-ac-grad) !important;
   color: #fff !important;
   box-shadow: 0 8px 22px color-mix(in srgb, var(--ds-ac) 34%, transparent) !important;
 }
-html body.light #loginScreen .mwv2-navbtn{ color: var(--ds-txt-2) !important; }
-html body.light #loginScreen .mwv2-navbtn.active{ color: var(--ds-txt) !important; }
+html body.light #loginScreen .mwv2-navbtn{ color: var(--mw-txt-2) !important; }
+/* No desktop o item ativo é só texto sobre o vidro do cartão, e aí a
+   tinta escura do tema claro é a certa. No celular ele vira uma cápsula
+   de acento escura, e texto escuro sobre ela dá 2,9:1 — por isso a
+   regra da faixa estreita (mais acima, dentro do @media) devolve o
+   branco. Esta aqui vale só onde o trilho é vertical. */
+@media (min-width: 861px){
+  html body.light #loginScreen .mwv2-navbtn.active{ color: var(--ds-txt) !important; }
+}
 
 /* O lado da marca é uma superfície colorida com fundo próprio: o texto
    nele é branco nos DOIS temas, e escurecê-lo no claro seria trocar um
