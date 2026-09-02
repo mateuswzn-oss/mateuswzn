@@ -132,7 +132,9 @@ const PROPRIO = {
   college:    [],
   reports:    ['mw-relatorios'],
   focus:      ['mw-foco'],
-  calendar:   ['mw-calendario', 'mw-cal-semana', 'mw-agenda']
+  calendar:   ['mw-calendario', 'mw-cal-semana', 'mw-agenda'],
+  files:      ['mw-arquivos', 'mw-arq-style'],
+  home:       ['mw-comando', 'mw-insights', 'mw-dev-tools', 'mw-graficos', 'mw-painel']
 };
 const meus = new Set(PROPRIO[area] || []);
 

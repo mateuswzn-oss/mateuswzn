@@ -40,6 +40,12 @@ for (const v of AREAS) {
     };
     let fora = 0;
     view.querySelectorAll('*').forEach(e => {
+      /* Dentro de um <svg>, quem recorta é o viewport do próprio SVG, e
+         isso não aparece como overflow-x em ancestral nenhum. Um <rect>
+         de área de toque num gráfico pode ter a caixa passando da tela
+         sem que um pixel seja desenhado lá fora. Quem pode vazar de
+         verdade é o <svg>; os filhos dele são medidos por ele. */
+      if (e.ownerSVGElement) return;
       const r = e.getBoundingClientRect();
       if (r.width > 0 && (r.right > window.innerWidth + 2 || r.left < -2) && !rolaHoriz(e)) fora++;
     });

@@ -220,7 +220,7 @@ Da menor superfície de risco para a maior. Cada uma é uma rodada.
 | ✅ 3 | ~~Disciplinas · Projetos · Atividades · Anotações~~ | **migradas.** As quatro numa rodada, porque compartilham gerador, linha e selos; 16 verificações cada no teste 15, zero regra legada vencendo nas quatro, nos dois temas |
 | ✅ 4 | ~~Configurações · Perfil~~ | **migradas.** Não são coleções: o teste delas é outro (16-ajustes), e mede o que uma tela de ajustes pode perder — campo que deixa de gravar, rótulo que se solta, categoria que some |
 | ✅ 5 | ~~Faculdade · Relatórios · Foco · Calendário~~ | **migradas.** Layout próprio em cada uma, então cada uma manteve o seu — o que passou para o sistema foi a casca (cartão, cabeçalho, campo, botão, controle segmentado) e o que era genérico |
-| 6 | Início | depende do vocabulário das outras estar pronto |
+| ✅ 6 | ~~Início~~ e ~~Arquivos~~ | **migradas.** Início é a maior — treze cartões, cinco cabeçalhos, quatro grades — e foi por último de propósito: ela resume as outras, então só fazia sentido depois que o vocabulário delas estava pronto. Com as duas, **as catorze áreas do app estão sob o Design System** |
 | 7 | Login / cadastro | fora do `#app`, com regras próprias e seis peles legadas sobrepostas |
 | 8 | Barra lateral e barra de baixo | tocam todas as telas; por último, quando o resto já está no sistema |
 

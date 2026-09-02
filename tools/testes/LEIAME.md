@@ -59,7 +59,7 @@ node tools/testes/1-regressao.mjs mobile
 | 13 | `13-ds.mjs` | o Design System carrega **sem o app** (galeria, 2 temas × 4 larguras), pinta **exatamente** as áreas migradas e nenhuma outra, e nenhum nome `ds-*` anda solto fora delas | o sistema depender de regra legada, a folha mexer em área não migrada, uma área migrada não mudar ao desligar a folha, ou um `ds-*` aparecer onde o sistema não alcança |
 | 14 | `14-suporte.mjs` | a área migrada faz tudo o que fazia: abrir atendimento, validar, conversar, anexar, encerrar, persistir — e nenhuma regra legada vence lá dentro | uma função perder-se na migração, ou o legado voltar a pintar a área |
 | 15 | `15-area.mjs <área>` | o teste de área genérico, o "antes e depois" de cada migração: estado vazio, formulário com foco e rótulos, criar pela interface, botões do item ao alcance, **agrupamento e ordem de pé com seis itens**, e nada vazando em 3 larguras × 2 temas. Roda nas seis coleções | qualquer um deles, em qualquer área — migrada ou não |
-| 16 | `16-ajustes.mjs <área>` | as **seis** áreas que não são coleção (Perfil, Configurações, Faculdade, Relatórios, Foco, Calendário): conteúdo em caixas, nome acessível em todo controle, alvo de 24px, e nada vazando em 3 larguras × 2 temas — mais uma checagem própria de cada uma (o que se edita grava e sobrevive ao recarregamento; as sete categorias; o tema carimba o `<html>`; os números leem o dado; o cronômetro anda; mês e semana são dois modos de verdade) | qualquer um deles |
+| 16 | `16-ajustes.mjs <área>` | as **oito** áreas que não são coleção (Perfil, Configurações, Faculdade, Relatórios, Foco, Calendário, Início, Arquivos): conteúdo em caixas, nome acessível em todo controle, alvo de 24px, e nada vazando em 3 larguras × 2 temas — mais uma checagem própria de cada uma (o que se edita grava e sobrevive ao recarregamento; as sete categorias; o tema carimba o `<html>`; os números leem o dado; o cronômetro anda; mês e semana são dois modos de verdade; os números do painel leem o dado; os arquivos guardados aparecem) | qualquer um deles |
 
 ### Por que o contraste é medido em duas etapas
 
@@ -216,6 +216,19 @@ resumidas aqui para quem for escrever um teste novo.
   nem percorre. O fingimento troca só a consulta de display-mode e delega o
   resto ao `matchMedia` de verdade — senão o app perde
   `prefers-color-scheme` e `prefers-reduced-motion` no meio do boot.
+- **"Texto cortado" num elemento sem texto é a barra de progresso.** A
+  checagem de texto espremido (`scrollWidth > clientWidth` com
+  `overflow:hidden` e sem reticências) acusava dois elementos no Início. Os
+  dois eram o `<i>` da barra de progresso: vazio, dentro de uma caixa com
+  overflow escondido, e com a largura em transição — durante a animação o
+  scrollWidth passa do clientWidth. Sem texto não há o que sumir; a
+  checagem passou a exigir texto.
+- **Dentro de um `<svg>`, quem recorta é o viewport do SVG.** A checagem de
+  vazamento horizontal sobe pelos ancestrais procurando `overflow-x`, e o
+  recorte do SVG não aparece assim. Um `<rect>` de área de toque no gráfico
+  do Início tinha a caixa passando 7px da tela sem desenhar um pixel lá
+  fora — e o teste acusava vazamento numa tela que não vaza. Quem pode
+  vazar de verdade é o `<svg>`; os filhos dele são medidos por ele.
 - **Seletor que não casa não levanta erro.** É o defeito de migração mais
   comum e o mais silencioso: um `querySelector` preso a uma classe que a
   migração renomeou devolve `null`, o bloco desiste, e não há erro no

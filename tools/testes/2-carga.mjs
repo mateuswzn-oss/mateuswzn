@@ -78,6 +78,12 @@ for (const [rotulo, vp] of [['1440', {width:1440,height:950}], ['834', {width:83
       const v = document.getElementById('view-' + nome);
       if (!v) return { erro: 'view ausente' };
       const fora = [...v.querySelectorAll('*')].filter(e => {
+        /* Dentro de um <svg>, quem recorta é o viewport do próprio SVG, e
+           isso não aparece como overflow-x em ancestral nenhum. Um <rect>
+           de área de toque num gráfico pode ter a caixa passando da tela
+           sem que um pixel seja desenhado lá fora. Quem pode vazar de
+           verdade é o <svg>; os filhos dele são medidos por ele. */
+        if (e.ownerSVGElement) return false;
         const b = e.getBoundingClientRect();
         if (!b.width && !b.height) return false;
         let pai = e.parentElement, rolavel = false;
@@ -91,6 +97,13 @@ for (const [rotulo, vp] of [['1440', {width:1440,height:950}], ['834', {width:83
          pior que vazar — some sem avisar. */
       const espremidos = [...v.querySelectorAll('*')].filter(e => {
         if (e.children.length) return false;
+        /* Só conta se HOUVER texto. A barra de progresso é um <i> vazio
+           dentro de uma caixa com overflow:hidden, e durante a transição
+           de largura o scrollWidth passa do clientWidth — o que faz esta
+           checagem acusar "texto cortado" num elemento que não tem texto
+           nenhum. O defeito que ela existe para pegar é texto que some
+           sem reticências; sem texto, não há o que sumir. */
+        if (!(e.textContent || '').trim()) return false;
         const cs = getComputedStyle(e);
         return e.scrollWidth > e.clientWidth + 2 && cs.overflow === 'hidden' && cs.textOverflow !== 'ellipsis';
       }).length;

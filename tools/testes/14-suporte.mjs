@@ -181,6 +181,12 @@ for (const [rot, larg] of [['desktop', 1280], ['tablet', 834], ['celular', 390]]
         while (n && n !== document.body) { const o = getComputedStyle(n).overflowX;
           if (o === 'auto' || o === 'scroll') return true; n = n.parentElement; } return false; };
       const fora = [...v.querySelectorAll('*')].filter(e => {
+        /* Dentro de um <svg>, quem recorta é o viewport do próprio SVG, e
+           isso não aparece como overflow-x em ancestral nenhum. Um <rect>
+           de área de toque num gráfico pode ter a caixa passando da tela
+           sem que um pixel seja desenhado lá fora. Quem pode vazar de
+           verdade é o <svg>; os filhos dele são medidos por ele. */
+        if (e.ownerSVGElement) return false;
         const r = e.getBoundingClientRect();
         if (!r.width && !r.height) return false;
         return !rola(e) && (r.right > innerWidth + 1 || r.left < -1);

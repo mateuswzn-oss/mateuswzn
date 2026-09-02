@@ -1,3 +1,51 @@
+/* v93 (BETA — Início e Arquivos migrados: as 14 áreas agora são pintadas
+   pelo Design System):
+
+   O QUE ENTROU
+   As duas últimas áreas que ainda usavam as folhas legadas — Início (o
+   painel) e Arquivos — foram reescritas com os componentes do sistema:
+   `ds-grade`, `ds-resumo`, `ds-cartao`, `ds-secao-cabeca`, `ds-titulo`,
+   `ds-rotulo`. Com elas, o contador do teste 13 fecha em 14 de 14:
+
+     14 migrada(s) pintada(s) pelo sistema, 0 legada(s) intocada(s)
+
+   Como nas rodadas anteriores, nada foi empilhado por cima do legado: as
+   79 regras que ainda alcançavam as duas telas foram RESTRINGIDAS na
+   origem, com `:not([data-mw-migrada] *)`, pelo tools/ds/restringe.py.
+   Elas continuam valendo onde ainda não houve migração e param na porta
+   das áreas migradas.
+
+   TRÊS FALSOS POSITIVOS DOS MEUS PRÓPRIOS TESTES, CORRIGIDOS
+   Os três acusavam defeito onde não havia, e os três já custaram uma
+   sessão de depuração cada — por isso ficam anotados aqui e no
+   tools/testes/LEIAME.md.
+
+   1. "texto espremido" numa barra de progresso. O `<i>` da barra é vazio
+      e está dentro de uma caixa com overflow:hidden; durante a transição
+      de largura o scrollWidth passa do clientWidth. A checagem existe
+      para pegar TEXTO que some sem reticências — sem texto, não há o que
+      sumir. Agora ela exige `(e.textContent || '').trim()`.
+
+   2. Um limiar único de "tem conteúdo" para oito telas diferentes. Ele
+      reprovava Faculdade (341px, correta) e teria aprovado uma tela
+      vazia. Virou um mínimo por área, medido por altura E por número de
+      controles: o Calendário tem 34 controles e 171 caracteres de texto,
+      e está certo assim.
+
+   3. "vazamento horizontal" no Início: era um `<rect class="mw-carga-alvo">`
+      DENTRO do SVG do gráfico. A checagem sobe pelos ancestrais HTML
+      procurando overflow-x, e o recorte do viewport de um SVG não aparece
+      dessa forma — a caixa do <rect> passa da tela sem que um pixel seja
+      desenhado lá fora. Quem pode vazar de verdade é o <svg>; os filhos
+      dele são medidos por ele. Guarda: `if (e.ownerSVGElement) return false;`,
+      agora nos cinco arquivos de teste que fazem essa medição, e não só
+      em três deles.
+
+   O QUE AINDA FALTA NESTA FRENTE
+   Login/cadastro, a barra lateral e a barra de baixo, e a auditoria final
+   — que só agora faz sentido: com tudo migrado, dá para APAGAR folhas
+   legadas inteiras em vez de restringi-las uma a uma.
+
 /* v92 (BETA — a barra de baixo não aparece mais sobre a tela de login):
 
    O DEFEITO, RELATADO COM DUAS FOTOS
@@ -1516,7 +1564,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v92-beta';
+const CACHE_NAME = 'mw-shell-v93-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

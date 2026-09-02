@@ -1,17 +1,17 @@
 /* Teste das áreas que NÃO são coleção.
  *
  * O teste 15 mede uma coleção: lista, formulário de criar, linha com
- * Editar/Excluir. Seis áreas do app não têm nada disso — Perfil,
- * Configurações, Faculdade, Relatórios, Foco e Calendário — e o que uma
- * migração pode fazer sumir nelas é outra coisa: um campo que deixa de
- * gravar, um rótulo que se solta do controle, uma categoria que
- * desaparece, um número que para de ler o dado, um cronômetro que não
- * anda mais.
+ * Editar/Excluir. Oito áreas do app não têm nada disso — Perfil,
+ * Configurações, Faculdade, Relatórios, Foco, Calendário, Início e
+ * Arquivos — e o que uma migração pode fazer sumir nelas é outra coisa:
+ * um campo que deixa de gravar, um rótulo que se solta do controle, uma
+ * categoria que desaparece, um número que para de ler o dado, um
+ * cronômetro que não anda mais, um arquivo que some da lista.
  *
  * As checagens comuns valem para todas; a última é própria de cada área,
  * porque "funcionar" quer dizer uma coisa diferente em cada uma.
  *
- * Uso: node tools/testes/16-ajustes.mjs [profile|settings|college|reports|focus|calendar]
+ * Uso: node tools/testes/16-ajustes.mjs [profile|settings|college|reports|focus|calendar|home|files]
  */
 import { abre, vaiPara, esperaParar } from './ajuda.mjs';
 
@@ -37,6 +37,30 @@ const SEMENTE = {
 };
 
 const { b, p, erros } = await abre(SEMENTE, { viewport: { width: 1280, height: 900 } });
+
+/* Arquivos guarda no IndexedDB deste navegador, não no blob do workspace.
+   Semeado vazio, o único caminho medido seria o estado vazio — e some da
+   medição justamente o que a área existe para fazer. */
+if (area === 'files') {
+  await p.evaluate(async () => {
+    await new Promise(ok => {
+      const req = indexedDB.open('mwArquivos', 1);
+      req.onupgradeneeded = () => { const d = req.result;
+        if (!d.objectStoreNames.contains('arquivos')) d.createObjectStore('arquivos', { keyPath: 'id' }); };
+      req.onsuccess = () => {
+        const d = req.result, loja = d.transaction('arquivos', 'readwrite').objectStore('arquivos');
+        loja.put({ id:'t1', nome:'aula-03-derivadas.pdf', tipo:'application/pdf', bytes:240000,
+                   criadoEm: Date.now(), subject:'Cálculo I', blob: new Blob(['%PDF'], { type:'application/pdf' }) });
+        loja.put({ id:'t2', nome:'resumo-ondas.md', tipo:'text/markdown', bytes:1200,
+                   criadoEm: Date.now()-1000, subject:'Física II', blob: new Blob(['# ondas'], { type:'text/markdown' }) });
+        loja.transaction.oncomplete = () => ok();
+      };
+      req.onerror = () => ok();
+    });
+  });
+  await p.reload({ waitUntil: 'domcontentloaded' });
+  await p.waitForTimeout(2400);
+}
 
 let ruins = 0;
 const ok = (rotulo, certo, detalhe) => {
@@ -77,7 +101,9 @@ const MINIMO = {
   college:  { caixas: 1, controles: 4 },
   reports:  { caixas: 4, controles: 4 },
   focus:    { caixas: 3, controles: 5 },
-  calendar: { caixas: 1, controles: 8 }
+  calendar: { caixas: 1, controles: 8 },
+  home:     { caixas: 8, controles: 8 },
+  files:    { caixas: 2, controles: 2 }
 }[area] || { caixas: 1, controles: 1 };
 
 /* Altura e controles, não quantidade de texto: o Calendário tem 34
@@ -300,6 +326,44 @@ if (area === 'calendar') {
   ok('a navegação de período anda', c.mudouMes, c);
 }
 
+/* ---- 4g. Início: os números do painel leem o dado ---------------------
+   O painel é a soma de todas as outras áreas. Se ele parar de ler,
+   continua bonito e passa a mostrar zero em tudo — o defeito mais
+   silencioso que esta tela pode ter. A semente tem 2 disciplinas, 1
+   projeto e 2 atividades. */
+if (area === 'home') {
+  const r = await p.evaluate(() => {
+    const v = document.getElementById('view-home');
+    const num = id => { const e = document.getElementById(id); return e ? (e.textContent || '').trim() : null; };
+    return {
+      disciplinas: num('statSubjects'), projetos: num('statProjects'),
+      atividades: num('statActivities'), progresso: num('statProgress'),
+      resumoVisivel: !!v.querySelector('#mwResumoDia:not([hidden])'),
+      atalhos: v.querySelectorAll('#mwAtalhos button, #mwAtalhos a').length
+    };
+  });
+  ok('os números do painel leem o dado',
+     r.disciplinas === '2' && r.projetos === '1' && r.atividades === '2', r);
+  ok('os atalhos de acesso rápido estão lá', r.atalhos >= 3, r.atalhos);
+}
+
+/* ---- 4h. Arquivos: os arquivos guardados aparecem ---------------------
+   A área lê do IndexedDB, não do blob do workspace. Uma migração que
+   quebre o seletor da lista deixa a tela com o estado vazio — e "nenhum
+   arquivo" é indistinguível de "a lista parou de achar os arquivos". */
+if (area === 'files') {
+  const r = await p.evaluate(() => {
+    const v = document.getElementById('view-files');
+    const txt = (v.textContent || '').replace(/\s+/g, ' ');
+    return {
+      temPdf: txt.includes('aula-03-derivadas'),
+      temMd: txt.includes('resumo-ondas'),
+      linhas: v.querySelectorAll('[data-mw-arquivo], .mw-arq-item, .list-item, .ds-item').length
+    };
+  });
+  ok('os arquivos guardados aparecem na lista', r.temPdf && r.temMd, r);
+}
+
 /* ---- 5. nada vaza, em três larguras e dois temas ---------------------- */
 for (const [rot, larg] of [['desktop', 1280], ['tablet', 834], ['celular', 390]]) {
   for (const tema of ['escuro', 'claro']) {
@@ -316,12 +380,25 @@ for (const [rot, larg] of [['desktop', 1280], ['tablet', 834], ['celular', 390]]
         while (n && n !== document.body) { const o = getComputedStyle(n).overflowX;
           if (o === 'auto' || o === 'scroll') return true; n = n.parentElement; } return false; };
       const fora = [...v.querySelectorAll('*')].filter(e => {
+        /* Dentro de um <svg>, quem recorta é o viewport do próprio SVG, e
+           isso não aparece como overflow-x em ancestral nenhum. Um <rect>
+           de área de toque num gráfico pode ter a caixa passando da tela
+           sem que um pixel seja desenhado lá fora. Quem pode vazar de
+           verdade é o <svg>; os filhos dele são medidos por ele. */
+        if (e.ownerSVGElement) return false;
         const r = e.getBoundingClientRect();
         if (!r.width && !r.height) return false;
         return !rola(e) && (r.right > innerWidth + 1 || r.left < -1);
       }).map(e => (e.id || e.className || e.tagName).toString().slice(0, 30));
       const espremidos = [...v.querySelectorAll('*')].filter(e => {
         if (e.children.length) return false;
+        /* Só conta se HOUVER texto. A barra de progresso é um <i> vazio
+           dentro de uma caixa com overflow:hidden, e durante a transição
+           de largura o scrollWidth passa do clientWidth — o que faz esta
+           checagem acusar "texto cortado" num elemento que não tem texto
+           nenhum. O defeito que ela existe para pegar é texto que some
+           sem reticências; sem texto, não há o que sumir. */
+        if (!(e.textContent || '').trim()) return false;
         const cs = getComputedStyle(e);
         return e.scrollWidth > e.clientWidth + 2 && cs.overflow === 'hidden' && cs.textOverflow !== 'ellipsis';
       }).length;
