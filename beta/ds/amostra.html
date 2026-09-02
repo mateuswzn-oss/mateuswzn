@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="pt-BR" data-mw-tema="escuro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Amostra responsiva</title>
+<link rel="stylesheet" href="mw-ds.css">
+<style>
+  /* Só o esqueleto da página. Tudo que é componente vem do sistema — é esse
+     o ponto desta amostra: provar que uma tela do MW pode ser montada sem
+     escrever CSS de componente nenhum. */
+  html, body{ margin:0; height:100%; }
+  body{ background: var(--mw-chao); }
+  body::before{
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background:
+      radial-gradient(circle at 82% 14%, rgba(139,92,246,.20), transparent 34%),
+      radial-gradient(circle at 12% 86%, rgba(79,91,255,.22), transparent 38%);
+  }
+  .a-app{ position:relative; z-index:1; display:grid; min-height:100%;
+          grid-template-columns:1fr; }
+  .a-lado{ display:none; }
+  .a-main{ padding:16px 16px 92px; display:flex; flex-direction:column; gap:20px; min-width:0; }
+  .a-baixo{ position:fixed; left:10px; right:10px; bottom:10px; z-index:200; }
+
+  /* tablet: a barra lateral aparece, a de baixo sai */
+  @media (min-width: 760px){
+    .a-app{ grid-template-columns:212px 1fr; }
+    .a-lado{ display:flex; flex-direction:column; gap:14px; padding:14px; }
+    .a-baixo{ display:none; }
+    .a-main{ padding:24px 24px 40px; }
+  }
+  /* desktop: mais respiro e a lateral mais larga */
+  @media (min-width: 1180px){
+    .a-app{ grid-template-columns:248px 1fr; }
+    .a-main{ padding:32px 40px 56px; max-width:1200px; }
+  }
+</style>
+</head>
+<body class="mw-ds">
+<div class="a-app">
+
+  <aside class="a-lado mw-vidro" style="border-radius:0;border-width:0 1px 0 0">
+    <div class="mw-linha">
+      <span class="mw-avatar" aria-hidden="true">MW</span>
+      <div class="mw-crescer">
+        <div class="mw-item-titulo">Mateus</div>
+        <div class="mw-micro">Engenharia</div>
+      </div>
+    </div>
+    <nav class="mw-nav" aria-label="Áreas">
+      <button class="mw-nav-item" aria-current="page">Início</button>
+      <button class="mw-nav-item">Faculdade</button>
+      <button class="mw-nav-item">Atividades</button>
+      <button class="mw-nav-item">Projetos</button>
+      <button class="mw-nav-item">Anotações</button>
+    </nav>
+  </aside>
+
+  <main class="a-main">
+    <div class="mw-secao-cabeca">
+      <div>
+        <h1 class="mw-tela-titulo">Boa tarde, Mateus</h1>
+        <p class="mw-micro">Terça, 2 de setembro · 3 entregas nesta semana</p>
+      </div>
+      <div class="mw-secao-acoes">
+        <button class="mw-btn mw-btn-secundario mw-btn-icone" aria-label="Buscar">⌕</button>
+        <button class="mw-btn mw-btn-primario">+ Adicionar</button>
+      </div>
+    </div>
+
+    <div class="mw-grade mw-entra-escada">
+      <div class="mw-resumo mw-vidro">
+        <span class="mw-rotulo">Atrasadas</span>
+        <span class="mw-numero">3</span>
+      </div>
+      <div class="mw-resumo mw-vidro">
+        <span class="mw-rotulo">Hoje</span>
+        <span class="mw-numero">1</span>
+      </div>
+      <div class="mw-resumo mw-vidro">
+        <span class="mw-rotulo">Disciplinas</span>
+        <span class="mw-numero">6</span>
+      </div>
+      <div class="mw-resumo mw-vidro">
+        <span class="mw-rotulo">Progresso</span>
+        <span class="mw-numero">62<span style="font-size:16px">%</span></span>
+      </div>
+    </div>
+
+    <div class="mw-grade-2">
+      <article class="mw-cartao">
+        <div class="mw-cartao-cabeca">
+          <div>
+            <h2 class="mw-titulo">Próximas entregas</h2>
+            <p class="mw-micro">ordenadas por prazo</p>
+          </div>
+          <button class="mw-btn mw-btn-fantasma mw-btn-p">Ver todas</button>
+        </div>
+        <div class="mw-lista">
+          <div class="mw-item">
+            <div class="mw-item-texto">
+              <span class="mw-item-titulo">Relatório de campo</span>
+              <span class="mw-item-apoio">Cálculo I · amanhã</span>
+            </div>
+            <div class="mw-item-acoes"><span class="mw-selo mw-selo-perigo">Alta</span></div>
+          </div>
+          <div class="mw-item">
+            <div class="mw-item-texto">
+              <span class="mw-item-titulo">Lista de exercícios 4</span>
+              <span class="mw-item-apoio">Álgebra Linear · em 3 dias</span>
+            </div>
+            <div class="mw-item-acoes"><span class="mw-selo mw-selo-alerta">Média</span></div>
+          </div>
+          <div class="mw-item">
+            <div class="mw-item-texto">
+              <span class="mw-item-titulo">Seminário de estruturas de dados avançadas</span>
+              <span class="mw-item-apoio">Algoritmos · em 9 dias</span>
+            </div>
+            <div class="mw-item-acoes"><span class="mw-selo">Baixa</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="mw-cartao">
+        <div class="mw-cartao-cabeca">
+          <div><h2 class="mw-titulo">Semestre</h2></div>
+        </div>
+        <div class="mw-pilha-2">
+          <div class="mw-linha"><span class="mw-crescer mw-corpo">Cálculo I</span><span class="mw-micro mw-tabular">62%</span></div>
+          <div class="mw-progresso"><i style="width:62%"></i></div>
+          <div class="mw-linha"><span class="mw-crescer mw-corpo">Álgebra Linear</span><span class="mw-micro mw-tabular">45%</span></div>
+          <div class="mw-progresso"><i style="width:45%"></i></div>
+          <div class="mw-linha"><span class="mw-crescer mw-corpo">Algoritmos</span><span class="mw-micro mw-tabular">80%</span></div>
+          <div class="mw-progresso"><i style="width:80%"></i></div>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <nav class="a-baixo mw-nav mw-nav-baixo mw-vidro" aria-label="Áreas">
+    <button class="mw-nav-item" aria-current="page">Início</button>
+    <button class="mw-nav-item">Faculdade</button>
+    <button class="mw-nav-item">Arquivos</button>
+    <button class="mw-nav-item">Perfil</button>
+  </nav>
+</div>
+
+<script>
+  /* A galeria manda o tema por postMessage; sem isso o iframe ficaria num
+     tema e a página em volta noutro. */
+  addEventListener('message', function(e){
+    var t = e.data && e.data.tema;
+    if (t === 'claro' || t === 'escuro') document.documentElement.setAttribute('data-mw-tema', t);
+  });
+</script>
+</body>
+</html>
