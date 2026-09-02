@@ -69,6 +69,7 @@ declare -a NOMES=(
   "13 design system · isolado e inerte"
   "14 suporte · área migrada"
   "15 área · estrutura das seis coleções"
+  "16 ajustes · Perfil e Configurações"
 )
 declare -a CMDS=(
   "node tools/testes/1-regressao.mjs"
@@ -87,6 +88,7 @@ declare -a CMDS=(
   "node tools/testes/13-ds.mjs && python3 tools/testes/7-contraste-medir.py"
   "node tools/testes/14-suporte.mjs && node tools/ds/quem-vence.mjs support claro | tail -3 && node tools/ds/quem-vence.mjs support escuro | tail -3"
   "for a in institutions subjects projects activities notes; do node tools/testes/15-area.mjs \$a || exit 1; done; node tools/ds/quem-vence.mjs institutions claro | tail -3 && node tools/ds/quem-vence.mjs institutions escuro | tail -3"
+  "for a in profile settings; do node tools/testes/16-ajustes.mjs \$a || exit 1; done; for a in profile settings; do for t in claro escuro; do node tools/ds/quem-vence.mjs \$a \$t | sed -n 2p; done; done"
 )
 
 SO_ESTES=("$@")

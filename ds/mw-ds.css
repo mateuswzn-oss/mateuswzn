@@ -590,6 +590,25 @@ body.light .ds{
   .ds .ds-campo textarea{ font-size: 16px; }
 }
 .ds .ds-campo textarea{ min-height: 96px; resize: vertical; line-height: var(--mw-l-normal); }
+/* Caixa de seleção e botão de opção. O sistema deixava os dois de fora
+   (`:not([type="checkbox"])`), e enquanto o app tinha uma regra global
+   dando tamanho a eles isso não aparecia. Restringir aquela regra à porta
+   das áreas migradas — que é o que o protocolo manda fazer — devolveu os
+   13px padrão do navegador: abaixo dos 24px que a WCAG 2.5.8 pede.
+
+   Tamanho de alvo é responsabilidade do sistema, não de uma folha antiga
+   que por acaso ainda existia. */
+.ds input[type="checkbox"],
+.ds input[type="radio"]{
+  width: 18px; height: 18px;
+  min-width: 18px; min-height: 18px;
+  /* o alvo cresce sem mexer no layout: o quadrado continua com 18px, a
+     área que responde ao dedo passa de 24 */
+  padding: 3px; margin: 3px;
+  accent-color: var(--mw-ac);
+  cursor: pointer;
+}
+
 .ds .ds-entrada::placeholder,
 .ds .ds-campo ::placeholder{ color: var(--mw-txt-3); }
 .ds .ds-entrada:hover:not(:disabled),
@@ -710,6 +729,15 @@ body.light .ds{
   overflow-wrap: anywhere;
 }
 .ds .ds-item-apoio{ font-size: var(--mw-t-micro); color: var(--mw-txt-3); }
+
+/* Link dentro de texto. O app pintava todo link com uma regra global
+   (`#app a{ color:#66e0ff !important }`); restringi-la às áreas ainda não
+   migradas deixaria os links das migradas no azul padrão do navegador.
+   Cor de link é responsabilidade do sistema, então passa a morar aqui —
+   lida do token de acento, e não de um valor cravado que só serve a um
+   dos dois temas. */
+.ds a{ color: var(--mw-ac-txt); text-underline-offset: 2px; }
+.ds a:hover{ color: var(--mw-txt-1); }
 /* Grupo de selos dentro de uma linha: quebra em várias faixas quando não
    cabe, em vez de espremer o texto do item. */
 .ds .ds-selos{ display: flex; flex-wrap: wrap; gap: var(--mw-e-2); margin-top: var(--mw-e-1); }
@@ -777,6 +805,54 @@ body.light .ds{
   display: flex; gap: var(--mw-e-2); flex-wrap: wrap;
   margin-bottom: var(--mw-e-3);
 }
+
+/* ---- GRUPO DE AJUSTE --------------------------------------------------------
+   Um assunto por caixa: título, uma linha explicando o que aquilo faz, e os
+   controles. É a unidade de leitura de Perfil e Configurações — vinte e tantas
+   vezes na segunda — e o que faz uma tela de ajustes ser percorrida em vez de
+   lida inteira.
+
+   A explicação é parte do componente, não enfeite: um interruptor sem uma
+   frase dizendo o que ele liga é um interruptor que ninguém mexe. */
+.ds .ds-grupo{
+  display: flex; flex-direction: column; gap: var(--mw-e-3);
+  padding: var(--mw-e-4);
+  background: var(--mw-sup-2);
+  border: 1px solid var(--mw-borda);
+  border-radius: var(--mw-r-3);
+}
+.ds .ds-grupo > h3,
+.ds .ds-grupo > h4,
+.ds .ds-grupo-titulo{
+  margin: 0;
+  font-size: var(--mw-t-corpo); font-weight: 650; color: var(--mw-txt-1);
+}
+.ds .ds-grupo-apoio{
+  margin: calc(var(--mw-e-3) * -1 + var(--mw-e-1)) 0 0;
+  font-size: var(--mw-t-micro); color: var(--mw-txt-3);
+  max-width: 62ch;
+}
+.ds .ds-grupo-corpo{ display: flex; flex-direction: column; gap: var(--mw-e-3); }
+
+/* Linha de ajuste: rótulo à esquerda, controle à direita, e quebra para
+   duas linhas quando o cartão fica estreito — sem media query, porque a
+   largura que importa é a do CARTÃO e não a da janela. */
+.ds .ds-linha-ajuste{
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--mw-e-3); flex-wrap: wrap;
+  min-height: var(--mw-alvo);
+}
+.ds .ds-linha-ajuste > :first-child{ flex: 1 1 16ch; min-width: 0; }
+
+/* Título de categoria: agrupa vários grupos sob um assunto maior
+   (Conta, Aparência, Segurança...). Não é cartão; é uma divisória. */
+.ds .ds-categoria{
+  margin: var(--mw-e-5) 0 var(--mw-e-1);
+  font-size: var(--mw-t-micro); font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--mw-txt-3);
+}
+.ds .ds-categoria:first-child{ margin-top: 0; }
 
 /* ---- CARTÃO DE NÚMERO ------------------------------------------------------- */
 .ds .ds-resumo{

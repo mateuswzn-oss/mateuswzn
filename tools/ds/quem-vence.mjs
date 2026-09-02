@@ -13,6 +13,7 @@
  */
 import { abre, vaiPara, esperaParar } from '../testes/ajuda.mjs';
 
+const INTEIRO = !!process.env.MW_SEL_INTEIRO;
 const area = process.argv[2] || 'support';
 const tema = process.argv[3] || 'escuro';
 
@@ -69,7 +70,13 @@ const achados = await p.evaluate(a => {
     for (const prop of PROPS) {
       let melhor = null;
       for (const r of regras) {
-        const v = r.style.getPropertyValue(prop);
+        /* `all: revert-layer` declara TODAS as propriedades de uma vez.
+           Lendo só `getPropertyValue(prop)`, a regra de desligamento fica
+           invisível para esta varredura — e o relatório acusa como
+           "legado vencendo" justamente a regra que está desligando o
+           legado. Foi o que fez `button,input,textarea{font:inherit}`
+           aparecer como vencedor dentro de áreas onde ele já não vence. */
+        const v = r.style.getPropertyValue(prop) || r.style.getPropertyValue('all');
         if (!v) continue;
         let casa = false;
         try { casa = el.matches(r.sel); } catch(e){ continue; }
@@ -92,7 +99,7 @@ const achados = await p.evaluate(a => {
     }
   }
   return { total: alvos.length,
-           lista: [...fora.values()].map(x => ({ folha: x.folha, sel: x.sel.slice(0, 96),
+           lista: [...fora.values()].map(x => ({ folha: x.folha, sel: x.sel,
                                                  props: [...x.props].join(','), imp: x.imp, exemplo: x.exemplo })) };
 }, area);
 
@@ -113,11 +120,47 @@ const PROPRIO = {
   activities: ['mw-agenda'],
   subjects:   ['mw-ordem'],
   notes:      ['mw-notas', 'mw-ordem'],
-  institutions: []
+  institutions: [],
+  profile:    ['mw-perfil-polido', 'mw-perfil-publico', 'mw-perfil-config-separados'],
+  /* `mw-perfil-publico` e `mw-perfil-config-separados` aparecem nas DUAS:
+     o interruptor e o selo "Em breve" são componentes que Perfil e
+     Configurações compartilham. O bloco é o mesmo; a área que o usa é
+     que muda. */
+  settings:   ['mw-diagnostico', 'mw-transfere-style', 'mw-preferencias',
+               'mw-faceid-style', 'mw-conta-style', 'mw-pin-style',
+               'mw-perfil-publico', 'mw-perfil-config-separados']
 };
 const meus = new Set(PROPRIO[area] || []);
-const proprias = achados.lista ? achados.lista.filter(r => meus.has(r.folha)) : [];
-if (achados.lista) achados.lista = achados.lista.filter(r => !meus.has(r.folha));
+
+/* Terceira categoria, além de "legado" e "próprio da área": CORREÇÃO que
+   vale para o app inteiro. `mw-alvos` dá 24px de alvo de toque a
+   controles pequenos em todas as áreas; `mw-teclado` implementa foco,
+   Tab preso e Escape nos diálogos. Nenhuma das duas é aparência legada —
+   restringi-las à porta da área migrada devolveria o defeito que elas
+   corrigem, exatamente na tela que acabou de ser refeita. É a mesma
+   lista que o restringe.py se recusa a tocar. */
+const CORRECOES = new Set(['mw-alvos', 'mw-teclado']);
+
+/* E um reset global, pela mesma razão: `button,input,textarea{font:inherit}`
+   é o que faz um controle herdar a fonte da página em vez da fonte do
+   sistema operacional. Ele "vence" em font-size num botão que não tem
+   texto, e isso não é o legado pintando a área — é o reset fazendo o que
+   existe para fazer. */
+const RESET = new Set(['button, input, textarea']);
+
+const proprias  = achados.lista ? achados.lista.filter(r => meus.has(r.folha)) : [];
+const eCorrecao = r => CORRECOES.has(r.folha) || RESET.has(r.sel.trim());
+const correcoes = achados.lista ? achados.lista.filter(eCorrecao) : [];
+if (achados.lista) achados.lista = achados.lista.filter(r => !meus.has(r.folha) && !eCorrecao(r));
+
+/* MW_JSON=1 imprime só os achados, em JSON, para o restringe.py consumir:
+   medir → restringir → medir de novo, sem ninguém copiar seletor à mão. */
+if (process.env.MW_JSON) {
+  console.log(JSON.stringify({ area, tema, total: achados.total,
+    legado: achados.lista || [], proprias }, null, 1));
+  await b.close();
+  process.exit(0);
+}
 
 console.log('=== área "' + area + '", tema ' + tema + ' — regras que NÃO são do sistema e ainda vencem ===');
 if (achados.erro) { console.log(achados.erro); }
@@ -126,10 +169,15 @@ else {
   achados.lista.sort((x, y) => (y.imp - x.imp) || y.props.length - x.props.length);
   for (const r of achados.lista) {
     console.log('\n  ' + r.folha + (r.imp ? '  [!important]' : ''));
-    console.log('    ' + r.sel);
+    console.log('    ' + (INTEIRO ? r.sel : r.sel.slice(0, 96)));
     console.log('    vence em: ' + r.props + '   (ex.: ' + r.exemplo + ')');
   }
   if (!achados.lista.length) console.log('\n  nenhuma — a área está inteiramente sob o Design System.');
+  if (correcoes.length){
+    console.log('\n  --- correções que valem para o app inteiro ---');
+    console.log('  (alvo de toque, teclado: não são aparência legada e não se restringem)');
+    for (const r of correcoes) console.log('    ' + r.folha + ' :: ' + r.sel + '  →  ' + r.props);
+  }
   if (proprias.length){
     console.log('\n  --- CSS próprio desta área, mantido de propósito ---');
     console.log('  (componente que só existe aqui; tem de ler os tokens do sistema, não sumir)');

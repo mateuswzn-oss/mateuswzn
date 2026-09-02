@@ -1,3 +1,67 @@
+/* v90 (BETA — Perfil e Configurações no Design System, e o legado que
+   mira por id):
+
+   AS ÁREAS
+   Com estas duas são OITO áreas sob o sistema, e seis ainda legadas.
+   Perfil e Configurações não são coleções: não têm lista, formulário de
+   criar nem linha com Editar/Excluir. São telas de campos e
+   interruptores, e o que uma migração pode fazer sumir ali é outra coisa
+   — um campo que deixa de gravar, um rótulo que se solta do controle,
+   uma categoria que desaparece. Por isso ganharam um teste próprio
+   (16-ajustes), verde antes e depois nas duas.
+
+   O SISTEMA GANHOU O QUE FALTAVA PARA TELA DE AJUSTE
+   Grupo (título, uma linha explicando, e os controles), linha de ajuste,
+   título de categoria, grupo de selos, barra de filtros — e, obrigado
+   pela migração, duas coisas que eram do app e viraram do sistema: cor
+   de link e tamanho de caixa de seleção. As duas vinham de regra global
+   do legado; sem elas, a área migrada ficava com o azul padrão do
+   navegador e caixas de 13px, abaixo dos 24 que a WCAG pede.
+
+   O LEGADO QUE MIRA POR ID
+   Nas duas primeiras migrações bastava o desligamento por :where():
+   as regras legadas miravam classes, e tirar a classe da marcação já as
+   deixava para trás. Aqui não. Perfil e Configurações são alcançadas por
+   id (html body #app #saveProfile{ … !important }) e por elemento
+   (#app input, #app select, #app textarea). Nenhum dos dois usa classe,
+   então o desligamento por nome não alcança — e contra !important sem
+   camada não existe regra que se ACRESCENTE. Eram 22 em Perfil e 52 em
+   Configurações.
+
+   O protocolo já dizia o que fazer: restringir o seletor legado. O que
+   faltava era não fazer isso à mão 74 vezes. Agora o quem-vence.mjs
+   emite os achados em JSON e o tools/ds/restringe.py acrescenta
+   :not([data-mw-migrada] *) a cada parte do seletor — medir, restringir,
+   medir de novo, até parar de cair.
+
+   TRÊS COISAS QUE O SCRIPT SE RECUSA A TOCAR, cada uma aprendida com um
+   defeito de verdade:
+     · o reset global button,input,textarea{font:inherit} — restringi-lo
+       devolve a fonte do sistema operacional aos controles;
+     · mw-alvos e mw-teclado, que são CORREÇÕES válidas para o app
+       inteiro — restringidas, os cinco links do Perfil voltaram a 14px;
+     · o CSS próprio de cada área — o interruptor do Perfil público virou
+       uma caixa de seleção crua de 18px quando foi restringido junto.
+
+   E uma quarta, no desligamento: `button` não pode entrar na lista de
+   elementos. O seletor de lá tem id mais atributo, então venceria também
+   as regras de CLASSE de botões que só existem numa tela — o interruptor
+   do Face ID virou um retângulo de 0px. Campo de formulário é genérico;
+   botão, muitas vezes, é componente da área.
+
+   O RELATÓRIO PASSOU A TER TRÊS SEÇÕES
+   Legado por substituir, CSS próprio da área, e correções do app
+   inteiro — com os números à vista, em vez de uma exceção silenciosa
+   escondida no código da ferramenta. O quem-vence também aprendeu que
+   `all: revert-layer` declara todas as propriedades: sem isso ele
+   acusava como "legado vencendo" justamente a regra que desliga o
+   legado.
+
+   SUÍTE
+   17 execuções verdes. Contraste: 0 falhas em 3 larguras x 2 temas, mais
+   os dois temas da galeria. Zero regras legadas vencendo nas oito áreas
+   migradas, nos dois temas. */
+
 /* v89 (BETA — as quatro áreas de coleção no Design System, e oito
    seletores que a migração teria quebrado em silêncio):
 
@@ -1350,7 +1414,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v89-beta';
+const CACHE_NAME = 'mw-shell-v90-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

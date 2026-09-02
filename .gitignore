@@ -2,3 +2,7 @@ node_modules/
 .vercel/
 *.tgz
 tools/testes/saida/
+
+# bytecode do Python das ferramentas
+__pycache__/
+*.pyc

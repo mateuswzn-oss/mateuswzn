@@ -218,7 +218,7 @@ Da menor superfície de risco para a maior. Cada uma é uma rodada.
 | ✅ 1 | ~~Suporte~~ | **migrada.** 25 verificações de funcionalidade antes e depois, idênticas; zero regra legada vencendo lá dentro |
 | ✅ 2 | ~~Instituições~~ | **migrada.** 14 verificações do teste 15 antes e depois, idênticas; zero regra legada vencendo lá dentro, nos dois temas |
 | ✅ 3 | ~~Disciplinas · Projetos · Atividades · Anotações~~ | **migradas.** As quatro numa rodada, porque compartilham gerador, linha e selos; 16 verificações cada no teste 15, zero regra legada vencendo nas quatro, nos dois temas |
-| 4 | Configurações · Perfil | muitos campos, pouca lógica |
+| ✅ 4 | ~~Configurações · Perfil~~ | **migradas.** Não são coleções: o teste delas é outro (16-ajustes), e mede o que uma tela de ajustes pode perder — campo que deixa de gravar, rótulo que se solta, categoria que some |
 | 5 | Faculdade · Relatórios · Foco · Calendário | layout próprio em cada uma |
 | 6 | Início | depende do vocabulário das outras estar pronto |
 | 7 | Login / cadastro | fora do `#app`, com regras próprias e seis peles legadas sobrepostas |
@@ -256,6 +256,50 @@ montando o material antigo. A barra Quadro/Lista e os filtros ficaram assim
 até serem medidos. Ou se exporta o helper, ou se pergunta ao DOM na hora
 (`document.querySelector('#view-x[data-mw-migrada]')`); guarda que degrada em
 silêncio, não.
+
+## Medir, restringir, medir de novo
+
+Nas duas primeiras migrações o `:where()` do desligamento bastava: as regras
+legadas miravam classes, e tirar a classe da marcação já as deixava para trás.
+
+Perfil e Configurações mostraram o outro tipo. Ali o legado mira por **id**
+(`html body #app #saveProfile{…!important}`) e por **elemento**
+(`#app input, #app select, #app textarea`). Nenhum dos dois usa classe, então
+o desligamento por nome não os alcança — e contra `!important` sem camada não
+existe regra que se acrescente. Eram 22 em Perfil e 52 em Configurações.
+
+O protocolo já dizia o que fazer (restringir o seletor legado). O que faltava
+era não fazer isso à mão, 74 vezes. Agora o ciclo é mecânico:
+
+```bash
+MW_JSON=1 node tools/ds/quem-vence.mjs profile escuro > /tmp/a.json
+python3 tools/ds/restringe.py /tmp/a.json --aplicar
+# repetir até o número parar de cair
+```
+
+O `restringe.py` acrescenta `:not([data-mw-migrada] *)` a cada parte do seletor
+relatado. A regra continua valendo nas áreas que ainda não migraram e para na
+porta das que migraram. Repetir é necessário: tirada a primeira regra da
+frente, aparece a segunda que estava atrás dela.
+
+**Três coisas ele se recusa a tocar**, e cada uma custou um defeito para
+aprender:
+
+| não restringe | por quê |
+|---|---|
+| `button, input, textarea{font:inherit}` | reset global: restringi-lo devolve a fonte do sistema operacional aos controles |
+| `mw-alvos`, `mw-teclado` | correções que valem para o app inteiro; restringi-las devolve o defeito de acessibilidade na tela recém-migrada — os cinco links do Perfil voltaram a 14px |
+| o CSS próprio de cada área | o interruptor do Perfil público virou uma caixa de seleção crua de 18px quando o `mw-perfil-publico` foi restringido junto |
+
+A mesma lista vive no `quem-vence.mjs`, e tem de viver: os dois precisam
+concordar sobre o que é legado. O relatório passou a ter três seções em vez de
+uma — legado por substituir, CSS próprio da área, correções do app inteiro —
+com os números à vista, em vez de uma exceção silenciosa.
+
+Duas correções que a restrição obrigou, e que são melhorias reais do sistema:
+**cor de link** e **tamanho de caixa de seleção** passaram a ser
+responsabilidade do Design System. Eram uma regra global do app; sem elas, a
+área migrada ficava com o azul padrão do navegador e com caixas de 13px.
 
 ## CSS próprio da área
 

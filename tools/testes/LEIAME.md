@@ -59,6 +59,7 @@ node tools/testes/1-regressao.mjs mobile
 | 13 | `13-ds.mjs` | o Design System carrega **sem o app** (galeria, 2 temas × 4 larguras), pinta **exatamente** as áreas migradas e nenhuma outra, e nenhum nome `ds-*` anda solto fora delas | o sistema depender de regra legada, a folha mexer em área não migrada, uma área migrada não mudar ao desligar a folha, ou um `ds-*` aparecer onde o sistema não alcança |
 | 14 | `14-suporte.mjs` | a área migrada faz tudo o que fazia: abrir atendimento, validar, conversar, anexar, encerrar, persistir — e nenhuma regra legada vence lá dentro | uma função perder-se na migração, ou o legado voltar a pintar a área |
 | 15 | `15-area.mjs <área>` | o teste de área genérico, o "antes e depois" de cada migração: estado vazio, formulário com foco e rótulos, criar pela interface, botões do item ao alcance, **agrupamento e ordem de pé com seis itens**, e nada vazando em 3 larguras × 2 temas. Roda nas seis coleções | qualquer um deles, em qualquer área — migrada ou não |
+| 16 | `16-ajustes.mjs <área>` | Perfil e Configurações: conteúdo em grupos, as sete categorias, nome acessível em todo controle, alvo de 24px, o que se edita grava e sobrevive ao recarregamento, o tema muda a tela e carimba o `<html>`, e nada vaza em 3 larguras × 2 temas | qualquer um deles |
 
 ### Por que o contraste é medido em duas etapas
 
@@ -169,6 +170,27 @@ resumidas aqui para quem for escrever um teste novo.
   outro compõe duas translucidezes sobre o gradiente animado: o mesmo texto
   que dá 4,9:1 na galeria (chão `#020617`, parado) caiu para 3,4:1 dentro do
   app. Cartão dentro de cartão agora é superfície opaca.
+- **Semear o dado é o que faz o controle existir para ser medido.** O teste 3
+  varria as áreas sem semear nada, então o chip de habilidade do Perfil nunca
+  era desenhado e o "×" de 19px dele nunca foi medido. Quem achou foi o teste
+  da área, que semeia uma habilidade porque a área é sobre isso.
+- **Restringir um seletor legado pode desmontar um componente.** Para tirar o
+  legado de dentro de uma área migrada, acrescenta-se `:not([data-mw-migrada] *)`
+  ao seletor dele. Só que nem toda regra ampla é aparência legada: um reset
+  global (`button,input,textarea{font:inherit}`), uma correção que vale para o
+  app inteiro (`mw-alvos`) e o CSS próprio da área (o interruptor do Perfil
+  público) precisam continuar valendo. Restringidos junto, devolveram
+  respectivamente a fonte do sistema operacional, links de 14px e um
+  interruptor virado caixa de seleção crua.
+- **`all: revert-layer` declara TODAS as propriedades.** Uma varredura que
+  pergunta `getPropertyValue('font-size')` não enxerga a regra de desligamento
+  — e acusa como "legado vencendo" justamente a regra que está desligando o
+  legado.
+- **`:where()` no desligamento não pode listar `button`.** O seletor da lista
+  tem id mais atributo, então venceria também as regras de CLASSE de botões
+  que só existem numa tela: o interruptor do Face ID virou um retângulo de
+  0px. Campo de formulário é genérico; botão, muitas vezes, é componente da
+  área.
 - **Seletor que não casa não levanta erro.** É o defeito de migração mais
   comum e o mais silencioso: um `querySelector` preso a uma classe que a
   migração renomeou devolve `null`, o bloco desiste, e não há erro no
