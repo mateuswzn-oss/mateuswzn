@@ -29812,6 +29812,192 @@ html body #app .mw-nota-ver:hover{ filter: brightness(1.15); }
 })();
 </script>
 
+<style id="mw-agenda">
+/* =====================================================================
+   §17 ATIVIDADES EM ORDEM DE PRAZO
+   =====================================================================
+   Achado da auditoria sob carga: com 120 atividades a área virava 21 mil
+   pixels de rolagem — mas o problema maior não era o tamanho, era a
+   ORDEM. A lista saía na ordem de cadastro, então uma entrega de amanhã
+   podia aparecer embaixo de uma de quarenta dias atrás. Uma lista de
+   prazos que não está em ordem de prazo não responde à pergunta que a
+   pessoa foi ali fazer.
+   ===================================================================== */
+html body #app #activitiesList .mw-agenda-titulo{
+  display: flex; align-items: baseline; gap: 9px;
+  margin: 18px 0 8px; padding: 0 2px;
+}
+html body #app #activitiesList .mw-agenda-titulo:first-child{ margin-top: 2px; }
+html body #app #activitiesList .mw-agenda-titulo strong{
+  font-size: 11.5px; font-weight: 750; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--ds-txt-2);
+}
+html body #app #activitiesList .mw-agenda-titulo span{
+  font-size: 11px; color: var(--ds-txt-3); font-variant-numeric: tabular-nums;
+}
+html body #app #activitiesList .mw-agenda-titulo::after{
+  content: ''; flex: 1; height: 1px;
+  background: color-mix(in srgb, var(--ds-txt-3) 22%, transparent);
+}
+/* O grupo que pede ação fica marcado; os outros são só organização. */
+html body #app #activitiesList .mw-agenda-titulo[data-grupo="atrasadas"] strong{ color: #ff8fa3; }
+html body #app #activitiesList .mw-agenda-titulo[data-grupo="hoje"] strong{ color: var(--ds-ac); }
+html body #app #activitiesList .mw-agenda-titulo[hidden]{ display: none !important; }
+</style>
+
+<script id="mw-agenda-js">
+(function(){
+  'use strict';
+  /* Atividades em ordem de prazo, agrupadas por urgência.
+
+     Isto é APRESENTAÇÃO, não dado: não reordena data.activities, não
+     grava nada, e o índice de cada item continua sendo o mesmo que os
+     botões Editar e Excluir usam. Reordenar o array quebraria esses
+     botões, porque eles guardam o índice da posição original.
+
+     Roda depois do renderAll (que reescreve a lista inteira a cada
+     gravação) e quando a área abre — medir e mexer em lista escondida
+     não tem efeito útil, e foi essa a lição do "Ver mais" das
+     anotações. */
+
+  var GRUPOS = [
+    ['atrasadas', 'Atrasadas'],
+    ['hoje',      'Hoje'],
+    ['semana',    'Próximos 7 dias'],
+    ['depois',    'Mais adiante'],
+    ['sem',       'Sem prazo']
+  ];
+
+  function hoje0(){ var d = new Date(); d.setHours(0,0,0,0); return d.getTime(); }
+  /* Nunca new Date('2026-09-05'): essa forma é lida como meia-noite UTC
+     e, em UTC-3, cai no dia anterior. */
+  function deIso(txt){
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(txt || ''));
+    return m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).getTime() : null;
+  }
+
+  function indiceDe(item){
+    var b = item.querySelector('[data-index]');
+    return b ? Number(b.getAttribute('data-index')) : -1;
+  }
+
+  function organiza(){
+    var lista = document.getElementById('activitiesList');
+    if (!lista) return;
+    if (getComputedStyle(lista).display === 'none' || !lista.offsetParent) return;
+    var itens = [].slice.call(lista.querySelectorAll('.list-item'));
+    if (itens.length < 2) { limpaTitulos(lista); return; }
+
+    var atividades = (window.data && Array.isArray(window.data.activities)) ? window.data.activities : [];
+    var h = hoje0(), semana = h + 7 * 86400000;
+
+    var comChave = itens.map(function(item){
+      var i = indiceDe(item);
+      var a = atividades[i] || {};
+      var quando = deIso(a.date);
+      var grupo;
+      if (quando === null) grupo = 'sem';
+      else if (quando < h) grupo = 'atrasadas';
+      else if (quando === h) grupo = 'hoje';
+      else if (quando <= semana) grupo = 'semana';
+      else grupo = 'depois';
+      return { item: item, grupo: grupo, quando: quando };
+    });
+
+    /* Sempre da data mais antiga para a mais nova, em todos os grupos.
+       Nos atrasados isso põe em cima o que está esperando há mais tempo;
+       nos futuros, o que vence primeiro. Uma regra só, fácil de explicar
+       e de prever. Sem prazo vai por último, na ordem de cadastro. */
+    comChave.sort(function(a, b){
+      var ga = GRUPOS.findIndex(function(g){ return g[0] === a.grupo; });
+      var gb = GRUPOS.findIndex(function(g){ return g[0] === b.grupo; });
+      if (ga !== gb) return ga - gb;
+      if (a.quando === null && b.quando === null) return 0;
+      if (a.quando === null) return 1;
+      if (b.quando === null) return -1;
+      return a.quando - b.quando;
+    });
+
+    limpaTitulos(lista);
+
+    /* Monta fora da árvore e insere de uma vez: com 120 itens, mover um
+       a um dentro do documento custa uma reflow por movimento. */
+    var pedaco = document.createDocumentFragment();
+    var atual = null;
+    comChave.forEach(function(x){
+      if (x.grupo !== atual){
+        atual = x.grupo;
+        var rotulo = (GRUPOS.find(function(g){ return g[0] === atual; }) || ['', ''])[1];
+        var quantos = comChave.filter(function(y){ return y.grupo === atual; }).length;
+        var t = document.createElement('div');
+        t.className = 'mw-agenda-titulo';
+        t.setAttribute('data-grupo', atual);
+        t.innerHTML = '<strong></strong><span></span>';
+        t.querySelector('strong').textContent = rotulo;
+        t.querySelector('span').textContent = quantos;
+        pedaco.appendChild(t);
+      }
+      pedaco.appendChild(x.item);
+    });
+    lista.appendChild(pedaco);
+    escondeVazios(lista);
+  }
+
+  function limpaTitulos(lista){
+    lista.querySelectorAll('.mw-agenda-titulo').forEach(function(t){ t.remove(); });
+  }
+
+  /* Um filtro pode esconder todos os itens de um grupo. O título
+     sozinho, sem nada embaixo, anuncia uma seção que não existe. */
+  function escondeVazios(lista){
+    var titulos = [].slice.call(lista.querySelectorAll('.mw-agenda-titulo'));
+    titulos.forEach(function(t){
+      var visiveis = 0, n = t.nextElementSibling;
+      while (n && !n.classList.contains('mw-agenda-titulo')){
+        if (!n.hidden) visiveis++;
+        n = n.nextElementSibling;
+      }
+      t.hidden = visiveis === 0;
+      var contador = t.querySelector('span');
+      if (contador) contador.textContent = visiveis;
+    });
+  }
+
+  /* O bloco de filtros é outro; ele esconde itens por conta própria.
+     Depois de qualquer clique nele, os títulos precisam recontar. */
+  document.addEventListener('click', function(ev){
+    if (!ev.target.closest) return;
+    if (ev.target.closest('[data-filtros="activities"]')){
+      setTimeout(function(){
+        var lista = document.getElementById('activitiesList');
+        if (lista) escondeVazios(lista);
+      }, 20);
+      return;
+    }
+    var alvo = ev.target.closest('[data-view="activities"],[data-ir="activities"],[data-go="activities"]');
+    if (alvo) setTimeout(function(){ try { organiza(); } catch(e){} }, 60);
+  });
+
+  function inicia(){ organiza(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', inicia);
+  else inicia();
+
+  var anterior = window.mwDashRefresh;
+  window.mwDashRefresh = function(d){
+    if (typeof anterior === 'function') { try { anterior(d); } catch(e){} }
+    try { organiza(); } catch(e){}
+  };
+
+  var mostrarAntes = window.showView;
+  if (typeof mostrarAntes === 'function') {
+    window.showView = function(v){
+      mostrarAntes(v);
+      if (v === 'activities') setTimeout(function(){ try { organiza(); } catch(e){} }, 30);
+    };
+  }
+})();
+</script>
+
 <style id="mw-previa-carimbo">
 #mwPreviaCarimbo{
   position: fixed; top: 8px; left: 50%; transform: translateX(-50%);
@@ -29840,7 +30026,7 @@ html body #app .mw-nota-ver:hover{ filter: brightness(1.15); }
   /* O carimbo entra depois do preloader para não brigar com a abertura
      da marca, e sai sozinho. window.MW_PREVIA fica disponível para
      conferir a versão pelo console sem depender de ver o carimbo. */
-  window.MW_PREVIA = 'v75 · auditoria do conjunto';
+  window.MW_PREVIA = 'v76 · Atividades em ordem de prazo';
   function mostra(){
     if (document.getElementById('mwPreviaCarimbo')) return;
     var el = document.createElement('div');
