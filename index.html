@@ -4664,7 +4664,6 @@ body.light .mw-faceid-gate-card p{color:#526988}
         <div class="mw-conta-linha"><div class="mw-conta-campo"><label for="mwContaSenha">Senha</label><input id="mwContaSenha" type="password" value="••••••••" readonly autocomplete="off"></div><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwContaTrocarSenha">Alterar</button></div>
         <div class="mw-conta-linha"><div class="mw-conta-campo"><label>Telefone</label><div class="mw-tel-exibicao" id="mwContaTelefoneExibicao"><span class="mw-tel-vazio" id="mwContaTelefoneVazio">Não cadastrado</span><span class="mw-tel-valor" id="mwContaTelefoneValor" hidden></span><span class="mw-tel-badge" id="mwContaTelefoneBadge" hidden>Aguardando confirmação</span></div></div><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwContaTrocarTelefone">Adicionar</button></div>
         <p class="form-error" id="mwContaStatus" hidden></p></div>
-      <div class="ds-grupo" data-mw-grupo><h4 class="ds-grupo-titulo">Sessão</h4><p class="ds-grupo-apoio">Sua conta fica guardada neste navegador. Ao sair, será preciso entrar de novo com seu usuário e senha.</p><div class="ds-dialogo-acoes"><button class="ds-btn ds-btn-fantasma ds-btn-p mw-logout-btn" id="logout">Sair</button><button class="ds-btn ds-btn-fantasma ds-btn-p" id="mwSairOutrosAparelhos">Sair de todos os outros aparelhos</button></div><p class="form-error" id="mwSairOutrosStatus" hidden></p></div>
       <h3 class="ds-categoria" data-mw-categoria>Aparência</h3>
       <div class="ds-grupo" data-mw-grupo id="legacyThemeGroup"><h4 class="ds-grupo-titulo">Tema</h4><p class="ds-grupo-apoio">Escolha entre escuro e claro — o mesmo alternador do topo, aqui também.</p><div class="ds-abas" role="group" aria-label="Tema do aplicativo"><button type="button" class="ds-aba theme-btn" id="darkModeBtn" aria-pressed="true">Modo Escuro</button><button type="button" class="ds-aba theme-btn" id="lightModeBtn" aria-pressed="false">Modo Claro</button></div></div>
       <div class="ds-grupo" data-mw-grupo id="mwCorDestaqueGrupo"><h4 class="ds-grupo-titulo">Cor de destaque</h4><p class="ds-grupo-apoio">Muda o realce do app inteiro: botão ativo da navegação, links, chips e a marca. O fundo e a leitura não mudam.</p>
@@ -4729,7 +4728,9 @@ body.light .mw-faceid-gate-card p{color:#526988}
 
            Quem for mexer aqui depois: o critério de saída é a validação
            nos seis ambientes, não uma data. -->
-      <div class="ds-grupo" data-mw-grupo><h4 class="ds-grupo-titulo">Diagnóstico deste aparelho</h4>
+      <details class="ds-grupo mw-diag" data-mw-grupo>
+        <summary class="ds-grupo-titulo">Diagnóstico avançado</summary>
+        <p class="ds-grupo-apoio">Ferramenta de manutenção, não recurso do app: mede o que <em>este</em> navegador realmente suporta. Abra só se algo parecer errado e alguém pedir o relatório.</p>
         <p>Roda uma verificação do que este navegador realmente suporta e mostra o resultado. Serve para quando algo parecer errado: o relatório diz o que falhou, em vez de a gente ficar adivinhando.</p>
         <p class="mw-diag-resumo" id="mwDiagResumo">Nada verificado ainda.</p>
         <div class="mw-diag-lista" id="mwDiagLista"></div>
@@ -4738,7 +4739,9 @@ body.light .mw-faceid-gate-card p{color:#526988}
           <button class="ds-btn ds-btn-fantasma ds-btn-p" id="mwDiagCopiar">Copiar relatório</button>
         </div>
         <textarea id="mwDiagBruto" readonly aria-label="Relatório do diagnóstico em texto" placeholder="O relatório aparece aqui depois de verificar."></textarea>
-      </div>
+      </details>
+      <h3 class="ds-categoria" data-mw-categoria>Sessão</h3>
+      <div class="ds-grupo" data-mw-grupo><h4 class="ds-grupo-titulo">Sair desta conta</h4><p class="ds-grupo-apoio">Sua conta fica guardada neste navegador. Ao sair, será preciso entrar de novo com seu usuário e senha.</p><div class="ds-dialogo-acoes"><button class="ds-btn ds-btn-fantasma ds-btn-p mw-logout-btn" id="logout">Sair</button><button class="ds-btn ds-btn-fantasma ds-btn-p" id="mwSairOutrosAparelhos">Sair de todos os outros aparelhos</button></div><p class="form-error" id="mwSairOutrosStatus" hidden></p></div>
     </section></section>
 
     <section class="view" id="view-admin">

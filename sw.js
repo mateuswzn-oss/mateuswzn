@@ -1,3 +1,35 @@
+/* v104 (BETA — §14 e §15: Configurações lida de cima para baixo)
+
+   "SAIR" ERA A SEGUNDA COISA DA TELA
+   Ele morava dentro de Conta, no alto. Numa tela de ajustes o item
+   destrutivo no topo é um convite ao clique errado: a mão chega nele
+   antes de a leitura começar. Passa a ser a ÚLTIMA categoria, depois de
+   Aplicativo — medido, fica nos últimos 110 px de uma tela de 4.105.
+
+   O DIAGNÓSTICO SAI DA UX NORMAL, SEM SER APAGADO
+   Ele é ferramenta de manutenção, não recurso do produto, e ocupava um
+   grupo inteiro no fim de Configurações. Vira uma divulgação recolhida —
+   uma linha, "Diagnóstico avançado", que abre quando alguém precisa.
+
+   Não apaguei porque o critério de saída combinado é a validação em
+   Safari, Chrome, iOS, Android, tablet e desktop, e ela ainda não
+   aconteceu. Apagar agora seria decidir por antecipação; esconder é o
+   que o §15 pede e o que a decisão anterior permite.
+
+   DUAS COISAS QUE SÓ A CAPTURA MOSTROU
+   1. "SESSÃO" (categoria) seguido de "Sessão" (grupo) — o mesmo nome
+      duas vezes, criado pela própria mudança. O grupo passou a se chamar
+      "Sair desta conta", que diz o que ele faz.
+   2. Duas divulgações empilhadas com desenhos de seta DIFERENTES: "Por
+      que preciso fazer isso?" com o triângulo nativo do navegador, e a
+      nova com a minha. Mesma ação, dois glifos, e o nativo muda de forma
+      em cada navegador. A seta virou peça do sistema: uma regra em
+      `.ds details > summary` serve as duas, e as próximas.
+
+   Medido: etapas 3 (acessibilidade), 7 (contraste) e 12 (teclado)
+   verdes, além da 16 na área "settings".
+*/
+
 /* v103 (BETA — os defeitos que a CAPTURA mostrou, e a régua nova para
    eles não voltarem)
 
@@ -2232,7 +2264,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v103-beta';
+const CACHE_NAME = 'mw-shell-v104-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

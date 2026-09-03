@@ -847,6 +847,51 @@ body.light .ds{
 }
 .ds .ds-grupo-corpo{ display: flex; flex-direction: column; gap: var(--mw-e-3); }
 
+/* ---- GRUPO QUE ABRE E FECHA -------------------------------------------------
+   Um <details> com a pele de grupo. Serve ao §15: o Diagnóstico é
+   ferramenta de manutenção, não recurso do produto, e some da leitura
+   normal sem ser apagado — o critério de saída combinado é a validação em
+   Safari, Chrome, iOS, Android, tablet e desktop, que ainda não
+   aconteceu. Apagar agora seria decidir por antecipação.
+
+   O <summary> é o único controle: recebe o alvo de toque inteiro e a
+   seta, e some a seta nativa (que em cada navegador tem um desenho
+   diferente e nenhum deles é o do sistema). */
+/* A SETA é do sistema, e vale para TODA divulgação dentro dele — não só
+   para o grupo. Na captura de Configurações havia duas divulgações
+   empilhadas ("Por que preciso fazer isso?" e "Diagnóstico avançado")
+   com desenhos de seta diferentes: uma com o triângulo nativo do
+   navegador, outra com o meu. Mesma ação, dois glifos, e nenhum dos dois
+   escolhido — o nativo muda de forma em cada navegador. */
+.ds details > summary{ cursor: pointer; list-style: none; }
+.ds details > summary::-webkit-details-marker{ display: none; }
+.ds details > summary::before{
+  content: ''; display: inline-block; vertical-align: middle;
+  width: 7px; height: 7px; margin-right: var(--mw-e-2);
+  border-right: 1.6px solid currentColor; border-bottom: 1.6px solid currentColor;
+  transform: translateY(-1px) rotate(-45deg);
+  transition: transform var(--mw-d-rapida) var(--mw-curva);
+}
+.ds details[open] > summary::before{ transform: translateY(-2px) rotate(45deg); }
+.ds details > summary:focus-visible{
+  outline: 2px solid var(--mw-ac); outline-offset: 3px; border-radius: var(--mw-r-1);
+}
+
+.ds details.ds-grupo{ gap: 0; }
+.ds details.ds-grupo > summary{
+  display: flex; align-items: center;
+  min-height: var(--mw-alvo);
+  color: var(--mw-txt-1);
+}
+.ds details.ds-grupo > summary::before{ flex: 0 0 auto; margin-left: 2px; transform: rotate(-45deg); }
+.ds details.ds-grupo[open] > summary::before{ transform: rotate(45deg); }
+/* O recheio só ganha espaço quando está aberto: fechado, o grupo é uma
+   linha só, que é o ponto de escondê-lo. */
+.ds details.ds-grupo[open] > :not(summary){ margin-top: var(--mw-e-3); }
+@media (prefers-reduced-motion: reduce){
+  .ds details.ds-grupo > summary::before{ transition: none; }
+}
+
 /* Linha de ajuste: rótulo à esquerda, controle à direita, e quebra para
    duas linhas quando o cartão fica estreito — sem media query, porque a
    largura que importa é a do CARTÃO e não a da janela. */
