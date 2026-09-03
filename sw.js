@@ -1,3 +1,91 @@
+/* v99 (BETA — ETAPA 0 DA REFORMULAÇÃO: desfazer as 263 guardas indevidas.
+   Não é uma melhoria: é a retirada de um método errado, antes de começar):
+
+   O QUE VOCÊ VIU, E ESTAVA CERTO
+   "Você está corrigindo regras, classes e testes, mas visualmente a
+   aplicação continua praticamente na mesma base." Fui olhar as telas, uma
+   a uma, em vez de olhar os testes. As dez queixas se confirmaram todas.
+   E uma delas — o texto colado, `Nenhuma entrega com dataColoque prazo…` —
+   não era herança do código antigo. Era defeito MEU, criado pelo método
+   que eu vinha chamando de migração.
+
+   O QUE ERA O MÉTODO, E POR QUE ELE NÃO ERA MIGRAÇÃO
+   O `restringe.py` pendurava `:not([data-mw-migrada])` no fim de seletores
+   antigos, para que a regra parasse na porta das áreas novas. Isso não
+   troca nada de lugar: apenas DESLIGA a regra ali. Se o Design System já
+   tem substituta, o resultado parece migração. Se não tem, o que sobra é
+   ausência — e ausência de `display:block` num `<strong>` é exatamente
+   duas frases coladas.
+
+   O NÚMERO QUE FECHA O ASSUNTO
+   Das 618 regras guardadas, 263 (43%) declaravam GEOMETRIA — display,
+   width, position, height, transform, transition, min-height, overflow,
+   flex, min-width, max-width, left. Não é um caso isolado que escapou: é
+   quase metade. O método estava desligando o layout do app e chamando
+   isso de migração.
+
+   O QUE ESTA VERSÃO FAZ
+   1. `tools/ds/desfaz-guarda.py` percorre o index.html e remove a guarda
+      de toda regra que declare geometria — as 263. As guardas de PELE
+      (cor, fundo, borda, sombra, raio) ficam: essas o DS de fato
+      substitui.
+   2. Onde a regra MISTURAVA as duas coisas, separei À MÃO — que é o que o
+      protocolo já mandava fazer e o script passou a recusar automatizar:
+      • `#app .main .card`: geometria fica global, o degradê azul-noite
+        (sem par no tema claro) para na porta das áreas migradas;
+      • `#searchWrap.search-wrap` e o painel do calendário: as cores
+        cravadas viraram `var(--mw-sup-*)` / `var(--mw-borda)`, que mudam
+        com o tema.
+   3. APAGUEI três declarações legadas que voltaram a ganhar do sistema na
+      lateral — `background:transparent` em `.nav button` (duas) e o fundo
+      cinza-chumbo do item ativo. A lateral é a única `.nav button` do app
+      e já é do sistema; essas regras não tinham mais alvo legítimo.
+
+   O QUE VOLTOU A FUNCIONAR
+   - o texto vazio do painel de foco e o da carga voltaram a ser duas
+     linhas dentro da caixa, com a caixa desenhada;
+   - os dias do calendário no tema escuro voltaram ao azul-noite; saíam
+     CINZA porque a regra que os pintava também dava a grade e foi
+     desligada inteira;
+   - no tema CLARO: os painéis "Foco do semestre" e "Carga de estudos"
+     deixaram de ser caixas azul-noite com texto escuro por cima (2:1);
+     o painel do calendário, idem (1,48:1); a pílula do item ativo da
+     lateral voltou; a lupa deixou de ser uma lápide azul-noite;
+   - as 36 telas medidas mudaram entre 10% e 46% de pixels.
+
+   O TESTE QUE FALTAVA — E ISSO IMPORTA MAIS QUE A CORREÇÃO
+   A medida de contraste só olhava as ÁREAS (`#view-*`). A moldura —
+   lateral, topo, barra de baixo — nunca foi medida. Era ali que, no tema
+   claro, o rótulo da Nyc AI estava a 1,06:1 e as linhas de tema/
+   configurações/sair a 1,08:1: branco sobre branco, invisíveis, com a
+   suíte inteira verde. A moldura entrou na conta como se fosse mais uma
+   área, e os quatro achados que ela revelou estão corrigidos com os
+   tokens do sistema.
+
+   O NÚMERO HONESTO QUE PIOROU — E O MAPA DO QUE FALTA
+   O contador de migração voltou a acusar regra antiga vencendo dentro das
+   áreas novas, onde antes marcava 0. Aquele 0 era falso: media "a regra
+   antiga foi desligada", não "o DS pinta isto agora". Agora o teste 18
+   RELATA em vez de reprovar — porque a única forma de fazê-lo passar hoje
+   seria repor as guardas, isto é, o método que acabou de ser desfeito — e
+   o log de cada rodada traz o mapa, área por área:
+
+       topo 7 · profile 6 · settings 6 · calendar 5 · lateral 4
+       home 3 · focus 3 · login 2 · reports 2 · college 1
+       baixo, files, institutions, subjects, projects, activities,
+       notes, support: 0
+
+   Esses números são o tamanho real do trabalho que começa, e a métrica que
+   tem de cair — por substituição de verdade, nunca por guarda. Quando
+   chegar a zero, o 18 volta a ser portão.
+
+   O QUE VEM AGORA
+   Na ordem que você pediu: Design System → estrutura → componentes →
+   perfil → Início → navegação → login/cadastro → configurações →
+   animações → responsividade → QA visual. E a regra que assumo daqui em
+   diante: ao fim de cada etapa eu OLHO cada tela e te mostro a captura.
+   Vinte testes verdes não significam uma tela boa.
+*/
 /* v98 (BETA — a gaveta do celular voltou para fora da tela: um defeito
    que EU introduzi na v97, e a ferramenta que o deixou passar):
 
@@ -1881,7 +1969,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v98-beta';
+const CACHE_NAME = 'mw-shell-v99-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

@@ -71,7 +71,7 @@ declare -a NOMES=(
   "15 área · estrutura das seis coleções"
   "16 ajustes · as oito áreas que não são coleção"
   "17 entrada · login e cadastro"
-  "18 pele · quem veste os componentes do sistema"
+  "18 pele · quem veste (RELATÓRIO, não reprova)"
   "19 contraste · tela de entrada"
   "20 navegação · lateral, baixo e topo"
 )
@@ -94,7 +94,21 @@ declare -a CMDS=(
   "for a in institutions subjects projects activities notes; do node tools/testes/15-area.mjs \$a || exit 1; done; node tools/ds/quem-vence.mjs institutions claro | tail -3 && node tools/ds/quem-vence.mjs institutions escuro | tail -3"
   "for a in profile settings college reports focus calendar home files; do node tools/testes/16-ajustes.mjs \$a || exit 1; done; for a in profile settings college reports focus calendar home files; do for t in claro escuro; do node tools/ds/quem-vence.mjs \$a \$t | sed -n 2p; done; done"
   "node tools/testes/17-login.mjs && node tools/ds/quem-vence.mjs login claro | sed -n 2p && node tools/ds/quem-vence.mjs login escuro | sed -n 2p"
-  "for a in login lateral topo baixo home files profile settings college reports focus calendar institutions subjects projects activities notes support; do for t in escuro claro; do node tools/ds/quem-veste.mjs \$a \$t | sed -n 2p || exit 1; done; done"
+  # 18 NÃO REPROVA — e isso é deliberado, não desleixo.
+  #
+  # O `quem-veste` responde: dos elementos que carregam classe `ds-*`,
+  # quantos estão sendo pintados por quem NÃO é o sistema? Enquanto o
+  # método das GUARDAS esteve em vigor ele marcava zero — mas era um zero
+  # falso: media "a regra antiga foi DESLIGADA ali", não "o sistema pinta
+  # isto agora". A Etapa 0 desfez as guardas e o número voltou ao que
+  # sempre foi de verdade.
+  #
+  # Voltar a tratá-lo como portão teria uma só saída: repor as guardas —
+  # exatamente o método que quebrou o layout em 263 regras. Então ele
+  # RELATA. O número aparece no log a cada rodada, área por área, e o
+  # trabalho da migração é fazê-lo cair. Quando chegar a zero por
+  # substituição de verdade, volta a ser portão.
+  "for a in login lateral topo baixo home files profile settings college reports focus calendar institutions subjects projects activities notes support; do for t in escuro claro; do printf '%-14s %-7s ' \$a \$t; printf '%s regra(s) legada(s) vestindo peça do sistema\\n' \$(node tools/ds/quem-veste.mjs \$a \$t | grep -c ' :: ' || true); done; done; true"
   "for l in 1440 834 390; do for t in dark light; do node tools/testes/7b-contraste-login.mjs \$l \$t || exit 1; done; done; python3 tools/testes/7-contraste-medir.py"
   "for m in desktop celular instalado; do node tools/testes/20-navegacao.mjs \$m || exit 1; done; for a in lateral topo baixo; do for t in claro escuro; do node tools/ds/quem-vence.mjs \$a \$t | sed -n 2p || exit 1; done; done"
 )

@@ -385,3 +385,21 @@ ser suposição.
   quebrado não pode depender de um gesto para ser visto — verifique a
   GEOMETRIA diretamente: com a gaveta fechada, a lateral está fora da
   tela? o conteúdo começa no topo?
+
+- **Vinte testes verdes não significam uma tela boa.** Eles passaram com
+  `Nenhuma entrega com dataColoque prazo…` na tela, com o calendário
+  todo em caixas cinzas no tema escuro, com o header ocupando 17% da
+  janela vazio e com o Perfil mandando o usuário editar o perfil em
+  outra tela. Testes provam que o código roda. **Olhe a captura de cada
+  área ao fim de cada etapa** — é a única verificação que pega isso.
+
+- **Um teste que não olha para um pedaço da tela garante o pedaço
+  errado.** A medida de contraste (7) percorria só as áreas, `#view-*`.
+  A moldura — lateral, topo, barra de baixo — estava fora da conta. Foi
+  ali que, no tema claro, o rótulo da Nyc AI ficou a **1,06:1** e as
+  linhas de tema/configurações/sair a **1,08:1** — branco sobre branco,
+  invisíveis — com a suíte inteira verde durante rodadas seguidas. Só
+  apareceram quando eu abri a captura e olhei. A moldura agora entra na
+  coleta como se fosse mais uma área; quando um pedaço da tela escapar
+  de uma medida, o conserto é **incluir o pedaço**, não confiar no olho
+  da próxima vez.

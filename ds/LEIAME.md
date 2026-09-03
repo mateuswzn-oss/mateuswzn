@@ -260,6 +260,48 @@ O mesmo vale para o acento em TEXTO: `--mw-ac` é a cor de preenchimento,
 `--mw-ac-txt` é a de texto, e ela é mais escura no tema claro de
 propósito. Um link pintado com `--mw-ac` sobre o cartão claro dá 2,72:1.
 
+## O método de RESTRINGIR foi abandonado — e por quê
+
+Durante oito rodadas o protocolo daqui mandou **restringir a regra
+legada**: acrescentar `:not([data-mw-migrada]...)` ao seletor antigo para
+ele parar na porta da área migrada. O contador chegou a zero em dezoito
+superfícies. E a tela continuou a mesma.
+
+Duas coisas ficaram claras quando alguém finalmente OLHOU as telas:
+
+**1. Restringir não constrói nada.** Ele desliga. O que sobra é a mesma
+estrutura de sempre, com a pintura vindo de outro lugar. "Zero regra
+legada vencendo" mede a ausência do velho, não a presença do novo — e as
+duas coisas não são a mesma.
+
+**2. Restringir quebra em silêncio.** Uma regra CSS é indivisível.
+Quando ela mistura aparência e geometria — e regra antiga quase sempre
+mistura —, desligá-la pela cor leva o `display`, o `position` e o
+`transform` junto. Medido: **263 das 618 regras restringidas (43%)
+declaravam geometria**. Duas já tinham virado defeito visível na tela
+publicada:
+
+| o que quebrou | a regra que foi desligada |
+|---|---|
+| a lateral cobrindo a tela no celular | `#app .sidebar{position:fixed; transform:translate3d(-105%,0,0)}` |
+| `Nenhuma entrega com dataColoque prazo…` | `.mw-p-vazio strong{display:block}` |
+| os dias do calendário em caixas cinzas | a regra de superfície do `.calendar-day` |
+
+As 263 foram revertidas pelo `tools/ds/desfaz-guarda.py`. Os contadores
+de migração voltaram a ser diferentes de zero, e isso é a verdade: as
+áreas ainda são pintadas pelo legado.
+
+**O método que substitui:** para cada tela, **apagar** as folhas que só
+servem a ela e **escrever o componente novo**. Sem guarda, sem
+`!important` novo, sem camada. Se a folha serve a mais de uma tela, ela
+espera a última delas ser refeita. É mais lento e é a única coisa que
+produz mudança visível.
+
+O `restringe.py` continua no repositório porque o relatório dele ainda é
+útil para descobrir QUEM pinta o quê — mas ele agora recusa qualquer
+regra que declare geometria, e não deve ser usado para "concluir" uma
+migração.
+
 ## Folha não é a unidade; regra é
 
 O `quem-vence.mjs` separa o que encontra em três baldes, e um deles —

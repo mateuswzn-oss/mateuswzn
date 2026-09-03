@@ -77,7 +77,12 @@
   --mw-p-tinta-500:#4a5878;
 
   --mw-p-gelo-100:#e9eefb;
-  --mw-p-gelo-300:#a6b2ce;
+  /* Clareado de #a6b2ce para #b3bed8: o valor antigo dava EXATAMENTE
+     4,50:1 sobre o painel violeta da tela de entrada — o piso do AA, sem
+     folga nenhuma. Um token de texto secundário que empata com o mínimo
+     reprova em qualquer superfície um passo mais clara, e foi o que
+     aconteceu. O novo valor deixa margem sem mudar o tom. */
+  --mw-p-gelo-300:#b3bed8;
   /* Medido no app, não na galeria: sobre o vidro que cobre o gradiente da
      canvas, #7b88a6 dava 4,25:1 — abaixo do mínimo. O fundo da galeria é
      mais escuro que o do app, e por isso o defeito só apareceu quando o

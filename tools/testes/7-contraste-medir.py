@@ -107,7 +107,7 @@ for caminho in sorted(glob.glob(os.path.join(SAIDA, 'contraste-*.json'))):
                     falhas.append((bloco['v'], c['t'], round(r,2), round(c['px']), m, fg, bg))
         total += len(falhas)
         print(f"=== {rotulo}: {len(falhas)} falha(s) ===")
-        for f in falhas[:8]:
+        for f in falhas[:14]:
             print(f"    {f[0]:<13} {f[1][:30]:<32} {f[2]:>5}:1 (mín {f[4]}) txt{f[5]} / bg{f[6]}")
 
 if not achou_arquivo:

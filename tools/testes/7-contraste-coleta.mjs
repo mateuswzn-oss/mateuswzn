@@ -103,6 +103,46 @@ for (const v of AREAS) {
   }
 }
 
+/* ---- A MOLDURA ----------------------------------------------------------
+   Até aqui a medida cobria só as áreas (`#view-*`). A lateral, o topo e a
+   barra de baixo ficavam de fora — e foi ali que, no tema claro, sete
+   textos estavam saindo brancos sobre branco (1,02:1 no rótulo da Nyc AI)
+   sem nenhum teste reclamar. Vinte testes verdes não significam uma tela
+   boa; um teste que não olha para um pedaço da tela é um teste que garante
+   o pedaço errado. A moldura entra na conta como se fosse mais uma área. */
+await vaiPara(p, AREAS[0]);
+await p.waitForTimeout(340);
+const daMoldura = await p.evaluate(() => {
+  const out = [];
+  for (const raiz of document.querySelectorAll('.sidebar, .topbar, #mwBottomNav')) {
+    raiz.querySelectorAll('p,span,small,label,li,b,strong,em,a,h1,h2,h3,h4,button').forEach(e => {
+      if (e.children.length) return;
+      const t = (e.textContent || '').trim(); if (t.length < 3) return;
+      const cs = getComputedStyle(e), r = e.getBoundingClientRect();
+      if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity < .5) return;
+      if (r.width < 10 || r.height < 6 || r.top < 0 || r.bottom > window.innerHeight || r.left < 0 || r.right > window.innerWidth) return;
+      let pintado = false, n = e;
+      for (let i = 0; i < 3 && n; i++, n = n.parentElement) {
+        const c = getComputedStyle(n);
+        const a = (c.backgroundColor.match(/[\d.]+/g) || [0,0,0,1]);
+        if (c.backgroundImage !== 'none' || (+(a[3] ?? 1)) > 0.5) { pintado = true; break; }
+      }
+      out.push({ t: t.slice(0,34), cor: cs.color, px: parseFloat(cs.fontSize), peso: +cs.fontWeight, pintado,
+                 box: [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)] });
+    });
+  }
+  return out;
+});
+if (daMoldura.length) {
+  for (const [rot, fase] of [['a', 0], ['b', 1]]) {
+    await congelaDecoracao(p, fase);
+    await p.waitForTimeout(180);
+    const png = path.join(saida, `contraste-${larg}-${tema}-moldura-${rot}.png`);
+    await p.screenshot({ path: png });
+    colhido.push({ v: 'moldura', png, cands: daMoldura });
+  }
+}
+
 fs.writeFileSync(path.join(saida, `contraste-${larg}-${tema}.json`), JSON.stringify({ larg, tema, erros, saida: colhido }));
 console.log(`coletado ${larg}px ${tema}: ${colhido.length} áreas, ${colhido.reduce((a,s) => a + s.cands.length, 0)} textos | erros JS: ${erros.length ? erros.join(' | ') : 'nenhum'}`);
 await b.close();
