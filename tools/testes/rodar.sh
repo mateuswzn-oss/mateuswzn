@@ -76,6 +76,7 @@ declare -a NOMES=(
   "20 navegação · lateral, baixo e topo"
   "21 acento · a matriz tema × cor (§45)"
   "22 acento · alcança as peças de destaque"
+  "23 toque · o dedo chega em quem está na tela"
 )
 declare -a CMDS=(
   "node tools/testes/1-regressao.mjs"
@@ -115,6 +116,7 @@ declare -a CMDS=(
   "for m in desktop celular instalado; do node tools/testes/20-navegacao.mjs \$m || exit 1; done; for a in lateral topo baixo; do for t in claro escuro; do node tools/ds/quem-vence.mjs \$a \$t | sed -n 2p || exit 1; done; done"
   "node tools/testes/21-acento.mjs"
   "node tools/testes/22-acento-alcanca.mjs"
+  "node tools/testes/23-toque-chega.mjs"
 )
 
 SO_ESTES=("$@")

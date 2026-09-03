@@ -1,3 +1,43 @@
+/* v105 (BETA — A TELA BORRADA NO IPHONE: dois defeitos, um escondendo o
+   outro. Nenhum dos dois veio desta reformulação; são de cf0b42a e
+   e226e2e, rodadas anteriores.)
+
+   O QUE O MATEUS VIU
+   Abriu o menu no iPhone: a tela inteira borrada, nada legível. E as
+   vinte e uma etapas da suíte estavam verdes.
+
+   1) EMPILHAMENTO — O VÉU ESTAVA POR CIMA DA GAVETA
+   `#mwSidebarScrim` era filho de <body> com z-index:110. A gaveta é
+   filha de #app, que tem `isolation:isolate`, com z-index:120. Os dois
+   números pareciam certos e NÃO ERAM COMPARÁVEIS: contextos de
+   empilhamento diferentes. O #app inteiro — gaveta junto — pintava por
+   baixo do véu. Daí o `backdrop-filter` borrar a própria gaveta, e
+   `elementFromPoint` no meio dela devolver o véu: tocar em "Disciplinas"
+   FECHAVA O MENU em vez de abrir a área.
+   Conserto: o véu passa a morar dentro do #app. Os z-index viram
+   comparáveis e a regra CSS que a rodada anterior deu por "quebrada" e
+   contornou por JS volta a bater.
+
+   2) O QUE O PRIMEIRO ESCONDIA — A GAVETA NÃO FECHAVA
+   Consertado o empilhamento, o menu ficava aberto por cima da área
+   recém escolhida. O gancho de fechar usava
+   `#app .nav button:not([data-mw-migrada])...` — guarda da época em que
+   a lateral ainda não tinha migrado para o Design System. Depois que ela
+   migrou, o `:not(...)` passou a excluir TODOS os itens, e nenhum
+   recebeu o gancho. Ninguém notou porque o véu fechava a gaveta por
+   acidente. Agora é delegação na própria lateral, sem guarda.
+
+   TESTE 23 — O TOQUE CHEGA EM QUEM ESTÁ NA TELA
+   Por que 21 testes estavam verdes com a tela inutilizável: todos
+   acionam controles com `elemento.click()`, que dispara o manipulador
+   direto no nó e não passa por teste de acerto. Perguntam "o gancho
+   funciona?", nunca "o dedo alcança?". O 23 mede o alcance —
+   `elementFromPoint` no centro de cada controle tem que devolver ele
+   mesmo — e fecha o ciclo com um toque POR COORDENADA. Conferi que ele
+   pega: repondo o defeito, acusa os 12 itens do menu devolvendo
+   `mwSidebarScrim`.
+*/
+
 /* v104 (BETA — §14 e §15: Configurações lida de cima para baixo)
 
    "SAIR" ERA A SEGUNDA COISA DA TELA
@@ -2264,7 +2304,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v104-beta';
+const CACHE_NAME = 'mw-shell-v105-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
