@@ -698,11 +698,11 @@ body.light .mateus-ai-form input{background:rgba(0,0,0,.035);color:#17191b;borde
 #app .search-icon:before{content:"";width:17px;height:17px;background:currentColor;display:block;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='10.8' cy='10.8' r='6.5' fill='none' stroke='black' stroke-width='1.9'/%3E%3Cpath d='m15.6 15.6 4.3 4.3' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='10.8' cy='10.8' r='6.5' fill='none' stroke='black' stroke-width='1.9'/%3E%3Cpath d='m15.6 15.6 4.3 4.3' fill='none' stroke='black' stroke-width='1.9'/%3E%3C/svg%3E") center/contain no-repeat}
 #app .search-wrap input{padding-left:43px!important}#app .icon-btn{width:40px!important;height:40px!important;border-radius:12px!important;display:grid!important;place-items:center!important;font-size:0!important;transition:.2s ease!important}
 #app .icon-btn:hover{transform:translateY(-1px)!important}
-#app #notificationBtn:before,#app #themeToggle:before{content:"";width:18px;height:18px;background:currentColor;display:block}
-#app #notificationBtn:before{-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M18 9a6 6 0 0 0-12 0c0 7-3 7-3 8h18c0-1-3-1-3-8M10 21h4' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M18 9a6 6 0 0 0-12 0c0 7-3 7-3 8h18c0-1-3-1-3-8M10 21h4' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}
-#app #themeToggle:before{-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5 8.5 8.5 0 1 0 20.5 15.5Z' fill='none' stroke='black' stroke-width='1.8'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5 8.5 8.5 0 1 0 20.5 15.5Z' fill='none' stroke='black' stroke-width='1.8'/%3E%3C/svg%3E") center/contain no-repeat}
+
+
+
 body.light #app .brand-mark,body.light #app .logo-mark,body.light #app .mw-logo{color:#15171a!important}
-#app #quickAdd:before{content:"+";font-size:23px;font-weight:300;line-height:1}
+
 #app .modal-card,#app .dialog-card{border-radius:22px!important;border:1px solid rgba(255,255,255,.09)!important;box-shadow:none !important;}
 #app .modal-card button,#app .dialog-card button{border-radius:11px!important}
 #app .profile-media,.profile-media,.avatar-editor,.photo-editor{border-radius:20px!important;border:1px solid rgba(255,255,255,.09)!important;background:rgba(255,255,255,.045)!important}
@@ -1403,7 +1403,6 @@ body.light #app .mw-switch{background:rgba(30,38,50,.20)!important;justify-conte
 #app .workspace-instagram{display:none!important}
 
 /* Top right: keep only search, AI and notifications */
-#app #themeToggle,#app #quickAdd,#app #profileBtn{display:none!important}
 #app .top-actions{gap:8px!important}
 #app .search-wrap{
   min-width:42px!important;width:42px!important;height:42px!important;overflow:hidden!important;
@@ -9393,7 +9392,6 @@ img,svg,video,canvas{max-width:100%}
   #app .topbar:has(.search-wrap.open) .mw-bell-wrap,
   #app .topbar:has(.search-wrap.open) #mateusAiBtn{display:none!important}
   #app .top-actions{width:auto!important;gap:6px!important}
-  #app #themeToggle,#app #quickAdd,#app #profileBtn{display:none!important}
   #app .search-wrap{width:44px!important;min-width:44px!important;height:44px!important;flex:0 0 44px!important;display:flex!important}
   #app .search-wrap.open{position:relative!important;width:min(300px,72vw)!important;min-width:0!important;height:44px!important;flex:0 1 auto!important}#app .icon-btn, #mateusAiBtn{width:44px!important;height:44px!important;min-width:44px!important;padding:0!important;border-radius:14px!important}#mateusAiBtn:not([data-mw-migrada]):not([data-mw-migrada] *){justify-content:center!important;font-size:0!important}
   #mateusAiBtn .eva-label{display:none!important}
@@ -9954,7 +9952,7 @@ html body #app .sidebar{
   position:relative !important;
 }
 #app .bell-btn:before,
-#app #notificationBtn:before{content:none !important; display:none !important}
+
 #app .bell-btn svg,
 #app #notificationBtn svg{
   display:block !important;
@@ -10820,7 +10818,6 @@ html body #app .search-icon svg{
   width: 18px !important;
   height: 18px !important;
 }
-html body #app #globalSearch{ display: none !important; }
 html body #app .search-wrap.open #globalSearch,
 html body #app .search-wrap:focus-within #globalSearch{
   display: block !important;
@@ -14703,7 +14700,8 @@ body.light #app .main::after{background:linear-gradient(to bottom,rgba(236,235,2
 
 <style id="mwv2-final-touch-ups">
 /* Ícones de modo claro/escuro — SVG, sem sobrepor um ao outro */
-#themeToggle.mwv2-theme-btn{display:grid!important;place-items:center!important}
+/* `#themeToggle` saiu daqui: a regra o forçava a aparecer com !important e vencia a decisão do sistema de tirar o tema da barra no telefone, onde ele mora em Configurações. Quem manda na visibilidade é o DS. */
+.mwv2-theme-btn{place-items:center}
 #themeToggle.mwv2-theme-btn svg{grid-area:1/1}
 #themeToggle .mwv2-icon-moon{opacity:0;transform:scale(.6) rotate(-40deg);transition:opacity .3s ease,transform .35s cubic-bezier(.34,1.4,.64,1)}
 #themeToggle .mwv2-icon-sun{opacity:1;transform:scale(1) rotate(0);transition:opacity .3s ease,transform .35s cubic-bezier(.34,1.4,.64,1)}
@@ -15310,7 +15308,6 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
   position:absolute;border-radius:50%;background:#bcdfff;opacity:0;
   animation:mwv2StarTwinkle 1.8s ease-in-out infinite;
 }
-#themeToggle.is-light .mwv2-star{display:none}
 #themeToggle .mwv2-star.s1{width:2.5px;height:2.5px;top:1px;right:-1px;animation-delay:.1s}
 #themeToggle .mwv2-star.s2{width:1.6px;height:1.6px;bottom:2px;right:1px;animation-delay:.7s}
 @keyframes mwv2StarTwinkle{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1)}}
@@ -23045,7 +23042,12 @@ html:root, html:root body.light{
 /* Texto DA cor sobre superfície: no escuro clareia, no claro escurece —
    senão um dos dois some no fundo. */
 html:root      { --id-ac-txt: color-mix(in srgb, var(--sem-1) 62%, #ffffff); }
-html:root body.light { --id-ac-txt: color-mix(in srgb, var(--sem-1) 86%, #000000); }
+/* 76%, não 86%: no tema claro o "Ver calendário" da faixa fica sobre a
+   superfície tingida de acento, e a 86% dava 4,48:1 — dois centésimos
+   abaixo do mínimo da WCAG. Calculei a razão das seis cores contra esse
+   fundo antes de escolher: a 76% a pior delas (índigo) vai a 4,96:1, e
+   nenhuma fica abaixo de 4,9. Escolhido pela conta, não pelo olho. */
+html:root body.light { --id-ac-txt: color-mix(in srgb, var(--sem-1) 76%, #000000); }
 
 /* ---- transição de tema e de cor (§5) ----
    Só o que muda de cor transita, e por 240ms. Transicionar `all` faria o
@@ -31641,7 +31643,7 @@ html body .mw-pular:focus{ transform: translateY(0); }
   /* O carimbo entra depois do preloader para não brigar com a abertura
      da marca, e sai sozinho. window.MW_PREVIA fica disponível para
      conferir a versão pelo console sem depender de ver o carimbo. */
-  window.MW_PREVIA = 'v105-beta';
+  window.MW_PREVIA = 'v106-beta';
   function mostra(){
     if (document.getElementById('mwPreviaCarimbo')) return;
     var el = document.createElement('div');

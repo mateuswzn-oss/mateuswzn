@@ -199,7 +199,16 @@ body.light .ds{
   --mw-txt-sobre-acento:#ffffff;
 
   --mw-ac:var(--id-ac, var(--mw-p-azul-600));
-  --mw-ac-txt:#3a49d8;
+  /* Segue o acento, como o tema escuro já seguia. Estava cravado em
+     #3a49d8 — um índigo fixo —, então no tema claro TODO texto de acento
+     saía azul, com a cor escolhida em verde, âmbar ou rosa. O §2 pede o
+     contrário: a cor escolhida vale no app inteiro.
+
+     Achado ao caçar um contraste de 4,48:1 no "Ver calendário": mexi
+     primeiro em `--id-ac-txt` e o pixel não mudou, o que denunciou o
+     literal aqui. O fallback guarda o valor antigo para quando não há
+     acento definido. */
+  --mw-ac-txt:var(--id-ac-txt, #3a49d8);
   --mw-ac-suave:var(--id-ac-suave, rgba(91,108,255,.10));
 
   /* Medido no pixel: com fundo translúcido (12-14%), o selo no tema claro
@@ -243,7 +252,16 @@ body.light .ds{
     --mw-txt-2:var(--mw-p-tinta-700);
     --mw-txt-3:var(--mw-p-tinta-500);
     --mw-ac:var(--id-ac, var(--mw-p-azul-600));
-    --mw-ac-txt:#3a49d8;
+    /* Segue o acento, como o tema escuro já seguia. Estava cravado em
+     #3a49d8 — um índigo fixo —, então no tema claro TODO texto de acento
+     saía azul, com a cor escolhida em verde, âmbar ou rosa. O §2 pede o
+     contrário: a cor escolhida vale no app inteiro.
+
+     Achado ao caçar um contraste de 4,48:1 no "Ver calendário": mexi
+     primeiro em `--id-ac-txt` e o pixel não mudou, o que denunciou o
+     literal aqui. O fallback guarda o valor antigo para quando não há
+     acento definido. */
+  --mw-ac-txt:var(--id-ac-txt, #3a49d8);
     --mw-ac-suave:var(--id-ac-suave, rgba(91,108,255,.10));
     --mw-ok:var(--mw-p-verde-700); --mw-ok-bg:#e2f7f0;  --mw-ok-bd:rgba(4,120,87,.26);
     --mw-alerta:var(--mw-p-ambar-800); --mw-alerta-bg:#fef3e2;  --mw-alerta-bd:rgba(146,64,14,.26);
@@ -1521,6 +1539,13 @@ body.light .ds{
        topo, ela é plana: não há o que refratar, e vidro sobre nada é ruído.
    ---------------------------------------------------------------------------- */
 .ds.ds-topo{
+  /* NÃO ENCOLHER. O <main> é um flex column; sem isto o cabeçalho é um
+     item com `flex-shrink:1` e, quando o conteúdo passa da altura da
+     tela, o navegador o ESPREME. Medido: 64px viravam 45px no desktop, e
+     era isso que fazia a barra do topo parecer quebrada — título colado
+     no alto, botões desalinhados, sem respiro. Altura declarada não
+     basta num container flex; é preciso dizer que ela não se negocia. */
+  flex: 0 0 auto;
   position: sticky; top: 0; z-index: 40;
   display: flex; align-items: center; flex-wrap: nowrap;
   gap: var(--mw-e-2);
@@ -1558,6 +1583,14 @@ body.light .ds{
   background: transparent; color: var(--mw-txt-2); cursor: pointer;
 }
 .ds .ds-topo-icone:hover{ background: var(--mw-sup-2); color: var(--mw-txt-1); }
+/* Todas as camadas do botão na MESMA célula. Um botão de ícone pode ter
+   mais de um filho — o de tema tem sol, brilho de lua e duas estrelas,
+   feitos para se sobrepor e trocar entre si. Sendo `display:grid`, sem
+   isto cada filho ganha a sua LINHA: o sol aparecia em cima e a lua
+   embaixo, transbordando a barra. Uma regra legada garantia isso por
+   `#themeToggle{display:grid!important}`; a garantia passa a ser do
+   sistema, para valer em qualquer botão de ícone e não só naquele id. */
+.ds .ds-topo-icone > *{ grid-area: 1 / 1; }
 /* Voltar: o app o revela (tirando o `hidden`) quando se está numa tela-folha
    — uma que se alcança de dentro de outra, e de onde a barra de baixo não
    traz de volta. Quando está visível, ele toma o lugar do menu. */
@@ -1591,6 +1624,31 @@ body.light .ds{
    a largura de que o título precisa. */
 .ds .ds-busca{ display: flex; align-items: center; }
 .ds .ds-busca-campo{ display: none; }
+
+/* No telefone a lupa ABRE o campo sobre a barra inteira. Isto faltava: o
+   `.ds-busca-campo{display:none}` acima descrevia o estado recolhido e
+   nunca houve o estado aberto, então tocar na lupa não fazia nada — a
+   busca era decorativa no celular. (No desktop o campo é permanente, ver
+   a media query de 901px adiante; lá não há o que abrir.)
+
+   `.open` é a classe que o app já usava antes desta reformulação; manter
+   o mesmo nome evita inventar um segundo vocabulário para o mesmo
+   estado. */
+@media (max-width: 900px){
+  .ds .ds-busca.open{
+    position: absolute; inset: 0; z-index: 2;
+    padding-inline: var(--mw-e-3);
+    background: var(--mw-sup-1);
+    gap: var(--mw-e-2);
+  }
+  .ds .ds-busca.open .ds-busca-campo{
+    display: block; flex: 1 1 auto; min-width: 0;
+    height: var(--mw-alvo); border: 0; background: none;
+    padding: 0; box-shadow: none; color: var(--mw-txt-1);
+    font-size: 16px;   /* 16px: abaixo disso o iOS dá zoom ao focar */
+  }
+  .ds .ds-busca.open .ds-busca-campo:focus{ outline: none; box-shadow: none; }
+}
 
 /* Nyc AI: identidade própria (§17). No desktop é uma pílula com o nome; no
    telefone, só a fagulha — mas continua sendo o acento da barra, e não mais
@@ -1632,7 +1690,12 @@ body.light .ds{
   .ds .ds-topo-ia-nome{ display: none; }
   /* O tema é uma preferência, não uma ação frequente: no telefone ele mora em
      Configurações, e sair daqui devolve a largura que o título precisava. */
-  .ds .ds-topo .mwv2-theme-btn{ display: none; }
+  /* `.ds.ds-topo`, não `.ds .ds-topo`: o cabeçalho É a raiz `.ds`, não
+     está dentro de uma. Com o espaço, a regra pedia um `.ds-topo`
+     descendente de um `.ds` — o que não existe — e nunca valeu: o
+     botão de tema continuava disputando a largura do título no
+     telefone. Foi o único seletor do sistema com esse vício. */
+  .ds.ds-topo .mwv2-theme-btn{ display: none; }
 }
 @media (min-width: 901px){
   .ds.ds-topo{
