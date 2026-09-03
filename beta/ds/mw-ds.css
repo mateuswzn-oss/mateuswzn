@@ -1677,7 +1677,15 @@ body.light .ds{
    ninguém declarar `display` — e a regra abaixo declara `inline-flex`.
    Uma peça do sistema que ganha display próprio tem que honrar o
    atributo, senão "esconder" vira promessa que o CSS não cumpre. */
-.ds [hidden], .ds[hidden]{ display: none !important; }
+/* ESTREITO DE PROPÓSITO. A primeira versão era `.ds [hidden]` com
+   `!important`, e ela escondeu as PRÓPRIAS TELAS: as views carregam
+   `hidden` quando inativas e contavam com `.view.active{display:block}`
+   para reaparecer — um `!important` genérico venceu isso e o Perfil
+   abria com altura zero. Os testes 16 e 20 pegaram no mesmo minuto.
+
+   Quem precisa da garantia é a peça que declara `display` própria; é ela
+   que anula o atributo. Uma linha por peça, e nada além. */
+.ds .ds-topo-ia[hidden]{ display: none !important; }
 
 .ds .ds-topo-ia{
   flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px;
@@ -1694,6 +1702,10 @@ body.light .ds{
 .ds .ds-topo-ia:hover{ box-shadow: var(--mw-sombra-2); }
 .ds .ds-topo-ia:active{ transform: scale(.96); }
 .ds .ds-topo-ia-fagulha{ font-size: 13px; line-height: 1; }
+
+/* Engrenagem do topo: mesma caixa dos outros ícones, e visível em
+   qualquer largura — Configurações não tem outra porta de um toque. */
+.ds .ds-topo-config{ flex: 0 0 auto; }
 
 .ds .ds-topo-perfil{
   flex: 0 0 auto; width: 34px; height: 34px; margin-left: 2px;
@@ -1728,6 +1740,9 @@ body.light .ds{
     height: 64px; padding-inline: var(--mw-e-6);
     gap: var(--mw-e-3);
   }
+  /* No desktop a lateral está sempre na tela: um ☰ ali seria um botão
+     para abrir o que já está aberto. A ENGRENAGEM continua, porque
+     Configurações não tem outra porta de um toque. */
   .ds .ds-topo-menu{ display: none; }
   .ds .ds-topo-titulo{ font-size: var(--mw-t-tela); }
   .ds .ds-busca{

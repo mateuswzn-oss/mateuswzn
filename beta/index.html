@@ -4074,7 +4074,6 @@ body.light .mw-faceid-gate-card p{color:#526988}
   </aside>
   <main class="main">
     <header class="ds-topo ds" data-mw-migrada="1" id="mwTopo">
-<button type="button" class="ds-topo-icone ds-topo-menu ds-btn ds-btn-fantasma ds-btn-icone" id="mwMobileMenu" aria-label="Abrir menu"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
 <button type="button" class="ds-topo-icone ds-topo-voltar ds-btn ds-btn-fantasma ds-btn-icone" id="mwBackBtn" aria-label="Voltar ao início" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg></button>
 <span class="ds-topo-marca" aria-hidden="true"><svg viewBox="0 0 64 44"><use href="#mwi-marca"/></svg></span>
 <h1 class="ds-topo-titulo" id="mwTopoTitulo">Início</h1>
@@ -4090,7 +4089,17 @@ body.light .mw-faceid-gate-card p{color:#526988}
      custaria caro para religar. Para trazer de volta: tire o
      `hidden`. -->
 <button class="ds-topo-ia" id="mateusAiBtn" type="button" hidden title="Abrir Nyc AI"><span class="ds-topo-ia-fagulha" aria-hidden="true">&#10022;</span><span class="ds-topo-ia-nome">Nyc AI</span></button>
-<button class="ds-topo-perfil" id="profileBtn" aria-label="Perfil e conta" title="Perfil e conta">MW</button>
+<!-- O CANTO DIREITO É NAVEGAÇÃO, NÃO IDENTIDADE.
+     Antes havia aqui a foto de perfil, e o menu lateral era um ☰ na
+     ponta ESQUERDA — longe do polegar em telefone grande, que é por
+     que a gaveta "custava a aparecer". Trocado: o ☰ vem para cá, ao
+     alcance, e a foto sai daqui porque o Perfil já tem porta própria
+     na barra de baixo. Uma função, um lugar.
+
+     A engrenagem ao lado é o atalho para Configurações, que só existia
+     dentro da gaveta. -->
+<button type="button" class="ds-topo-icone ds-topo-config ds-btn ds-btn-fantasma ds-btn-icone" id="mwTopoConfig" aria-label="Configurações" title="Configurações"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.1"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V21a2 2 0 1 1-4 0v-.07A1.7 1.7 0 0 0 8.9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1.03H3a2 2 0 1 1 0-4h.07A1.7 1.7 0 0 0 4.6 8.9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1.03-1.56V3a2 2 0 1 1 4 0v.07A1.7 1.7 0 0 0 15 4.6a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9v.07a1.7 1.7 0 0 0 1.56 1.03H21a2 2 0 1 1 0 4h-.07a1.7 1.7 0 0 0-1.53 1.03Z"/></svg></button>
+<button type="button" class="ds-topo-icone ds-topo-menu ds-btn ds-btn-fantasma ds-btn-icone" id="mwMobileMenu" aria-label="Abrir menu"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
 </div>
 </header>
     <section class="view ds active" id="view-home" data-mw-migrada="1">
@@ -5505,7 +5514,12 @@ function showView(view){$$('.view').forEach(v=>v.classList.remove('active'));$('
 // referência direta dentro desta mesma função.
 window.showView = showView;
 $$('#nav button').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
-$('#profileBtn').onclick=()=>showView('profile');
+/* `#profileBtn` saiu do cabeçalho (o canto direito virou ☰ + engrenagem)
+   e esta linha passaria a estourar em `null.onclick`, derrubando o resto
+   deste script — que é grande. Fica opcional, para o dia em que o botão
+   voltar, e a engrenagem ganha o seu destino aqui do lado. */
+$('#profileBtn')?.addEventListener('click',()=>showView('profile'));
+$('#mwTopoConfig')?.addEventListener('click',()=>showView('settings'));
 /* O "+" do topo é o mesmo botão que o atalho "Adicionar" do painel e o
    "+" da barra de baixo acionam por dentro (os dois fazem
    getElementById('quickAdd').click()). Ele abria o formulário LEGADO,
@@ -5937,7 +5951,7 @@ window.toast = toast;
  const q=s=>document.querySelector(s), qa=s=>[...document.querySelectorAll(s)];
  // Search: click icon to open, click outside to close
  const sw=q('.search-wrap'), si=q('.search-icon'), inp=q('#globalSearch');
- if(sw&&inp){si?.addEventListener('click',e=>{e.stopPropagation();sw.classList.add('open');inp.focus()});document.addEventListener('click',e=>{if(!sw.contains(e.target)&&!inp.value.trim())sw.classList.remove('open')});inp.addEventListener('keydown',e=>{if(e.key==='Escape'){inp.value='';sw.classList.remove('open');inp.dispatchEvent(new Event('input'))}})}
+ /* (abrir/fechar a lupa saiu daqui — havia CINCO cópias disto no arquivo, cada uma com o seu "fechar ao clicar fora"; uma delas olhava `.search-wrap`, seletor que a marcação nova não tem, e fechava o que as outras abriam. Dono único: `mw-busca-abre-js`.) */
  // Calendar and lectures belong only to Home.
  const home=q('#view-home'), cal=q('#academicCalendarPanel'), lec=q('#lecturesPanel');
  function syncPanels(view){const homeOn=view==='home'||q('#view-home')?.classList.contains('active'); if(cal)cal.style.display=homeOn?'block':'none'; if(lec)lec.style.display=homeOn?'block':'none'}
@@ -6143,14 +6157,7 @@ body.light #app .workspace-instagram .social-profile-btn span{background:#f8f6f0
 (()=>{
  const q=s=>document.querySelector(s);
  const searchWrap=q('.search-wrap'), searchIcon=q('.search-icon'), searchInput=q('#globalSearch');
- if(searchWrap&&searchIcon&&searchInput&&!searchWrap.dataset.fixed){
-   searchWrap.dataset.fixed='1';
-   const open=()=>{searchWrap.classList.add('open');setTimeout(()=>searchInput.focus(),0)};
-   searchIcon.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();open()});
-   searchWrap.addEventListener('click',e=>{if(!searchWrap.classList.contains('open')){e.preventDefault();open()}});
-   document.addEventListener('click',e=>{if(!searchWrap.contains(e.target)){searchWrap.classList.remove('open');searchInput.blur()}});
-   searchInput.addEventListener('keydown',e=>{if(e.key==='Escape'){searchInput.value='';searchWrap.classList.remove('open');searchInput.blur()}});
- }
+ /* (abrir/fechar a lupa saiu daqui — havia CINCO cópias disto no arquivo, cada uma com o seu "fechar ao clicar fora"; uma delas olhava `.search-wrap`, seletor que a marcação nova não tem, e fechava o que as outras abriam. Dono único: `mw-busca-abre-js`.) */
  // Calendar visibility follows the actual active view, regardless of how navigation changes it.
  const navButtons=[...document.querySelectorAll('#nav button')];
  const cal=q('#academicCalendarPanel'), lec=q('#lecturesPanel');
@@ -6186,7 +6193,7 @@ body.light #app .workspace-instagram .social-profile-btn span{background:#f8f6f0
  preencheDatalist('#collegeCourseOptions',collegeSugestoesCurso);
  preencheDatalist('#collegeAreaOptions',collegeSugestoesArea);
  // Give the workspace search a reliable open/close interaction and visible magnifier.
- const sw=$('.search-wrap'), si=$('.search-icon'), inp=$('#globalSearch'); if(sw&&si&&inp&&!sw.dataset.final){sw.dataset.final='1'; const open=()=>{sw.classList.add('open');setTimeout(()=>inp.focus(),20)}; si.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();open()}); document.addEventListener('click',e=>{if(!sw.contains(e.target))sw.classList.remove('open')}); inp.addEventListener('keydown',e=>{if(e.key==='Escape'){inp.value='';sw.classList.remove('open')}})}
+ /* (abrir/fechar a lupa saiu daqui — havia CINCO cópias disto no arquivo, cada uma com o seu "fechar ao clicar fora"; uma delas olhava `.search-wrap`, seletor que a marcação nova não tem, e fechava o que as outras abriam. Dono único: `mw-busca-abre-js`.) */
  // Improve the sidebar icon semantics while keeping the existing layout.
  const icons=['⌂','▦','◫','◇','✓','▤','□','⚙']; /* disabled: keep SVG icons */ void icons;
 })();
@@ -7530,8 +7537,14 @@ body.light #app .search-wrap input:focus{
      script principal define como showView('settings')) funciona porque
      é uma chamada de função direta, sem depender de o elemento estar
      visível. */
-  profileMain?.addEventListener('click', () => q('#profileBtn')?.onclick?.());
-  profileSettings?.addEventListener('click', () => q('#profileBtn')?.onclick?.());
+  /* Vão DIRETO ao destino. Antes chamavam `#profileBtn.onclick()` — o
+     avatar do topo — e o Perfil dependia de um botão de outra área
+     continuar existindo E de ele guardar a ação numa propriedade
+     `onclick`. Quando o topo virou ☰ + engrenagem, o cartão da lateral
+     parou de abrir o Perfil e o motivo não estava nem perto de onde o
+     sintoma aparecia. Uma tela é aberta por quem sabe abri-la. */
+  profileMain?.addEventListener('click', () => window.showView?.('profile'));
+  profileSettings?.addEventListener('click', () => window.showView?.('settings'));
   darkToggle?.addEventListener('click', () => {
     q('#themeToggle')?.click();
     setTimeout(syncTheme, 0);
@@ -8558,20 +8571,7 @@ body.light .kicker{color:#355070!important}#lecturesPanel .section-head span:not
 (() => {
   const q = s => document.querySelector(s);
 
-  /* Search expand */
-  const wrap = q('#searchWrap');
-  const tog = q('#searchToggle');
-  const inp = q('#globalSearch');
-  if (wrap && tog && inp) {
-    tog.addEventListener('click', e => {
-      e.preventDefault();
-      wrap.classList.add('open');
-      setTimeout(() => inp.focus(), 80);
-    });
-    inp.addEventListener('blur', () => {
-      if (!inp.value) wrap.classList.remove('open');
-    });
-  }
+  /* (abrir/fechar a busca saiu daqui — ver `mw-busca-abre-js`) */
 
   /* Calendar month navigation */
   const months = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
@@ -13424,22 +13424,7 @@ html body.light .eva-chips button{
     });
   }
 
-  /* Lupa: abre no clique com a animação elástica */
-  const wrap = q('#searchWrap');
-  const toggle = q('#searchToggle');
-  const search = q('#globalSearch');
-  if (wrap && toggle) {
-    toggle.addEventListener('click', (e) => {
-      e.preventDefault();
-      wrap.classList.add('open');
-      setTimeout(() => search && search.focus(), 80);
-    });
-    document.addEventListener('click', (e) => {
-      if (!wrap.contains(e.target) && !String(search && search.value || '').trim()) {
-        wrap.classList.remove('open');
-      }
-    });
-  }
+  /* (a segunda cópia de abrir a lupa saiu daqui — ver `mw-busca-abre-js`) */
 })();
 </script>
 <style id="mw-cyan-glass-finish">
@@ -15974,11 +15959,9 @@ html body #app .mw-theme-icon.mw-theme-flash::after{opacity:1!important;transfor
       const app = document.getElementById('app');
       if (!app || app.classList.contains('hidden')) return;
       e.preventDefault();
-      const toggle = document.getElementById('searchToggle');
-      const input = document.getElementById('globalSearch');
-      const wrap = document.getElementById('searchWrap');
-      if (wrap && !wrap.classList.contains('open')) toggle?.click();
-      setTimeout(() => input?.focus(), 30);
+      /* Ctrl+K fala com o MESMO dono da busca, em vez de simular um
+         clique e torcer para o resto acontecer. */
+      window.mwBuscaAbrir?.();
     }
   });
 })();
@@ -23675,7 +23658,11 @@ html body.light #mateusAiTitle .mw-id-beta{
 .mw-atalho:active{ transform: translateY(1px); }
 .mw-atalho:focus-visible{ outline: 2px solid var(--id-ac); outline-offset: 2px; }
 .mw-atalho .mw-atalho-tile{
-  width: 34px; height: 34px; border-radius: var(--id-r-tile, 11px);
+  /* REDONDO. O ícone dentro do cartão de atalho era um quadrado de canto
+     arredondado; pedido do Mateus para virar círculo, e é o que a barra
+     do topo já faz — o mesmo desenho de "ícone dentro de superfície"
+     aparecendo igual nos dois lugares. */
+  width: 36px; height: 36px; border-radius: 50%;
   display: grid; place-items: center;
   background: var(--id-ac-suave); color: var(--id-ac-txt);
 }
@@ -23911,6 +23898,105 @@ html body.light #mateusAiTitle .mw-id-beta{
 }
 </style>
 
+<script id="mw-busca-abre-js">
+(function(){
+  'use strict';
+  /* O DONO ÚNICO DE ABRIR, FECHAR E FOCAR A BUSCA.
+
+     Havia TRÊS lugares fazendo isto: dois blocos legados quase idênticos
+     (cada um com o seu `wrap.classList.add('open')` e o seu setTimeout de
+     80ms para focar) e o atalho Ctrl+K, que simulava um clique no botão e
+     torcia para o resto acontecer. O efeito era o que o Mateus via: no
+     navegador a lupa "não fazia nada" (o campo já está sempre visível no
+     desktop, então abrir não muda nada — e ninguém levava o FOCO até ele,
+     que era o que faltava), e no app o campo não abria.
+
+     A regra, agora escrita num lugar só:
+
+       DESKTOP (>=901px) — o campo é permanente. Clicar na lupa não abre
+       coisa alguma; ele apenas LEVA O FOCO para o campo. Era exatamente
+       o passo que faltava.
+
+       TELEFONE — a lupa alterna `.open` no envoltório, e o foco vai para
+       o campo depois que ele ganha caixa (dois quadros, não um timeout
+       chutado: focar um elemento ainda sem layout falha em silêncio, e
+       era isso que acontecia de vez em quando).
+
+     Fechar: Escape sempre; clique fora e blur só quando o campo está
+     vazio — quem digitou não perde o que escreveu por encostar na tela. */
+  var envolucro = document.getElementById('searchWrap');
+  var botao     = document.getElementById('searchToggle');
+  var campo     = document.getElementById('globalSearch');
+  if (!envolucro || !botao || !campo) return;
+
+  var permanente = function(){ return window.matchMedia('(min-width: 901px)').matches; };
+
+  function foca(){
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){ try { campo.focus({ preventScroll: true }); } catch(e){ campo.focus(); } });
+    });
+  }
+  function abre(){
+    if (!permanente()) { envolucro.classList.add('open'); ouveFora(); }
+    foca();
+  }
+  function fecha(){
+    envolucro.classList.remove('open');
+    if (document.activeElement === campo) campo.blur();
+  }
+  /* Exposto para o Ctrl+K falar com o dono em vez de imitar um clique. */
+  window.mwBuscaAbrir = abre;
+  window.mwBuscaFechar = fecha;
+
+  /* `pointerdown`, NÃO `click` — e isto é o coração do defeito.
+
+     Medido: ao pressionar a lupa, o envoltório da busca se reposiciona
+     (o campo abre e ocupa a barra), e o botão ANDA 136px para a
+     esquerda entre o `mousedown` e o `mouseup`. O navegador então
+     entrega o `click` ao ancestral comum (`#searchWrap`), não ao botão:
+     o clique simplesmente nunca chegava em quem escuta. Era isso, e não
+     um handler faltando, que fazia a lupa "não fazer nada" — no
+     navegador e no app.
+
+     Um controle que MOVE A SI MESMO ao ser acionado não pode depender
+     de `click`, que só existe se o dedo terminar onde começou. */
+  botao.addEventListener('pointerdown', function(ev){
+    ev.preventDefault();
+    if (!permanente() && envolucro.classList.contains('open') && !campo.value) { fecha(); return; }
+    abre();
+  });
+  /* O clique que não chega ao botão chega ao envoltório: é o mesmo
+     gesto, e ignorá-lo aqui evita que o listener de "clique fora"
+     feche o que acabou de abrir. */
+  envolucro.addEventListener('click', function(ev){ ev.stopPropagation(); });
+  campo.addEventListener('keydown', function(ev){ if (ev.key === 'Escape') fecha(); });
+  campo.addEventListener('blur', function(){ if (!campo.value) envolucro.classList.remove('open'); });
+  /* FECHAR AO TOCAR FORA — registrado DEPOIS do gesto que abriu.
+
+     Abrir no `pointerdown` e fechar no `click` do documento significa que
+     o MESMO toque faz as duas coisas: abre no primeiro evento e fecha no
+     segundo. Era o que sobrava depois de remover as cópias legadas — a
+     classe `.open` entrava e saía no mesmo gesto, e no telefone a busca
+     parecia não abrir.
+
+     A escuta de fora só passa a existir no próximo quadro, quando o
+     toque que abriu já terminou. */
+  var foraLigado = false;
+  function ouveFora(){
+    if (foraLigado) return;
+    foraLigado = true;
+    requestAnimationFrame(function(){
+      document.addEventListener('click', function aoClicarFora(ev){
+        if (envolucro.contains(ev.target)) return;
+        if (String(campo.value || '').trim()) return;
+        envolucro.classList.remove('open');
+        document.removeEventListener('click', aoClicarFora);
+        foraLigado = false;
+      });
+    });
+  }
+})();
+</script>
 <script id="mw-busca-global-js">
 (function(){
   'use strict';
@@ -24067,9 +24153,26 @@ html body.light #mateusAiTitle .mw-id-beta{
     if (!envolucro.contains(e.target) && !painel.contains(e.target)) fecha();
   });
   window.addEventListener('resize', function(){ if (!painel.hidden) ancora(); });
-  /* Rolar fecha em vez de reancorar: a barra do topo comprime durante o
-     scroll, então perseguir a posição faria o painel tremer. */
-  window.addEventListener('scroll', function(){ if (!painel.hidden) fecha(); }, true);
+  /* Rolar fecha o painel — mas SÓ quando a pessoa realmente rolou.
+
+     A regra anterior fechava em qualquer evento de scroll capturado. No
+     telefone, focar o campo faz o navegador rolar o campo para a vista,
+     e esse scroll automático derrubava o painel no mesmo instante em que
+     ele nascia: no app a busca abria, aceitava o texto e não mostrava
+     nada. Aqui se compara a posição: se ela não mudou de verdade, não
+     houve rolagem — houve o próprio teclado se acomodando.
+
+     Continua fechando (e não reancorando) porque a barra do topo
+     comprime durante o scroll, e perseguir a posição faria o painel
+     tremer. */
+  var ultimaRolagem = window.scrollY;
+  window.addEventListener('scroll', function(){
+    if (painel.hidden) { ultimaRolagem = window.scrollY; return; }
+    var y = window.scrollY;
+    if (Math.abs(y - ultimaRolagem) < 6) { ancora(); return; }
+    ultimaRolagem = y;
+    fecha();
+  }, true);
 })();
 </script>
 
@@ -31670,7 +31773,7 @@ html body .mw-pular:focus{ transform: translateY(0); }
   /* O carimbo entra depois do preloader para não brigar com a abertura
      da marca, e sai sozinho. window.MW_PREVIA fica disponível para
      conferir a versão pelo console sem depender de ver o carimbo. */
-  window.MW_PREVIA = 'v107-beta';
+  window.MW_PREVIA = 'v108-beta';
   function mostra(){
     if (document.getElementById('mwPreviaCarimbo')) return;
     var el = document.createElement('div');
