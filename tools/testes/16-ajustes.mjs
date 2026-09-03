@@ -96,9 +96,30 @@ const base = await p.evaluate(a => {
        antes. Corrigir aqui, e não remendar a marcação nova para caber num
        nome velho. */
     caixas: v.querySelectorAll('[data-mw-grupo], .settings-group, .ds-cartao, .card,'
-                             + ' .ds-faixa, .ds-chapa').length,
-    categorias: [...v.querySelectorAll('[data-mw-categoria], .mw-settings-categoria, .ds-tela-titulo')]
-      .map(e => e.textContent.trim()).filter(Boolean)
+                             + ' .ds-faixa, .ds-chapa, .ds-conf-secao').length,
+    /* `.ds-conf-secao` entrou pelo mesmo motivo que `.ds-faixa` entrou
+       na linha acima quando o Perfil foi reformulado: Configurações
+       deixou de agrupar por cartão e passou a agrupar por SEÇÃO
+       (título discreto + lista com divisores). A tela ficou mais
+       separada por assunto, não menos — a régua é que ainda media o
+       nome antigo. */
+
+    /* AS CATEGORIAS MUDARAM DE LUGAR, NÃO DEIXARAM DE EXISTIR.
+       Antes eram catorze grupos empilhados numa página só, e cada um
+       trazia o seu título visível: bastava ler os títulos. Agora cada
+       categoria é uma SUB-TELA, e o que fica visível no índice é a
+       PORTA dela — uma linha de navegação com o nome.
+
+       Ler a porta é uma medida mais forte do que ler o título, não mais
+       fraca: um título prova que existe um texto na tela; uma porta
+       prova que existe um caminho até a categoria. Uma categoria sem
+       porta é uma categoria inalcançável, e é exatamente esse o defeito
+       que este teste deve pegar numa arquitetura de sub-telas. */
+    categorias: [
+      ...[...v.querySelectorAll('[data-mw-categoria], .mw-settings-categoria, .ds-tela-titulo')]
+        .map(e => e.textContent.trim()),
+      ...[...v.querySelectorAll('[data-conf-ir] .ds-conf-rotulo')].map(e => e.textContent.trim())
+    ].filter(Boolean)
   };
 }, area);
 /* Mínimos por área, e não um número só: Faculdade é um cartão de quatro
@@ -123,7 +144,12 @@ ok('a tela tem conteúdo',
 ok('os assuntos estão em caixas', base.caixas >= MINIMO.caixas, { caixas: base.caixas, minimo: MINIMO.caixas });
 
 if (area === 'settings') {
-  const ESPERADAS = ['Conta', 'Aparência', 'Notificações', 'Segurança', 'IA', 'Privacidade', 'Aplicativo'];
+  /* 'Nyc AI', e não 'IA'. A área já se chamava Nyc AI no produto, e a
+     régua continuava cobrando o nome antigo — 'Nyc AI'.includes('IA') é
+     falso ('A'+'I', não 'I'+'A'), então este item passaria a reprovar
+     assim que alguém acertasse o texto da tela. Um teste que reprova o
+     nome certo é pior do que teste nenhum. */
+  const ESPERADAS = ['Conta', 'Aparência', 'Notificações', 'Segurança', 'Nyc AI', 'Privacidade', 'Aplicativo'];
   const faltam = ESPERADAS.filter(c => !base.categorias.some(x => x.includes(c)));
   ok('as sete categorias estão lá', !faltam.length, { faltam, achadas: base.categorias });
 }
