@@ -116,14 +116,28 @@
   color-scheme: dark;
 
   /* superfícies, do chão para cima */
-  --mw-chao:#020617;
-  --mw-sup-1:var(--mw-p-noite-900);
-  --mw-sup-2:var(--mw-p-noite-800);
+  /* AS SUPERFÍCIES SEGUEM O ACENTO — de leve.
+     Elas eram um azul-marinho FIXO (#101a33 e vizinhos). Com a cor de
+     destaque em âmbar, verde ou rosa, cada cartão, chip e campo da tela
+     continuava AZUL: era isso que o Mateus via como "cores que destoem"
+     no Perfil. O §2 pede a cor no app inteiro e, ao mesmo tempo, que
+     fundo e leitura continuem equilibrados — as duas coisas convivem se
+     a superfície carregar uma DOSE PEQUENA do acento em vez da cor
+     inteira.
+
+     6% e 4% foram escolhidos por serem o suficiente para a superfície
+     deixar de brigar com o acento e pouco demais para virar cor: o
+     cinza-azulado continua cinza, só que da família certa. */
+  --mw-chao:color-mix(in srgb, var(--id-ac, #5b6cff) 7%, #020617);
+  --mw-sup-1:color-mix(in srgb, var(--id-ac, #5b6cff) 10%, var(--mw-p-noite-900));
+  --mw-sup-2:color-mix(in srgb, var(--id-ac, #5b6cff) 13%, var(--mw-p-noite-800));
   --mw-sup-3:var(--mw-p-noite-700);
-  --mw-sup-afundada:var(--mw-p-noite-950);
+  --mw-sup-afundada:color-mix(in srgb, var(--id-ac, #5b6cff) 7%, var(--mw-p-noite-950));
 
   /* traços */
-  --mw-borda:rgba(140,165,220,.14);
+  /* A borda seguia a mesma família azul; agora nasce do acento com
+     14% de opacidade, que é a mesma presença de antes. */
+  --mw-borda:color-mix(in srgb, var(--id-ac, #5b6cff) 26%, transparent);
   --mw-borda-forte:rgba(140,165,220,.26);
   --mw-divisor:rgba(140,165,220,.10);
 
@@ -183,9 +197,9 @@
 body.light .ds{
   color-scheme: light;
 
-  --mw-chao:#eef4ff;
+  --mw-chao:color-mix(in srgb, var(--id-ac, #4f5bff) 5%, #f7f9ff);
   --mw-sup-1:#ffffff;
-  --mw-sup-2:var(--mw-p-nevoa-50);
+  --mw-sup-2:color-mix(in srgb, var(--id-ac, #4f5bff) 6%, var(--mw-p-nevoa-50));
   --mw-sup-3:var(--mw-p-nevoa-100);
   --mw-sup-afundada:var(--mw-p-nevoa-200);
 
@@ -1579,7 +1593,11 @@ body.light .ds{
 .ds .ds-topo-icone{
   width: var(--mw-alvo-confortavel); height: var(--mw-alvo-confortavel);
   flex: 0 0 auto; display: grid; place-items: center;
-  border-radius: var(--mw-r-2); border: 1px solid transparent;
+  /* REDONDOS. Eram quadrados de canto arredondado, e uma fileira
+     deles fazia a barra parecer uma régua de caixinhas — foi o que o
+     Mateus chamou de "barra quadrada". Círculo é o que Instagram e
+     WhatsApp usam no topo, e some quando não há hover. */
+  border-radius: 50%; border: 1px solid transparent;
   background: transparent; color: var(--mw-txt-2); cursor: pointer;
 }
 .ds .ds-topo-icone:hover{ background: var(--mw-sup-2); color: var(--mw-txt-1); }
@@ -1653,6 +1671,14 @@ body.light .ds{
 /* Nyc AI: identidade própria (§17). No desktop é uma pílula com o nome; no
    telefone, só a fagulha — mas continua sendo o acento da barra, e não mais
    um botão igual aos outros. */
+
+/* `hidden` PRECISA VENCER. O botão da Nyc AI foi marcado com `hidden`
+   para sair da barra e continuava na tela: o atributo só vale enquanto
+   ninguém declarar `display` — e a regra abaixo declara `inline-flex`.
+   Uma peça do sistema que ganha display próprio tem que honrar o
+   atributo, senão "esconder" vira promessa que o CSS não cumpre. */
+.ds [hidden], .ds[hidden]{ display: none !important; }
+
 .ds .ds-topo-ia{
   flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px;
   height: 36px; padding: 0 var(--mw-e-3); margin-left: 2px;
@@ -1926,6 +1952,11 @@ body.light .ds{
   gap: var(--mw-e-5);
   align-items: start;
 }
+/* A foto é REDONDA, e isso vale também para uma <img> colocada dentro.
+   O contêiner já era `border-radius:50%`, mas com `overflow:visible` (que
+   existe para o botão de câmera transbordar a borda) uma imagem filha
+   apareceria QUADRADA por cima do círculo. A regra da imagem, logo
+   abaixo, fecha esse caminho. */
 .ds .ds-perfil-foto{
   position: relative; flex: 0 0 auto;
   width: 92px; height: 92px; border-radius: 50%;
@@ -1934,6 +1965,11 @@ body.light .ds{
   color: var(--mw-txt-sobre-acento);
   font-size: 32px; font-weight: 700; letter-spacing: -.02em;
   box-shadow: 0 0 0 3px var(--mw-chao), 0 0 0 4px var(--mw-borda);
+}
+.ds .ds-perfil-foto > img{
+  grid-area: 1 / 1;
+  width: 100%; height: 100%;
+  border-radius: 50%; object-fit: cover; display: block;
 }
 .ds .ds-perfil-foto.has-avatar{ color: transparent; }
 .ds .ds-perfil-foto.has-avatar > span{ display: none; }
@@ -2118,3 +2154,25 @@ body.light .ds{
 @media (prefers-reduced-motion: reduce){
   .ds .ds-perfil-abas-caixa::after{ animation: none; }
 }
+
+
+/* ============================================================================
+   O RODAPÉ DA MARCA — só na tela inicial
+   ============================================================================
+   Ele é a assinatura do produto: marca, links legais, redes e as lojas.
+   Isso se diz UMA vez, na porta de entrada. Repetido no fim de Perfil, de
+   Configurações, do Calendário e de mais dez telas, deixa de ser assinatura
+   e vira ruído — e foi assim que ele estava.
+
+   `:has()` em vez de uma classe alternada por JS: quem sabe qual tela está
+   aberta é o próprio DOM (`.view.active`), e derivar disso não cria um
+   segundo lugar guardando a mesma verdade. Onde `:has()` não existir, o
+   rodapé simplesmente continua aparecendo — degrada para o que era antes,
+   não para uma tela quebrada. */
+#app .mw-app-footer{ display: none; }
+#app:has(#view-home.view.active) .mw-app-footer{ display: flex; }
+
+/* Marca de rede social: o desenho oficial é uma forma CHEIA, não um
+   contorno. Trocado no HTML; aqui só se garante que o `stroke` herdado de
+   regras antigas não volte a desenhar por cima. */
+.mw-app-footer-icon svg{ fill: currentColor; stroke: none; }

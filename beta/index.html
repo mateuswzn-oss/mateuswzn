@@ -2260,7 +2260,8 @@ body:not(.light) #app .mw-reference-sidebar .mw-switch i{transform:translateX(15
   opacity:1!important;
 }
 
-/* Search button: same surface language as notifications, centered. */#app .top-actions .search, #app .top-actions .search-btn, #app button[aria-label*="Pesquisar"], #app button[aria-label*="Buscar"]{
+/* Search button: same surface language as notifications, centered. */
+#app .top-actions .search, #app .top-actions .search-btn{
   width:38px!important;height:38px!important;
   min-width:38px!important;
   display:grid!important;place-items:center!important;
@@ -2269,7 +2270,7 @@ body:not(.light) #app .mw-reference-sidebar .mw-switch i{transform:translateX(15
   background:rgba(255,255,255,.055)!important;
   border:1px solid rgba(255,255,255,.08)!important;
   box-shadow:none!important;
-}#app .top-actions .search svg, #app .top-actions .search-btn svg, #app button[aria-label*="Pesquisar"] svg, #app button[aria-label*="Buscar"] svg{
+}#app .top-actions .search svg, #app .top-actions .search-btn svg{
   width:16px!important;height:16px!important;
   margin:0!important;
 }
@@ -2400,7 +2401,7 @@ body:not(.light) #app .mw-reference-sidebar .mw-switch i{transform:translateX(15
 /* Search and notification controls share one centered surface. */
 #app .top-actions{
   align-items:center!important;
-}#app .top-actions .search, #app .top-actions .search-btn, #app .top-actions .notification, #app .top-actions .notification-btn, #app button[aria-label*="Pesquisar"], #app button[aria-label*="Buscar"], #app button[aria-label*="Notifica"]{
+}#app .top-actions .search, #app .top-actions .search-btn, #app .top-actions .notification, #app .top-actions .notification-btn{
   width:38px!important;height:38px!important;
   min-width:38px!important;
   display:grid!important;
@@ -4082,7 +4083,13 @@ body.light .mw-faceid-gate-card p{color:#526988}
 <div class="ds-topo-sino"><button class="ds-topo-icone ds-btn ds-btn-fantasma ds-btn-icone" id="notificationBtn" aria-label="Notificações" title="Notificações"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 2a6.5 6.5 0 0 0-6.5 6.5c0 4.6-1.8 6.6-2.4 7.2A1 1 0 0 0 4 17.8h16a1 1 0 0 0 .9-1.6c-.6-.6-2.4-2.6-2.4-7.2A6.5 6.5 0 0 0 12 2zm-1.6 18a1.6 1.6 0 0 0 3.2 0z"/></svg><span class="ds-topo-ponto"></span></button><div class="ds-topo-aviso ds-chapa hidden" id="notificationMenu"><strong>Notificações</strong><div id="notificationList"><div class="ds-topo-aviso-item">Nada novo por agora.</div></div></div></div>
 <button class="ds-topo-icone mwv2-theme-btn ds-btn ds-btn-fantasma ds-btn-icone" id="themeToggle" title="Alternar tema"><svg class="mwv2-icon-sun" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.5v2.4M12 19.1v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/></svg><span class="mwv2-moon-glow" aria-hidden="true"></span><svg class="mwv2-icon-moon" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z"/></svg><span class="mwv2-star s1" aria-hidden="true"></span><span class="mwv2-star s2" aria-hidden="true"></span></button>
 <button class="ds-topo-icone ds-topo-so-desktop ds-btn ds-btn-fantasma ds-btn-icone" id="quickAdd" aria-label="Adicionar" title="Adicionar"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
-<button class="ds-topo-ia" id="mateusAiBtn" type="button" title="Abrir Nyc AI"><span class="ds-topo-ia-fagulha" aria-hidden="true">&#10022;</span><span class="ds-topo-ia-nome">Nyc AI</span></button>
+<!-- A Nyc AI está FORA DA BARRA por tempo indeterminado, a pedido do
+     Mateus (03/09/2026). O botão continua no documento com `hidden`,
+     e a área, as conversas e o ajuste em Configurações continuam de
+     pé: parar de mostrar não é o mesmo que arrancar, e arrancar aqui
+     custaria caro para religar. Para trazer de volta: tire o
+     `hidden`. -->
+<button class="ds-topo-ia" id="mateusAiBtn" type="button" hidden title="Abrir Nyc AI"><span class="ds-topo-ia-fagulha" aria-hidden="true">&#10022;</span><span class="ds-topo-ia-nome">Nyc AI</span></button>
 <button class="ds-topo-perfil" id="profileBtn" aria-label="Perfil e conta" title="Perfil e conta">MW</button>
 </div>
 </header>
@@ -4796,10 +4803,10 @@ body.light .mw-faceid-gate-card p{color:#526988}
       </nav>
       <div class="mw-app-footer-social">
         <button type="button" class="mw-app-footer-icon" data-social="instagram" aria-label="Instagram">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16Zm0 3.18A6.66 6.66 0 1 0 18.66 12 6.66 6.66 0 0 0 12 5.34Zm0 10.98A4.32 4.32 0 1 1 16.32 12 4.32 4.32 0 0 1 12 16.32Zm6.92-11.24a1.56 1.56 0 1 1-1.55-1.56 1.56 1.56 0 0 1 1.55 1.56Z"/></svg>
         </button>
         <button type="button" class="mw-app-footer-icon" data-social="facebook" aria-label="Facebook">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.52 1.49-3.91 3.77-3.91 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94Z"/></svg>
         </button>
         <span class="mw-app-footer-divider" aria-hidden="true"></span>
         <button type="button" class="mw-app-store-badge" data-store="apple" aria-label="Em breve na App Store">
@@ -8474,12 +8481,7 @@ body.light #app .search-wrap input:focus{
 <style id="mateus-no-extra-shadows">#inlineCreateForm .mw-original-car-btn{box-shadow:none!important}#inlineCreateForm .mw-original-car-btn:hover:not(:disabled){box-shadow:none!important}</style>
 
 <style id="mw-atualizado-2026-08-22">
-/* Nyc AI */#mateusAiBtn.mateus-ai-btn{
-  height:40px!important;padding:0 14px 0 12px!important;border-radius:999px!important;
-  background:linear-gradient(135deg,rgba(56,189,248,.22),rgba(124,92,255,.28))!important;
-  border:1px solid rgba(125,211,252,.32)!important;color:var(--mw-txt-sobre-acento,#fff)!important;/*Etapa 0: idem*/
-  font-weight:750!important;letter-spacing:.01em!important;
-}#mateusAiBtn.mateus-ai-btn span:not([data-mw-migrada]):not([data-mw-migrada] *){background:linear-gradient(90deg,#7dd3fc,#a78bfa,#38bdf8);-webkit-background-clip:text;background-clip:text;color:transparent;animation:evaName 6s linear infinite;background-size:200% 100%}
+/* Nyc AI */#mateusAiBtn.mateus-ai-btn span:not([data-mw-migrada]):not([data-mw-migrada] *){background:linear-gradient(90deg,#7dd3fc,#a78bfa,#38bdf8);-webkit-background-clip:text;background-clip:text;color:transparent;animation:evaName 6s linear infinite;background-size:200% 100%}
 @keyframes evaName{0%{background-position:0% 50%}100%{background-position:200% 50%}}
 .mateus-ai-card{border-radius:22px!important;background:rgba(10,18,34,.96)!important;border:1px solid rgba(125,211,252,.18)!important}
 .mateus-ai-form{align-items:center}
@@ -8838,7 +8840,7 @@ body.light .kicker{color:#355070!important}#lecturesPanel .section-head span:not
 #view-college .college-setup label{color:#9ec4ea !important}
 
 /* 8) Perfil: nome maior + foto redonda */
-#mwSidebarName{font-size:13px !important; font-weight:800 !important; color:#fff !important}#mwSidebarAvatar.has-avatar:not([data-mw-migrada] *), #profileBtn.has-avatar:not([data-mw-migrada] *), #profileAvatarPreview:not([data-mw-migrada] *){
+#mwSidebarName{font-size:13px !important; font-weight:800 !important; color:#fff !important}#mwSidebarAvatar.has-avatar:not([data-mw-migrada] *), #profileAvatarPreview:not([data-mw-migrada] *){
   background-size: cover !important;
   background-position: center !important;
   border-radius: 12px !important;
@@ -9393,7 +9395,7 @@ img,svg,video,canvas{max-width:100%}
   #app .topbar:has(.search-wrap.open) #mateusAiBtn{display:none!important}
   #app .top-actions{width:auto!important;gap:6px!important}
   #app .search-wrap{width:44px!important;min-width:44px!important;height:44px!important;flex:0 0 44px!important;display:flex!important}
-  #app .search-wrap.open{position:relative!important;width:min(300px,72vw)!important;min-width:0!important;height:44px!important;flex:0 1 auto!important}#app .icon-btn, #mateusAiBtn{width:44px!important;height:44px!important;min-width:44px!important;padding:0!important;border-radius:14px!important}#mateusAiBtn:not([data-mw-migrada]):not([data-mw-migrada] *){justify-content:center!important;font-size:0!important}
+  #app .search-wrap.open{position:relative!important;width:min(300px,72vw)!important;min-width:0!important;height:44px!important;flex:0 1 auto!important}#app .icon-btn{width:44px!important;height:44px!important;min-width:44px!important;padding:0!important;border-radius:14px!important}#mateusAiBtn:not([data-mw-migrada]):not([data-mw-migrada] *){justify-content:center!important;font-size:0!important}
   #mateusAiBtn .eva-label{display:none!important}
 
   #app .stats{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important}
@@ -9988,14 +9990,6 @@ html body #app .sidebar{
   animation: mwEvaSpin 2.8s linear infinite !important;
   z-index:-2 !important;
   opacity:.9 !important;
-}
-#mateusAiBtn.mateus-ai-btn::after{
-  content:"" !important;
-  position:absolute !important;
-  inset:1px !important;
-  border-radius:inherit !important;
-  background:linear-gradient(135deg, rgba(12,28,58,.92), rgba(37,20,72,.88)) !important;
-  z-index:-1 !important;
 }
 #mateusAiBtn.mateus-ai-btn span{
   position:relative !important;
@@ -11316,7 +11310,7 @@ html body #app.mw-sidebar-collapsed aside.sidebar .mw-row-icon{
   border: 0 !important;
   overflow: visible !important;
   position: relative !important;
-}html body #app .search-icon, html body #app .search-icon.icon-btn, html body #app #searchToggle{
+}html body #app .search-icon, html body #app .search-icon.icon-btn{
   position: relative !important;
   inset: auto !important;
   left: auto !important;
@@ -11350,7 +11344,7 @@ html body #app #searchToggle svg{
   stroke: currentColor !important;
   stroke-width: 2 !important;
   overflow: visible !important;
-}html body #app .bell-btn, html body #app #notificationBtn{
+}html body #app .bell-btn{
   width: 40px !important;
   height: 40px !important;
   min-width: 40px !important;
@@ -11785,7 +11779,7 @@ html body #app.mw-sidebar-collapsed aside.sidebar .mw-reference-row{
               background .22s ease,
               border-color .22s ease,
               box-shadow .22s ease !important;
-}html body #app .search-icon, html body #app #searchToggle{
+}html body #app .search-icon{
   position: relative !important;
   flex: 0 0 40px !important;
   width: 40px !important;
@@ -13963,11 +13957,21 @@ html { scroll-behavior:smooth; }
   window.addEventListener('scroll',onScroll,{passive:true}); main?.addEventListener('scroll',onScroll,{passive:true});
 
   const home=document.getElementById('view-home');
-  if(home && !document.getElementById('mwDevTools')){
-    const tools=document.createElement('section'); tools.id='mwDevTools'; tools.className='grid mw-dev-tools';
-    tools.innerHTML='<article class="card mw-dev-tool"><h4>Central de desenvolvimento</h4><p id="mwDevFocus">Organize o próximo passo do seu workspace.</p><div class="mw-dev-actions"><button type="button" data-dashboard-go="subjects">Nova disciplina</button><button type="button" data-dashboard-go="activities">Nova atividade</button><button type="button" data-dashboard-go="projects">Novo projeto</button></div></article><article class="card mw-dev-tool"><h4>Stack em foco</h4><p>As tecnologias dos seus projetos aparecem aqui.</p><div class="mw-stack-list" id="mwStackList"><span>Adicione um projeto</span></div></article><article class="card mw-dev-tool"><h4>Próximo prazo</h4><p id="mwDevDeadline">Cadastre uma atividade com data para planejar sua semana.</p><div class="mw-dev-actions"><button type="button" data-dashboard-go="notes">Nova anotação</button></div></article>';
-    home.appendChild(tools);
-  }
+  /* A "CENTRAL DE DESENVOLVIMENTO" SAIU. Ela era três cartões que este
+     script PENDURAVA no fim do Início — marcação de outra época, com
+     ciano cravado (#67e8f9) que não segue a cor de destaque, e colada
+     por `appendChild` depois da tela reconstruída, o que a deixava fora
+     do ritmo da página: desalinhada, sobrepondo o que vinha antes.
+
+     Além disso ela DUPLICAVA o que o Início já faz: "Nova disciplina",
+     "Nova atividade" e "Novo projeto" são exatamente os atalhos do
+     trilho de acesso rápido, e "Próximo prazo" é a faixa "Próximos
+     dias". Dois lugares dizendo a mesma coisa, um deles feio.
+
+     O que ela tinha de próprio — "Stack em foco" — era um resumo de
+     tecnologias que nunca leu dado nenhum: mostrava "Adicione um
+     projeto" e ficava nisso. Não foi movido porque não havia o que
+     mover. */
   const read=()=>{try{return JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}')}catch{return {}}};
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const refreshTools=(d=read())=>{
@@ -14762,14 +14766,7 @@ body.light html body #app #searchWrap .search-icon.icon-btn{color:#2563eb!import
    Nyc AI — botão e composer do chat, efeito mais bonito e
    placeholder com troca animada (letra a letra, com blur)
    ============================================================ */
-@media(min-width:761px){#mateusAiBtn.mateus-ai-btn{
-  display:inline-flex!important;align-items:center!important;gap:8px!important;
-  padding:0 16px!important;height:42px!important;border-radius:100px!important;
-  background:linear-gradient(135deg,rgba(37,99,235,.22),rgba(124,92,255,.22))!important;
-  border:1px solid rgba(125,194,255,.32)!important;
-  box-shadow:none!important;
-  transition:transform .2s ease,border-color .25s ease,background .25s ease!important;
-}
+@media(min-width:761px){
 #mateusAiBtn.mateus-ai-btn:hover{
   transform:translateY(-1px)!important;
   border-color:rgba(125,194,255,.55)!important;
@@ -15296,18 +15293,9 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
    ============================================================ */
 #themeToggle.mwv2-theme-btn{position:relative;overflow:visible!important}
 #themeToggle .mwv2-icon-moon{position:relative}
-#themeToggle .mwv2-moon-glow{
-  position:absolute;inset:-6px;border-radius:50%;
-  background:radial-gradient(circle,rgba(167,139,250,.45),transparent 70%);
-  opacity:0;transform:scale(.6);transition:opacity .4s ease,transform .4s ease;pointer-events:none;
-}
 #themeToggle.is-light .mwv2-moon-glow{opacity:0;transform:scale(.6)}
 #themeToggle:not(.is-light) .mwv2-moon-glow{opacity:1;transform:scale(1);animation:mwv2MoonBreathe 2.6s ease-in-out infinite}
 @keyframes mwv2MoonBreathe{0%,100%{opacity:.55;transform:scale(.92)}50%{opacity:1;transform:scale(1.08)}}
-#themeToggle .mwv2-star{
-  position:absolute;border-radius:50%;background:#bcdfff;opacity:0;
-  animation:mwv2StarTwinkle 1.8s ease-in-out infinite;
-}
 #themeToggle .mwv2-star.s1{width:2.5px;height:2.5px;top:1px;right:-1px;animation-delay:.1s}
 #themeToggle .mwv2-star.s2{width:1.6px;height:1.6px;bottom:2px;right:1px;animation-delay:.7s}
 @keyframes mwv2StarTwinkle{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1)}}
@@ -16195,7 +16183,10 @@ html body #mwBottomNav{
      são a mesma peça. */
   --mw-icon:30px;
   --mw-avatar:41px;
-  --mw-pad-y:13.4px;
+  /* 13,4 -> 8,6: a coluna cresceu de 30 para 44px ao receber o nome
+     embaixo do ícone. Sem baixar o respiro, a cápsula passaria de
+     57 para 71px de altura e comeria a tela no telefone. */
+  --mw-pad-y:7px;
   --mw-pad-x:17.4px;
   --mw-gap:9.4px;
   --mw-btn-w:52.6px;
@@ -16824,7 +16815,6 @@ html body #mwBottomMenu.mw-bottomnav-avatar{
   background-repeat:no-repeat!important;
 }
 html body #mwSidebarAvatar{border-radius:10px!important}
-html body #profileBtn{border-radius:13px!important}
 html body #mwBottomMenu.mw-bottomnav-avatar{border-radius:50%!important}html body #profileAvatarPreview:not([data-mw-migrada] *){border-radius:18px!important}
 @media(hover:hover){
   html body #mwBottomNav #mwBottomMenu.mw-bottomnav-avatar:hover{filter:brightness(1.12)}
@@ -17172,6 +17162,13 @@ html body #mwBottomNav.mwbn > button{
   /* O botão tinha overflow:hidden, que cortava o nome ("Facul...").
      O rótulo é absoluto e precisa transbordar a coluna de propósito. */
   overflow:visible!important;
+  /* ALTURA PARA O NOME CABER EMBAIXO.
+     Com o nome ao lado, a coluna só precisava da altura do ícone (30px).
+     Empilhado, o conjunto passa a medir ícone + respiro + nome ≈ 44px —
+     e, sendo o rótulo absoluto, ele NÃO empurra nada: sem esta altura
+     mínima o nome sairia por baixo da cápsula. O respiro vertical da
+     cápsula cai junto, senão a barra inteira engordaria. */
+  min-height:48px!important;
 }
 /* ============================================================
    O CONJUNTO ÍCONE + NOME FICA CENTRADO NO SLOT
@@ -17200,33 +17197,19 @@ html body #mwBottomNav.mwbn > button{
        chegam no mesmo quadro. É isso que evita o efeito "parcelado".
      • Tudo é transform/opacity. Nenhum slot muda de tamanho ou posição,
        nada é empurrado, não há reflow. */
-html body #mwBottomNav.mwbn > button .mwnav-icon{
-  transform:translateX(0);
-  transition:transform var(--mw-choreo-dur) var(--mw-choreo-ease),
-             opacity var(--mw-choreo-dur) var(--mw-choreo-ease);
-}
-html body #mwBottomNav.mwbn > button.active .mwnav-icon{
-  transform:translateX(var(--mw-ix,0px));
-}
-/* O rótulo sai do fluxo: ancorado no centro do slot e colocado pelo
-   transform, para que entrar e posicionar sejam O MESMO movimento —
-   e não "aparece, depois anda". */
-html body #mwBottomNav.mwbn .mwnav-label{
-  position:absolute!important;
-  left:50%!important;
-  top:50%!important;
-  font-size:9px!important;font-weight:700;letter-spacing:0!important;
-  white-space:nowrap!important;pointer-events:none;
-  opacity:0;
-  /* Nasce 8px atrás do destino, na direção de onde o ícone vem: o nome
-     parece sair de dentro do ícone e assentar junto com ele. */
-  transform:translate(calc(var(--mw-lx,0px) - 8px),-50%);
-  transition:opacity var(--mw-choreo-dur) var(--mw-choreo-ease),
-             transform var(--mw-choreo-dur) var(--mw-choreo-ease);
-}
-html body #mwBottomNav.mwbn > button.active .mwnav-label{
-  opacity:1;transform:translate(var(--mw-lx,0px),-50%);
-}
+/* (o deslocamento do ícone saía daqui: era a outra metade da
+   coreografia apagada logo abaixo) */
+/* AQUI HAVIA UMA SEGUNDA IMPLEMENTAÇÃO DO RÓTULO — apagada.
+
+   Ela tirava o nome do fluxo (`position:absolute`) e o colocava por
+   `transform`, com a posição medida em JS. Perdia a cascata para o
+   bloco `mw-ds-bottomnav`, lá embaixo, havia rodadas — mas o
+   `transform` SOBREVIVIA, porque o bloco vencedor não declara essa
+   propriedade. Resultado: com o nome empilhado, ele nascia 11px
+   abaixo do lugar e caía fora da pílula. Código morto que ainda mexe
+   na tela é pior do que código morto parado.
+
+   Quem manda no rótulo agora é um lugar só: `mw-ds-bottomnav`. */
 }
 /* Perfil: foto quando existe, ícone de pessoa quando não existe.
    A camada da foto ocupa exatamente a caixa do ícone, então trocar
@@ -17253,7 +17236,7 @@ html body #mwBottomNav.mwbn > button .mwnav-icon{
    (Esta regra vem DEPOIS da de .has-photo de propósito: mesma
    especificidade, então a ordem é que decide qual vale no item ativo.) */
 html body #mwBottomNav.mwbn > button.active .mwnav-photo{
-  transform:translate(calc(-50% + var(--mw-ix,0px)),-50%) scale(1);
+  transform:translate(-50%, calc(-50% + var(--mw-iy,0px))) scale(1);
 }
 
 /* Com o conjunto centrado o nome passou a caber bem mais para baixo: a
@@ -17857,16 +17840,26 @@ html body #mwBottomNav:has(> button.mw-avatar-active) > button.active .mwnav-lab
     if (prematuro) return false;
     botoes.forEach(b => {
       const lbl = b.querySelector('.mwnav-label');
-      const lblW = (lbl && getComputedStyle(lbl).display !== 'none')
-        ? lbl.getBoundingClientRect().width / k : 0;
-      const groupW = lblW ? icon + GAP + lblW : icon;
-      // Centrar o conjunto = mover o ícone meia "sobra" para a esquerda.
-      const ix = lblW ? -(GAP + lblW) / 2 : 0;
-      // O nome começa onde o ícone termina; como o rótulo está ancorado
-      // em left:50%, o destino é medido a partir do centro do slot.
-      const lx = lblW ? (icon + GAP - lblW) / 2 : 0;
-      b.style.setProperty('--mw-ix', ix.toFixed(2) + 'px');
-      b.style.setProperty('--mw-lx', lx.toFixed(2) + 'px');
+      const visivel = lbl && getComputedStyle(lbl).display !== 'none';
+      const cx = visivel ? lbl.getBoundingClientRect() : null;
+      const lblW = cx ? cx.width / k : 0;
+      const lblH = cx ? cx.height / k : 0;
+      /* O NOME FICA EMBAIXO DO ÍCONE, não ao lado.
+         Antes o conjunto crescia na HORIZONTAL: o ícone andava para a
+         esquerda e o nome pousava à direita dele. Empilhado, o eixo do
+         movimento passa a ser o VERTICAL, e as duas peças continuam
+         centradas na coluna — o ícone sobe metade da sobra, o nome pousa
+         logo abaixo dele. A largura da bolha deixa de somar ícone + nome
+         e passa a ser o MAIOR dos dois, senão ela ficaria larga demais
+         para um conjunto que agora é estreito e alto. */
+      const espaco = 3;                       // respiro entre ícone e nome
+      const groupW = lblW ? Math.max(icon, lblW) : icon;
+      const iy = lblH ? -(espaco + lblH) / 2 : 0;
+      const ly = lblH ? (icon + espaco) / 2 : 0;
+      b.style.setProperty('--mw-ix', '0px');
+      b.style.setProperty('--mw-iy', iy.toFixed(2) + 'px');
+      b.style.setProperty('--mw-lx', '0px');
+      b.style.setProperty('--mw-ly', ly.toFixed(2) + 'px');
       b.dataset.groupw = groupW.toFixed(2);
     });
     return true;
@@ -26769,33 +26762,67 @@ html body #mwBottomNav.mwbn button.active .mwnav-icon svg{ fill: currentColor !i
 /* O nome da seção aparece SÓ no item ativo, e o item cresce para caber:
    é a diferença entre uma barra de ícones (onde é preciso decorar) e uma
    em que a seção atual está escrita. */
+/* O NOME FICA EMBAIXO DO ÍCONE.
+   Era ao lado, e o item ativo crescia na horizontal para caber os dois.
+   Empilhado, o item cresce na VERTICAL: o botão vira uma coluna, e o que
+   se anima é a altura do nome, não a largura.
+
+   Um aviso para quem mexer: existia uma SEGUNDA implementação disto no
+   arquivo — o rótulo absoluto, posicionado por `--mw-lx`, com a medição
+   em JS. Ela perdia a cascata para esta e estava morta havia rodadas.
+   Foi apagada junto com esta mudança: duas maneiras de colocar o mesmo
+   texto no mesmo lugar é como se instala a divergência. */
+html body #mwBottomNav.mwbn > button{
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  /* A coluna precisa de caixa própria: 30 do ícone + 3 de respiro + 14
+     do nome = 47. O botão vinha com 44 de altura e 10 de respiro em cima
+     e embaixo, ou seja, 24 úteis — o ícone já transbordava e o nome
+     caía FORA da pílula, que é desenhada com `inset:0` sobre o botão.
+     Com 54 e respiro de 4, a pílula volta a envolver os dois. */
+  min-height: 54px !important;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+}
 html body #mwBottomNav.mwbn .mwnav-label{
   position: static !important;
+  /* NÃO ENCOLHER. Num container flex column, o rótulo é um item como
+     outro qualquer: com ícone (30px) + nome (12px) + respiro passando da
+     altura mínima do botão, o navegador espremia justamente o nome até
+     zero — `max-height:14px` valia e a altura usada era 0. O mesmo
+     descuido do cabeçalho, um andar abaixo. */
+  flex: 0 0 auto !important;
   opacity: 0 !important;
-  max-width: 0 !important;
+  max-height: 0 !important;
+  margin-top: 0 !important;
   overflow: hidden !important;
   white-space: nowrap !important;
-  font-size: 12.5px !important;
+  font-size: 10.5px !important;
   font-weight: 700 !important;
-  transition: opacity .2s var(--ds-suave), max-width .34s var(--ds-mola), margin-left .34s var(--ds-mola) !important;
+  line-height: 1.15 !important;
+  letter-spacing: .01em !important;
+  transition: opacity .2s var(--ds-suave), max-height .34s var(--ds-mola), margin-top .34s var(--ds-mola) !important;
 }
 html body #mwBottomNav.mwbn button.active .mwnav-label{
   opacity: 1 !important;
-  max-width: 90px !important;
-  margin-left: 7px !important;
+  max-height: 14px !important;
+  margin-top: 3px !important;
 }
 /* O item ativo deixa de dividir a largura igualmente com os outros e
    passa a se dimensionar pelo conteúdo: com "flex:1 1 0" ele competia
    com os irmãos e o nome saía cortado dentro da própria pílula
    ("Iníci…"). Os demais continuam dividindo o que sobra. */
 html body #mwBottomNav.mwbn > button.active{
-  /* "flex-basis:auto" volta a olhar para "width", e o botão herda
-     width:100% da barra em grade — o que fazia a pílula ocupar quase a
-     barra inteira. Com width:auto ela mede o próprio conteúdo. */
-  flex: 0 0 auto !important;
-  width: auto !important;
-  padding-left: 13px !important;
-  padding-right: 15px !important;
+  /* Com o nome EMBAIXO, o item deixa de crescer na horizontal: a pílula
+     envolve uma coluna estreita e alta, e não uma linha larga. Os
+     paddings caem de 13/15 para 10/10 e a largura volta a ser dividida
+     igualmente — o que também acaba com o empurra-empurra que cortava o
+     nome dos vizinhos ("Iníci…"). */
+  flex: 1 1 0 !important;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
 }
 
 /* --- O + central -----------------------------------------------------
@@ -31643,7 +31670,7 @@ html body .mw-pular:focus{ transform: translateY(0); }
   /* O carimbo entra depois do preloader para não brigar com a abertura
      da marca, e sai sozinho. window.MW_PREVIA fica disponível para
      conferir a versão pelo console sem depender de ver o carimbo. */
-  window.MW_PREVIA = 'v106-beta';
+  window.MW_PREVIA = 'v107-beta';
   function mostra(){
     if (document.getElementById('mwPreviaCarimbo')) return;
     var el = document.createElement('div');
