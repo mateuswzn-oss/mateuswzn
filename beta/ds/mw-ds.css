@@ -89,7 +89,10 @@
      sistema encontrou a superfície de verdade. #8893af dá 4,91:1 e
      continua abaixo de --mw-txt-2 (7,09:1), que é o que preserva a
      hierarquia entre os três níveis de texto. */
-  --mw-p-gelo-500:#8893af;
+  /* Segunda medida, mesma lição do gelo-300: #8893af dava 4,41–4,49:1 sobre
+     as superfícies reais das áreas — abaixo do mínimo por uma casa decimal,
+     em seis telas. #94a0bd sai do fio e mantém a distância para --mw-txt-2. */
+  --mw-p-gelo-500:#94a0bd;
 
   /* semânticas de estado */
   --mw-p-verde-400:#34d399;
@@ -1178,4 +1181,585 @@ body.light .ds{
   .ds{ --mw-txt-1:#000; --mw-txt-2:#222; --mw-txt-3:#444; }
 }
 
+}
+
+/* ============================================================================
+   OS TRÊS MATERIAIS — e por que isto existe
+   ============================================================================
+   A crítica que originou este bloco foi: "praticamente tudo é CARD CARD CARD
+   CARD, com fundo azul escuro + borda + blur + border-radius + texto". Estava
+   certa, e a causa não era a cor: era não haver DISTINÇÃO DE MATERIAL. Se toda
+   informação vira a mesma caixa de vidro, nenhuma tem peso maior que a outra —
+   e uma tela sem hierarquia parece um template, por mais bonita que seja a
+   caixa.
+
+   Então o sistema passa a ter três materiais, e cada um só pode ser usado no
+   seu papel:
+
+     CHAPA  — conteúdo que fica parado na página. Sólida, fio de 1px, SEM blur.
+              É a maioria esmagadora do app. Blur em coisa parada é custo de
+              GPU sem nenhum ganho: não há nada atrás para refratar.
+
+     VIDRO  — só o que FLUTUA sobre o conteúdo: a barra de baixo, o topo quando
+              sobrepõe, diálogos, popovers, o véu do menu. Aqui a transparência
+              tem função — você vê o conteúdo passar por baixo — e é isso que
+              faz o Liquid Glass parecer material e não filtro.
+
+     PLANO  — nada. Sem fundo, sem borda, sem sombra. Só ritmo e um rótulo.
+              É a peça que quebra a parede de cartões: a maior parte de uma
+              tela boa é conteúdo agrupado, não conteúdo encaixotado.
+
+   Regra de ouro: se o elemento não se sobrepõe a nada, ele NÃO é de vidro.
+   ---------------------------------------------------------------------------- */
+
+/* ---- CHAPA: a superfície de conteúdo ------------------------------------- */
+.ds .ds-chapa{
+  background: var(--mw-sup-1);
+  border: 1px solid var(--mw-borda);
+  border-radius: var(--mw-r-4);
+  padding: var(--mw-e-5);
+}
+.ds .ds-chapa-p{ padding: var(--mw-e-4); border-radius: var(--mw-r-3); }
+/* Afundada: para o que está DENTRO de uma chapa e precisa recuar um degrau —
+   um trilho de progresso, uma caixa de código, o fundo de um gráfico. */
+.ds .ds-afundada{
+  background: var(--mw-sup-afundada);
+  border: 1px solid var(--mw-divisor);
+  border-radius: var(--mw-r-3);
+}
+
+/* ---- VIDRO: só para o que flutua ------------------------------------------
+   Três camadas, e as três importam. Sem a especular de cima o vidro fica
+   chapado; sem a sombra ele não descola do fundo; sem o blur não é vidro. */
+.ds .ds-material-vidro{
+  background: var(--mw-vidro-cor);
+  -webkit-backdrop-filter: saturate(150%) blur(22px);
+  backdrop-filter: saturate(150%) blur(22px);
+  border: 1px solid var(--mw-vidro-borda);
+  box-shadow:
+    inset 0 1px 0 0 var(--mw-vidro-brilho),  /* especular: a quina de cima */
+    inset 0 0 0 1px rgba(255,255,255,.04),   /* espessura do próprio vidro */
+    var(--mw-sombra-3);                      /* o que o descola da página */
+  border-radius: var(--mw-r-5);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))){
+  /* Sem blur, translucidez vira sujeira. Quem não suporta recebe chapa. */
+  .ds .ds-material-vidro{ background: var(--mw-sup-2); }
+}
+
+/* ---- PLANO: agrupamento sem caixa ----------------------------------------
+   `ds-faixa` é a peça mais usada das telas novas. Um rótulo, uma ação
+   opcional à direita, e o conteúdo — sem nada desenhado em volta. */
+.ds .ds-faixa{ display: flex; flex-direction: column; gap: var(--mw-e-3); }
+/* Sem margem entre faixas: quem dá o ritmo é o `gap` da `.ds-tela`. Ter os
+   dois somava 32px + 32px e abria um vão morto entre as seções — o mesmo
+   "espaços vazios e componentes sem vida" que a crítica apontou. */
+.ds .ds-faixa-cabeca{
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: var(--mw-e-3); min-height: 20px;
+}
+.ds .ds-faixa-titulo{
+  margin: 0; font-size: var(--mw-t-corpo-g); font-weight: 650;
+  letter-spacing: -.01em; color: var(--mw-txt-1);
+}
+.ds .ds-faixa-apoio{ font-size: var(--mw-t-micro); color: var(--mw-txt-3); }
+/* A ação da faixa é um link de texto, não um botão: botão em toda seção
+   devolve a poluição que a faixa veio resolver. */
+.ds .ds-faixa-acao{
+  border: 0; background: none; padding: 0; cursor: pointer;
+  font: inherit; font-size: var(--mw-t-micro); font-weight: 600;
+  color: var(--mw-ac-txt); white-space: nowrap;
+  transition: opacity var(--mw-d-rapida) var(--mw-curva);
+}
+.ds .ds-faixa-acao:hover{ opacity: .72; }
+/* Área de toque: o link mede ~94x17 no texto, abaixo do mínimo de 24px que a
+   auditoria exige. O recheio negativo dá o alvo confortável sem mexer no
+   desenho — continua lendo como link, e não como mais um botão. */
+.ds .ds-faixa-acao{ padding: 8px 4px; margin: -8px -4px; }
+
+/* ============================================================================
+   COMPOSIÇÃO — as peças que não são cartão
+   ============================================================================ */
+
+/* ---- MÉTRICAS EM LINHA ----------------------------------------------------
+   Quatro números NÃO precisam de quatro caixas. Uma linha, divisores de 1px,
+   e os números alinhados pela mesma base. Ocupa um terço da altura e lê-se de
+   uma vez só. */
+.ds .ds-med-fila{
+  display: grid; grid-auto-flow: column; grid-auto-columns: 1fr;
+  align-items: start;
+}
+.ds .ds-med{
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 0 var(--mw-e-4); min-width: 0;
+}
+.ds .ds-med + .ds-med{ border-left: 1px solid var(--mw-divisor); }
+.ds .ds-med:first-child{ padding-left: 0; }
+.ds .ds-med:last-child{ padding-right: 0; }
+.ds .ds-med-n{
+  font-size: var(--mw-t-numero); font-weight: 700; line-height: 1.05;
+  letter-spacing: -.03em; color: var(--mw-txt-1);
+  font-variant-numeric: tabular-nums;
+}
+.ds .ds-med-r{
+  font-size: var(--mw-t-rotulo); font-weight: 650; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--mw-txt-3);
+}
+.ds .ds-med-ap{ font-size: var(--mw-t-micro); color: var(--mw-txt-2); }
+
+/* ---- TRILHO HORIZONTAL ----------------------------------------------------
+   Disciplinas, projetos, atalhos: rolam de lado no celular em vez de empilhar
+   dez caixas verticalmente. `scroll-snap` para parar no item, não no meio. */
+.ds .ds-trilho{
+  display: flex; gap: var(--mw-e-3);
+  overflow-x: auto; overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  margin-inline: calc(var(--mw-e-5) * -1);
+  padding-inline: var(--mw-e-5);
+  padding-bottom: 2px;
+}
+.ds .ds-trilho::-webkit-scrollbar{ display: none; }
+.ds .ds-trilho > *{ scroll-snap-align: start; flex: 0 0 auto; }
+
+/* ---- LINHA DO TEMPO -------------------------------------------------------
+   Para a agenda e as próximas entregas. O marcador e o fio dão a leitura de
+   sequência que uma pilha de cartões não dá. */
+.ds .ds-tempo{ display: flex; flex-direction: column; }
+.ds .ds-tempo-item{
+  display: grid; grid-template-columns: 54px 14px 1fr;
+  gap: var(--mw-e-3); align-items: start;
+  padding: var(--mw-e-3) 0; position: relative;
+}
+.ds .ds-tempo-quando{
+  font-size: var(--mw-t-micro); font-weight: 650; color: var(--mw-txt-2);
+  font-variant-numeric: tabular-nums; padding-top: 1px; text-align: right;
+}
+.ds .ds-tempo-marca{ position: relative; height: 100%; }
+.ds .ds-tempo-marca::before{
+  content: ''; position: absolute; left: 50%; top: 5px;
+  width: 7px; height: 7px; margin-left: -3.5px; border-radius: 50%;
+  background: var(--mw-txt-3);
+}
+.ds .ds-tempo-marca::after{
+  content: ''; position: absolute; left: 50%; top: 16px; bottom: -14px;
+  width: 1px; margin-left: -.5px; background: var(--mw-divisor);
+}
+.ds .ds-tempo-item:last-child .ds-tempo-marca::after{ display: none; }
+.ds .ds-tempo-item[data-urgente] .ds-tempo-marca::before{
+  background: var(--mw-perigo); box-shadow: 0 0 0 3px var(--mw-perigo-bg);
+}
+.ds .ds-tempo-item[data-hoje] .ds-tempo-marca::before{ background: var(--mw-ac); }
+.ds .ds-tempo-o-que{ min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.ds .ds-tempo-titulo{
+  font-size: var(--mw-t-corpo); font-weight: 600; color: var(--mw-txt-1);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.ds .ds-tempo-apoio{ font-size: var(--mw-t-micro); color: var(--mw-txt-3); }
+
+/* ---- ESTADO DE PARTIDA ----------------------------------------------------
+   Não é "estado vazio": é o primeiro passo. Ícone discreto, uma frase que diz
+   o que a área faz, e a AÇÃO. "Nenhum cadastrado" informa e abandona; isto
+   convida. Vazio sem ação é um beco. */
+.ds .ds-partida{
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: var(--mw-e-3); padding: var(--mw-e-10) var(--mw-e-5);
+}
+.ds .ds-partida-marca{
+  width: 46px; height: 46px; display: grid; place-items: center;
+  border-radius: var(--mw-r-3);
+  background: var(--mw-ac-suave); color: var(--mw-ac);
+  margin-bottom: var(--mw-e-1);
+}
+.ds .ds-partida-marca svg{ width: 22px; height: 22px; }
+.ds .ds-partida-titulo{
+  margin: 0; font-size: var(--mw-t-titulo); font-weight: 650;
+  letter-spacing: -.015em; color: var(--mw-txt-1);
+}
+.ds .ds-partida-texto{
+  margin: 0; font-size: var(--mw-t-corpo); line-height: 1.5;
+  color: var(--mw-txt-2); max-width: 34ch;
+}
+.ds .ds-partida .ds-btn{ margin-top: var(--mw-e-2); }
+/* Em faixa (sem chapa em volta) o vazio ainda precisa de um chão discreto,
+   senão o texto flutua solto no meio do nada — que foi exatamente a queixa. */
+.ds .ds-partida-emfaixa{
+  border: 1px dashed var(--mw-borda);
+  border-radius: var(--mw-r-4);
+  padding: var(--mw-e-8) var(--mw-e-5);
+}
+
+/* ---- PÍLULA (chip acionável) --------------------------------------------- */
+.ds .ds-pilula{
+  display: inline-flex; align-items: center; gap: var(--mw-e-2);
+  height: 30px; padding: 0 var(--mw-e-3);
+  border: 1px solid var(--mw-borda); border-radius: 999px;
+  background: transparent; color: var(--mw-txt-2);
+  font: inherit; font-size: var(--mw-t-micro); font-weight: 600;
+  cursor: pointer; white-space: nowrap;
+  transition: background var(--mw-d-rapida) var(--mw-curva),
+              border-color var(--mw-d-rapida) var(--mw-curva),
+              color var(--mw-d-rapida) var(--mw-curva);
+}
+.ds .ds-pilula:hover{ background: var(--mw-sup-2); color: var(--mw-txt-1); }
+.ds .ds-pilula[aria-pressed="true"]{
+  background: var(--mw-ac-suave); border-color: transparent; color: var(--mw-ac-txt);
+}
+.ds .ds-pilula svg{ width: 14px; height: 14px; }
+
+/* ============================================================================
+   MOVIMENTO — vivo, não animado
+   ============================================================================
+   Duas regras: nada anima sem motivo, e nada anima por mais de 260ms. O que
+   o usuário deve sentir é resposta, não espetáculo. */
+
+/* Pressão: o gesto do dedo. Vale para tudo que é tocável. */
+.ds .ds-btn:active,
+.ds .ds-pilula:active,
+.ds .ds-nav-item:active,
+.ds .ds-item-acionavel:active{ transform: scale(.97); }
+.ds .ds-btn, .ds .ds-pilula, .ds .ds-item-acionavel{
+  transition: transform 90ms var(--mw-curva),
+              background var(--mw-d-rapida) var(--mw-curva),
+              border-color var(--mw-d-rapida) var(--mw-curva),
+              color var(--mw-d-rapida) var(--mw-curva),
+              box-shadow var(--mw-d-rapida) var(--mw-curva);
+}
+
+/* Entrada em cascata: a tela se monta de cima para baixo, uma faixa após a
+   outra, com 34ms entre elas. É o que dá a sensação de "o app montou a tela
+   para mim" em vez de "a tela apareceu". */
+@keyframes ds-sobe{ from{ opacity:0; transform: translate3d(0,10px,0); } to{ opacity:1; transform:none; } }
+.ds .ds-monta > *{
+  animation: ds-sobe var(--mw-d-media) var(--mw-curva-entrada) both;
+  animation-delay: calc(var(--i, 0) * 34ms);
+}
+
+/* Esqueleto: o que aparece enquanto o dado não chegou. */
+@keyframes ds-pulsa{ 0%,100%{ opacity:.45 } 50%{ opacity:.8 } }
+.ds .ds-osso{
+  background: var(--mw-sup-2); border-radius: var(--mw-r-2);
+  animation: ds-pulsa 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce){
+  .ds .ds-monta > *{ animation: none; }
+  .ds .ds-btn:active, .ds .ds-pilula:active,
+  .ds .ds-nav-item:active, .ds .ds-item-acionavel:active{ transform: none; }
+  .ds .ds-osso{ animation: none; }
+}
+
+/* ============================================================================
+   A MOLDURA — topo
+   ============================================================================
+   O topo antigo carregava a SAUDAÇÃO dentro da barra ("Olá, Mateus!" mais
+   "1º semestre • Seu curso", em duas linhas). No telefone isso comia toda a
+   largura, as três ações não cabiam na mesma linha e o navegador as empilhava
+   verticalmente — que é o defeito que aparece na foto: uma barra ocupando
+   quase metade da primeira tela, com três botões em coluna no canto.
+
+   Não era um problema de CSS. Era a saudação estar no lugar errado: ela é
+   conteúdo da tela inicial, não da moldura. Aqui o topo passa a carregar só o
+   CONTEXTO — o nome da área, uma linha — e a saudação foi para o hero do
+   Início, onde ela pertence e onde tem espaço para respirar.
+
+   Regras que a barra passa a cumprir:
+     · uma linha, sempre; as ações nunca quebram;
+     · altura proporcional (56px no telefone, 64px no desktop);
+     · a área segura do notch entra como padding, não como margem;
+     · vidro SÓ quando há conteúdo passando por baixo (rolagem > 0). Parada no
+       topo, ela é plana: não há o que refratar, e vidro sobre nada é ruído.
+   ---------------------------------------------------------------------------- */
+.ds.ds-topo{
+  position: sticky; top: 0; z-index: 40;
+  display: flex; align-items: center; flex-wrap: nowrap;
+  gap: var(--mw-e-2);
+  height: calc(56px + env(safe-area-inset-top, 0px));
+  padding: env(safe-area-inset-top, 0px) var(--mw-e-4) 0;
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background var(--mw-d-media) var(--mw-curva),
+              border-color var(--mw-d-media) var(--mw-curva),
+              backdrop-filter var(--mw-d-media) var(--mw-curva);
+}
+/* Rolou: agora existe conteúdo por baixo, e o vidro tem função. */
+.ds.ds-topo[data-rolado="1"]{
+  background: var(--mw-vidro-cor);
+  -webkit-backdrop-filter: saturate(160%) blur(20px);
+  backdrop-filter: saturate(160%) blur(20px);
+  border-bottom-color: var(--mw-divisor);
+}
+.ds .ds-topo-marca{ display: none; flex: 0 0 auto; }
+.ds .ds-topo-marca svg{ height: 20px; width: auto; display: block; color: var(--mw-txt-1); }
+.ds .ds-topo-titulo{
+  flex: 1 1 auto; min-width: 0; margin: 0;
+  font-size: var(--mw-t-titulo); font-weight: 680; letter-spacing: -.02em;
+  color: var(--mw-txt-1);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ds .ds-topo-acoes{
+  flex: 0 0 auto; display: flex; align-items: center; flex-wrap: nowrap;
+  gap: var(--mw-e-1);
+}
+.ds .ds-topo-icone{
+  width: var(--mw-alvo-confortavel); height: var(--mw-alvo-confortavel);
+  flex: 0 0 auto; display: grid; place-items: center;
+  border-radius: var(--mw-r-2); border: 1px solid transparent;
+  background: transparent; color: var(--mw-txt-2); cursor: pointer;
+}
+.ds .ds-topo-icone:hover{ background: var(--mw-sup-2); color: var(--mw-txt-1); }
+/* Voltar: o app o revela (tirando o `hidden`) quando se está numa tela-folha
+   — uma que se alcança de dentro de outra, e de onde a barra de baixo não
+   traz de volta. Quando está visível, ele toma o lugar do menu. */
+.ds .ds-topo-voltar[hidden]{ display: none; }
+.ds .ds-topo-voltar:not([hidden]) ~ .ds-topo-menu,
+.ds .ds-topo-menu:has(~ .ds-topo-voltar:not([hidden])){ display: none; }
+
+/* Sino: o ponto só aparece quando há algo. */
+.ds .ds-topo-sino{ position: relative; }
+.ds .ds-topo-ponto{
+  position: absolute; top: 9px; right: 9px; width: 7px; height: 7px;
+  border-radius: 50%; background: var(--mw-ac); display: none;
+}
+.ds .ds-topo-sino[data-tem="1"] .ds-topo-ponto{ display: block; }
+.ds .ds-topo-aviso{
+  position: absolute; top: calc(100% + 6px); right: 0; z-index: 60;
+  width: min(300px, calc(100vw - 32px)); padding: var(--mw-e-4);
+  display: flex; flex-direction: column; gap: var(--mw-e-2);
+  /* CHAPA, não vidro — e a regra do material explica por quê: aqui há
+     TEXTO PARA LER por cima do conteúdo da página. Vidro serve quando ver
+     através é a intenção (a barra de baixo, o véu do menu); num popover de
+     leitura ele só reduz o contraste. Sombra funda para descolar. */
+  box-shadow: var(--mw-sombra-3);
+}
+.ds .ds-topo-aviso.hidden{ display: none; }
+.ds .ds-topo-aviso strong{ font-size: var(--mw-t-corpo); color: var(--mw-txt-1); }
+.ds .ds-topo-aviso-item{ font-size: var(--mw-t-micro); color: var(--mw-txt-2); }
+
+/* Busca: no desktop é um campo; no telefone é só a lupa, e o campo abre
+   ocupando a barra inteira. Um campo de busca permanente num telefone rouba
+   a largura de que o título precisa. */
+.ds .ds-busca{ display: flex; align-items: center; }
+.ds .ds-busca-campo{ display: none; }
+
+/* Nyc AI: identidade própria (§17). No desktop é uma pílula com o nome; no
+   telefone, só a fagulha — mas continua sendo o acento da barra, e não mais
+   um botão igual aos outros. */
+.ds .ds-topo-ia{
+  flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px;
+  height: 36px; padding: 0 var(--mw-e-3); margin-left: 2px;
+  border: 1px solid transparent; border-radius: 999px;
+  background: var(--mw-ac-grad); color: var(--mw-txt-sobre-acento);
+  font: inherit; font-size: var(--mw-t-micro); font-weight: 650;
+  cursor: pointer; box-shadow: var(--mw-sombra-1);
+  transition: transform 90ms var(--mw-curva), box-shadow var(--mw-d-rapida) var(--mw-curva);
+}
+.ds .ds-topo-ia:hover{ box-shadow: var(--mw-sombra-2); }
+.ds .ds-topo-ia:active{ transform: scale(.96); }
+.ds .ds-topo-ia-fagulha{ font-size: 13px; line-height: 1; }
+
+.ds .ds-topo-perfil{
+  flex: 0 0 auto; width: 34px; height: 34px; margin-left: 2px;
+  border-radius: 50%; border: 1px solid var(--mw-borda);
+  background: var(--mw-sup-2) center/cover no-repeat; color: var(--mw-txt-1);
+  font: inherit; font-size: 11.5px; font-weight: 700; letter-spacing: .02em;
+  display: grid; place-items: center; cursor: pointer; overflow: hidden;
+  transition: transform 90ms var(--mw-curva), border-color var(--mw-d-rapida) var(--mw-curva);
+}
+.ds .ds-topo-perfil:hover{ border-color: var(--mw-borda-forte); }
+.ds .ds-topo-perfil:active{ transform: scale(.94); }
+.ds .ds-topo-perfil.has-avatar{ color: transparent; font-size: 0; }
+
+/* ---- telefone ---- */
+@media (max-width: 900px){
+  .ds .ds-topo-marca{ display: block; }
+  .ds .ds-topo-so-desktop{ display: none; }
+  .ds .ds-topo-titulo{ font-size: var(--mw-t-corpo-g); font-weight: 700; }
+  .ds .ds-topo-ia{ width: var(--mw-alvo-confortavel); padding: 0; justify-content: center; }
+  .ds .ds-topo-ia-nome{ display: none; }
+  /* O tema é uma preferência, não uma ação frequente: no telefone ele mora em
+     Configurações, e sair daqui devolve a largura que o título precisava. */
+  .ds .ds-topo .mwv2-theme-btn{ display: none; }
+}
+@media (min-width: 901px){
+  .ds.ds-topo{
+    height: 64px; padding-inline: var(--mw-e-6);
+    gap: var(--mw-e-3);
+  }
+  .ds .ds-topo-menu{ display: none; }
+  .ds .ds-topo-titulo{ font-size: var(--mw-t-tela); }
+  .ds .ds-busca{
+    height: 38px; padding: 0 var(--mw-e-2) 0 0; margin-right: var(--mw-e-2);
+    border: 1px solid var(--mw-borda); border-radius: 999px;
+    background: var(--mw-sup-2);
+    transition: border-color var(--mw-d-rapida) var(--mw-curva),
+                box-shadow var(--mw-d-rapida) var(--mw-curva);
+  }
+  .ds .ds-busca:focus-within{
+    border-color: var(--mw-ac); box-shadow: 0 0 0 3px var(--mw-ac-suave);
+  }
+  .ds .ds-busca-lupa{ width: 36px; height: 36px; }
+  .ds .ds-busca-campo{
+    display: block; width: 172px; height: 36px;
+    border: 0; background: none; padding: 0; box-shadow: none;
+    color: var(--mw-txt-1); font-size: var(--mw-t-corpo);
+  }
+  .ds .ds-busca-campo:focus{ outline: none; box-shadow: none; }
+}
+
+/* ============================================================================
+   A TELA — ritmo, e o hero de contexto
+   ============================================================================ */
+.ds .ds-tela{
+  display: flex; flex-direction: column; gap: var(--mw-e-6);
+  padding: var(--mw-e-5) var(--mw-e-5) var(--mw-e-16);
+  max-width: 1120px; margin-inline: auto;
+}
+@media (min-width: 901px){
+  .ds .ds-tela{ gap: var(--mw-e-8); padding: var(--mw-e-8) var(--mw-e-8) var(--mw-e-12); }
+}
+
+/* ---- HERO DE CONTEXTO -----------------------------------------------------
+   Sem caixa. É a primeira coisa da página e a única que pode ocupar espaço
+   sem pedir licença: data, saudação, contexto acadêmico, e os quatro números
+   numa linha só — não em quatro caixas. */
+.ds .ds-hero{ display: flex; flex-direction: column; gap: var(--mw-e-1); }
+.ds .ds-hero-data{
+  margin: 0; font-size: var(--mw-t-rotulo); font-weight: 650;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--mw-txt-3);
+}
+.ds .ds-hero-ola{
+  margin: 2px 0 0; font-size: clamp(26px, 7vw, 34px); line-height: 1.1;
+  font-weight: 700; letter-spacing: -.035em; color: var(--mw-txt-1);
+  text-wrap: balance;
+}
+.ds .ds-hero-ola b{ font-weight: 700; color: var(--mw-txt-1); }
+.ds .ds-hero-ctx{
+  margin: 0; font-size: var(--mw-t-corpo); color: var(--mw-txt-2);
+}
+.ds .ds-hero-ctx:empty{ display: none; }
+.ds .ds-hero-med{
+  margin-top: var(--mw-e-5);
+  padding-top: var(--mw-e-4); border-top: 1px solid var(--mw-divisor);
+}
+
+/* ---- AGORA ----------------------------------------------------------------
+   A faixa do momento. Fica acima de tudo e some quando não há nada — um
+   destaque permanente deixa de ser destaque. */
+.ds .ds-agora{
+  display: flex; align-items: center; gap: var(--mw-e-3); flex-wrap: wrap;
+  padding: var(--mw-e-3) var(--mw-e-4);
+  border: 1px solid var(--mw-borda); border-left: 3px solid var(--mw-ac);
+  border-radius: var(--mw-r-3);
+  background: var(--mw-sup-1);
+}
+.ds .ds-agora[hidden]{ display: none; }
+.ds .ds-agora-chips{ display: flex; gap: var(--mw-e-2); flex-wrap: wrap; align-items: center; }
+
+/* ---- ATALHOS --------------------------------------------------------------
+   Trilho de destinos. No telefone rola de lado; no desktop cabe inteiro. */
+.ds .ds-atalhos[hidden]{ display: none; }
+.ds .ds-atalhos > *{
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; min-width: 78px; height: 72px; padding: 0 var(--mw-e-3);
+  border: 1px solid var(--mw-borda); border-radius: var(--mw-r-3);
+  background: var(--mw-sup-1); color: var(--mw-txt-2);
+  font: inherit; font-size: var(--mw-t-micro); font-weight: 600; cursor: pointer;
+  transition: transform 90ms var(--mw-curva), border-color var(--mw-d-rapida) var(--mw-curva),
+              color var(--mw-d-rapida) var(--mw-curva);
+}
+.ds .ds-atalhos > *:hover{ border-color: var(--mw-borda-forte); color: var(--mw-txt-1); }
+.ds .ds-atalhos > *:active{ transform: scale(.96); }
+.ds .ds-atalhos svg{ width: 19px; height: 19px; }
+
+/* ---- ações do estado de partida ---- */
+.ds .ds-partida-acoes{
+  display: flex; gap: var(--mw-e-2); flex-wrap: wrap; justify-content: center;
+  margin-top: var(--mw-e-2);
+}
+
+/* ---- calendário dentro da chapa ---- */
+.ds .ds-cal-topo{ display: flex; justify-content: flex-end; margin-bottom: var(--mw-e-2); }
+.ds .ds-cal-topo .cal-nav{ display: flex; align-items: center; gap: var(--mw-e-2); }
+.ds .ds-cal-topo .cal-nav strong{
+  min-width: 118px; text-align: center; font-size: var(--mw-t-corpo);
+  font-weight: 650; color: var(--mw-txt-1);
+}
+.ds .ds-cal-hoje{
+  margin: 0 0 var(--mw-e-3); font-size: var(--mw-t-micro); color: var(--mw-txt-3);
+}
+.ds .ds-cal-hoje:empty{ display: none; }
+.ds .ds-cal-detalhe{
+  margin-top: var(--mw-e-3); padding-top: var(--mw-e-3);
+  border-top: 1px solid var(--mw-divisor);
+  font-size: var(--mw-t-corpo); color: var(--mw-txt-2);
+}
+
+/* ---- gráfico ---- */
+.ds .ds-grafico{ position: relative; height: 190px; }
+.ds .ds-grafico canvas{ width: 100%; height: 100%; display: block; }
+.ds .ds-grafico-dica{
+  position: absolute; pointer-events: none; opacity: 0;
+  padding: 6px 9px; border-radius: var(--mw-r-1);
+  background: var(--mw-sup-3); border: 1px solid var(--mw-borda);
+  font-size: var(--mw-t-micro); color: var(--mw-txt-1);
+  box-shadow: var(--mw-sombra-2); transition: opacity var(--mw-d-rapida) var(--mw-curva);
+}
+.ds .ds-grafico-dica[data-ativo="1"]{ opacity: 1; }
+.ds .ds-grafico-vazio{
+  display: none;   /* o JS liga com .show quando não há disciplina */
+  font-size: var(--mw-t-corpo); color: var(--mw-txt-3); text-align: center;
+  padding: var(--mw-e-6) 0;
+}
+.ds .ds-grafico-vazio.show{ display: block; }
+
+/* ---- PEÇA: o item de um trilho -------------------------------------------
+   Uma disciplina, um projeto, uma aula. Largura fixa para que o trilho pare
+   sempre no mesmo lugar, e altura dada pelo conteúdo. */
+.ds .ds-peca{
+  display: flex; flex-direction: column; gap: 6px;
+  width: 176px; padding: var(--mw-e-4);
+  border: 1px solid var(--mw-borda); border-radius: var(--mw-r-3);
+  background: var(--mw-sup-1);
+  transition: transform 90ms var(--mw-curva), border-color var(--mw-d-rapida) var(--mw-curva);
+}
+.ds .ds-peca:hover{ border-color: var(--mw-borda-forte); }
+.ds .ds-peca-titulo{
+  font-size: var(--mw-t-corpo); font-weight: 650; color: var(--mw-txt-1);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.ds .ds-peca-apoio{
+  font-size: var(--mw-t-micro); color: var(--mw-txt-3); line-height: 1.4;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; min-height: 2.8em;
+}
+.ds .ds-peca-trilho{
+  height: 5px; border-radius: 99px; background: var(--mw-sup-3); overflow: hidden;
+  margin-top: 2px;
+}
+.ds .ds-peca-trilho > i{
+  display: block; height: 100%; border-radius: 99px; background: var(--mw-ac-grad);
+  transition: width var(--mw-d-media) var(--mw-curva);
+}
+.ds .ds-peca-pct{
+  font-size: var(--mw-t-micro); font-weight: 650; color: var(--mw-txt-2);
+  font-variant-numeric: tabular-nums;
+}
+.ds .ds-peca .ds-selo{ align-self: flex-start; margin-top: 2px; }
+
+/* Quatro métricas numa linha só cabem com folga a partir de ~430px. Abaixo
+   disso viram duas colunas por duas linhas — continua sendo UMA peça, com
+   divisores, e não quatro caixas. */
+@media (max-width: 430px){
+  .ds .ds-med-fila{
+    grid-auto-flow: row; grid-template-columns: 1fr 1fr;
+    gap: var(--mw-e-4) 0;
+  }
+  .ds .ds-med{ padding-inline: var(--mw-e-4); }
+  .ds .ds-med:nth-child(odd){ padding-left: 0; }
+  .ds .ds-med:nth-child(even){ padding-right: 0; }
+  .ds .ds-med + .ds-med{ border-left: 1px solid var(--mw-divisor); }
+  .ds .ds-med:nth-child(odd) + .ds-med{ border-left: 1px solid var(--mw-divisor); }
+  .ds .ds-med:nth-child(odd){ border-left: 0; }
+  .ds .ds-med-n{ font-size: 26px; }
 }

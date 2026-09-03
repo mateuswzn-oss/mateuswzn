@@ -1412,7 +1412,7 @@ body.light #app .mw-switch{background:rgba(30,38,50,.20)!important;justify-conte
   background:linear-gradient(135deg,rgba(102,224,255,.10),rgba(37,99,235,.16))!important;
   border:1px solid rgba(102,224,255,.16)!important;
   backdrop-filter:blur(14px)!important;-webkit-backdrop-filter:blur(14px)!important;
-  color:var(--mw-txt-1,#f5f8ff)!important;/*Etapa 0: branco cravado no rótulo da Nyc AI*/
+  color:var(--mw-txt-sobre-acento,#fff)!important;/*Etapa 0: branco cravado no rótulo da Nyc AI*/
   transition:transform .18s ease,background .18s ease,border-color .18s ease!important;
 }
 #app .mateus-ai-btn:hover{transform:translateY(-1px)!important;background:linear-gradient(135deg,rgba(102,224,255,.15),rgba(37,99,235,.22))!important;border-color:rgba(102,224,255,.24)!important}
@@ -4067,44 +4067,104 @@ body.light .mw-faceid-gate-card p{color:#526988}
     </div>
   </aside>
   <main class="main">
-    <header class="topbar ds" data-mw-migrada="1"><button type="button" class="mw-mobile-menu ds-btn ds-btn-fantasma ds-btn-icone" id="mwMobileMenu" aria-label="Abrir menu"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><button type="button" class="mw-back-btn ds-btn ds-btn-fantasma ds-btn-icone" id="mwBackBtn" aria-label="Voltar ao início" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg></button><div class="hello"><h2>Olá, Mateus!</h2><p>1º semestre • Seu curso</p></div><div class="top-actions"><div class="search-wrap" id="searchWrap"><button type="button" class="search-icon icon-btn ds-btn ds-btn-fantasma ds-btn-icone" id="searchToggle" aria-label="Pesquisar" title="Pesquisar (Ctrl+K)"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="m16.2 16.2 3.6 3.6"/></svg></button><input id="globalSearch" class="ds-entrada" type="search" placeholder="Pesquisar..."></div><div class="mw-bell-wrap" style="position:relative"><button class="icon-btn bell-btn ds-btn ds-btn-fantasma ds-btn-icone" id="notificationBtn" title="Notificações"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 2a6.5 6.5 0 0 0-6.5 6.5c0 4.6-1.8 6.6-2.4 7.2A1 1 0 0 0 4 17.8h16a1 1 0 0 0 .9-1.6c-.6-.6-2.4-2.6-2.4-7.2A6.5 6.5 0 0 0 12 2zm-1.6 18a1.6 1.6 0 0 0 3.2 0z"/></svg><span class="bell-dot"></span></button><div class="notification-menu hidden" id="notificationMenu"><strong>Notificações</strong><div id="notificationList"><div class="notification-item">Nada novo por agora.</div></div></div></div><button class="icon-btn mwv2-theme-btn ds-btn ds-btn-fantasma ds-btn-icone" id="themeToggle" title="Alternar tema"><svg class="mwv2-icon-sun" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.5v2.4M12 19.1v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/></svg><span class="mwv2-moon-glow" aria-hidden="true"></span><svg class="mwv2-icon-moon" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z"/></svg><span class="mwv2-star s1" aria-hidden="true"></span><span class="mwv2-star s2" aria-hidden="true"></span></button><button class="icon-btn ds-btn ds-btn-fantasma ds-btn-icone" id="quickAdd" title="Adicionar">＋</button><button class="mateus-ai-btn" id="mateusAiBtn" type="button" title="Abrir Nyc AI"><span>✦</span><span class="eva-label">Nyc AI</span></button><button class="profile-btn" id="profileBtn" title="Configurações do perfil">MW</button></div></header>
+    <header class="ds-topo ds" data-mw-migrada="1" id="mwTopo">
+<button type="button" class="ds-topo-icone ds-topo-menu ds-btn ds-btn-fantasma ds-btn-icone" id="mwMobileMenu" aria-label="Abrir menu"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+<button type="button" class="ds-topo-icone ds-topo-voltar ds-btn ds-btn-fantasma ds-btn-icone" id="mwBackBtn" aria-label="Voltar ao início" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg></button>
+<span class="ds-topo-marca" aria-hidden="true"><svg viewBox="0 0 64 44"><use href="#mwi-marca"/></svg></span>
+<h1 class="ds-topo-titulo" id="mwTopoTitulo">Início</h1>
+<div class="ds-topo-acoes">
+<div class="ds-busca" id="searchWrap"><button type="button" class="ds-topo-icone ds-busca-lupa ds-btn ds-btn-fantasma ds-btn-icone" id="searchToggle" aria-label="Pesquisar" title="Pesquisar (Ctrl+K)"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="m16.2 16.2 3.6 3.6"/></svg></button><input id="globalSearch" class="ds-entrada ds-busca-campo" type="search" placeholder="Pesquisar..."></div>
+<div class="ds-topo-sino"><button class="ds-topo-icone ds-btn ds-btn-fantasma ds-btn-icone" id="notificationBtn" aria-label="Notificações" title="Notificações"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 2a6.5 6.5 0 0 0-6.5 6.5c0 4.6-1.8 6.6-2.4 7.2A1 1 0 0 0 4 17.8h16a1 1 0 0 0 .9-1.6c-.6-.6-2.4-2.6-2.4-7.2A6.5 6.5 0 0 0 12 2zm-1.6 18a1.6 1.6 0 0 0 3.2 0z"/></svg><span class="ds-topo-ponto"></span></button><div class="ds-topo-aviso ds-chapa hidden" id="notificationMenu"><strong>Notificações</strong><div id="notificationList"><div class="ds-topo-aviso-item">Nada novo por agora.</div></div></div></div>
+<button class="ds-topo-icone mwv2-theme-btn ds-btn ds-btn-fantasma ds-btn-icone" id="themeToggle" title="Alternar tema"><svg class="mwv2-icon-sun" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.5v2.4M12 19.1v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/></svg><span class="mwv2-moon-glow" aria-hidden="true"></span><svg class="mwv2-icon-moon" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z"/></svg><span class="mwv2-star s1" aria-hidden="true"></span><span class="mwv2-star s2" aria-hidden="true"></span></button>
+<button class="ds-topo-icone ds-topo-so-desktop ds-btn ds-btn-fantasma ds-btn-icone" id="quickAdd" aria-label="Adicionar" title="Adicionar"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+<button class="ds-topo-ia" id="mateusAiBtn" type="button" title="Abrir Nyc AI"><span class="ds-topo-ia-fagulha" aria-hidden="true">&#10022;</span><span class="ds-topo-ia-nome">Nyc AI</span></button>
+<button class="ds-topo-perfil" id="profileBtn" aria-label="Perfil e conta" title="Perfil e conta">MW</button>
+</div>
+</header>
     <section class="view ds active" id="view-home" data-mw-migrada="1">
-      <!-- Resumo do dia e atalhos: inseridos aqui na marcação, e não por
-           script, para existirem no primeiro quadro em vez de aparecerem
-           depois com um salto de layout. O conteúdo é preenchido pelo
-           mw-comando-js; enquanto não há dado, ambos ficam ocultos. -->
-      <section class="ds-cartao ds-cartao-compacto mw-resumo" id="mwResumoDia" hidden>
-        <div class="mw-resumo-data">
-          <strong id="mwResumoDataTexto"></strong>
-          <span id="mwResumoSemestre"></span>
-        </div>
-        <div class="mw-resumo-chips" id="mwResumoChips"></div>
-      </section>
-      <nav class="mw-atalhos" id="mwAtalhos" aria-label="Acesso rápido" hidden></nav>
-      <div class="ds-grade" id="mwGradeStats"><div class="ds-resumo" data-mw-grupo><div class="ds-rotulo">Disciplinas</div><strong id="statSubjects">0</strong><span id="statSubjectsHint">Nenhuma cadastrada</span></div><div class="ds-resumo" data-mw-grupo><div class="ds-rotulo">Atividades</div><strong id="statActivities">0</strong><span id="statActivitiesHint">Nenhuma cadastrada</span></div><div class="ds-resumo" data-mw-grupo><div class="ds-rotulo">Projetos</div><strong id="statProjects">0</strong><span id="statProjectsHint">Nenhum cadastrado</span></div><div class="ds-resumo" data-mw-grupo><div class="ds-rotulo">Progresso</div><strong id="statProgress">0%</strong><span id="statProgressHint">Sem dados ainda</span></div></div>
-      <section class="ds-cartao mwv2-chart-card" id="mwv2ChartCard">
-        <div class="ds-secao-cabeca" data-mw-cabeca><h3 class="ds-titulo">Progresso por disciplina</h3><span id="mwv2ChartHint">Ao vivo, com seus dados</span></div>
-        <div class="mwv2-chart-wrap"><canvas id="mwv2ProgressChart"></canvas><div class="mwv2-chart-tooltip" id="mwv2ChartTooltip" role="status" aria-hidden="true"></div></div>
-        <div class="mwv2-chart-empty" id="mwv2ChartEmpty">Cadastre disciplinas pra ver o gráfico aqui.</div>
-      </section>
-      <div class="grid cols"><section class="ds-cartao"><div class="ds-secao-cabeca" data-mw-cabeca><h3 class="ds-titulo">Suas disciplinas</h3><span id="subjectsCountLabel">0 cadastradas</span></div><div class="course-list" id="homeSubjects"></div></section><section class="ds-cartao"><div class="ds-secao-cabeca" data-mw-cabeca><h3 class="ds-titulo">Projetos recentes</h3><span id="projectsCountLabel">0 cadastrados</span></div><div class="course-list" id="homeProjects"></div></section></div>
-      <div class="ds-cartao mw-welcome" id="homeWelcome" hidden>
-        <div class="mw-welcome-kicker">Workspace</div>
-        <h3 class="ds-titulo">Seu semestre começa aqui</h3>
-        <p>Cadastre a primeira disciplina, uma atividade com prazo ou um projeto. O calendário, as aulas e o sino passam a mostrar o que é seu — sem texto genérico.</p>
-        <div class="mw-welcome-actions">
-          <button type="button" data-go-add="subjects">Cadastrar disciplina</button>
-          <button type="button" data-go-add="activities">Nova atividade</button>
-          <button type="button" data-go-add="projects">Novo projeto</button>
-        </div>
-      </div>
-      <div class="grid activity-list" id="homePromo"><div class="ds-cartao ds-cartao-compacto activity-card" id="promoActivities"><h4>Próximas atividades</h4><div id="promoActivitiesBody"><p>Organize tarefas, prazos e compromissos acadêmicos em um só lugar.</p></div></div><div class="ds-cartao ds-cartao-compacto activity-card" id="promoProjects"><h4>Projetos em andamento</h4><div id="promoProjectsBody"><p>Acompanhe projetos pessoais e da faculdade sem perder o contexto.</p></div></div><div class="ds-cartao ds-cartao-compacto activity-card" id="promoProgress"><h4>Progresso</h4><p id="collegeProgress">0% — calculado automaticamente com seus registros.</p></div></div>
-    </section>
-    <div class="mw-cal-aulas">
-    <section class="ds-cartao liquid-card extra-panel" id="academicCalendarPanel"><div class="ds-secao-cabeca" data-mw-cabeca><h3 class="ds-titulo">Calendário acadêmico</h3><div class="cal-nav" id="calNav"><button type="button" class="ds-btn ds-btn-fantasma ds-btn-icone ds-btn-p" id="calPrev" aria-label="Mês anterior">‹</button><strong id="calMonthLabel">Agosto 2026</strong><button type="button" class="ds-btn ds-btn-fantasma ds-btn-icone ds-btn-p" id="calNext" aria-label="Próximo mês">›</button></div></div><p class="mw-cal-todayline" id="calTodayLine"></p><div class="calendar-grid" id="academicCalendar"></div><div class="mw-cal-detail" id="calDayDetail" hidden></div></section>
-    <section class="ds-cartao liquid-card extra-panel" id="lecturesPanel"><div class="ds-secao-cabeca" data-mw-cabeca><h3 class="ds-titulo">Aulas</h3><span class="aulas-sub">Suas aulas e progresso</span></div><div class="lecture-grid" id="lectureGrid"><div class="lecture-card"><strong>Nenhuma aula cadastrada</strong><div class="lecture-meta">Adicione disciplinas para começar a organizar suas aulas.</div><div class="progress-line"><i></i></div></div></div></section>
-    </div>
-<section class="view ds" id="view-college" data-mw-migrada="1"><section class="ds-cartao"><div class="ds-secao-cabeca" data-mw-cabeca><div><h2 class="ds-titulo">Faculdade</h2><p class="ds-micro">Seu contexto acadêmico</p></div></div><div class="ds-grade"><div class="ds-cartao ds-cartao-compacto"><h3 class="ds-rotulo" id="collegeCourseLabel">Seu curso</h3><p class="ds-micro" id="collegeSemesterLabel">1º semestre</p></div><div class="ds-cartao ds-cartao-compacto"><h3 class="ds-rotulo">Progresso do curso</h3><p class="ds-micro" id="collegeProgress2">0% calculado a partir das suas disciplinas</p></div><div class="ds-cartao ds-cartao-compacto"><h3 class="ds-rotulo">Organização</h3><p class="ds-micro">Use Disciplinas, Atividades e Projetos para montar seu Workspace.</p></div></div><div class="ds-grade-fixa-2" data-mw-grupo><div class="ds-campo"><label for="collegeInstitution">Instituição</label><input id="collegeInstitution" class="ds-entrada" list="collegeInstitutionOptions" placeholder="Sua faculdade ou universidade" autocomplete="organization"><datalist id="collegeInstitutionOptions"></datalist></div><div class="ds-campo"><label for="collegeCourse">Curso</label><input id="collegeCourse" class="ds-entrada" list="collegeCourseOptions" placeholder="Seu curso"><datalist id="collegeCourseOptions"></datalist></div><div class="ds-campo"><label for="collegeArea">Área/Especialização (opcional)</label><input id="collegeArea" class="ds-entrada" list="collegeAreaOptions" placeholder="Sua área de interesse"><datalist id="collegeAreaOptions"></datalist></div><div class="ds-campo"><label for="collegeSemester">Semestre atual</label><input id="collegeSemester" class="ds-entrada" type="number" min="1" max="20" value="1"></div></div><div class="ds-dialogo-acoes"><button class="ds-btn ds-btn-primario" id="saveCollege">Salvar organização</button></div></section></section>
+<div class="ds-monta ds-tela">
+
+<!-- 1 · CONTEXTO — quem, quando, como vai o semestre.
+     A saudação mora AQUI, e não na barra de cima: na barra ela roubava a
+     largura das ações e as empilhava em coluna no telefone. -->
+<header class="ds-hero" style="--i:0">
+<p class="ds-hero-data" id="mwResumoDataTexto"></p>
+<h2 class="ds-hero-ola">Ol&aacute;, <b id="mwOlaNome">voc&ecirc;</b></h2>
+<p class="ds-hero-ctx" id="mwResumoSemestre"></p>
+<div class="ds-med-fila ds-hero-med" id="mwGradeStats"><div class="ds-med"><span class="ds-med-n" id="statSubjects">0</span><span class="ds-med-r">Disciplinas</span><span class="ds-med-ap" id="statSubjectsHint">—</span></div><div class="ds-med"><span class="ds-med-n" id="statActivities">0</span><span class="ds-med-r">Atividades</span><span class="ds-med-ap" id="statActivitiesHint">—</span></div><div class="ds-med"><span class="ds-med-n" id="statProjects">0</span><span class="ds-med-r">Projetos</span><span class="ds-med-ap" id="statProjectsHint">—</span></div><div class="ds-med"><span class="ds-med-n" id="statProgress">0%</span><span class="ds-med-r">Progresso</span><span class="ds-med-ap" id="statProgressHint">—</span></div></div>
+</header>
+
+<!-- 2 · AGORA — a única coisa que pede atenção neste momento. -->
+<section class="ds-agora" id="mwResumoDia" hidden style="--i:1">
+<div class="ds-agora-chips" id="mwResumoChips"></div>
+</section>
+
+<!-- 3 · AÇÃO — trilho de atalhos, rola de lado em vez de empilhar. -->
+<nav class="ds-trilho ds-atalhos" id="mwAtalhos" aria-label="Acesso r&aacute;pido" hidden style="--i:2"></nav>
+
+<!-- 4 · PARTIDA — quando ainda não há nada, isto é o primeiro passo. -->
+<div class="ds-partida ds-partida-emfaixa" id="homeWelcome" hidden style="--i:3">
+<span class="ds-partida-marca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 7.5 12 12l9-4.5L12 3Z"/><path d="M3 12.5 12 17l9-4.5"/><path d="M3 17 12 21.5 21 17"/></svg></span>
+<h3 class="ds-partida-titulo">Seu semestre come&ccedil;a aqui</h3>
+<p class="ds-partida-texto">Cadastre a primeira disciplina, uma atividade com prazo ou um projeto. O calend&aacute;rio, as aulas e o resumo do dia passam a mostrar o que &eacute; seu.</p>
+<div class="ds-partida-acoes">
+<button type="button" class="ds-btn ds-btn-primario" data-go-add="subjects">Adicionar disciplina</button>
+<button type="button" class="ds-btn ds-btn-secundario" data-go-add="activities">Nova atividade</button>
+<button type="button" class="ds-btn ds-btn-fantasma" data-go-add="projects">Novo projeto</button>
+</div>
+</div>
+
+<!-- 5 · PRÓXIMOS DIAS — agenda própria do Início.
+     O painel do calendário NÃO vem para cá: existe um `traz()` que o move
+     para dentro da área Calendário, de propósito, porque o calendário
+     completo é daquela tela. Emprestá-lo aqui deixava esta faixa com o
+     título e nada embaixo. O Início ganha a sua própria linha do tempo,
+     que é o que a tela inicial precisa: o que vem, em ordem. -->
+<section class="ds-faixa" style="--i:4">
+<div class="ds-faixa-cabeca"><h3 class="ds-faixa-titulo">Pr&oacute;ximos dias</h3><button type="button" class="ds-faixa-acao" data-ir="calendar">Ver calend&aacute;rio</button></div>
+<div id="mwAgenda"></div>
+</section>
+
+<!-- 6 · PROGRESSO DO SEMESTRE -->
+<section class="ds-faixa" style="--i:5">
+<div class="ds-faixa-cabeca"><h3 class="ds-faixa-titulo">Progresso do semestre</h3><span class="ds-faixa-apoio" id="mwv2ChartHint">Ao vivo, com seus dados</span></div>
+<div class="ds-chapa" id="mwv2ChartCard">
+<div class="ds-grafico"><canvas id="mwv2ProgressChart"></canvas><div class="ds-grafico-dica" id="mwv2ChartTooltip" role="status" aria-hidden="true"></div></div>
+<div class="ds-grafico-vazio" id="mwv2ChartEmpty">Cadastre disciplinas para ver o gr&aacute;fico aqui.</div>
+</div>
+</section>
+
+<!-- 7 · DISCIPLINAS — trilho, não pilha de cartões -->
+<section class="ds-faixa" style="--i:6">
+<div class="ds-faixa-cabeca"><h3 class="ds-faixa-titulo">Suas disciplinas</h3><span class="ds-faixa-apoio" id="subjectsCountLabel">0 cadastradas</span></div>
+<div class="ds-trilho" id="homeSubjects"></div>
+</section>
+
+<!-- 8 · PROJETOS -->
+<section class="ds-faixa" style="--i:7">
+<div class="ds-faixa-cabeca"><h3 class="ds-faixa-titulo">Projetos recentes</h3><span class="ds-faixa-apoio" id="projectsCountLabel">0 cadastrados</span></div>
+<div class="ds-trilho" id="homeProjects"></div>
+</section>
+
+<!-- 9 · AULAS -->
+<section class="ds-faixa" id="lecturesPanel" style="--i:8">
+<div class="ds-faixa-cabeca"><h3 class="ds-faixa-titulo">Aulas</h3><span class="ds-faixa-apoio">Suas aulas e o progresso de cada uma</span></div>
+<div class="ds-trilho" id="lectureGrid"></div>
+</section>
+
+<!-- 10 · O QUE VEM — três linhas numa chapa, não três cartões. -->
+<section class="ds-faixa" id="homePromo" style="--i:9">
+<div class="ds-chapa ds-chapa-p">
+<div class="ds-lista">
+<div class="ds-item" id="promoActivities"><div class="ds-item-texto"><div class="ds-item-titulo">Pr&oacute;ximas atividades</div><div class="ds-item-apoio" id="promoActivitiesBody">Organize tarefas, prazos e compromissos em um s&oacute; lugar.</div></div></div>
+<div class="ds-item" id="promoProjects"><div class="ds-item-texto"><div class="ds-item-titulo">Projetos em andamento</div><div class="ds-item-apoio" id="promoProjectsBody">Acompanhe projetos pessoais e da faculdade sem perder o contexto.</div></div></div>
+<div class="ds-item" id="promoProgress"><div class="ds-item-texto"><div class="ds-item-titulo">Progresso</div><div class="ds-item-apoio" id="collegeProgress">0% &mdash; calculado com os seus registros.</div></div></div>
+</div>
+</div>
+</section>
+
+</div>
+</section><section class="view ds" id="view-college" data-mw-migrada="1"><section class="ds-cartao"><div class="ds-secao-cabeca" data-mw-cabeca><div><h2 class="ds-titulo">Faculdade</h2><p class="ds-micro">Seu contexto acadêmico</p></div></div><div class="ds-grade"><div class="ds-cartao ds-cartao-compacto"><h3 class="ds-rotulo" id="collegeCourseLabel">Seu curso</h3><p class="ds-micro" id="collegeSemesterLabel">1º semestre</p></div><div class="ds-cartao ds-cartao-compacto"><h3 class="ds-rotulo">Progresso do curso</h3><p class="ds-micro" id="collegeProgress2">0% calculado a partir das suas disciplinas</p></div><div class="ds-cartao ds-cartao-compacto"><h3 class="ds-rotulo">Organização</h3><p class="ds-micro">Use Disciplinas, Atividades e Projetos para montar seu Workspace.</p></div></div><div class="ds-grade-fixa-2" data-mw-grupo><div class="ds-campo"><label for="collegeInstitution">Instituição</label><input id="collegeInstitution" class="ds-entrada" list="collegeInstitutionOptions" placeholder="Sua faculdade ou universidade" autocomplete="organization"><datalist id="collegeInstitutionOptions"></datalist></div><div class="ds-campo"><label for="collegeCourse">Curso</label><input id="collegeCourse" class="ds-entrada" list="collegeCourseOptions" placeholder="Seu curso"><datalist id="collegeCourseOptions"></datalist></div><div class="ds-campo"><label for="collegeArea">Área/Especialização (opcional)</label><input id="collegeArea" class="ds-entrada" list="collegeAreaOptions" placeholder="Sua área de interesse"><datalist id="collegeAreaOptions"></datalist></div><div class="ds-campo"><label for="collegeSemester">Semestre atual</label><input id="collegeSemester" class="ds-entrada" type="number" min="1" max="20" value="1"></div></div><div class="ds-dialogo-acoes"><button class="ds-btn ds-btn-primario" id="saveCollege">Salvar organização</button></div></section></section>
     <!-- Instituições: até aqui "instituição" era um campo de texto solto
          dentro de Faculdade, então quem estuda em duas (graduação numa,
          técnico/pós em outra) não tinha onde registrar a segunda, e a
@@ -4172,7 +4232,20 @@ body.light .mw-faceid-gate-card p{color:#526988}
          ganhou a visão de semana ao lado. Duplicar teria criado dois
          calendários para manter em dia, que é como se chega a dois que
          discordam. -->
-    <section class="view ds" id="view-calendar" data-mw-migrada="1"></section>
+    <section class="view ds" id="view-calendar" data-mw-migrada="1">
+<!-- O PAINEL DO CALENDÁRIO MORA AQUI AGORA.
+     Ele estava declarado no Início e um `traz()` o arrastava para cá a cada
+     visita — markup num lugar, posição real noutro. Com o Início ganhando a
+     sua própria agenda, o painel completo passa a ser declarado onde de fato
+     vive: nesta área. O `traz()` continua valendo como garantia de ordem
+     (ele o põe logo depois do seletor mês/semana), mas já não move nada de
+     tela. -->
+<div class="ds-chapa" id="academicCalendarPanel">
+<div class="ds-cal-topo"><div class="cal-nav" id="calNav"><button type="button" class="ds-btn ds-btn-fantasma ds-btn-icone ds-btn-p" id="calPrev" aria-label="M&ecirc;s anterior">&lsaquo;</button><strong id="calMonthLabel">&nbsp;</strong><button type="button" class="ds-btn ds-btn-fantasma ds-btn-icone ds-btn-p" id="calNext" aria-label="Pr&oacute;ximo m&ecirc;s">&rsaquo;</button></div></div>
+<p class="ds-cal-hoje" id="calTodayLine"></p>
+<div class="calendar-grid" id="academicCalendar"></div>
+<div class="ds-cal-detalhe" id="calDayDetail" hidden></div>
+</div></section>
     <!-- Foco. O relógio não é um contador de quadros: o que fica
          guardado é o instante em que a sessão começou, e o tempo que
          falta é sempre calculado a partir do relógio do aparelho. É por
@@ -5494,7 +5567,7 @@ function loadProfileFields(){const p=data.profile||defaults.profile;$('#profileN
    tecnologias, links e as escolhas de privacidade. Agora só os três
    campos deste formulário são atualizados; o resto do perfil é
    preservado. */
-$('#saveProfile').onclick=()=>{data.profile=Object.assign({},data.profile||{},{name:$('#profileName').value.trim()||'Mateus',email:$('#profileEmail').value.trim(),photo:$('#profilePhoto').value.trim()});save();$('.hello h2').textContent='Olá, '+data.profile.name+'! 👋';toast('Perfil salvo')};
+$('#saveProfile').onclick=()=>{data.profile=Object.assign({},data.profile||{},{name:$('#profileName').value.trim()||'Mateus',email:$('#profileEmail').value.trim(),photo:$('#profilePhoto').value.trim()});save();/* a saudação saiu da barra de cima e virou o hero do Início; quem a escreve agora é o mw-inicio-js, a partir do dado — este `$('.hello h2')` estourava com null desde a mudança */toast('Perfil salvo')};
 $('#clearAll').onclick=()=>{window.mwConfirmar('Apagar todos os dados?','Isso remove disciplinas, projetos, atividades e anotações deste aparelho. Não dá para desfazer.',{sim:'Apagar tudo',icone:'!'}).then(ok=>{if(!ok)return;data.subjects=[];data.projects=[];data.activities=[];data.notes=[];save();toast('Dados apagados')})};
 $('#exportBackup').onclick=()=>{
   const payload={mateusWorkspaceBackup:1,exportedAt:new Date().toISOString(),data};
@@ -8294,7 +8367,7 @@ body.light #app .search-wrap input:focus{
 /* Nyc AI */#mateusAiBtn.mateus-ai-btn{
   height:40px!important;padding:0 14px 0 12px!important;border-radius:999px!important;
   background:linear-gradient(135deg,rgba(56,189,248,.22),rgba(124,92,255,.28))!important;
-  border:1px solid rgba(125,211,252,.32)!important;color:var(--mw-txt-1,#eef7ff)!important;/*Etapa 0: idem*/
+  border:1px solid rgba(125,211,252,.32)!important;color:var(--mw-txt-sobre-acento,#fff)!important;/*Etapa 0: idem*/
   font-weight:750!important;letter-spacing:.01em!important;
 }#mateusAiBtn.mateus-ai-btn span:not([data-mw-migrada]):not([data-mw-migrada] *){background:linear-gradient(90deg,#7dd3fc,#a78bfa,#38bdf8);-webkit-background-clip:text;background-clip:text;color:transparent;animation:evaName 6s linear infinite;background-size:200% 100%}
 @keyframes evaName{0%{background-position:0% 50%}100%{background-position:200% 50%}}
@@ -8665,7 +8738,7 @@ body.light .kicker{color:#355070!important}#lecturesPanel .section-head span:not
   height: 32px !important;
   padding: 0 12px !important;
   font-size: 11px !important;
-  color: #fecaca !important;
+  color: var(--mw-perigo, #fecaca) !important;
   background: rgba(239,68,68,.12) !important;
   border: 1px solid rgba(248,113,113,.35) !important;
 }#clearAll.mw-clear-btn:not([data-mw-migrada] *){
@@ -8684,7 +8757,7 @@ body.light #view-college .college-setup input{
 }
 
 /* Nyc AI botão */
-#mateusAiBtn{color:var(--mw-txt-1,#f0f7ff) !important/*Etapa 0: o rótulo da Nyc AI media 1,06:1 no tema claro — branco sobre branco*/}
+#mateusAiBtn{color:var(--mw-txt-sobre-acento,#fff) !important/*Etapa 0: o rótulo da Nyc AI media 1,06:1 no tema claro — branco sobre branco*/}
 </style>
 
 <style id="mw-video-match-css">
@@ -8783,16 +8856,12 @@ body.light #view-college .college-setup input{
     if (localStorage.getItem('mwSidebarCollapsed') === '1') apply(true);
   }
 
-  /* Calendário + Aulas lado a lado, como no dashboard do vídeo */
-  const cal = document.querySelector('#academicCalendarPanel');
-  const lec = document.querySelector('#lecturesPanel');
-  if (cal && lec && !document.querySelector('.mw-home-extras')) {
-    const w = document.createElement('div');
-    w.className = 'mw-home-extras';
-    cal.parentNode.insertBefore(w, cal);
-    w.appendChild(cal);
-    w.appendChild(lec);
-  }
+  /* APAGADO na reformulação: este trecho ARRANCAVA o calendário e as aulas
+     de onde o markup os punha e os embrulhava num `.mw-home-extras` para
+     ficarem "lado a lado como no vídeo". Com o Início reescrito em faixas,
+     cada painel já tem o seu lugar e o seu cabeçalho — e o embrulho levava
+     os dois para fora da faixa, deixando "Próximos dias" com o título e
+     nada embaixo. Posição é do markup; script não muda tela de lugar. */
 })();
 </script>
 
@@ -9448,6 +9517,7 @@ html body #app .sidebar{
     nav.innerHTML = `
       <button type="button" data-view="home" class="active" aria-label="Início"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.6 12 3.4l8.5 7.2"/><path d="M5.6 9.7V20a1 1 0 0 0 1 1h3.7v-5.8h3.4V21h3.7a1 1 0 0 0 1-1V9.7"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M12 2.7 2.6 10.4V21h6.7v-6.3h5.4V21h6.7V10.4L12 2.7Z"/></svg></span><span class="mwnav-label">Início</span></button>
       <button type="button" data-view="college" aria-label="Faculdade"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 2.8 8.7 12 13.4l9.2-4.7L12 4Z"/><path d="M6.6 11.3v4c0 1.7 2.6 3 5.9 3.2 3.3-.2 5.9-1.5 5.9-3.2v-4"/><path d="M20.5 9.4v5.3"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M12 3 1.6 8.3 12 13.6l8.7-4.4V15h1.7V8.3L12 3Z"/><path d="M5.6 10.9v4.3c0 1.9 2.9 3.4 6.4 3.4s6.4-1.5 6.4-3.4v-4.3l-6.4 3.3-6.4-3.3Z" opacity=".55"/></svg></span><span class="mwnav-label">Faculdade</span></button>
+      <button type="button" id="mwNavMais" class="mwnav-mais" aria-label="Adicionar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></svg></button>
       <button type="button" data-view="files" aria-label="Arquivos"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 2.6h7l5.3 5.3v13.5h-12.3V2.6Z"/><path d="M13.5 2.6v5.3h5.3"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><path d="M6.5 2.2h7.6l5.4 5.4V21.8h-13V2.2Z"/><path d="M14.1 2.2v5.4h5.4Z" opacity=".55"/></svg></span><span class="mwnav-label">Arquivos</span></button>
       <button type="button" id="mwBottomMenu" data-view="profile" aria-label="Perfil"><span class="mwnav-icon"><svg class="mwnav-icon-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.9"/><path d="M4.6 20.2c0-3.7 3.3-6.1 7.4-6.1s7.4 2.4 7.4 6.1"/></svg><svg class="mwnav-icon-solid" viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="7.8" r="4.3"/><path d="M12 13.6c-4.3 0-7.8 2.6-7.8 6.1 0 .5.4.9.9.9h13.8c.5 0 .9-.4.9-.9 0-3.5-3.5-6.1-7.8-6.1Z"/></svg></span><span class="mwnav-photo" aria-hidden="true"></span><span class="mwnav-label">Perfil</span></button>`;
     document.body.appendChild(nav);
@@ -10715,7 +10785,7 @@ body.light #view-settings .settings-group{
   height: 34px !important;
   padding: 0 14px !important;
   background: rgba(255,255,255,.08) !important;
-  color: #e8eef8 !important;
+  color: var(--mw-perigo, #e8eef8) !important;
   border: 1px solid rgba(255,255,255,.14) !important;
   border-radius: 10px !important;
 }body.light #logout:not([data-mw-migrada] *){ background:#fff !important; color:#16345c !important; border-color:rgba(15,40,80,.16) !important; }body.light #clearAll:not([data-mw-migrada] *), body.light #clearAll.mw-clear-btn:not([data-mw-migrada] *){
@@ -11350,7 +11420,7 @@ html body #app .profile-photo-actions .small-btn.danger{
   border-radius: 10px !important;
   background: #222528 !important;
   border: 1px solid #3a3e43 !important;
-  color: #f1f1ee !important;
+  color: var(--mw-perigo, #f1f1ee) !important;
   font-size: 13px !important;
 }html body #app #clearAll.mw-clear-btn, html body #app #clearAll{
   height: 36px !important;
@@ -11881,14 +11951,14 @@ html body #app #view-settings .settings-group #saveProfile:hover{
   border-radius: 10px !important;
   background: rgba(255,255,255,.06) !important;
   border: 1px solid rgba(255,255,255,.14) !important;
-  color: #e8eef6 !important;
+  color: var(--mw-perigo, #e8eef6) !important;
   font-size: 13px !important;
   font-weight: 650 !important;
 }
 html body #app #logout:hover{
   background: rgba(251,113,133,.14) !important;
   border-color: rgba(251,113,133,.35) !important;
-  color: #fecaca !important;
+  color: var(--mw-perigo, #fecaca) !important;
 }html body #app #clearAll, html body #app #clearAll.mw-clear-btn{
   height: 36px !important;
   padding: 0 14px !important;
@@ -13026,7 +13096,7 @@ html body.light #app #removeProfilePhoto:hover{
   border: 1px solid rgba(251,113,133,.35) !important;
   opacity: 1 !important;
 }html body.light #app #logout, html body.light #app #logout.mw-logout-btn, html body.light #app #view-settings #logout{
-  background: linear-gradient(135deg,#3b82f6,#2563eb) !important;
+  background: linear-gradient(rgba(0,0,0,.16), rgba(0,0,0,.16)), linear-gradient(135deg,#3b82f6,#2563eb) !important;
   color: #fff !important;
   border: 0 !important;
   opacity: 1 !important;
@@ -13037,7 +13107,7 @@ html body.light #app #removeProfilePhoto:hover{
   font-weight: 750 !important;
 }
 html body.light #app #logout:hover{
-  background: linear-gradient(135deg,#60a5fa,#1d4ed8) !important;
+  background: linear-gradient(rgba(0,0,0,.16), rgba(0,0,0,.16)), linear-gradient(135deg,#60a5fa,#1d4ed8) !important;
   filter: none !important;
 }html body #app #clearAll, html body #app #clearAll.mw-clear-btn{
   height: 32px !important;
@@ -16971,7 +17041,12 @@ html body #app .topbar.topbar{
 html body.mw-in-app.mw-drawer-open #mwBottomNav.mwbn{display:none!important}
 html body.mw-in-app #mwBottomNav.mwbn{
   display:grid!important;
-  grid-template-columns:repeat(4,1fr)!important;
+  /* CINCO colunas: Início · Faculdade · + · Arquivos · Perfil.
+     O "+" é a ação principal do aplicativo no telefone e passa a ocupar o
+     centro geométrico da barra — onde o polegar alcança sem esticar. A Nyc
+     AI saiu daqui e foi para o topo, com identidade própria: assistente é
+     ação especial, não destino de navegação. */
+  grid-template-columns:repeat(5,1fr)!important;
   align-items:center!important;
   justify-items:center!important;
   gap:0!important;
@@ -16996,6 +17071,10 @@ html body.mw-in-app #mwBottomNav.mwbn{
   transform-origin:50% 50%!important;
   transform:translateX(-50%) scale(var(--mw-nav-scale,1))!important;
 }
+/* A peça do "+" já existe mais abaixo (`#mwNavMais`), escrita numa rodada
+   anterior e nunca usada porque o botão não estava no markup. Agora está:
+   o markup passou a ter cinco itens e reaproveita aquela peça em vez de
+   declarar uma segunda. */
 html body #mwBottomNav.mwbn > button{
   width:100%!important;min-width:0!important;flex:none!important;
   display:grid!important;place-items:center!important;
@@ -25983,59 +26062,21 @@ html body #app .mw-topo-marca{ display: none; }
      criar e destruir conforme o tamanho da janela daria trabalho e
      piscada a cada rotação de tela. */
 
+  /* A SAUDAÇÃO SAIU DAQUI — e este bloco saiu junto.
+     ---------------------------------------------------------------------
+     Ele existia para copiar "Olá, Fulano" da BARRA DE CIMA para dentro do
+     Início, porque a saudação morava na barra e no telefone não cabia lá.
+     Era remendo sobre o lugar errado: a saudação é conteúdo da tela
+     inicial, não da moldura. Agora ela é markup do hero (`#mwOlaNome`) e
+     quem a preenche é o `mw-hero-js`, direto do perfil — sem copiar de
+     lugar nenhum, sem MutationObserver vigiando o topo.  */
   function nomeAtual(){
     var d = window.data;
     if (!d) { try { d = JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}'); } catch(e){ d = {}; } }
-    return String(((d.profile||{}).name) || 'Mateus').trim() || 'Mateus';
+    return String(((d.profile||{}).name) || '').trim();
   }
-  function primeiroNome(){ return nomeAtual().split(/\s+/)[0]; }
-
-  function montaMarca(){
-    var barra = document.querySelector('#app .topbar');
-    if (!barra || barra.querySelector('.mw-topo-marca')) return;
-    var hello = barra.querySelector('.hello');
-    var el = document.createElement('div');
-    el.className = 'mw-topo-marca';
-    el.innerHTML = '<svg viewBox="0 0 64 44" aria-hidden="true"><use href="#mwi-marca"/></svg>' +
-                   '<span>Workspace</span>';
-    if (hello) hello.insertAdjacentElement('afterend', el); else barra.prepend(el);
-  }
-
-  function montaOla(){
-    var casa = document.getElementById('view-home');
-    if (!casa) return;
-    var el = document.getElementById('mwOla');
-    if (!el){
-      el = document.createElement('div');
-      el.id = 'mwOla';
-      el.className = 'mw-ola';
-      el.innerHTML = '<b></b><small></small>';
-      casa.prepend(el);
-    }
-    /* Só o primeiro nome: é a largura de uma tela de telefone que manda
-       aqui, e "Olá, Mateus!" cabe onde "Olá, Mateus Souza!" não cabia. */
-    el.querySelector('b').textContent = 'Olá, ' + primeiroNome() + '!';
-    var sub = document.querySelector('#app .topbar .hello p');
-    el.querySelector('small').textContent = sub ? sub.textContent : '';
-  }
-
-  function inicia(){ montaMarca(); montaOla(); }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', inicia);
-  else inicia();
-
-  var anterior = window.mwDashRefresh;
-  window.mwDashRefresh = function(d){
-    if (typeof anterior === 'function') { try { anterior(d); } catch (e) {} }
-    try { inicia(); } catch (e) {}
-  };
-
-  /* A saudação e o subtítulo do topo são reescritos por outros blocos
-     (ao salvar o perfil, ao trocar de conta). Observar o próprio topo é
-     o que mantém a versão do telefone em dia sem ter que descobrir e
-     alterar cada um desses pontos. */
-  var alvo = document.querySelector('#app .topbar .hello');
-  if (alvo) new MutationObserver(function(){ try { montaOla(); } catch (e) {} })
-    .observe(alvo, { childList: true, subtree: true, characterData: true });
+  function primeiroNome(){ return (nomeAtual().split(/\s+/)[0]) || 'você'; }
+  window.mwPrimeiroNome = primeiroNome;
 })();
 </script>
 
@@ -30754,6 +30795,246 @@ html body .mw-pular:focus{ transform: translateY(0); }
 })();
 </script>
 
+
+<script id="mw-inicio-js">
+/* =====================================================================
+   O INÍCIO, E A MOLDURA QUE O CERCA
+   =====================================================================
+   Este bloco existe porque a reformulação trocou o MARKUP das telas, e
+   não o CSS que pintava o markup antigo. A medida que autorizou isso:
+   dos 6.511 seletores do arquivo, só 462 (7,1%) alcançam markup que não
+   carrega nome de classe legado — e esses 462 são todos de raiz (html,
+   body, #app, :root) mexendo em fundo e tokens. Nenhum deles desenha
+   nada dentro de uma tela.
+
+   Ou seja: markup novo com nomes `ds-*` fica FORA do alcance do CSS
+   antigo, sem guarda, sem !important e sem camada nova. É por isso que
+   a reformulação passa a ser "reescrever a tela" em vez de "descobrir
+   qual regra está ganhando".
+
+   O que este bloco faz, e por quê:
+     · preenche o hero (a saudação saiu da barra de cima e veio para cá);
+     · escreve o CONTEXTO na barra de cima — o nome da área, uma linha;
+     · liga o vidro da barra só quando há rolagem (vidro sobre nada é
+       ruído, não material);
+     · desenha os trilhos do Início como peças do sistema, com estado de
+       partida de verdade quando estão vazios.
+   ===================================================================== */
+(function(){
+  'use strict';
+  var q = function(s, r){ return (r||document).querySelector(s); };
+  var esc = function(t){ return String(t==null?'':t).replace(/[&<>"]/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+  function dados(){
+    if (window.data) return window.data;
+    try { return JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}'); } catch(e){ return {}; }
+  }
+
+  /* ---- 1. O nome no hero -------------------------------------------- */
+  function nome(){
+    var n = String(((dados().profile)||{}).name||'').trim();
+    return n ? n.split(/\s+/)[0] : 'você';
+  }
+  function pintaHero(){ var b = q('#mwOlaNome'); if (b) b.textContent = nome(); }
+
+  /* ---- 2. O contexto na barra de cima --------------------------------
+     O topo mostrava "Olá, Fulano" mais o curso, em duas linhas. Isso é
+     conteúdo do Início. Aqui ele mostra ONDE você está — que é o que uma
+     barra de aplicativo faz. */
+  var NOMES = {
+    home:'Início', college:'Faculdade', institutions:'Instituições',
+    subjects:'Disciplinas', projects:'Projetos', activities:'Atividades',
+    calendar:'Calendário', focus:'Foco', reports:'Relatórios',
+    notes:'Anotações', files:'Arquivos', support:'Suporte',
+    profile:'Perfil', settings:'Configurações', admin:'Painel Admin'
+  };
+  function pintaTitulo(v){
+    var h = q('#mwTopoTitulo'); if (!h) return;
+    h.textContent = NOMES[v] || NOMES.home;
+  }
+
+  /* ---- 3. O vidro da barra, só quando há o que refratar -------------- */
+  function ligaRolagem(){
+    var topo = q('#mwTopo'); if (!topo) return;
+    var alvo = q('#app .main') || document.scrollingElement || document.documentElement;
+    var ultimo = -1;
+    function ver(){
+      var y = (alvo.scrollTop || window.scrollY || 0);
+      var v = y > 4 ? 1 : 0;
+      if (v !== ultimo){ ultimo = v; topo.setAttribute('data-rolado', String(v)); }
+    }
+    (alvo === document.documentElement ? window : alvo)
+      .addEventListener('scroll', ver, { passive: true });
+    window.addEventListener('scroll', ver, { passive: true });
+    ver();
+  }
+
+  /* ---- 4. Os trilhos do Início ---------------------------------------
+     Antes: duas listas verticais dentro de dois cartões. Agora: dois
+     trilhos que rolam de lado, com uma peça por item — e, quando não há
+     item, um ESTADO DE PARTIDA com a ação, não a frase "Nenhum
+     cadastrado" perdida no meio de uma caixa. */
+  function partida(titulo, texto, rotulo, area){
+    return '<div class="ds-partida ds-partida-emfaixa" style="flex:1 1 100%">' +
+      '<h4 class="ds-partida-titulo">' + esc(titulo) + '</h4>' +
+      '<p class="ds-partida-texto">' + esc(texto) + '</p>' +
+      '<div class="ds-partida-acoes"><button type="button" class="ds-btn ds-btn-primario ds-btn-p" data-go-add="' +
+        area + '">' + esc(rotulo) + '</button></div></div>';
+  }
+  function peca(titulo, apoio, pct){
+    var p = Math.max(0, Math.min(100, Number(pct)||0));
+    return '<article class="ds-peca">' +
+      '<div class="ds-peca-titulo">' + esc(titulo) + '</div>' +
+      '<div class="ds-peca-apoio">' + esc(apoio) + '</div>' +
+      '<div class="ds-peca-trilho"><i style="width:' + p + '%"></i></div>' +
+      '<div class="ds-peca-pct">' + p + '%</div>' +
+      '</article>';
+  }
+  function pintaTrilhos(){
+    var d = dados();
+    var subs = (d.subjects||[]), projs = (d.projects||[]);
+
+    var alvo = q('#homeSubjects');
+    if (alvo){
+      alvo.innerHTML = subs.length
+        ? subs.slice(0,8).map(function(s){
+            return peca(s.name||'Disciplina', s.description || 'Sem descrição', s.progress);
+          }).join('')
+        : partida('Nenhuma disciplina ainda',
+                  'Adicione as matérias do semestre para o progresso e as aulas aparecerem aqui.',
+                  'Adicionar disciplina', 'subjects');
+      alvo.classList.toggle('ds-trilho', subs.length > 0);
+    }
+
+    var alvoP = q('#homeProjects');
+    if (alvoP){
+      alvoP.innerHTML = projs.length
+        ? projs.slice(0,8).map(function(pj){
+            var st = pj.status || 'Planejamento';
+            return '<article class="ds-peca">' +
+              '<div class="ds-peca-titulo">' + esc(pj.name||'Projeto') + '</div>' +
+              '<div class="ds-peca-apoio">' + esc(pj.description||'Sem descrição') + '</div>' +
+              '<span class="ds-selo ds-selo-liso">' + esc(st) + '</span>' +
+              '</article>';
+          }).join('')
+        : partida('Nenhum projeto ainda',
+                  'Um TCC, um seminário, um trabalho em grupo: registre para acompanhar o andamento.',
+                  'Novo projeto', 'projects');
+      alvoP.classList.toggle('ds-trilho', projs.length > 0);
+    }
+
+    var aulas = q('#lectureGrid');
+    if (aulas){
+      aulas.innerHTML = subs.length
+        ? subs.slice(0,8).map(function(s){
+            return peca(s.name||'Disciplina', 'Progresso da disciplina', s.progress);
+          }).join('')
+        : partida('Sem aulas cadastradas',
+                  'As aulas saem das suas disciplinas — cadastre a primeira e elas aparecem aqui.',
+                  'Adicionar disciplina', 'subjects');
+      aulas.classList.toggle('ds-trilho', subs.length > 0);
+    }
+  }
+
+  /* ---- 5. A AGENDA DO INÍCIO -----------------------------------------
+     Linha do tempo: quando, marcador, o quê. Uma pilha de cartões não diz
+     "isto vem antes daquilo"; um fio com marcadores diz. Atrasado ganha
+     marcador vermelho, hoje ganha o acento. */
+  var DIAS = ['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
+  var MESESC = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  function meiaNoite(d){ var x = new Date(d); x.setHours(0,0,0,0); return x; }
+  function quando(dt, hoje){
+    var dias = Math.round((meiaNoite(dt) - hoje) / 86400000);
+    if (dias < 0)  return { txt: (dias === -1 ? 'ontem' : Math.abs(dias)+' dias'), urgente: true };
+    if (dias === 0) return { txt: 'hoje',   hoje: true };
+    if (dias === 1) return { txt: 'amanhã', hoje: false };
+    if (dias < 7)   return { txt: DIAS[dt.getDay()].slice(0,3), hoje: false };
+    return { txt: dt.getDate() + ' ' + MESESC[dt.getMonth()], hoje: false };
+  }
+  function pintaAgenda(){
+    var caixa = q('#mwAgenda'); if (!caixa) return;
+    var hoje = meiaNoite(new Date());
+    var itens = (dados().activities||[])
+      .filter(function(a){ return a && a.date; })
+      .map(function(a){ return { a: a, d: new Date(a.date + 'T00:00:00') }; })
+      .filter(function(o){ return !isNaN(o.d); })
+      .sort(function(x,y){ return x.d - y.d; })
+      .slice(0, 7);
+
+    if (!itens.length){
+      caixa.className = '';
+      caixa.innerHTML = '<div class="ds-partida ds-partida-emfaixa">' +
+        '<h4 class="ds-partida-titulo">Nada com prazo pela frente</h4>' +
+        '<p class="ds-partida-texto">Coloque data nas atividades e elas aparecem aqui em ordem, com o que est&aacute; atrasado em destaque.</p>' +
+        '<div class="ds-partida-acoes"><button type="button" class="ds-btn ds-btn-primario ds-btn-p" data-go-add="activities">Nova atividade</button></div></div>';
+      return;
+    }
+    caixa.className = 'ds-tempo';
+    caixa.innerHTML = itens.map(function(o){
+      var w = quando(o.d, hoje);
+      var marca = w.urgente ? ' data-urgente="1"' : (w.hoje ? ' data-hoje="1"' : '');
+      var apoio = [o.a.subject, o.a.priority].filter(Boolean).join(' · ') || 'Atividade';
+      return '<div class="ds-tempo-item"' + marca + '>' +
+        '<div class="ds-tempo-quando">' + esc(w.txt) + '</div>' +
+        '<div class="ds-tempo-marca"></div>' +
+        '<div class="ds-tempo-o-que"><div class="ds-tempo-titulo">' + esc(o.a.name||'Atividade') + '</div>' +
+        '<div class="ds-tempo-apoio">' + esc(apoio) + '</div></div></div>';
+    }).join('');
+  }
+
+  function tudo(v){ pintaHero(); pintaTrilhos(); pintaAgenda(); if (v) pintaTitulo(v); }
+
+  /* Enganchar sem substituir: showView continua sendo de quem já era. */
+  function engancha(){
+    var antes = window.showView;
+    if (typeof antes !== 'function' || antes.__mwInicio) return false;
+    var novo = function(v){
+      var r = antes.apply(this, arguments);
+      try { tudo(v); } catch(e){}
+      return r;
+    };
+    novo.__mwInicio = true;
+    window.showView = novo;
+    return true;
+  }
+
+  /* ---- 6. O "+" da barra de baixo -------------------------------------
+     Ele não navega: abre a criação, que é a ação principal do app no
+     telefone. Reaproveita o mesmo caminho do "+" do topo (`#quickAdd`)
+     para que exista UM fluxo de criação, e não dois que divergem. */
+  function ligaMais(){
+    document.addEventListener('click', function(ev){
+      var b = ev.target && ev.target.closest && ev.target.closest('#mwNavMais');
+      if (!b) return;
+      ev.preventDefault(); ev.stopPropagation();
+      var rapido = document.getElementById('quickAdd');
+      if (rapido) rapido.click();
+    }, true);
+  }
+
+  function inicia(){
+    engancha(); ligaRolagem(); ligaMais();
+    var v = (q('#app .view.active') || {}).id || 'view-home';
+    tudo(String(v).replace(/^view-/, ''));
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', inicia);
+  else inicia();
+
+  /* Quando os dados mudam (salvar, sincronizar, trocar de conta) o Início
+     precisa se repintar. `renderAll` é o ponto por onde tudo isso passa. */
+  var antesRender = window.renderAll;
+  if (typeof antesRender === 'function' && !antesRender.__mwInicio){
+    var novoRender = function(){
+      var r = antesRender.apply(this, arguments);
+      try { pintaHero(); pintaTrilhos(); pintaAgenda(); } catch(e){}
+      return r;
+    };
+    novoRender.__mwInicio = true;
+    window.renderAll = novoRender;
+  }
+  document.addEventListener('mw:dados', function(){ try{ pintaHero(); pintaTrilhos(); pintaAgenda(); }catch(e){} });
+})();
+</script>
 <style id="mw-previa-carimbo">
 #mwPreviaCarimbo{
   position: fixed; top: 8px; left: 50%; transform: translateX(-50%);
@@ -30782,7 +31063,7 @@ html body .mw-pular:focus{ transform: translateY(0); }
   /* O carimbo entra depois do preloader para não brigar com a abertura
      da marca, e sai sozinho. window.MW_PREVIA fica disponível para
      conferir a versão pelo console sem depender de ver o carimbo. */
-  window.MW_PREVIA = 'v99-beta';
+  window.MW_PREVIA = 'v100-beta';
   function mostra(){
     if (document.getElementById('mwPreviaCarimbo')) return;
     var el = document.createElement('div');
