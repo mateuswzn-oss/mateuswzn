@@ -4034,7 +4034,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
     <div class="mw-reference-divider" aria-hidden="true"></div>
 
     <nav class="nav ds-nav mw-reference-nav" id="nav">
-      <button class="ds-nav-item active" aria-current="page" data-view="home"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-dashboard"/></svg></span><span class="label">Dashboard</span></button>
+      <button class="ds-nav-item active" aria-current="page" data-view="home"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-dashboard"/></svg></span><span class="label">Início</span></button>
       <button class="ds-nav-item" data-view="college"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-college"/></svg></span><span class="label">Faculdade</span></button>
       <button class="ds-nav-item" data-view="institutions"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-institutions"/></svg></span><span class="label">Instituições</span></button>
       <button class="ds-nav-item" data-view="subjects"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-subjects"/></svg></span><span class="label">Disciplinas</span></button>
@@ -4524,37 +4524,139 @@ body.light .mw-faceid-gate-card p{color:#526988}
 
 </section>
 
-<section class="view ds" id="view-profile" data-mw-migrada="1"><section class="ds-cartao"><div class="ds-secao-cabeca" data-mw-cabeca><div><h2 class="ds-titulo">Perfil</h2><p class="ds-micro">Como você aparece no Workspace</p></div></div>
-      <!-- Cabeçalho de identidade. A página abria direto numa fileira de
-           chips e o avatar ficava enterrado no meio do formulário, três
-           blocos abaixo — numa página que é justamente sobre "quem é
-           você", a pessoa aparecia por último. -->
-      <div class="mw-perfil-cabecalho">
-        <div class="mw-perfil-foto" id="mwPerfilFoto" aria-hidden="true"><span id="mwPerfilIniciais">M</span></div>
-        <div class="mw-perfil-id">
-          <strong id="mwPerfilNome">Mateus</strong>
-          <span id="mwPerfilLinha"></span>
-        </div>
-      </div>
-      <div class="mw-perfil-resumo">
-        <div class="mw-perfil-chip"><span>Usuário</span><strong id="mwPerfilResumoUsuario">—</strong><a href="javascript:void(0)" data-ir-config>Alterar em Configurações</a></div>
-        <div class="mw-perfil-chip"><span>E-mail</span><strong id="mwPerfilResumoEmail">—</strong><a href="javascript:void(0)" data-ir-config>Alterar em Configurações</a></div>
-        <div class="mw-perfil-chip"><span>Curso</span><strong id="mwPerfilResumoCurso">Seu curso</strong><a href="javascript:void(0)" data-ir-faculdade>Editar em Faculdade</a></div>
-        <div class="mw-perfil-chip"><span>Instituição</span><strong id="mwPerfilResumoInstituicao">—</strong><a href="javascript:void(0)" data-ir-faculdade>Editar em Faculdade</a></div>
-        <div class="mw-perfil-chip"><span>Semestre</span><strong id="mwPerfilResumoSemestre">1º</strong><a href="javascript:void(0)" data-ir-faculdade>Editar em Faculdade</a></div>
-      </div>
-      <!-- data-mw-grupo é o gancho durável do grupo de ajuste: o nome da
-           classe muda conforme a área esteja migrada, e o teste de área
-           conta grupos. -->
-      <div class="ds-grupo" data-mw-grupo><h4 class="ds-grupo-titulo">Nome e foto</h4><p class="ds-grupo-apoio">Como você aparece no Workspace. O nome de exibição pode ser trocado a qualquer momento, sem senha.</p><div class="ds-grupo-corpo"><div class="ds-grade-fixa-2"><div class="ds-campo"><label for="profileName">Nome de exibição</label><input id="profileName" class="ds-entrada" type="text" placeholder="Mateus"></div><div class="ds-campo"><label for="profileEmail">E-mail</label><input id="profileEmail" class="ds-entrada" type="email" readonly placeholder="seu@email.com" title="O e-mail da conta muda em Configurações › Conta."></div><div class="ds-campo ds-largo profile-photo-field">
-<label>Foto de perfil</label>
-<div class="profile-photo-card" id="profilePhotoCard">
-  <div class="profile-avatar-preview" id="profileAvatarPreview"><span id="profileAvatarInitials">MW</span></div>
-  <div class="profile-photo-copy"><strong>Foto do perfil</strong><small>Escolha uma foto e ajuste o enquadramento antes de salvar.</small><div class="profile-photo-actions"><button class="ds-btn ds-btn-fantasma ds-btn-p" type="button" id="chooseProfilePhoto">Escolher foto</button><button class="ds-btn ds-btn-fantasma ds-btn-p" type="button" id="editProfilePhoto">Ajustar</button><button class="ds-btn ds-btn-fantasma ds-btn-p ds-btn-perigo" type="button" id="removeProfilePhoto">Remover</button></div><input id="profilePhotoFile" type="file" accept="image/*" hidden><input id="profilePhoto" type="hidden"></div>
+<section class="view ds" id="view-profile" data-mw-migrada="1">
+<div class="ds-monta ds-tela">
+
+<!-- 1 · IDENTIDADE (§13).
+     Antes esta tela era um cartão com dois campos e três links dizendo
+     "Editar em Faculdade" / "Alterar em Configurações". Ou seja: uma
+     página administrativa que mandava a pessoa para outro lugar sempre
+     que ela tentava mudar o que é dela. O §36 é explícito — clicar no
+     perfil tem de abrir o PERFIL. Tudo o que é identidade se edita aqui;
+     Configurações fica com o que é conta e aplicativo (§37). -->
+<header class="ds-perfil-hero" style="--i:0">
+<div class="ds-perfil-foto" id="mwPerfilFoto">
+<span id="mwPerfilIniciais" aria-hidden="true">M</span>
+<button type="button" class="ds-perfil-foto-btn" id="chooseProfilePhoto" aria-label="Trocar foto de perfil" title="Trocar foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.4h3.1l1.5-2.2h6.8l1.5 2.2H20a1.6 1.6 0 0 1 1.6 1.6v8.2A1.6 1.6 0 0 1 20 19.6H4a1.6 1.6 0 0 1-1.6-1.6V10A1.6 1.6 0 0 1 4 8.4Z"/><circle cx="12" cy="13.7" r="3.2"/></svg></button>
 </div>
-</div></div><div class="ds-dialogo-acoes"><button class="ds-btn ds-btn-primario" id="saveProfile">Salvar perfil</button></div></div></div>
-    </section></section>
-    <section class="view ds" id="view-settings" data-mw-migrada="1"><section class="ds-cartao"><div class="ds-secao-cabeca" data-mw-cabeca><div><h2 class="ds-titulo">Configurações</h2><p class="ds-micro">Conta, aparência e segurança</p></div></div>
+<div class="ds-perfil-id">
+<h2 class="ds-perfil-nome" id="mwPerfilNome">&nbsp;</h2>
+<p class="ds-perfil-usuario" id="mwPerfilUsuario"></p>
+<p class="ds-perfil-bio" id="mwPerfilBio"></p>
+<div class="ds-perfil-selos" id="mwPerfilSelos"></div>
+<div class="ds-perfil-links" id="mwPerfilLinks"></div>
+</div>
+<div class="ds-perfil-acoes">
+<button type="button" class="ds-btn ds-btn-primario" id="mwPerfilEditar">Editar perfil</button>
+<span class="ds-perfil-visib" id="mwPerfilVisib" title="Quem pode ver este perfil"></span>
+</div>
+</header>
+
+<!-- 2 · O QUE ESTE PERFIL PRODUZ — números numa linha, não em caixas. -->
+<div class="ds-med-fila ds-perfil-numeros" id="mwPerfilNumeros" style="--i:1"></div>
+
+<!-- 3 · ABAS -->
+<div class="ds-perfil-abas-caixa" style="--i:2"><div class="ds-abas ds-perfil-abas" role="tablist" aria-label="Seções do perfil">
+<button type="button" class="ds-aba" role="tab" data-aba="visao" aria-selected="true">Vis&atilde;o geral</button>
+<button type="button" class="ds-aba" role="tab" data-aba="projetos" aria-selected="false">Projetos</button>
+<button type="button" class="ds-aba" role="tab" data-aba="atividades" aria-selected="false">Atividades</button>
+<button type="button" class="ds-aba" role="tab" data-aba="sobre" aria-selected="false">Sobre</button>
+</div></div>
+
+<!-- 4 · PAINÉIS -->
+<div class="ds-perfil-painel" data-painel="visao" style="--i:3">
+<section class="ds-faixa">
+<div class="ds-faixa-cabeca"><h3 class="ds-faixa-titulo">Progresso acad&ecirc;mico</h3><span class="ds-faixa-apoio" id="mwPerfilProgApoio"></span></div>
+<div class="ds-chapa" id="mwPerfilProgresso"></div>
+</section>
+<section class="ds-faixa">
+<div class="ds-faixa-cabeca"><h3 class="ds-faixa-titulo">Disciplinas</h3><button type="button" class="ds-faixa-acao" data-ir="subjects">Ver todas</button></div>
+<div id="mwPerfilDisciplinas"></div>
+</section>
+</div>
+
+<div class="ds-perfil-painel" data-painel="projetos" hidden style="--i:3">
+<div id="mwPerfilProjetos"></div>
+</div>
+
+<div class="ds-perfil-painel" data-painel="atividades" hidden style="--i:3">
+<div id="mwPerfilAtividades"></div>
+</div>
+
+<!-- 5 · SOBRE = a edição, no lugar. Sem mandar para outra tela. -->
+<div class="ds-perfil-painel" data-painel="sobre" hidden style="--i:3">
+<section class="ds-faixa">
+<div class="ds-faixa-cabeca"><h3 class="ds-faixa-titulo">Quem &eacute; voc&ecirc;</h3></div>
+<div class="ds-chapa">
+<div class="ds-grade-fixa-2">
+<div class="ds-campo"><label for="profileName">Nome de exibi&ccedil;&atilde;o</label><input id="profileName" class="ds-entrada" type="text" placeholder="Seu nome"></div>
+<div class="ds-campo"><label for="mwPerfilCampoUsuario">Nome de usu&aacute;rio</label><input id="mwPerfilCampoUsuario" class="ds-entrada" type="text" placeholder="seuusuario" autocapitalize="none" spellcheck="false"></div>
+<div class="ds-campo ds-largo"><label for="mwPerfilCampoBio">Bio</label><textarea id="mwPerfilCampoBio" class="ds-entrada" rows="3" maxlength="220" placeholder="Uma linha sobre voc&ecirc; e o que voc&ecirc; estuda."></textarea><small class="ds-micro" id="mwPerfilBioConta"></small></div>
+</div>
+</div>
+</section>
+
+<section class="ds-faixa">
+<div class="ds-faixa-cabeca"><h3 class="ds-faixa-titulo">Contexto acad&ecirc;mico</h3><span class="ds-faixa-apoio">O mesmo dado da &aacute;rea Faculdade — editar aqui muda l&aacute;</span></div>
+<div class="ds-chapa">
+<div class="ds-grade-fixa-2">
+<div class="ds-campo"><label for="mwPerfilCampoInst">Institui&ccedil;&atilde;o</label><input id="mwPerfilCampoInst" class="ds-entrada" type="text" placeholder="Onde voc&ecirc; estuda"></div>
+<div class="ds-campo"><label for="mwPerfilCampoCurso">Curso</label><input id="mwPerfilCampoCurso" class="ds-entrada" type="text" placeholder="Seu curso"></div>
+<div class="ds-campo"><label for="mwPerfilCampoSemestre">Semestre</label><input id="mwPerfilCampoSemestre" class="ds-entrada" type="number" min="1" max="20" step="1" placeholder="1"></div>
+<div class="ds-campo"><label for="mwPerfilCampoArea">&Aacute;rea / especializa&ccedil;&atilde;o</label><input id="mwPerfilCampoArea" class="ds-entrada" type="text" placeholder="Opcional"></div>
+</div>
+</div>
+</section>
+
+<section class="ds-faixa">
+<div class="ds-faixa-cabeca"><h3 class="ds-faixa-titulo">Links</h3><span class="ds-faixa-apoio">Aparecem no topo do perfil</span></div>
+<div class="ds-chapa">
+<div class="ds-grade-fixa-2">
+<div class="ds-campo"><label for="mwLinkInstagram">Instagram</label><input id="mwLinkInstagram" class="ds-entrada" type="text" inputmode="url" placeholder="@usuario"></div>
+<div class="ds-campo"><label for="mwLinkGithub">GitHub</label><input id="mwLinkGithub" class="ds-entrada" type="text" inputmode="url" placeholder="usuario"></div>
+<div class="ds-campo"><label for="mwLinkLinkedin">LinkedIn</label><input id="mwLinkLinkedin" class="ds-entrada" type="text" inputmode="url" placeholder="in/usuario"></div>
+<div class="ds-campo"><label for="mwLinkSite">Site</label><input id="mwLinkSite" class="ds-entrada" type="text" inputmode="url" placeholder="https://"></div>
+</div>
+</div>
+</section>
+
+<section class="ds-faixa">
+<div class="ds-faixa-cabeca"><h3 class="ds-faixa-titulo">Privacidade</h3><span class="ds-faixa-apoio">O que outra pessoa veria</span></div>
+<div class="ds-chapa">
+<p class="ds-perfil-privacidade-nota">O MW ainda n&atilde;o publica perfis para outras pessoas — n&atilde;o existe servidor de perfis p&uacute;blicos. Estas escolhas ficam guardadas com voc&ecirc; e passam a valer no dia em que o perfil p&uacute;blico existir. Enquanto isso elas j&aacute; controlam o que aparece no topo desta tela.</p>
+<div class="ds-lista" id="mwPerfilPrivacidade"></div>
+</div>
+</section>
+
+<section class="ds-faixa">
+<div class="ds-faixa-cabeca"><h3 class="ds-faixa-titulo">Foto</h3></div>
+<div class="ds-chapa">
+<div class="ds-perfil-foto-linha">
+<div class="ds-perfil-foto-previa" id="profileAvatarPreview"><span id="profileAvatarInitials">MW</span></div>
+<div class="ds-perfil-foto-texto">
+<strong>Foto do perfil</strong>
+<small class="ds-micro">Escolha uma imagem e ajuste o enquadramento antes de salvar.</small>
+<div class="ds-perfil-foto-acoes">
+<button class="ds-btn ds-btn-secundario ds-btn-p" type="button" id="mwPerfilEscolherFoto">Escolher foto</button>
+<button class="ds-btn ds-btn-fantasma ds-btn-p" type="button" id="editProfilePhoto">Ajustar</button>
+<button class="ds-btn ds-btn-fantasma ds-btn-p ds-btn-perigo" type="button" id="removeProfilePhoto">Remover</button>
+</div>
+<input id="profilePhotoFile" type="file" accept="image/*" hidden>
+<input id="profilePhoto" type="hidden">
+<input id="profileEmail" type="hidden">
+</div>
+</div>
+</div>
+</section>
+
+<div class="ds-perfil-salvar">
+<button class="ds-btn ds-btn-primario ds-btn-g" id="saveProfile">Salvar perfil</button>
+<span class="ds-micro" id="mwPerfilSalvoAviso"></span>
+</div>
+</div>
+
+</div>
+</section><section class="view ds" id="view-settings" data-mw-migrada="1"><section class="ds-cartao"><div class="ds-secao-cabeca" data-mw-cabeca><div><h2 class="ds-titulo">Configurações</h2><p class="ds-micro">Conta, aparência e segurança</p></div></div>
       <h3 class="ds-categoria" data-mw-categoria>Conta</h3>
       <div class="ds-grupo" data-mw-grupo id="mwContaGrupo"><h4 class="ds-grupo-titulo">Informações de acesso</h4><p class="ds-grupo-apoio">Nome de usuário, e-mail e senha. Mudar qualquer um deles pede sua senha ou o código de acesso, porque são as três coisas com que se entra na conta.</p>
         <div class="mw-conta-linha"><div class="mw-conta-campo"><label for="mwContaUsuario">Nome de usuário</label><input id="mwContaUsuario" type="text" readonly autocomplete="off"></div><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwContaTrocarUsuario">Alterar</button></div>
@@ -8953,17 +9055,7 @@ body.light #view-college .college-setup input{
 }
 body.light #view-college .college-setup label{color:#1d4ed8 !important}
 
-/* Settings buttons compact + hover inteligente */#saveProfile, #saveCollege.college-save{
-  height: 36px !important; padding: 0 14px !important; font-size: 12px !important;
-  width: auto !important; min-width: 0 !important;
-  background: linear-gradient(135deg,#38bdf8,#2563eb) !important;
-  color: #fff !important;
-}
-#saveProfile:hover, #saveCollege.college-save:hover{
-  filter: brightness(1.12) !important;
-  background: linear-gradient(135deg,#7dd3fc,#3b82f6) !important;
-  color: #fff !important;
-}#chooseProfilePhoto, #editProfilePhoto{
+/* Settings buttons compact + hover inteligente */#chooseProfilePhoto, #editProfilePhoto{
   /* Etapa 0: fundo e cor eram valores de tema escuro cravados; no claro os
      dois botões da foto mediam 2,65:1. Passam a ler o sistema, que muda
      com o tema (o Perfil carrega `ds`). */
@@ -9317,8 +9409,7 @@ img,svg,video,canvas{max-width:100%}
   .cal-nav{width:100%!important;display:flex!important;align-items:center!important;justify-content:space-between!important}
   #calPrev,#calNext{width:44px!important;height:44px!important}#academicCalendarPanel .calendar-day{min-height:38px!important;padding:5px 2px!important;font-size:12px!important}
   #academicCalendarPanel .calendar-day small,.event-dot{display:none!important}
-  #app .add-btn,#app .small-btn,#app .save-btn{min-height:44px!important}
-  #saveProfile,#saveCollege{width:100%!important;height:48px!important}#app input:not([data-mw-migrada] *), #app select:not([data-mw-migrada] *), #app textarea:not([data-mw-migrada] *){font-size:16px!important}
+  #app .add-btn,#app .small-btn,#app .save-btn{min-height:44px!important}#app input:not([data-mw-migrada] *), #app select:not([data-mw-migrada] *), #app textarea:not([data-mw-migrada] *){font-size:16px!important}
   .mateus-ai-card,.eva-pro{width:100%!important;height:100dvh!important;max-height:100dvh!important;border-radius:0!important}
   #app .stat:hover,#app .activity-card:hover{transform:none!important}
 }
@@ -9484,10 +9575,6 @@ html body #app .sidebar{
     border-radius: 14px !important;
     height: 48px !important;
     color: #eef6ff !important;
-  }#saveCollege, #saveProfile{
-    width:100% !important;
-    min-height:48px !important;
-    margin: 12px 0 16px !important;
   }
 }
 @media (min-width:861px){
@@ -10508,14 +10595,7 @@ body.light #app .search-icon svg{ stroke:#0b1830 !important; }
   outline: none !important;
 }
 #view-settings .settings-group h4,
-#view-settings .settings-group p{ border:0 !important; }#saveProfile{
-  height:38px !important;
-  padding:0 16px !important;
-  background:linear-gradient(135deg,#2563eb,#1d4ed8) !important;
-  color:#fff !important;
-  border:0 !important;
-  border-radius:12px !important;
-}#clearAll.mw-clear-btn{
+#view-settings .settings-group p{ border:0 !important; }#clearAll.mw-clear-btn{
   height:38px !important;
   padding:0 16px !important;
   background:rgba(239,68,68,.14) !important;
@@ -10771,15 +10851,7 @@ body.light #mateusAiBtn.mateus-ai-btn::after{
 body.light #view-settings .settings-group{
   background: #fff !important;
   border-color: rgba(15,40,80,.10) !important;
-}#saveProfile{
-  height: 38px !important;
-  padding: 0 16px !important;
-  background: linear-gradient(135deg,#2563eb,#1d4ed8) !important;
-  color: #fff !important;
-  border: 0 !important;
-  border-radius: 12px !important;
-}
-#saveProfile:hover{ filter: brightness(1.08) !important; background: linear-gradient(135deg,#3b82f6,#2563eb) !important; color:#fff !important; }#clearAll.mw-clear-btn, #clearAll{
+}#clearAll.mw-clear-btn, #clearAll{
   height: 38px !important;
   padding: 0 16px !important;
   background: #7f1d1d !important;
@@ -11412,11 +11484,6 @@ html body #app .profile-photo-actions .small-btn.danger{
   background: rgba(239,68,68,.12) !important;
   border-color: rgba(239,68,68,.28) !important;
   color: #fecaca !important;
-}html body #app #saveProfile{
-  height: 40px !important;
-  padding: 0 18px !important;
-  border-radius: 12px !important;
-  font-size: 13.5px !important;
 }html body #app #logout.mw-logout-btn, html body #app #logout{
   width: auto !important;
   min-width: 88px !important;
@@ -11929,25 +11996,6 @@ html body #app .profile-photo-actions .small-btn.danger{
   background: rgba(239,68,68,.12) !important;
   border-color: rgba(239,68,68,.28) !important;
   color: #fecaca !important;
-}html body #app #saveProfile, html body #app #saveProfile.save-btn, html body #app #view-settings #saveProfile{
-  height: 40px !important;
-  padding: 0 18px !important;
-  border-radius: 12px !important;
-  font-size: 13.5px !important;
-  font-weight: 750 !important;
-  background: linear-gradient(135deg, #38bdf8, #2563eb) !important;
-  color: #fff !important;
-  border: 0 !important;
-  filter: none !important;
-  width: auto !important;
-}
-html body #app #saveProfile:hover,
-html body #app #view-settings #saveProfile:hover,
-html body #app #view-settings .settings-group #saveProfile:hover{
-  background: linear-gradient(135deg, #7dd3fc, #3b82f6) !important;
-  color: #fff !important;
-  filter: none !important;
-  transform: translateY(-1px) !important;
 }html body #app #logout, html body #app #logout.mw-logout-btn, html body #app #view-settings #logout{
   width: auto !important;
   min-width: 84px !important;
@@ -11985,9 +12033,6 @@ html body #app #clearAll:hover{
   background: #fff !important;
   border-color: #c9d4e4 !important;
   color: #152033 !important;
-}html body.light #app #saveProfile:not([data-mw-migrada] *){
-  background: linear-gradient(135deg, #38bdf8, #2563eb) !important;
-  color: #fff !important;
 }html body.light #app #logout:not([data-mw-migrada] *){
   background: #fff !important;
   color: #1d2430 !important;
@@ -19979,13 +20024,11 @@ html body.light #app #searchWrap input::placeholder{color:#6b80a0!important}
    O gradiente principal é o mesmo dos dois temas (é o acento da
    marca), mas no claro ele precisa de texto branco e sombra mais
    discreta: sobre fundo claro, a sombra pesada do escuro vira uma
-   mancha. */html body.light #app .save-btn:not([data-mw-migrada] *), html body.light #app .add-btn:not([data-mw-migrada] *), html body.light #app .modal-submit:not([data-mw-migrada] *), html body.light #app .college-save:not([data-mw-migrada] *), html body.light #app #saveProfile:not([data-mw-migrada] *){
+   mancha. */
+html body.light #app .save-btn:not([data-mw-migrada] *), html body.light #app .add-btn:not([data-mw-migrada] *), html body.light #app .modal-submit:not([data-mw-migrada] *), html body.light #app .college-save:not([data-mw-migrada] *){
   color:#fff!important;
   box-shadow:0 5px 16px rgba(37,99,235,.22)!important;
-}
-html body.light #app .save-btn:hover:not(:disabled),
-html body.light #app .add-btn:hover:not(:disabled),
-html body.light #app #saveProfile:hover:not(:disabled){
+}html body.light #app .save-btn:hover:not(:disabled), html body.light #app .add-btn:hover:not(:disabled){
   box-shadow:0 9px 22px rgba(37,99,235,.28)!important;
 }
 html body.light #app .small-btn,
@@ -20027,7 +20070,8 @@ html body.light #app .danger-btn:hover{background:#ffe9ec!important}
      PERIGO     — o que apaga
 
    Especificidade alta de propósito: quase todas as folhas antigas
-   marcam !important, então uma regra curta não venceria. */html body #app .save-btn, html body #app .add-btn, html body #app .modal-submit, html body #app .college-save, html body #app #saveProfile, html body #app #saveCollege{
+   marcam !important, então uma regra curta não venceria. */
+html body #app .save-btn, html body #app .add-btn, html body #app .modal-submit, html body #app .college-save{
   background:linear-gradient(135deg,#38bdf8 0%,#2563eb 62%,#1d4ed8 100%)!important;
   color:var(--mw-txt-sobre-acento,#02122e)!important/*Etapa 0: quase-preto cravado sobre o degradê de acento — 3,14:1 no botão primário. Dentro do sistema o token resolve; fora dele o valor antigo continua valendo.*/;
   border:0!important;
@@ -20037,22 +20081,13 @@ html body.light #app .danger-btn:hover{background:#ffe9ec!important}
   letter-spacing:.01em!important;
   box-shadow:0 6px 18px rgba(37,99,235,.28)!important;
   transition:transform .16s cubic-bezier(.22,.8,.24,1),box-shadow .16s ease,filter .16s ease!important;
-}
-html body #app .save-btn:hover:not(:disabled),
-html body #app .add-btn:hover:not(:disabled),
-html body #app .modal-submit:hover:not(:disabled),
-html body #app .college-save:hover:not(:disabled),
-html body #app #saveProfile:hover:not(:disabled){
+}html body #app .save-btn:hover:not(:disabled), html body #app .add-btn:hover:not(:disabled), html body #app .modal-submit:hover:not(:disabled), html body #app .college-save:hover:not(:disabled){
   transform:translateY(-1px)!important;
   box-shadow:0 10px 26px rgba(37,99,235,.36)!important;
   filter:saturate(1.06)!important;
 }
 /* O toque tem que responder no dedo, não só no mouse. */
-html body #app .save-btn:active:not(:disabled),
-html body #app .add-btn:active:not(:disabled),
-html body #app .modal-submit:active:not(:disabled),
-html body #app .college-save:active:not(:disabled),
-html body #app #saveProfile:active:not(:disabled){
+html body #app .save-btn:active:not(:disabled), html body #app .add-btn:active:not(:disabled), html body #app .modal-submit:active:not(:disabled), html body #app .college-save:active:not(:disabled){
   transform:translateY(0) scale(.975)!important;
   box-shadow:0 4px 12px rgba(37,99,235,.24)!important;
 }
@@ -26443,7 +26478,8 @@ html body #loginScreen .mw-btn-inner{ border-radius: 999px !important; }
    texto quase preto —, pensada para quando o botão era claro. Sobre o
    azul de agora isso dá 2,9:1: mede pior que o texto secundário da
    mesma tela, num elemento que é o alvo principal da ação. Em branco
-   sobe para 6,3:1. */html body #app .save-btn:not([data-mw-migrada] *), html body #app .college-save:not([data-mw-migrada] *), html body #app .modal-submit:not([data-mw-migrada] *), html body #app .main .save-btn:not([data-mw-migrada] *), html body #app .main .modal-submit:not([data-mw-migrada] *), html body #app #saveProfile:not([data-mw-migrada] *), html body #app #saveCollege:not([data-mw-migrada] *){
+   sobe para 6,3:1. */
+html body #app .save-btn:not([data-mw-migrada] *), html body #app .college-save:not([data-mw-migrada] *), html body #app .modal-submit:not([data-mw-migrada] *), html body #app .main .save-btn:not([data-mw-migrada] *), html body #app .main .modal-submit:not([data-mw-migrada] *){
   color: #fff !important;
   /* Não é o degradê de destaque puro: a ponta violeta dele mede 4,38:1
      com texto branco, logo abaixo do mínimo. Um escurecimento de 8%
@@ -26457,7 +26493,7 @@ html body #loginScreen .mw-btn-inner{ border-radius: 999px !important; }
   border-radius: 999px !important;
   font-weight: 700 !important;
   box-shadow: 0 8px 22px color-mix(in srgb, var(--ds-ac) 38%, transparent) !important;
-}html body.light #app .save-btn:not([data-mw-migrada] *), html body.light #app .college-save:not([data-mw-migrada] *), html body.light #app .modal-submit:not([data-mw-migrada] *), html body.light #app .main .save-btn:not([data-mw-migrada] *), html body.light #app #saveProfile:not([data-mw-migrada] *), html body.light #app #saveCollege:not([data-mw-migrada] *){ color: #fff !important; }
+}html body.light #app .save-btn:not([data-mw-migrada] *), html body.light #app .college-save:not([data-mw-migrada] *), html body.light #app .modal-submit:not([data-mw-migrada] *), html body.light #app .main .save-btn:not([data-mw-migrada] *){ color: #fff !important; }
 
 /* --- Tema claro da entrada -------------------------------------------
    A tela de login foi desenhada só para o escuro: no claro, as cores de
@@ -26846,7 +26882,8 @@ html body #mwBottomNav.mwbn #mwNavMais svg{ width: 21px !important; height: 21px
    âncora profunda (view + id + classe). Sem elas, alguma camada antiga
    com id+classe vencia e o botão voltava ao violeta claro de 4,2:1 —
    e como o valor computado dizia uma coisa e o pixel outra, só a
-   medição da tela flagrou. */html body #app #view-profile #saveProfile.save-btn:not([data-mw-migrada] *), html body #app #view-college #saveCollege.save-btn:not([data-mw-migrada] *), html body #app #view-settings #darkModeBtn.theme-btn.active:not([data-mw-migrada] *), html body #app #view-settings #lightModeBtn.theme-btn.active:not([data-mw-migrada] *), html body #app .save-btn:not([data-mw-migrada] *), html body #app .college-save:not([data-mw-migrada] *), html body #app .modal-submit:not([data-mw-migrada] *), html body #app .main .save-btn:not([data-mw-migrada] *), html body #app .main .modal-submit:not([data-mw-migrada] *), html body #app #saveProfile:not([data-mw-migrada] *), html body #app #saveCollege:not([data-mw-migrada] *), html body.light #app #saveProfile:not([data-mw-migrada] *), html body.light #app #saveCollege:not([data-mw-migrada] *){
+   medição da tela flagrou. */
+html body #app #view-settings #darkModeBtn.theme-btn.active:not([data-mw-migrada] *), html body #app #view-settings #lightModeBtn.theme-btn.active:not([data-mw-migrada] *), html body #app .save-btn:not([data-mw-migrada] *), html body #app .college-save:not([data-mw-migrada] *), html body #app .modal-submit:not([data-mw-migrada] *), html body #app .main .save-btn:not([data-mw-migrada] *), html body #app .main .modal-submit:not([data-mw-migrada] *){
   background-image: linear-gradient(135deg,
       color-mix(in srgb, var(--ds-ac) 84%, #000) 0%,
       color-mix(in srgb, var(--ds-ac-2) 72%, #000) 100%) !important;
@@ -30903,6 +30940,374 @@ html body .mw-pular:focus{ transform: translateY(0); }
 </script>
 
 
+<script id="mw-perfil-js">
+/* =====================================================================
+   O PERFIL — identidade, produção e edição NO LUGAR (§13, §36, §37)
+   =====================================================================
+   O que mudou de conceito, e não só de aparência:
+
+   ANTES a tela mostrava cinco chips e três deles diziam "Editar em
+   Faculdade" / "Alterar em Configurações". Quer dizer: a página sobre
+   você não deixava você mudar você. O §36 é explícito — clicar no perfil
+   tem de abrir o PERFIL, não uma lista administrativa.
+
+   AGORA: curso, instituição, semestre, área, @usuário, bio e links se
+   editam AQUI, na aba "Sobre". O dado continua sendo o mesmo (`college`
+   é o mesmo objeto que a área Faculdade usa) — o que muda é que existe
+   uma segunda porta para ele, na tela onde a pessoa procura.
+
+   Configurações fica com o que é CONTA e APLICATIVO (§37): e-mail,
+   senha, telefone, tema, dados, segurança. Identidade é daqui.
+
+   Sobre a privacidade: o MW não publica perfis para ninguém — não existe
+   servidor de perfis públicos. As chaves ficam guardadas e já controlam
+   o que aparece no topo desta tela; o resto passa a valer no dia em que
+   o perfil público existir. Marcar como pronto o que não existe é o que
+   o pedido chama de funcionalidade falsa.
+   ===================================================================== */
+(function(){
+  'use strict';
+  var q = function(s){ return document.querySelector(s); };
+  var qi = function(id){ return document.getElementById(id); };
+  var esc = function(t){ return String(t==null?'':t).replace(/[&<>"]/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+
+  function dados(){
+    if (window.data) return window.data;
+    try { return JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}'); } catch(e){ return {}; }
+  }
+  function perfil(){ var d = dados(); d.profile = d.profile || {}; return d.profile; }
+  function faculdade(){ var d = dados(); d.college = d.college || {}; return d.college; }
+  function iniciais(nome){
+    var p = String(nome||'').trim().split(/\s+/).filter(Boolean);
+    if (!p.length) return 'MW';
+    return (p[0][0] + (p.length > 1 ? p[p.length-1][0] : '')).toUpperCase();
+  }
+
+  /* ---- os links, normalizados ------------------------------------------
+     A pessoa digita "@fulano", "fulano" ou a URL inteira. Guardar os três
+     jeitos e sair abrindo o que veio daria link quebrado — então cada rede
+     tem a sua regra de montar o endereço, e o que se guarda é o que foi
+     digitado. */
+  var REDES = [
+    { chave:'instagram', nome:'Instagram', campo:'mwLinkInstagram',
+      url:function(v){ return 'https://instagram.com/' + v.replace(/^@/,''); },
+      icone:'<rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/>' },
+    { chave:'github', nome:'GitHub', campo:'mwLinkGithub',
+      url:function(v){ return 'https://github.com/' + v.replace(/^@/,''); },
+      icone:'<path d="M9 19.4c-4.2 1.2-4.2-2.3-5.9-2.8m11.8 5.1v-3.3c0-.9.1-1.3-.5-1.8 2.6-.3 5.1-1.3 5.1-5.6a4.3 4.3 0 0 0-1.2-3 4 4 0 0 0-.1-3s-1-.3-3.3 1.2a11.3 11.3 0 0 0-5.9 0C6.7 4.7 5.7 5 5.7 5a4 4 0 0 0-.1 3 4.3 4.3 0 0 0-1.2 3.1c0 4.2 2.5 5.2 5.1 5.5-.6.5-.6 1.1-.5 1.9v3.2"/>' },
+    { chave:'linkedin', nome:'LinkedIn', campo:'mwLinkLinkedin',
+      url:function(v){ return /^https?:/.test(v) ? v : 'https://linkedin.com/' + v.replace(/^\//,''); },
+      icone:'<rect x="3.2" y="3.2" width="17.6" height="17.6" rx="3"/><path d="M7.4 10.2v6.4M7.4 7.6v.1M11.4 16.6v-6.4m0 2.2c0-1.2.9-2.2 2.1-2.2s2.1 1 2.1 2.2v4.2"/>' },
+    { chave:'site', nome:'Site', campo:'mwLinkSite',
+      url:function(v){ return /^https?:/.test(v) ? v : 'https://' + v; },
+      icone:'<circle cx="12" cy="12" r="8.6"/><path d="M3.4 12h17.2M12 3.4c2.2 2.4 3.4 5.4 3.4 8.6S14.2 18.2 12 20.6c-2.2-2.4-3.4-5.4-3.4-8.6S9.8 5.8 12 3.4Z"/>' }
+  ];
+
+  /* ---- o que a privacidade controla ------------------------------------ */
+  var CHAVES = [
+    ['bio',    'Bio',                    'A frase que descreve voc&ecirc;'],
+    ['curso',  'Curso e institui&ccedil;&atilde;o',  'Onde e o que voc&ecirc; estuda'],
+    ['numeros','N&uacute;meros',                'Quantas disciplinas, projetos e atividades'],
+    ['projetos','Projetos',               'A lista dos seus projetos'],
+    ['links',  'Links',                   'Instagram, GitHub, LinkedIn, site']
+  ];
+  function visib(){ var p = perfil(); p.visibility = p.visibility || {}; return p.visibility; }
+  function ve(chave){ var v = visib(); return v[chave] !== false; }   /* aberto por padrão */
+
+  /* ================= PINTAR ================= */
+  function pintaHero(){
+    var p = perfil(), c = faculdade(), v = visib();
+    var nome = (p.name || '').trim() || 'Sem nome ainda';
+    var foto = qi('mwPerfilFoto');
+    if (foto){
+      if (p.photo){ foto.style.backgroundImage = 'url("' + p.photo + '")'; foto.classList.add('has-avatar'); }
+      else { foto.style.backgroundImage = ''; foto.classList.remove('has-avatar'); }
+      var ini = qi('mwPerfilIniciais'); if (ini) ini.textContent = iniciais(p.name);
+    }
+    var elNome = qi('mwPerfilNome'); if (elNome) elNome.textContent = nome;
+    var elUser = qi('mwPerfilUsuario');
+    if (elUser) elUser.textContent = p.username ? '@' + p.username : '';
+    var elBio = qi('mwPerfilBio');
+    if (elBio) elBio.textContent = ve('bio') ? (p.bio || '') : '';
+
+    var selos = qi('mwPerfilSelos');
+    if (selos){
+      var partes = [];
+      if (ve('curso')){
+        if ((c.course||'').trim()) partes.push(c.course.trim());
+        if ((c.institution||'').trim()) partes.push(c.institution.trim());
+        if (Number(c.semester)) partes.push(Number(c.semester) + 'º semestre');
+        if ((c.area||'').trim()) partes.push(c.area.trim());
+      }
+      selos.innerHTML = partes.map(function(t){
+        return '<span class="ds-perfil-selo">' + esc(t) + '</span>'; }).join('');
+    }
+
+    var links = qi('mwPerfilLinks');
+    if (links){
+      var l = p.links || {};
+      links.innerHTML = !ve('links') ? '' : REDES.filter(function(r){ return (l[r.chave]||'').trim(); })
+        .map(function(r){
+          var val = l[r.chave].trim();
+          return '<a href="' + esc(r.url(val)) + '" target="_blank" rel="noopener noreferrer">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' +
+            r.icone + '</svg>' + esc(r.nome) + '</a>'; }).join('');
+    }
+
+    var vs = qi('mwPerfilVisib');
+    if (vs){
+      /* §13 pede o conceito público/privado, e "Tudo visível" não é uma
+         das duas coisas: é o resultado de uma contagem interna. Quem lê
+         quer o ESTADO da conta primeiro, e o detalhe depois. */
+      var fechados = CHAVES.filter(function(k){ return !ve(k[0]); }).length;
+      vs.textContent = fechados
+        ? 'Perfil restrito · ' + fechados + ' de ' + CHAVES.length + ' seções ocultas'
+        : 'Perfil público';
+      vs.setAttribute('data-estado', fechados ? 'restrito' : 'publico');
+    }
+  }
+
+  function pintaNumeros(){
+    var caixa = qi('mwPerfilNumeros'); if (!caixa) return;
+    if (!ve('numeros')){ caixa.innerHTML = ''; caixa.hidden = true; return; }
+    caixa.hidden = false;
+    var d = dados();
+    var subs = d.subjects || [], proj = d.projects || [], ativ = d.activities || [];
+    var med = subs.length
+      ? Math.round(subs.reduce(function(a,s){ return a + (Number(s.progress)||0); }, 0) / subs.length)
+      : 0;
+    var itens = [
+      [subs.length, 'Disciplinas', subs.length ? 'no semestre' : 'nenhuma ainda'],
+      [proj.length, 'Projetos',    proj.length ? 'registrados' : 'nenhum ainda'],
+      [ativ.length, 'Atividades',  ativ.length ? 'registradas' : 'nenhuma ainda'],
+      [med + '%',   'Progresso',   'média das disciplinas']
+    ];
+    caixa.innerHTML = itens.map(function(i){
+      return '<div class="ds-med"><span class="ds-med-n">' + esc(i[0]) + '</span>' +
+        '<span class="ds-med-r">' + esc(i[1]) + '</span>' +
+        '<span class="ds-med-ap">' + esc(i[2]) + '</span></div>'; }).join('');
+  }
+
+  function partida(titulo, texto, rotulo, area){
+    return '<div class="ds-partida ds-partida-emfaixa">' +
+      '<h4 class="ds-partida-titulo">' + esc(titulo) + '</h4>' +
+      '<p class="ds-partida-texto">' + esc(texto) + '</p>' +
+      (rotulo ? '<div class="ds-partida-acoes"><button type="button" class="ds-btn ds-btn-primario ds-btn-p" data-go-add="' +
+        area + '">' + esc(rotulo) + '</button></div>' : '') + '</div>';
+  }
+
+  function pintaVisao(){
+    var d = dados(), subs = d.subjects || [];
+    var prog = qi('mwPerfilProgresso'), apoio = qi('mwPerfilProgApoio');
+    if (prog){
+      if (!subs.length){
+        prog.innerHTML = '<p class="ds-micro" style="margin:0;text-align:center;padding:12px 0">Sem disciplinas, não há progresso a mostrar.</p>';
+      } else {
+        prog.innerHTML = subs.map(function(s){
+          var v = Math.max(0, Math.min(100, Number(s.progress)||0));
+          return '<div class="ds-perfil-prog-linha">' +
+            '<span class="ds-perfil-prog-nome">' + esc(s.name||'Disciplina') + '</span>' +
+            '<span class="ds-peca-trilho" style="flex:1"><i style="width:' + v + '%"></i></span>' +
+            '<b class="ds-perfil-prog-pct">' + v + '%</b></div>'; }).join('');
+      }
+    }
+    if (apoio) apoio.textContent = subs.length ? subs.length + (subs.length===1?' disciplina':' disciplinas') : '';
+    var disc = qi('mwPerfilDisciplinas');
+    if (disc){
+      disc.className = subs.length ? 'ds-trilho' : '';
+      disc.innerHTML = subs.length
+        ? subs.slice(0,10).map(function(s){
+            return '<article class="ds-peca"><div class="ds-peca-titulo">' + esc(s.name||'Disciplina') + '</div>' +
+              '<div class="ds-peca-apoio">' + esc(s.description||'Sem descrição') + '</div>' +
+              '<div class="ds-peca-trilho"><i style="width:' + (Number(s.progress)||0) + '%"></i></div>' +
+              '<div class="ds-peca-pct">' + (Number(s.progress)||0) + '%</div></article>'; }).join('')
+        : partida('Nenhuma disciplina ainda',
+                  'Cadastre as matérias do semestre para o seu progresso aparecer aqui.',
+                  'Adicionar disciplina', 'subjects');
+    }
+  }
+
+  function pintaProjetos(){
+    var caixa = qi('mwPerfilProjetos'); if (!caixa) return;
+    var proj = (dados().projects || []);
+    if (!ve('projetos')){
+      caixa.innerHTML = '<div class="ds-partida ds-partida-emfaixa"><h4 class="ds-partida-titulo">Projetos ocultos</h4>' +
+        '<p class="ds-partida-texto">Você escolheu não mostrar os projetos no perfil. A troca fica na aba Sobre, em Privacidade.</p></div>';
+      return;
+    }
+    caixa.className = proj.length ? 'ds-lista' : '';
+    caixa.innerHTML = proj.length
+      ? proj.map(function(p){
+          return '<div class="ds-item"><div class="ds-item-texto">' +
+            '<div class="ds-item-titulo">' + esc(p.name||'Projeto') + '</div>' +
+            '<div class="ds-item-apoio">' + esc(p.description||'Sem descrição') + '</div></div>' +
+            '<div class="ds-item-acoes"><span class="ds-selo ds-selo-liso">' + esc(p.status||'Planejamento') + '</span></div></div>'; }).join('')
+      : partida('Nenhum projeto ainda',
+                'Um TCC, um seminário, um trabalho em grupo: o que você registra aqui é o que o perfil mostra.',
+                'Novo projeto', 'projects');
+  }
+
+  function pintaAtividades(){
+    var caixa = qi('mwPerfilAtividades'); if (!caixa) return;
+    var at = (dados().activities || []).slice().sort(function(a,b){
+      return String(a.date||'').localeCompare(String(b.date||'')); });
+    caixa.className = at.length ? 'ds-lista' : '';
+    caixa.innerHTML = at.length
+      ? at.slice(0,20).map(function(a){
+          return '<div class="ds-item"><div class="ds-item-texto">' +
+            '<div class="ds-item-titulo">' + esc(a.name||'Atividade') + '</div>' +
+            '<div class="ds-item-apoio">' + esc([a.subject, a.date].filter(Boolean).join(' · ')) + '</div></div>' +
+            (a.priority ? '<div class="ds-item-acoes"><span class="ds-selo ds-selo-liso">' + esc(a.priority) + '</span></div>' : '') +
+            '</div>'; }).join('')
+      : partida('Nenhuma atividade ainda',
+                'Listas, provas e entregas aparecem aqui conforme você as registra.',
+                'Nova atividade', 'activities');
+  }
+
+  function pintaPrivacidade(){
+    var caixa = qi('mwPerfilPrivacidade'); if (!caixa) return;
+    caixa.innerHTML = CHAVES.map(function(k){
+      return '<div class="ds-item"><div class="ds-item-texto">' +
+        '<div class="ds-item-titulo">' + k[1] + '</div>' +
+        '<div class="ds-item-apoio">' + k[2] + '</div></div>' +
+        '<div class="ds-item-acoes"><input type="checkbox" class="ds-chave" data-visib="' + k[0] + '"' +
+        (ve(k[0]) ? ' checked' : '') + ' aria-label="Mostrar ' + k[1] + ' no perfil"></div></div>'; }).join('');
+  }
+
+  function preencheFormulario(){
+    var p = perfil(), c = faculdade(), l = p.links || {};
+    var põe = function(id, v){ var e = qi(id); if (e) e.value = v == null ? '' : v; };
+    põe('profileName', p.name || '');
+    põe('mwPerfilCampoUsuario', p.username || '');
+    põe('mwPerfilCampoBio', p.bio || '');
+    põe('mwPerfilCampoInst', c.institution || '');
+    põe('mwPerfilCampoCurso', c.course || '');
+    põe('mwPerfilCampoSemestre', c.semester || '');
+    põe('mwPerfilCampoArea', c.area || '');
+    REDES.forEach(function(r){ põe(r.campo, l[r.chave] || ''); });
+    contaBio();
+  }
+  function contaBio(){
+    var t = qi('mwPerfilCampoBio'), c = qi('mwPerfilBioConta');
+    if (t && c) c.textContent = (t.value || '').length + ' de 220';
+  }
+
+  function pintaTudo(){
+    pintaHero(); pintaNumeros(); pintaVisao(); pintaProjetos();
+    pintaAtividades(); pintaPrivacidade(); preencheFormulario();
+  }
+  window.mwPintaPerfil = pintaTudo;
+
+  /* ================= SALVAR ================= */
+  function salva(){
+    var d = window.data; if (!d) return;
+    d.profile = d.profile || {}; d.college = d.college || {};
+    var v = function(id){ var e = qi(id); return e ? String(e.value||'').trim() : ''; };
+    d.profile.name = v('profileName') || d.profile.name || '';
+    /* @usuário sem arroba e sem espaço: é o que vira endereço depois. */
+    d.profile.username = v('mwPerfilCampoUsuario').replace(/^@/,'').replace(/\s+/g,'');
+    d.profile.bio = v('mwPerfilCampoBio');
+    d.profile.links = d.profile.links || {};
+    REDES.forEach(function(r){ d.profile.links[r.chave] = v(r.campo); });
+    d.college.institution = v('mwPerfilCampoInst');
+    d.college.course = v('mwPerfilCampoCurso');
+    d.college.area = v('mwPerfilCampoArea');
+    var sem = parseInt(v('mwPerfilCampoSemestre'), 10);
+    if (sem > 0) d.college.semester = sem;
+
+    if (typeof window.save === 'function') window.save();
+    else if (typeof window.persistWorkspace === 'function') window.persistWorkspace();
+    pintaTudo();
+    var aviso = qi('mwPerfilSalvoAviso');
+    if (aviso){
+      aviso.textContent = 'Salvo.';
+      clearTimeout(salva._t);
+      salva._t = setTimeout(function(){ aviso.textContent = ''; }, 2600);
+    }
+    if (typeof window.toast === 'function') window.toast('Perfil salvo');
+  }
+
+  /* ================= EVENTOS ================= */
+  document.addEventListener('click', function(ev){
+    var t = ev.target;
+    if (!t || !t.closest) return;
+
+    var aba = t.closest('.ds-perfil-abas .ds-aba');
+    if (aba){
+      var nome = aba.dataset.aba;
+      document.querySelectorAll('.ds-perfil-abas .ds-aba').forEach(function(b){
+        b.setAttribute('aria-selected', String(b === aba)); });
+      document.querySelectorAll('.ds-perfil-painel').forEach(function(pn){
+        pn.hidden = pn.dataset.painel !== nome; });
+      return;
+    }
+    /* "Editar perfil" leva para a aba Sobre — dentro da própria tela. */
+    if (t.closest('#mwPerfilEditar')){
+      var alvo = document.querySelector('.ds-perfil-abas .ds-aba[data-aba="sobre"]');
+      if (alvo) alvo.click();
+      var campo = qi('profileName'); if (campo) campo.focus();
+      return;
+    }
+    if (t.closest('#saveProfile')){ ev.preventDefault(); ev.stopPropagation(); salva(); return; }
+    /* Os dois botões de escolher foto abrem o MESMO seletor: um fluxo só. */
+    if (t.closest('#mwPerfilEscolherFoto')){
+      ev.preventDefault();
+      var b = qi('chooseProfilePhoto'); if (b) b.click();
+    }
+  }, true);
+
+  document.addEventListener('change', function(ev){
+    var c = ev.target;
+    if (c && c.dataset && c.dataset.visib){
+      var d = window.data; if (!d) return;
+      d.profile = d.profile || {}; d.profile.visibility = d.profile.visibility || {};
+      d.profile.visibility[c.dataset.visib] = !!c.checked;
+      if (typeof window.persistWorkspace === 'function') window.persistWorkspace();
+      pintaHero(); pintaNumeros(); pintaProjetos();
+    }
+  });
+  document.addEventListener('input', function(ev){
+    if (ev.target && ev.target.id === 'mwPerfilCampoBio') contaBio();
+  });
+
+  /* Repintar ao ENTRAR na área. A navegação chega por caminhos diferentes
+     (clique na lateral, barra de baixo, foto do topo), e nem todos passam
+     por window.showView — observar qual view está ativa pega todos. */
+  var app = qi('app');
+  if (app){
+    /* DUAS travas, e as duas foram necessárias:
+
+       1. `ultima` — o observador só reage quando a área ATIVA MUDA. Sem
+          isso ele dispara a cada troca de classe em qualquer lugar da
+          subárvore, o que na prática é o tempo todo.
+       2. `pintando` — a própria pintura escreve `className` (o trilho de
+          disciplinas alterna entre `ds-trilho` e vazio conforme haja
+          itens). Como o observador escuta `class` com `subtree:true`,
+          pintar disparava o observador, que pintava de novo: laço
+          infinito, e a aba nem chegava a abrir. Custou uma captura
+          travada para aparecer. */
+    var ultima = '', pintando = false;
+    new MutationObserver(function(){
+      if (pintando) return;
+      var ativa = app.querySelector('.view.active');
+      var id = ativa ? ativa.id : '';
+      if (id === ultima) return;
+      ultima = id;
+      if (id !== 'view-profile') return;
+      pintando = true;
+      try { pintaTudo(); } catch(e){}
+      /* Soltar a trava só no quadro seguinte: as mutações que a pintura
+         gerou são entregues de forma assíncrona, então liberar aqui
+         mesmo deixaria o laço voltar. */
+      requestAnimationFrame(function(){ pintando = false; });
+    }).observe(app, { subtree: true, attributes: true, attributeFilter: ['class'] });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', pintaTudo);
+  else setTimeout(pintaTudo, 0);
+})();
+</script>
+
 <script id="mw-inicio-js">
 /* =====================================================================
    O INÍCIO, E A MOLDURA QUE O CERCA
@@ -31119,8 +31524,33 @@ html body .mw-pular:focus{ transform: translateY(0); }
     }, true);
   }
 
+  /* ---- 5b. O título segue a TELA, não a função que a trocou ----------
+     `engancha()` embrulha `window.showView`, e isso cobre a navegação da
+     barra lateral e da barra de baixo. Não cobre a foto do topo: ela vai
+     para o Perfil por um caminho próprio, e o título continuava dizendo
+     "Início" com o Perfil na tela — visível nas duas capturas da rodada,
+     no telefone e no desktop.
+
+     Embrulhar também o segundo caminho seria remendar o sintoma e deixar
+     um terceiro caminho quebrado. O que é sempre verdade é a classe
+     `.active` na seção visível; então é ela que o título passa a ler. */
+  function observaTela(){
+    var app = document.getElementById('app'); if (!app) return;
+    var ultima = '';
+    function ver(){
+      var ativa = app.querySelector('.view.active');
+      var id = ativa ? String(ativa.id).replace(/^view-/, '') : '';
+      if (!id || id === ultima) return;
+      ultima = id;
+      try { tudo(id); } catch(e){}
+    }
+    new MutationObserver(ver).observe(app, {
+      subtree: true, attributes: true, attributeFilter: ['class'] });
+    ver();
+  }
+
   function inicia(){
-    engancha(); ligaRolagem(); ligaMais();
+    engancha(); ligaRolagem(); ligaMais(); observaTela();
     var v = (q('#app .view.active') || {}).id || 'view-home';
     tudo(String(v).replace(/^view-/, ''));
   }
@@ -31170,7 +31600,7 @@ html body .mw-pular:focus{ transform: translateY(0); }
   /* O carimbo entra depois do preloader para não brigar com a abertura
      da marca, e sai sozinho. window.MW_PREVIA fica disponível para
      conferir a versão pelo console sem depender de ver o carimbo. */
-  window.MW_PREVIA = 'v101-beta';
+  window.MW_PREVIA = 'v103-beta';
   function mostra(){
     if (document.getElementById('mwPreviaCarimbo')) return;
     var el = document.createElement('div');

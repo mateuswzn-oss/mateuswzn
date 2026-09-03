@@ -1800,3 +1800,213 @@ body.light .ds{
 }
 .ds .ds-cor[aria-pressed="true"] .ds-cor-nome{ color: var(--mw-txt-1); }
 .ds .ds-cor:focus-visible{ outline: none; box-shadow: var(--mw-foco); }
+
+/* ============================================================================
+   PERFIL — área de primeira classe (§13)
+   ============================================================================
+   A tela anterior era um cartão com dois campos e três links dizendo "Editar
+   em Faculdade" / "Alterar em Configurações". Uma página administrativa que
+   mandava a pessoa embora toda vez que ela tentava mudar o que é dela.
+
+   Aqui o perfil vira o que o §13 pede: identidade primeiro, com a foto
+   grande e o nome em tamanho de título; depois o que este perfil produz; e
+   a edição DENTRO da própria tela, numa aba, em vez de noutra área.
+   ---------------------------------------------------------------------------- */
+.ds .ds-perfil-hero{
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--mw-e-5);
+  align-items: start;
+}
+.ds .ds-perfil-foto{
+  position: relative; flex: 0 0 auto;
+  width: 92px; height: 92px; border-radius: 50%;
+  display: grid; place-items: center; overflow: visible;
+  background: var(--mw-ac-grad) center/cover no-repeat;
+  color: var(--mw-txt-sobre-acento);
+  font-size: 32px; font-weight: 700; letter-spacing: -.02em;
+  box-shadow: 0 0 0 3px var(--mw-chao), 0 0 0 4px var(--mw-borda);
+}
+.ds .ds-perfil-foto.has-avatar{ color: transparent; }
+.ds .ds-perfil-foto.has-avatar > span{ display: none; }
+/* O botão da câmera fica NA foto: trocar a foto é a ação mais óbvia de um
+   perfil, e escondê-la numa aba obrigaria a procurar. */
+.ds .ds-perfil-foto-btn{
+  position: absolute; right: -2px; bottom: -2px;
+  width: 30px; height: 30px; display: grid; place-items: center;
+  border-radius: 50%; border: 2px solid var(--mw-chao);
+  background: var(--mw-sup-3); color: var(--mw-txt-1);
+  cursor: pointer; padding: 0;
+  transition: transform 90ms var(--mw-curva), background var(--mw-d-rapida) var(--mw-curva);
+}
+.ds .ds-perfil-foto-btn svg{ width: 15px; height: 15px; }
+.ds .ds-perfil-foto-btn:hover{ background: var(--mw-sup-2); }
+.ds .ds-perfil-foto-btn:active{ transform: scale(.9); }
+
+.ds .ds-perfil-id{ min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.ds .ds-perfil-nome{
+  margin: 0; font-size: clamp(22px, 4.6vw, 28px); line-height: 1.15;
+  font-weight: 700; letter-spacing: -.03em; color: var(--mw-txt-1);
+}
+.ds .ds-perfil-usuario{
+  margin: 0; font-size: var(--mw-t-corpo); font-weight: 600; color: var(--mw-ac-txt);
+}
+.ds .ds-perfil-usuario:empty{ display: none; }
+.ds .ds-perfil-bio{
+  margin: 6px 0 0; font-size: var(--mw-t-corpo-g); line-height: 1.5;
+  color: var(--mw-txt-2); max-width: 60ch;
+}
+.ds .ds-perfil-bio:empty{ display: none; }
+/* Os dados acadêmicos como CHIPS, e não como uma frase separada por
+   pontinhos. O separador inline parecia certo até a linha quebrar no
+   telefone: "Engenharia da Computação · UFPA" cabia, e a segunda linha
+   começava com um pontinho solto, apontando para nada. Um chip tem começo
+   e fim próprios — quebra onde quiser e continua legível. */
+.ds .ds-perfil-selos{ display: flex; flex-wrap: wrap; gap: var(--mw-e-2); margin-top: var(--mw-e-3); }
+.ds .ds-perfil-selo{
+  display: inline-flex; align-items: center;
+  height: 26px; padding: 0 10px;
+  border: 1px solid var(--mw-borda); border-radius: 999px;
+  background: var(--mw-sup-2);
+  font-size: var(--mw-t-micro); font-weight: 600; color: var(--mw-txt-2);
+  white-space: nowrap;
+}
+.ds .ds-perfil-links{ display: flex; flex-wrap: wrap; gap: var(--mw-e-2); margin-top: var(--mw-e-3); }
+.ds .ds-perfil-links a{
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 32px; padding: 0 var(--mw-e-3);
+  border: 1px solid var(--mw-borda); border-radius: 999px;
+  font-size: var(--mw-t-micro); font-weight: 600;
+  color: var(--mw-txt-2); text-decoration: none;
+  transition: border-color var(--mw-d-rapida) var(--mw-curva), color var(--mw-d-rapida) var(--mw-curva);
+}
+.ds .ds-perfil-links a:hover{ border-color: var(--mw-borda-forte); color: var(--mw-txt-1); }
+.ds .ds-perfil-links a svg{ width: 14px; height: 14px; }
+
+.ds .ds-perfil-acoes{ display: flex; flex-direction: column; align-items: flex-end; gap: var(--mw-e-2); }
+/* O estado da conta é informação, não rodapé do botão: ganha a forma de
+   um selo, e a cor sai do acento quando o perfil está aberto. */
+.ds .ds-perfil-visib{
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 26px; padding: 0 10px;
+  border: 1px solid var(--mw-borda); border-radius: 999px;
+  font-size: var(--mw-t-micro); font-weight: 600; color: var(--mw-txt-3);
+  white-space: nowrap;
+}
+.ds .ds-perfil-visib::before{
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--mw-txt-3);
+}
+.ds .ds-perfil-visib[data-estado="publico"]{
+  color: var(--mw-ac-txt);
+  border-color: color-mix(in srgb, var(--mw-ac) 40%, var(--mw-borda));
+}
+.ds .ds-perfil-visib[data-estado="publico"]::before{ background: var(--mw-ac); }
+.ds .ds-perfil-numeros{
+  padding-top: var(--mw-e-4); border-top: 1px solid var(--mw-divisor);
+}
+.ds .ds-perfil-abas{ border-bottom: 1px solid var(--mw-divisor); }
+.ds .ds-perfil-painel[hidden]{ display: none; }
+.ds .ds-perfil-painel{ display: flex; flex-direction: column; gap: var(--mw-e-8); }
+
+.ds .ds-perfil-privacidade-nota{
+  margin: 0 0 var(--mw-e-4); font-size: var(--mw-t-micro); line-height: 1.5;
+  color: var(--mw-txt-3);
+}
+.ds .ds-perfil-foto-linha{ display: flex; gap: var(--mw-e-4); align-items: flex-start; }
+.ds .ds-perfil-foto-previa{
+  flex: 0 0 auto; width: 62px; height: 62px; border-radius: 50%;
+  display: grid; place-items: center; overflow: hidden;
+  background: var(--mw-ac-grad) center/cover no-repeat;
+  color: var(--mw-txt-sobre-acento); font-weight: 700; font-size: 19px;
+}
+.ds .ds-perfil-foto-previa.has-avatar{ color: transparent; font-size: 0; }
+.ds .ds-perfil-foto-texto{ display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.ds .ds-perfil-foto-acoes{ display: flex; flex-wrap: wrap; gap: var(--mw-e-2); margin-top: var(--mw-e-2); }
+/* A barra fica colada ao pé da tela porque o formulário é longo e o botão
+   de salvar não pode exigir uma rolagem até o fim para ser encontrado. Mas
+   sticky FLUTUA sobre o conteúdo — e sem reservar o espaço dela, o último
+   campo ficava por baixo, que é o defeito de "conteúdo coberto" que o §14
+   proíbe. O painel reserva a altura da barra no seu recheio de baixo. */
+.ds .ds-perfil-painel[data-painel="sobre"]{ padding-bottom: 76px; }
+/* A barra de salvar: RODAPÉ DO PAINEL, e não um botão flutuante.
+   Como pílula de vidro no meio da tela ela cobria o campo "@usuário" —
+   medido, não suposto: a barra parava em y=726 e o campo ficava embaixo
+   dela, borrado. Um botão que paira sobre um campo editável lê como
+   defeito, e é o "conteúdo coberto" que o §14 proíbe.
+
+   Uma barra que ocupa a largura toda, tem borda em cima e fundo SÓLIDO
+   lê como o fim da área: o que passa por baixo dela está claramente
+   "abaixo da dobra", não escondido atrás de um borrão. Vidro aqui seria
+   materialmente defensável (ela se sobrepõe a conteúdo), mas legibilidade
+   ganha de material: por trás dela há texto de formulário, não paisagem. */
+.ds .ds-perfil-salvar{
+  display: flex; align-items: center; gap: var(--mw-e-3); flex-wrap: wrap;
+  position: sticky; bottom: 0; z-index: 5;
+  margin: 0;
+  padding: var(--mw-e-3) var(--mw-e-4);
+  border-radius: var(--mw-r-3) var(--mw-r-3) 0 0;
+  background: var(--mw-sup-1);
+  border-top: 1px solid var(--mw-borda);
+  box-shadow: 0 -10px 24px -18px rgba(0,0,0,.75);
+}
+
+@media (max-width: 760px){
+  .ds .ds-perfil-hero{ grid-template-columns: auto 1fr; }
+  .ds .ds-perfil-acoes{
+    grid-column: 1 / -1; flex-direction: row; align-items: center;
+    justify-content: space-between; width: 100%;
+  }
+  .ds .ds-perfil-acoes .ds-btn{ flex: 1 1 auto; }
+  .ds .ds-perfil-foto{ width: 76px; height: 76px; font-size: 26px; }
+}
+.ds .ds-perfil-prog-linha{
+  display: flex; align-items: center; gap: var(--mw-e-3);
+  padding: var(--mw-e-2) 0;
+}
+.ds .ds-perfil-prog-linha + .ds-perfil-prog-linha{ border-top: 1px solid var(--mw-divisor); }
+.ds .ds-perfil-prog-nome{
+  flex: 0 0 auto; min-width: 108px; max-width: 40%;
+  font-size: var(--mw-t-corpo); font-weight: 600; color: var(--mw-txt-1);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.ds .ds-perfil-prog-pct{
+  flex: 0 0 auto; min-width: 40px; text-align: right;
+  font-size: var(--mw-t-micro); font-weight: 650; color: var(--mw-txt-2);
+  font-variant-numeric: tabular-nums;
+}
+
+/* As quatro abas não cabem em 390px e a última ("Sobre") ficava cortada —
+   e é justamente a aba que edita o perfil. Passam a rolar de lado, com a
+   barra de rolagem escondida, como o trilho. */
+.ds .ds-perfil-abas{
+  overflow-x: auto; overscroll-behavior-x: contain;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch;
+}
+.ds .ds-perfil-abas::-webkit-scrollbar{ display: none; }
+.ds .ds-perfil-abas .ds-aba{ flex: 0 0 auto; white-space: nowrap; }
+
+/* As quatro abas não cabem em 390px, e a quarta ("Sobre" — onde mora TODA
+   a edição) ficava fora da tela sem nada indicando que havia mais. Rolar
+   funcionava; descobrir que dava para rolar, não. A máscara apaga a borda
+   direita enquanto houver conteúdo além dela, que é o sinal que um trilho
+   horizontal precisa dar. Some sozinha quando a rolagem chega ao fim
+   (`animation-timeline: scroll`) e, onde isso não existe, fica um degradê
+   fixo — discreto, e nunca uma informação errada. */
+.ds .ds-perfil-abas-caixa{ position: relative; }
+.ds .ds-perfil-abas-caixa::after{
+  content: ''; position: absolute; inset: 0 0 1px auto; width: 40px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--mw-fundo) 85%);
+}
+@supports (animation-timeline: scroll(self inline)){
+  .ds .ds-perfil-abas{ scroll-timeline: --abas inline; }
+  .ds .ds-perfil-abas-caixa::after{
+    animation: mw-some-fim linear both;
+    animation-timeline: --abas; animation-range: contain;
+  }
+}
+@keyframes mw-some-fim{ from{ opacity: 1 } 92%{ opacity: 1 } to{ opacity: 0 } }
+@media (prefers-reduced-motion: reduce){
+  .ds .ds-perfil-abas-caixa::after{ animation: none; }
+}
