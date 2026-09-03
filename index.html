@@ -4700,21 +4700,19 @@ body.light .mw-faceid-gate-card p{color:#526988}
 </div>
 </section>
 <style id="mw-conf-css">
-/* Peças pequenas de Configurações que não pertencem ao sistema inteiro:
-   o campo somente-leitura das linhas de Conta, a fileira de ações e o
-   recolhível do diagnóstico. Ficam aqui, ao lado da tela que as usa. */
-#view-settings .ds-conf-campo{
-  border:0; background:transparent; padding:0; margin:0; width:100%;
-  font:inherit; font-size:var(--mw-t-micro); color:var(--mw-txt-3);
-  text-overflow:ellipsis;
-}
-#view-settings .ds-conf-campo:focus{ outline:none; }
-#view-settings .ds-conf-acoes{ display:flex; gap:var(--mw-e-2); flex:0 0 auto; }
-#view-settings .ds-conf-acoes-bloco{ padding:0 var(--mw-e-4) var(--mw-e-3); }
+/* O que sobrou aqui é o que É desta tela e de mais nenhuma: a lista
+   numerada da transferência de conta e a caixa de texto do relatório
+   de diagnóstico.
+
+   O que saiu: `ds-conf-campo`, `ds-conf-acoes`, `ds-conf-acoes-bloco` e
+   `ds-conf-detalhe`. Eu os havia escrito aqui, presos a
+   `#view-settings`, com a desculpa de que eram "peças pequenas". O
+   teste 13 discordou, e tem razão: um nome que começa com `ds-` é uma
+   promessa de que o sistema o define — quem escrever `ds-conf-acoes`
+   noutra tela amanhã espera que funcione, e aqui não funcionaria. Ou o
+   nome é do sistema e mora na folha do sistema, ou não devia se chamar
+   `ds-`. Foram para `ds/mw-ds.css`, junto com os outros dez. */
 #view-settings .mw-transfere-passos{ margin:0; padding:0 var(--mw-e-4) 0 calc(var(--mw-e-4) + 16px); }
-#view-settings .ds-conf-detalhe > summary{ list-style:none; cursor:pointer; }
-#view-settings .ds-conf-detalhe > summary::-webkit-details-marker{ display:none; }
-#view-settings .ds-conf-detalhe[open] > summary::after{ transform:rotate(135deg); }
 #view-settings #mwDiagBruto{
   width:calc(100% - var(--mw-e-4) * 2); margin:0 var(--mw-e-4) var(--mw-e-3);
   min-height:90px; border-radius:var(--mw-r-2); border:1px solid var(--mw-borda);

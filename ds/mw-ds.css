@@ -2363,6 +2363,37 @@ html[data-densidade]{ --mw-alvo:44px; --mw-alvo-confortavel:44px; }
 .ds .ds-conf-linha:focus-visible{
   outline: 2px solid var(--mw-ac); outline-offset: -2px;
 }
+
+/* ---- VALOR SOMENTE-LEITURA DENTRO DA LINHA --------------------------------
+   Nas linhas de Conta, o valor atual (usuário, e-mail, telefone) é um
+   `<input readonly` e não um `<span>`: assim ele pode ser selecionado e
+   copiado, que é o que se quer fazer com um e-mail. Mas um campo com
+   cara de campo mentiria — daria a entender que dá para digitar ali, e
+   quem altera é o botão ao lado. Então ele se despe: sem borda, sem
+   fundo, sem contorno de foco próprio. Parece texto, e é copiável. */
+.ds .ds-conf-campo{
+  border: 0; background: transparent; padding: 0; margin: 0; width: 100%;
+  font: inherit; font-size: var(--mw-t-micro); color: var(--mw-txt-3);
+  text-overflow: ellipsis;
+}
+.ds .ds-conf-campo:focus{ outline: none; }
+
+/* ---- AÇÕES DA LINHA -------------------------------------------------------
+   Dois ou mais botões à direita da linha (Definir/Remover, por exemplo).
+   `flex: 0 0 auto` porque quem cede largura é o texto, nunca o alvo de
+   toque. A variante `-bloco` é para quando as ações não cabem na linha
+   e descem para baixo dela: aí precisam do mesmo recuo lateral da
+   linha, senão encostam na borda do cartão. */
+.ds .ds-conf-acoes{ display: flex; gap: var(--mw-e-2); flex: 0 0 auto; }
+.ds .ds-conf-acoes-bloco{ padding: 0 var(--mw-e-4) var(--mw-e-3); }
+
+/* ---- RECOLHÍVEL -----------------------------------------------------------
+   Um `<details>` cujo `<summary>` é uma linha comum. O triângulo nativo
+   sai (ele não combina com nada), e a seta do sistema — a mesma de
+   `details > summary::before` — gira ao abrir. */
+.ds .ds-conf-detalhe > summary{ list-style: none; cursor: pointer; }
+.ds .ds-conf-detalhe > summary::-webkit-details-marker{ display: none; }
+.ds .ds-conf-detalhe[open] > summary::after{ transform: rotate(135deg); }
 .ds .ds-conf-icone{
   flex: 0 0 auto; width: 28px; height: 28px;
   display: grid; place-items: center; border-radius: var(--mw-r-2);
