@@ -174,7 +174,14 @@
   --mw-vidro-cor-2:rgba(255,255,255,.085);
   --mw-vidro-brilho:rgba(255,255,255,.10);
   --mw-vidro-borda:rgba(255,255,255,.12);
-  --mw-vidro-desfoque:18px;
+  /* O DESFOQUE É UMA ESCALA, não um número fixo (§7).
+     `--mw-vidro-forca` vai de 0 a 1 e é escrita pelo atributo
+     `data-vidro` no <html>; tudo o que usa vidro multiplica por ela em
+     vez de guardar um px próprio. Assim "discreto/médio/intenso" é uma
+     decisão em UM lugar, e não uma caça a cada `backdrop-filter` do
+     arquivo. */
+  --mw-vidro-forca:1;
+  --mw-vidro-desfoque:calc(18px * var(--mw-vidro-forca));
   --mw-vidro-saturacao:150%;
   --mw-vidro-solido:var(--mw-p-noite-800);   /* quando não há backdrop-filter */
 
@@ -1125,6 +1132,17 @@ body.light .ds{
   display: flex; justify-content: flex-end; gap: var(--mw-e-2);
   flex-wrap: wrap;
 }
+/* Fechado é fechado. A cobertura declara `display:grid`, e uma regra de
+   autor vence o `[hidden]{display:none}` que o navegador traz de
+   fábrica — sem esta linha, esconder pelo atributo não esconderia
+   nada. Vale a pena a linha: `hidden` é como o resto do app fala. */
+.ds .ds-cobertura[hidden]{ display: none; }
+/* Cabeça de diálogo: título à esquerda, saída à direita. */
+.ds .ds-dialogo-cabeca{
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--mw-e-3);
+}
+.ds .ds-dialogo-cabeca .ds-titulo{ margin: 0; }
 @media (max-width: 640px){
   .ds .ds-cobertura{ place-items: end stretch; padding: 0; }
   .ds .ds-dialogo{
@@ -1615,6 +1633,18 @@ body.light .ds{
 .ds .ds-topo-voltar[hidden]{ display: none; }
 .ds .ds-topo-voltar:not([hidden]) ~ .ds-topo-menu,
 .ds .ds-topo-menu:has(~ .ds-topo-voltar:not([hidden])){ display: none; }
+/* Numa tela-folha ele é a SAÍDA PRINCIPAL, e por isso ganha peso: numa
+   barra de ícones fantasma, o único com superfície é o que o dedo
+   procura primeiro. Peso feito de SUPERFÍCIE, não de cor — a folha
+   legada fazia isso com um degradê ciano→azul cravado, que continuava
+   azul mesmo com o destaque em verde ou âmbar. Superfície funciona nas
+   seis cores e nos dois temas porque `--mw-sup-2` já deriva do acento. */
+body.mw-tela-folha .ds .ds-topo-voltar:not([hidden]){
+  background: var(--mw-sup-2);
+  border-color: var(--mw-borda);
+  color: var(--mw-txt-1);
+}
+body.mw-tela-folha .ds .ds-topo-voltar:active{ transform: scale(.92); }
 
 /* Sino: o ponto só aparece quando há algo. */
 .ds .ds-topo-sino{ position: relative; }
@@ -1706,6 +1736,11 @@ body.light .ds{
 /* Engrenagem do topo: mesma caixa dos outros ícones, e visível em
    qualquer largura — Configurações não tem outra porta de um toque. */
 .ds .ds-topo-config{ flex: 0 0 auto; }
+/* ...MENOS quando já se está lá dentro. Medido no iPhone (390px): com a
+   engrenagem na barra, o título saía "Configuraç…" — os 44px dela eram
+   exatamente o que faltava. E um botão que leva para onde o dedo já
+   está não é atalho, é ruído: some, e o título cabe inteiro. */
+#app:has(#view-settings.view.active) .ds-topo-config{ display: none; }
 
 .ds .ds-topo-perfil{
   flex: 0 0 auto; width: 34px; height: 34px; margin-left: 2px;
@@ -2082,6 +2117,30 @@ body.light .ds{
 .ds .ds-perfil-foto-previa.has-avatar{ color: transparent; font-size: 0; }
 .ds .ds-perfil-foto-texto{ display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .ds .ds-perfil-foto-acoes{ display: flex; flex-wrap: wrap; gap: var(--mw-e-2); margin-top: var(--mw-e-2); }
+/* ---- folha da foto (§13) ----
+   A tarefa é olhar para a foto e decidir. Então a prévia é GRANDE e
+   centrada, e os botões vêm embaixo dela, em coluna: numa folha que
+   sobe pelo polegar, alvos empilhados são mais fáceis do que três
+   botões dividindo uma linha de 358px. */
+.ds .ds-perfil-foto-folha{ align-items: stretch; text-align: center; }
+.ds .ds-perfil-foto-previa-g{
+  width: 132px; height: 132px; margin: var(--mw-e-2) auto 0;
+  font-size: 40px;
+}
+.ds .ds-perfil-foto-nota{ margin: 0; text-align: center; }
+.ds .ds-perfil-foto-folha .ds-perfil-foto-acoes{
+  flex-direction: column; align-items: stretch; margin-top: 0;
+}
+.ds .ds-perfil-foto-folha .ds-perfil-foto-acoes .ds-btn{ width: 100%; }
+.ds .ds-perfil-foto-folha .ds-perfil-foto-acoes .ds-btn[hidden]{ display: none; }
+/* A foto do topo é o botão: precisa PARECER tocável, e responder ao
+   toque como um. O foco visível não é opcional — é um `role="button"`,
+   e quem navega por teclado tem de ver onde está. */
+.ds .ds-perfil-foto[role="button"]{ cursor: pointer; }
+.ds .ds-perfil-foto[role="button"]:active{ transform: scale(.97); }
+.ds .ds-perfil-foto[role="button"]:focus-visible{
+  outline: 2px solid var(--mw-ac); outline-offset: 3px;
+}
 /* A barra fica colada ao pé da tela porque o formulário é longo e o botão
    de salvar não pode exigir uma rolagem até o fim para ser encontrado. Mas
    sticky FLUTUA sobre o conteúdo — e sem reservar o espaço dela, o último
@@ -2191,3 +2250,274 @@ body.light .ds{
    contorno. Trocado no HTML; aqui só se garante que o `stroke` herdado de
    regras antigas não volte a desenhar por cima. */
 .mw-app-footer-icon svg{ fill: currentColor; stroke: none; }
+
+
+/* ============================================================================
+   INTENSIDADE DO VIDRO E DENSIDADE — dois eixos, escritos no <html>
+   ============================================================================
+   §7 pediu os dois controles e o §3 pediu que a interface inteira responda.
+   Nenhum dos dois existia: o desfoque era um px fixo e o espaçamento era uma
+   escala rígida. Aqui eles viram TOKENS, e cada peça continua lendo os mesmos
+   nomes de sempre — `--mw-vidro-desfoque`, `--mw-e-3` — sem saber que agora
+   há um multiplicador atrás.
+
+   Por que multiplicador e não três blocos de valores: com três blocos, toda
+   peça nova precisaria ser lembrada em três lugares, e a que fosse esquecida
+   ficaria surda a um dos modos. Com um fator, quem nasce depois já obedece.
+   ---------------------------------------------------------------------------- */
+html[data-vidro="discreto"]{ --mw-vidro-forca:.45; }
+html[data-vidro="medio"]   { --mw-vidro-forca:1; }
+html[data-vidro="intenso"] { --mw-vidro-forca:1.75; }
+
+/* Menos desfoque pede um pouco mais de cor no vidro, senão "discreto" vira
+   "invisível" e a barra some do fundo. */
+html[data-vidro="discreto"]{ --mw-vidro-cor:rgba(255,255,255,.085); }
+html[data-vidro="intenso"] { --mw-vidro-cor:rgba(255,255,255,.04); }
+html[data-vidro="discreto"] body.light{ --mw-vidro-cor:rgba(255,255,255,.78); }
+html[data-vidro="intenso"]  body.light{ --mw-vidro-cor:rgba(255,255,255,.48); }
+
+/* DENSIDADE. A escala de espaço inteira passa por um fator. Os degraus de 4px
+   continuam existindo — o que muda é o tamanho do degrau. */
+html{ --mw-densidade:1; }
+html[data-densidade="compacta"]  { --mw-densidade:.8; }
+html[data-densidade="confortavel"]{ --mw-densidade:1; }
+html[data-densidade="espacosa"]  { --mw-densidade:1.22; }
+html[data-densidade]{
+  --mw-e-1:calc(4px  * var(--mw-densidade));
+  --mw-e-2:calc(8px  * var(--mw-densidade));
+  --mw-e-3:calc(12px * var(--mw-densidade));
+  --mw-e-4:calc(16px * var(--mw-densidade));
+  --mw-e-5:calc(20px * var(--mw-densidade));
+  --mw-e-6:calc(24px * var(--mw-densidade));
+  --mw-e-8:calc(32px * var(--mw-densidade));
+}
+/* O ALVO DE TOQUE NÃO ENCOLHE. Densidade compacta aperta o respiro entre as
+   coisas, nunca o tamanho do que se toca: 44px é acessibilidade, não estilo.
+   Sem esta linha, "compacta" viraria uma tela que ninguém acerta com o dedo. */
+html[data-densidade]{ --mw-alvo:44px; --mw-alvo-confortavel:44px; }
+
+/* ============================================================================
+   CONFIGURAÇÕES — os dez componentes (§19)
+   ============================================================================
+   Antes, cada item de Configurações era montado à mão com `ds-grupo` e o que
+   coubesse: catorze grupos, vinte botões, cada um resolvendo o seu alinhamento.
+   O resultado era o que o §1 descreve — "página cheia de cards iguais".
+
+   O que muda aqui não é a pintura, é a UNIDADE. Numa área de ajustes de
+   aplicativo, a unidade não é o cartão: é a LINHA. O cartão só agrupa linhas
+   que pertencem ao mesmo assunto, e as divisórias entre elas fazem o trabalho
+   que catorze molduras faziam antes — com um traço de 1px em vez de uma caixa.
+
+   Vocabulário, na ordem em que se lê a tela:
+
+     ds-conf-secao      o assunto (título discreto + o bloco abaixo)
+     ds-conf-lista      o cartão que agrupa linhas irmãs
+     ds-conf-linha      a linha: ícone · rótulo (+ apoio) · valor · acessório
+     ds-conf-nav        linha que LEVA a algum lugar (ganha a seta)
+     ds-conf-chave      o interruptor
+     ds-conf-faixa      o controle deslizante
+     ds-conf-seletor    escolha entre poucas opções, lado a lado
+     ds-conf-cores      a paleta de acento
+     ds-conf-perigo     ação destrutiva
+     ds-conf-info       texto que explica, sem controle nenhum
+   ---------------------------------------------------------------------------- */
+
+.ds .ds-conf{ display: flex; flex-direction: column; gap: var(--mw-e-6); }
+
+/* ---- SEÇÃO ---------------------------------------------------------------- */
+.ds .ds-conf-secao{ display: flex; flex-direction: column; gap: var(--mw-e-2); }
+.ds .ds-conf-secao > h2,
+.ds .ds-conf-titulo{
+  margin: 0 0 0 var(--mw-e-4);
+  font-size: var(--mw-t-rotulo); font-weight: 700;
+  letter-spacing: .09em; text-transform: uppercase;
+  color: var(--mw-txt-3);
+}
+
+/* ---- LISTA (o cartão que agrupa) ------------------------------------------
+   Uma superfície só, com as linhas separadas por divisória — e não uma
+   moldura por item. É a diferença entre "cartão dentro de cartão" e uma
+   lista de ajustes. */
+.ds .ds-conf-lista{
+  display: flex; flex-direction: column;
+  background: var(--mw-sup-1);
+  border: 1px solid var(--mw-borda);
+  border-radius: var(--mw-r-3);
+  overflow: hidden;
+}
+/* A divisória começa depois do ícone: alinhada com o texto, como em lista
+   nativa. Sem ícone, encosta na borda. */
+.ds .ds-conf-lista > * + *{ box-shadow: inset 0 1px 0 var(--mw-divisor); }
+
+/* ---- LINHA ---------------------------------------------------------------- */
+.ds .ds-conf-linha{
+  display: flex; align-items: center; gap: var(--mw-e-3);
+  width: 100%; min-height: var(--mw-alvo);
+  padding: var(--mw-e-3) var(--mw-e-4);
+  background: transparent; border: 0;
+  font: inherit; color: var(--mw-txt-1); text-align: left;
+}
+.ds button.ds-conf-linha{ cursor: pointer; }
+.ds button.ds-conf-linha:hover{ background: var(--mw-sup-2); }
+.ds button.ds-conf-linha:active{ background: var(--mw-sup-afundada); }
+.ds .ds-conf-linha:focus-visible{
+  outline: 2px solid var(--mw-ac); outline-offset: -2px;
+}
+.ds .ds-conf-icone{
+  flex: 0 0 auto; width: 28px; height: 28px;
+  display: grid; place-items: center; border-radius: var(--mw-r-2);
+  background: var(--mw-sup-2); color: var(--mw-txt-2);
+}
+.ds .ds-conf-icone svg{ width: 16px; height: 16px; }
+.ds .ds-conf-corpo{ flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.ds .ds-conf-rotulo{ font-size: var(--mw-t-corpo); font-weight: 550; color: var(--mw-txt-1); }
+.ds .ds-conf-apoio{ font-size: var(--mw-t-micro); color: var(--mw-txt-3); }
+.ds .ds-conf-valor{
+  flex: 0 0 auto; max-width: 45%;
+  font-size: var(--mw-t-micro); color: var(--mw-txt-3);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+/* ---- NAVEGAÇÃO (leva a uma sub-tela) -------------------------------------- */
+.ds .ds-conf-nav::after{
+  content: ''; flex: 0 0 auto;
+  width: 7px; height: 7px; margin-left: 2px;
+  border-top: 1.6px solid var(--mw-txt-3); border-right: 1.6px solid var(--mw-txt-3);
+  transform: rotate(45deg);
+}
+
+/* ---- CHAVE (interruptor) --------------------------------------------------- */
+.ds .ds-conf-chave{
+  flex: 0 0 auto; position: relative;
+  width: 46px; height: 28px; padding: 0; border: 0;
+  border-radius: 999px; background: var(--mw-sup-afundada);
+  box-shadow: inset 0 0 0 1px var(--mw-borda);
+  cursor: pointer; transition: background var(--mw-d-rapida) var(--mw-curva);
+}
+.ds .ds-conf-chave::after{
+  content: ''; position: absolute; top: 3px; left: 3px;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.35);
+  transition: transform var(--mw-d-media) var(--mw-mola);
+}
+.ds .ds-conf-chave[aria-checked="true"]{ background: var(--mw-ac); box-shadow: none; }
+.ds .ds-conf-chave[aria-checked="true"]::after{ transform: translateX(18px); }
+.ds .ds-conf-chave:focus-visible{ outline: 2px solid var(--mw-ac); outline-offset: 2px; }
+
+/* ---- FAIXA (deslizante) ---------------------------------------------------- */
+.ds .ds-conf-faixa{
+  display: flex; flex-direction: column; gap: var(--mw-e-2);
+  padding: var(--mw-e-3) var(--mw-e-4);
+}
+.ds .ds-conf-faixa input[type="range"]{
+  width: 100%; height: 26px; margin: 0; background: transparent;
+  -webkit-appearance: none; appearance: none;
+}
+.ds .ds-conf-faixa input[type="range"]::-webkit-slider-runnable-track{
+  height: 5px; border-radius: 999px; background: var(--mw-sup-afundada);
+  box-shadow: inset 0 0 0 1px var(--mw-borda);
+}
+.ds .ds-conf-faixa input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance: none; appearance: none;
+  width: 22px; height: 22px; margin-top: -8.5px;
+  border-radius: 50%; background: #fff; border: 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,.4), 0 0 0 2px var(--mw-ac);
+  cursor: grab;
+}
+.ds .ds-conf-faixa input[type="range"]::-moz-range-track{
+  height: 5px; border-radius: 999px; background: var(--mw-sup-afundada);
+}
+.ds .ds-conf-faixa input[type="range"]::-moz-range-thumb{
+  width: 22px; height: 22px; border: 0; border-radius: 50%;
+  background: #fff; box-shadow: 0 0 0 2px var(--mw-ac);
+}
+
+/* ---- SELETOR (poucas opções, lado a lado) ---------------------------------- */
+.ds .ds-conf-seletor{
+  display: flex; gap: 3px; padding: 3px; margin: var(--mw-e-3) var(--mw-e-4);
+  background: var(--mw-sup-afundada); border: 1px solid var(--mw-borda);
+  border-radius: var(--mw-r-total);
+}
+.ds .ds-conf-seletor > button{
+  flex: 1 1 0; min-height: 34px; padding: 0 var(--mw-e-3);
+  border: 0; border-radius: var(--mw-r-total); background: transparent;
+  font: inherit; font-size: var(--mw-t-micro); font-weight: 600;
+  color: var(--mw-txt-2); cursor: pointer; white-space: nowrap;
+  transition: background var(--mw-d-rapida) var(--mw-curva), color var(--mw-d-rapida) var(--mw-curva);
+}
+.ds .ds-conf-seletor > button[aria-pressed="true"]{
+  background: var(--mw-sup-1); color: var(--mw-txt-1); box-shadow: var(--mw-sombra-1);
+}
+.ds .ds-conf-seletor > button:focus-visible{ outline: 2px solid var(--mw-ac); outline-offset: 1px; }
+
+/* ---- CORES ----------------------------------------------------------------- */
+.ds .ds-conf-cores{
+  display: flex; flex-wrap: wrap; gap: var(--mw-e-3);
+  padding: var(--mw-e-4);
+}
+.ds .ds-conf-cor{
+  width: 38px; height: 38px; padding: 0; border-radius: 50%; cursor: pointer;
+  border: 2px solid transparent; background: var(--mw-conf-cor, var(--mw-ac-grad));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.14);
+  transition: transform var(--mw-d-rapida) var(--mw-mola);
+}
+.ds .ds-conf-cor:active{ transform: scale(.9); }
+/* Selecionado: anel FORA do círculo, para a cor não ser coberta. E um
+   traço de conferência dentro — porque estado não pode depender só de
+   cor (§24). */
+.ds .ds-conf-cor[aria-checked="true"]{
+  box-shadow: 0 0 0 2px var(--mw-chao), 0 0 0 4px var(--mw-txt-1);
+}
+.ds .ds-conf-cor[aria-checked="true"]::after{
+  content: ''; display: block; width: 9px; height: 5px; margin: 0 auto;
+  border-left: 2.2px solid #fff; border-bottom: 2.2px solid #fff;
+  transform: rotate(-45deg) translate(1px, -1px);
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,.5));
+}
+
+/* ---- PERIGO ---------------------------------------------------------------- */
+.ds .ds-conf-perigo .ds-conf-rotulo{ color: var(--mw-perigo); }
+.ds .ds-conf-perigo .ds-conf-icone{ color: var(--mw-perigo); background: var(--mw-perigo-bg); }
+
+/* ---- INFO ------------------------------------------------------------------ */
+.ds .ds-conf-info{
+  padding: var(--mw-e-3) var(--mw-e-4);
+  font-size: var(--mw-t-micro); color: var(--mw-txt-3); line-height: 1.55;
+}
+.ds .ds-conf-info strong{ color: var(--mw-txt-2); font-weight: 600; }
+
+/* ---- SUB-TELA (§14) --------------------------------------------------------
+   Abrir uma categoria não rola a página: TROCA de tela, com voltar próprio.
+   É o que separa "área de ajustes de aplicativo" de "página web comprida".
+   A pilha vive dentro da própria view, então a navegação principal (barra de
+   baixo, lateral) continua respondendo — o usuário não fica preso. */
+.ds .ds-conf-pilha{ position: relative; }
+.ds .ds-conf-tela{
+  display: flex; flex-direction: column; gap: var(--mw-e-6);
+  animation: ds-conf-entra var(--mw-d-media) var(--mw-curva) both;
+}
+.ds .ds-conf-tela[hidden]{ display: none; }
+@keyframes ds-conf-entra{
+  from{ opacity: 0; transform: translateX(14px); }
+  to  { opacity: 1; transform: none; }
+}
+.ds .ds-conf-cabeca{
+  display: flex; align-items: center; gap: var(--mw-e-2);
+  margin-bottom: calc(var(--mw-e-4) * -1);
+}
+.ds .ds-conf-voltar{
+  flex: 0 0 auto; width: 36px; height: 36px; padding: 0;
+  display: grid; place-items: center;
+  border: 1px solid var(--mw-borda); border-radius: 50%;
+  background: var(--mw-sup-2); color: var(--mw-txt-1); cursor: pointer;
+}
+.ds .ds-conf-voltar:hover{ border-color: var(--mw-borda-forte); }
+.ds .ds-conf-cabeca h2{ margin: 0; font-size: var(--mw-t-tela); font-weight: 700; color: var(--mw-txt-1); }
+
+@media (prefers-reduced-motion: reduce){
+  .ds .ds-conf-tela{ animation: none; }
+  .ds .ds-conf-chave::after{ transition: none; }
+}
+/* Desktop: coluna com largura de leitura, não a tela inteira (§20). */
+@media (min-width: 901px){
+  .ds .ds-conf{ max-width: 720px; }
+}

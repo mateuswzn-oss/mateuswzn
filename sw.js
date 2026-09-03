@@ -1,3 +1,51 @@
+/* v109 (BETA — Configurações como área nativa, e a foto que virou botão)
+
+   CONFIGURAÇÕES DEIXOU DE SER UMA PÁGINA
+   Eram 4.105px de rolagem: oito categorias e catorze grupos, todos na
+   mesma tela, todos com o mesmo peso. Agora são um ÍNDICE de 753px com
+   nove linhas e oito sub-telas com cabeçalho e volta — Conta, Aparência,
+   Notificações, Segurança, Nyc AI, Privacidade, Aplicativo e Sessão.
+   A unidade de uma área de ajustes não é o cartão: é a LINHA, e é isso
+   que dez componentes novos (`ds-conf-*`) passam a dizer.
+
+   DUAS PREFERÊNCIAS QUE NÃO EXISTIAM
+   Intensidade do vidro (discreto/médio/intenso) e densidade
+   (compacta/confortável/espaçosa). Nenhuma das duas é uma lista de
+   valores por tamanho: são MULTIPLICADORES sobre os tokens que já
+   existiam, então uma peça escrita amanhã já obedece sem saber que elas
+   existem. O alvo de toque de 44px fica fora da conta — 44px é
+   acessibilidade, não estilo.
+
+   "CONFIGURAÇ…"
+   O título saía cortado no iPhone. A causa eram os 44px da engrenagem
+   do topo — um botão que, estando dentro de Configurações, levava para
+   onde o dedo já estava. Ela some ali, e o título cabe inteiro.
+
+   O BOTÃO DE VOLTAR ERA O ÚNICO AZUL DE UMA BARRA NEUTRA
+   Quadrado de canto 13px com degradê ciano→azul cravado numa folha
+   antiga, alcançando marcação nova pelo próprio id — e continuava azul
+   com o acento em verde ou âmbar. Agora é redondo como os vizinhos, e
+   numa tela-folha ganha peso com SUPERFÍCIE (que deriva do acento), não
+   com cor fixa.
+
+   A FOTO DO PERFIL VIROU O BOTÃO
+   Saiu do meio do Perfil a caixa permanente com "Escolher foto /
+   Ajustar / Remover" — três botões ocupando a tela o tempo todo para
+   uma tarefa que se faz uma vez por ano. Toca-se na foto e as opções
+   sobem numa folha; sem foto, "Ajustar" e "Remover" nem aparecem,
+   porque botão que não faz nada é botão morto.
+
+   DOIS PINTORES DISPUTAVAM O MESMO CABEÇALHO
+   Achado ao medir: a insígnia de câmera sumia meio segundo depois de a
+   tela abrir, sempre. Um bloco antigo reescrevia o innerHTML da foto e
+   apagava a marcação que o outro dependia — e preenchia um
+   `#mwPerfilLinha` que não existe mais. Retirado: um cabeçalho, um
+   pintor. Junto com ele caiu um `background-image: none !important`
+   que derrubava o gradiente do próprio sistema.
+
+   DOIS BOTÕES MORTOS PASSARAM A FUNCIONAR
+   "Apagar histórico" da Nyc AI e "Copiar código" da transferência.
+
 /* v108 (BETA — a lupa consertada de verdade, e o topo trocado)
 
    A LUPA TINHA CINCO DONOS
@@ -2441,7 +2489,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v108-beta';
+const CACHE_NAME = 'mw-shell-v109-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

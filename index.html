@@ -4550,9 +4550,16 @@ body.light .mw-faceid-gate-card p{color:#526988}
      perfil tem de abrir o PERFIL. Tudo o que é identidade se edita aqui;
      Configurações fica com o que é conta e aplicativo (§37). -->
 <header class="ds-perfil-hero" style="--i:0">
-<div class="ds-perfil-foto" id="mwPerfilFoto">
+<!-- A FOTO É O BOTÃO (§13). Antes havia aqui uma insígnia de câmera
+     clicável e, mais abaixo na página, uma caixa PERMANENTE com
+     "Escolher foto / Ajustar / Remover" — três botões ocupando a tela
+     inteira do tempo para uma tarefa que se faz uma vez por ano. O §13
+     pede o contrário, e é o que Instagram e WhatsApp fazem: toca-se na
+     foto, e as opções aparecem na hora. A insígnia continua, agora só
+     como sinal de que dá para tocar; quem escuta o toque é o círculo. -->
+<div class="ds-perfil-foto" id="mwPerfilFoto" role="button" tabindex="0" aria-label="Foto do perfil — tocar para alterar" title="Alterar foto">
 <span id="mwPerfilIniciais" aria-hidden="true">M</span>
-<button type="button" class="ds-perfil-foto-btn" id="chooseProfilePhoto" aria-label="Trocar foto de perfil" title="Trocar foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.4h3.1l1.5-2.2h6.8l1.5 2.2H20a1.6 1.6 0 0 1 1.6 1.6v8.2A1.6 1.6 0 0 1 20 19.6H4a1.6 1.6 0 0 1-1.6-1.6V10A1.6 1.6 0 0 1 4 8.4Z"/><circle cx="12" cy="13.7" r="3.2"/></svg></button>
+<span class="ds-perfil-foto-btn" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.4h3.1l1.5-2.2h6.8l1.5 2.2H20a1.6 1.6 0 0 1 1.6 1.6v8.2A1.6 1.6 0 0 1 20 19.6H4a1.6 1.6 0 0 1-1.6-1.6V10A1.6 1.6 0 0 1 4 8.4Z"/><circle cx="12" cy="13.7" r="3.2"/></svg></span>
 </div>
 <div class="ds-perfil-id">
 <h2 class="ds-perfil-nome" id="mwPerfilNome">&nbsp;</h2>
@@ -4643,26 +4650,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
 </div>
 </section>
 
-<section class="ds-faixa">
-<div class="ds-faixa-cabeca"><h3 class="ds-faixa-titulo">Foto</h3></div>
-<div class="ds-chapa">
-<div class="ds-perfil-foto-linha">
-<div class="ds-perfil-foto-previa" id="profileAvatarPreview"><span id="profileAvatarInitials">MW</span></div>
-<div class="ds-perfil-foto-texto">
-<strong>Foto do perfil</strong>
-<small class="ds-micro">Escolha uma imagem e ajuste o enquadramento antes de salvar.</small>
-<div class="ds-perfil-foto-acoes">
-<button class="ds-btn ds-btn-secundario ds-btn-p" type="button" id="mwPerfilEscolherFoto">Escolher foto</button>
-<button class="ds-btn ds-btn-fantasma ds-btn-p" type="button" id="editProfilePhoto">Ajustar</button>
-<button class="ds-btn ds-btn-fantasma ds-btn-p ds-btn-perigo" type="button" id="removeProfilePhoto">Remover</button>
 </div>
-<input id="profilePhotoFile" type="file" accept="image/*" hidden>
-<input id="profilePhoto" type="hidden">
-<input id="profileEmail" type="hidden">
-</div>
-</div>
-</div>
-</section>
 
 <div class="ds-perfil-salvar">
 <button class="ds-btn ds-btn-primario ds-btn-g" id="saveProfile">Salvar perfil</button>
@@ -4670,94 +4658,318 @@ body.light .mw-faceid-gate-card p{color:#526988}
 </div>
 </div>
 
+<!-- A MESMA CAIXA, AGORA CONTEXTUAL (§13/§14).
+     Nada aqui foi reescrito: são os mesmos três botões, com os mesmos
+     ids e os mesmos manipuladores de sempre — o recorte com arrasto e
+     zoom continua sendo o `openCrop` que já existia. O que mudou foi
+     ONDE eles moram. Eram uma seção fixa no meio do perfil; passam a
+     ser uma folha que sobe quando se toca na foto e some quando a
+     tarefa acaba. `role="dialog" aria-modal="true"` não é enfeite: é
+     por esse par que o bloco `mw-teclado` prende o Tab, leva o foco
+     para dentro e faz o Escape fechar — de graça, sem código novo. -->
+<div class="ds-cobertura" id="mwFotoFolha" role="dialog" aria-modal="true" aria-labelledby="mwFotoFolhaTitulo" hidden>
+<div class="ds-dialogo ds-perfil-foto-folha">
+<div class="ds-dialogo-cabeca">
+<h3 id="mwFotoFolhaTitulo" class="ds-titulo">Foto do perfil</h3>
+<button type="button" class="ds-btn ds-btn-fantasma ds-btn-icone" data-fechar aria-label="Fechar"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
 </div>
-</section><section class="view ds" id="view-settings" data-mw-migrada="1"><section class="ds-cartao"><div class="ds-secao-cabeca" data-mw-cabeca><div><h2 class="ds-titulo">Configurações</h2><p class="ds-micro">Conta, aparência e segurança</p></div></div>
-      <h3 class="ds-categoria" data-mw-categoria>Conta</h3>
-      <div class="ds-grupo" data-mw-grupo id="mwContaGrupo"><h4 class="ds-grupo-titulo">Informações de acesso</h4><p class="ds-grupo-apoio">Nome de usuário, e-mail e senha. Mudar qualquer um deles pede sua senha ou o código de acesso, porque são as três coisas com que se entra na conta.</p>
-        <div class="mw-conta-linha"><div class="mw-conta-campo"><label for="mwContaUsuario">Nome de usuário</label><input id="mwContaUsuario" type="text" readonly autocomplete="off"></div><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwContaTrocarUsuario">Alterar</button></div>
-        <div class="mw-conta-linha"><div class="mw-conta-campo"><label for="mwContaEmail">E-mail</label><input id="mwContaEmail" type="email" readonly autocomplete="off"></div><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwContaTrocarEmail">Alterar</button></div>
-        <div class="mw-conta-linha"><div class="mw-conta-campo"><label for="mwContaSenha">Senha</label><input id="mwContaSenha" type="password" value="••••••••" readonly autocomplete="off"></div><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwContaTrocarSenha">Alterar</button></div>
-        <div class="mw-conta-linha"><div class="mw-conta-campo"><label>Telefone</label><div class="mw-tel-exibicao" id="mwContaTelefoneExibicao"><span class="mw-tel-vazio" id="mwContaTelefoneVazio">Não cadastrado</span><span class="mw-tel-valor" id="mwContaTelefoneValor" hidden></span><span class="mw-tel-badge" id="mwContaTelefoneBadge" hidden>Aguardando confirmação</span></div></div><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwContaTrocarTelefone">Adicionar</button></div>
-        <p class="form-error" id="mwContaStatus" hidden></p></div>
-      <h3 class="ds-categoria" data-mw-categoria>Aparência</h3>
-      <div class="ds-grupo" data-mw-grupo id="legacyThemeGroup"><h4 class="ds-grupo-titulo">Tema</h4><p class="ds-grupo-apoio">Escolha entre escuro e claro — o mesmo alternador do topo, aqui também.</p><div class="ds-abas" role="group" aria-label="Tema do aplicativo"><button type="button" class="ds-aba theme-btn" id="darkModeBtn" aria-pressed="true">Modo Escuro</button><button type="button" class="ds-aba theme-btn" id="lightModeBtn" aria-pressed="false">Modo Claro</button></div></div>
-      <div class="ds-grupo" data-mw-grupo id="mwCorDestaqueGrupo"><h4 class="ds-grupo-titulo">Cor de destaque</h4><p class="ds-grupo-apoio">Muda o realce do app inteiro: botão ativo da navegação, links, chips e a marca. O fundo e a leitura não mudam.</p>
-        <div class="mw-cores" id="mwCores" role="radiogroup" aria-label="Cor de destaque"></div>
-      </div>
-      <h3 class="ds-categoria" data-mw-categoria>Notificações</h3>
-      <div class="ds-grupo" data-mw-grupo><h4 class="ds-grupo-titulo">Lembretes e prazos</h4><p class="ds-grupo-apoio">O sino do topo mostra o que vence perto. Estas escolhas decidem o que conta como "perto" — e o que entra na lista.</p>
-        <div class="mw-pref-linha">
-          <span>Avisar sobre prazos<small id="mwNotifDiasTexto">até 7 dias antes</small></span>
-          <input type="range" id="mwNotifDias" min="1" max="30" step="1" value="7" aria-label="Quantos dias antes avisar sobre um prazo">
-        </div>
-        <div class="mw-pref-linha">
-          <span>Incluir aulas de hoje<small>Só faz diferença se você cadastrou horário de aula nas disciplinas.</small></span>
-          <label class="mw-id-switch"><input type="checkbox" id="mwNotifAulas" aria-label="Incluir aulas de hoje nas notificações"><i></i></label>
-        </div>
-      </div>
-      <div class="ds-grupo" data-mw-grupo><h4 class="ds-grupo-titulo">Notificações no aparelho <span class="mw-id-beta">Em breve</span></h4><p class="mw-settings-em-breve">Um aviso que chega com o app fechado precisa de um servidor de push, que ainda não existe. Enquanto isso, os lembretes acima aparecem no sino quando você abre o Workspace — nada é enviado para fora daqui.</p></div>
-      <h3 class="ds-categoria" data-mw-categoria>Segurança</h3>
-      <div class="ds-grupo" data-mw-grupo id="mwFaceIdGroup" hidden><h4 class="ds-grupo-titulo">Face ID</h4><p class="ds-grupo-apoio">Use o Face ID deste iPhone/iPad para entrar no Workspace sem digitar nada.</p><div class="mw-faceid-row"><span class="mw-faceid-row-label">Entrar com Face ID</span><button type="button" class="mw-faceid-switch" id="mwFaceIdToggle" role="switch" aria-checked="false" aria-label="Entrar com Face ID"><i></i></button></div><p class="mw-faceid-limite">Atalho só deste aparelho: agiliza a entrada sem precisar de senha aqui. A proteção da sua conta continua sendo a senha (e a recuperação por e-mail), não o Face ID.</p><p class="form-error" id="mwFaceIdStatus" hidden></p></div>
-        <div class="ds-grupo" data-mw-grupo id="mwPinGroup"><h4 class="ds-grupo-titulo">Código de acesso</h4><p class="ds-grupo-apoio">Um código de 6 dígitos para destravar o Workspace ao reabrir. Funciona em qualquer aparelho, com ou sem Face ID.</p><div class="mw-pin-row"><span class="mw-pin-estado" id="mwPinEstado">Nenhum código definido.</span><div class="mw-pin-acoes"><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwPinDefinir">Definir código</button><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p mw-pin-remover" id="mwPinRemover" hidden>Remover</button></div></div><p class="form-error" id="mwPinStatus" hidden></p></div>
-      <h3 class="ds-categoria" data-mw-categoria>IA</h3>
-      <div class="ds-grupo" data-mw-grupo><h4 class="ds-grupo-titulo">Nyc AI</h4><p class="ds-grupo-apoio">Suas conversas ficam guardadas neste navegador, junto com o resto do workspace. Nada delas é usado para treinar nada.</p>
-        <div class="mw-pref-linha">
-          <span>Conversas guardadas<small id="mwIaContagem">Nenhuma conversa ainda.</small></span>
-          <button type="button" class="ds-btn ds-btn-fantasma ds-btn-p ds-btn-perigo" id="mwIaLimpar">Apagar histórico</button>
-        </div>
-        <div class="mw-pref-linha">
-          <span>Ditar por voz<small id="mwIaVozEstado">Verificando…</small></span>
-          <span class="mw-id-beta" id="mwIaVozSelo" hidden>Indisponível</span>
-        </div>
-      </div>
-      <h3 class="ds-categoria" data-mw-categoria>Privacidade</h3>
-      <div class="ds-grupo" data-mw-grupo><h4 class="ds-grupo-titulo">Backup</h4><p class="ds-grupo-apoio">Seus dados ficam salvos só neste navegador. Exporte um arquivo de backup pra não perder nada ao trocar de aparelho ou limpar os dados do navegador.</p><div class="ds-dialogo-acoes"><button class="ds-btn ds-btn-fantasma ds-btn-p" id="exportBackup">Exportar backup</button><button class="ds-btn ds-btn-fantasma ds-btn-p" id="importBackupBtn">Importar backup</button><input type="file" id="importBackupFile" accept="application/json" hidden></div><div class="form-error" id="importBackupError"></div></div>
-      <div class="ds-grupo" data-mw-grupo><h4 class="ds-grupo-titulo">Dados</h4><p class="ds-grupo-apoio">Remove disciplinas, atividades, projetos e anotações salvos neste navegador. Veja também a <a href="javascript:void(0)" data-footer-link="privacidade">Política de Privacidade</a>.</p><button class="ds-btn ds-btn-fantasma ds-btn-p ds-btn-perigo mw-clear-btn" id="clearAll">Apagar todos os dados</button></div>
-      <h3 class="ds-categoria" data-mw-categoria>Aplicativo</h3>
-      <div class="ds-grupo" data-mw-grupo><h4 class="ds-grupo-titulo">Instalação</h4><p id="mwSettingsInstallDesc">Adicione o Mateus Workspace à tela de início para abrir como um app.</p><div class="ds-dialogo-acoes"><button class="ds-btn ds-btn-fantasma ds-btn-p" id="mwSettingsInstallBtn">Instalar aplicativo</button></div></div>
-      <div class="ds-grupo" data-mw-grupo id="mwTransfereGrupo"><h4 class="ds-grupo-titulo">Usar a mesma conta no app</h4>
-        <p id="mwTransfereOnde" class="mw-transfere-onde"></p>
-        <ol class="mw-transfere-passos"><li id="mwPasso1"><b>No Safari:</b> toque em <b>Copiar código</b>.</li><li id="mwPasso2"><b>No app da tela de início:</b> abra Configurações e toque em <b>Colar código</b>.</li><li>Entre com o <b>mesmo usuário e senha</b> de sempre.</li></ol><p class="mw-transfere-nota">O código é uma <b>cópia do momento</b>, não uma sincronização. Mudou a foto ou criou uma disciplina depois de transferir? Copie de novo e cole do outro lado.</p>
-        <div class="mw-transfere-acoes"><button type="button" class="ds-btn ds-btn-secundario ds-btn-p" id="mwTransfereCopiar">Copiar código</button><button type="button" class="ds-btn ds-btn-secundario ds-btn-p" id="mwTransfereColar">Colar código</button></div>
-        <textarea id="mwTransfereCodigo" rows="3" readonly hidden aria-label="Código da conta"></textarea>
-        <p class="form-error" id="mwTransfereStatus" hidden></p>
-        <details class="mw-transfere-porque"><summary>Por que preciso fazer isso?</summary><p>No iPhone, o app da tela de início guarda os dados <b>separado</b> do Safari. É assim que o iOS funciona e nenhum ajuste no site muda isso: a conta criada num não existe no outro. O código leva a conta de um lado para o outro. Ele não carrega sua senha — quem receber ainda precisa dela para entrar — mas leva seus dados do Workspace, então trate como coisa sua.</p></details></div>
-      <!-- Diagnóstico: existe porque o desenvolvimento é verificado no
-           Chromium e o Safari do iPhone tem diferenças reais justamente
-           no que este app usa. Em vez de afirmar por leitura de
-           especificação, esta tela MEDE no aparelho de quem abriu.
+<div class="ds-perfil-foto-previa ds-perfil-foto-previa-g" id="profileAvatarPreview"><span id="profileAvatarInitials">MW</span></div>
+<p class="ds-micro ds-perfil-foto-nota">Escolha uma imagem e ajuste o enquadramento antes de salvar.</p>
+<div class="ds-perfil-foto-acoes">
+<button class="ds-btn ds-btn-primario" type="button" id="chooseProfilePhoto">Escolher foto</button>
+<button class="ds-btn ds-btn-secundario" type="button" id="editProfilePhoto">Ajustar</button>
+<button class="ds-btn ds-btn-fantasma ds-btn-perigo" type="button" id="removeProfilePhoto">Remover</button>
+</div>
+<input id="profilePhotoFile" type="file" accept="image/*" hidden>
+<input id="profilePhoto" type="hidden">
+<input id="profileEmail" type="hidden">
+</div>
 
-           ISTO É FERRAMENTA DE MANUTENÇÃO, NÃO FUNCIONALIDADE DO MW.
-           Decidido com o Mateus em 02/09/2026, e escrito aqui porque
-           combinado que só existe na conversa se perde:
+</div>
+</section><section class="view ds" id="view-settings" data-mw-migrada="1">
+<div class="ds-conf-pilha ds-tela">
+<div class="ds-conf ds-conf-tela" data-conf-tela="indice"><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Preferências</h2><div class="ds-conf-lista"><button class="ds-conf-linha ds-conf-nav" type="button" data-conf-ir="conta"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/><path d="M4.5 20.2c0-3.5 3.4-5.8 7.5-5.8s7.5 2.3 7.5 5.8"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Conta</span><span class="ds-conf-apoio">Usuário, e-mail, senha e telefone</span></span></button><button class="ds-conf-linha ds-conf-nav" type="button" data-conf-ir="aparencia"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.4"/><path d="M12 3.6v16.8"/><path d="M12 8.6a3.4 3.4 0 0 1 0 6.8"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Aparência</span><span class="ds-conf-apoio">Tema, cor, vidro e densidade</span></span></button><button class="ds-conf-linha ds-conf-nav" type="button" data-conf-ir="notificacoes"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 8h18c0-1-3-1-3-8"/><path d="M10 21h4"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Notificações</span><span class="ds-conf-apoio">Prazos, aulas e lembretes</span></span></button><button class="ds-conf-linha ds-conf-nav" type="button" data-conf-ir="seguranca"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10" width="15" height="10.5" rx="2.4"/><path d="M8 10V7.2a4 4 0 0 1 8 0V10"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Segurança</span><span class="ds-conf-apoio">Face ID, código e sessões</span></span></button></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Conteúdo</h2><div class="ds-conf-lista"><button class="ds-conf-linha ds-conf-nav" type="button" data-conf-ir="ia"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 2 5.2 5.2 2-5.2 2-2 5.2-2-5.2-5.2-2 5.2-2L12 3Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Nyc AI</span><span class="ds-conf-apoio">Conversas, voz e preferências</span></span></button><button class="ds-conf-linha ds-conf-nav" type="button" data-conf-ir="privacidade"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 5 6v5.4c0 4.2 2.9 7.6 7 9.4 4.1-1.8 7-5.2 7-9.4V6l-7-2.8Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Privacidade</span><span class="ds-conf-apoio">O que fica visível no seu perfil</span></span></button></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Sistema</h2><div class="ds-conf-lista"><button class="ds-conf-linha ds-conf-nav" type="button" data-conf-ir="aplicativo"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.8" width="11" height="18.4" rx="2.4"/><path d="M10.7 5.6h2.6"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Aplicativo</span><span class="ds-conf-apoio">Instalação, backup, versão e suporte</span></span></button></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Sessão</h2><div class="ds-conf-lista"><button class="ds-conf-linha ds-conf-nav" type="button" data-conf-ir="sessao"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 3.5h3a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-3"/><path d="M10 16.5 5.5 12 10 7.5"/><path d="M5.5 12h9"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Sair desta conta</span><span class="ds-conf-apoio">Encerrar aqui ou nos outros aparelhos</span></span></button></div></section></div>
+<div class="ds-conf ds-conf-tela" data-conf-tela="conta" hidden><div class="ds-conf-cabeca"><button type="button" class="ds-conf-voltar" data-conf-voltar aria-label="Voltar para Configurações"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h2>Conta</h2></div><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Informações de acesso</h2><div class="ds-conf-lista"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/><path d="M4.5 20.2c0-3.5 3.4-5.8 7.5-5.8s7.5 2.3 7.5 5.8"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Nome de usuário</span><input id="mwContaUsuario" class="ds-conf-campo" type="text" readonly autocomplete="off"></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwContaTrocarUsuario">Alterar</button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="5" width="17.6" height="14" rx="2.4"/><path d="m3.8 6.6 8.2 6 8.2-6"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">E-mail</span><input id="mwContaEmail" class="ds-conf-campo" type="email" readonly autocomplete="off"></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwContaTrocarEmail">Alterar</button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4.6" y="10.4" width="14.8" height="10" rx="2.2"/><path d="M8.2 10.4V7.6a3.8 3.8 0 0 1 7.6 0v2.8"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Senha</span><input id="mwContaSenha" class="ds-conf-campo" type="password" readonly autocomplete="off" value="••••••••"></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwContaTrocarSenha">Alterar</button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.6" width="10" height="18.8" rx="2.6"/><path d="M11 18.6h2"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Telefone</span><span class="ds-conf-apoio" id="mwContaTelefoneExibicao"><span id="mwContaTelefoneVazio">Não cadastrado</span><span id="mwContaTelefoneValor" hidden></span><span class="mw-tel-badge" id="mwContaTelefoneBadge" hidden>Aguardando confirmação</span></span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwContaTrocarTelefone">Adicionar</button></div></div></section><p class="ds-conf-info" id="mwContaStatus" hidden></p><p class="ds-conf-info">Mudar qualquer um dos três primeiros pede sua senha ou o código de acesso: são as coisas com que se entra na conta.</p></div>
+<div class="ds-conf ds-conf-tela" data-conf-tela="aparencia" hidden><div class="ds-conf-cabeca"><button type="button" class="ds-conf-voltar" data-conf-voltar aria-label="Voltar para Configurações"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h2>Aparência</h2></div><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Tema</h2><div class="ds-conf-lista"><div class="ds-conf-seletor" role="group" aria-label="Tema do aplicativo"><button type="button" data-conf-opcao="tema:escuro" aria-pressed="false">Escuro</button><button type="button" data-conf-opcao="tema:claro" aria-pressed="false">Claro</button><button type="button" data-conf-opcao="tema:sistema" aria-pressed="false">Sistema</button></div><p class="ds-conf-info">Em <strong>Sistema</strong>, o app acompanha o ajuste do seu aparelho.</p></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Cor de destaque</h2><div class="ds-conf-lista"><div class="ds-conf-cores" id="mwCores" role="radiogroup" aria-label="Cor de destaque"></div><p class="ds-conf-info">A cor vale para botões, item ativo, links, foco e indicadores. O fundo e a leitura continuam neutros.</p></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Vidro</h2><div class="ds-conf-lista"><div class="ds-conf-seletor" role="group" aria-label="Intensidade do vidro"><button type="button" data-conf-opcao="vidro:discreto" aria-pressed="false">Discreto</button><button type="button" data-conf-opcao="vidro:medio" aria-pressed="false">Médio</button><button type="button" data-conf-opcao="vidro:intenso" aria-pressed="false">Intenso</button></div><p class="ds-conf-info">Quanto o que está atrás das barras e diálogos é desfocado.</p></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Densidade</h2><div class="ds-conf-lista"><div class="ds-conf-seletor" role="group" aria-label="Densidade"><button type="button" data-conf-opcao="densidade:compacta" aria-pressed="false">Compacta</button><button type="button" data-conf-opcao="densidade:confortavel" aria-pressed="false">Confortável</button><button type="button" data-conf-opcao="densidade:espacosa" aria-pressed="false">Espaçosa</button></div><p class="ds-conf-info">O espaço entre os elementos. O tamanho do que se toca não muda.</p></div></section><div hidden><button type="button" id="darkModeBtn" class="theme-btn">Modo Escuro</button><button type="button" id="lightModeBtn" class="theme-btn">Modo Claro</button></div></div>
+<div class="ds-conf ds-conf-tela" data-conf-tela="notificacoes" hidden><div class="ds-conf-cabeca"><button type="button" class="ds-conf-voltar" data-conf-voltar aria-label="Voltar para Configurações"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h2>Notificações</h2></div><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Lembretes e prazos</h2><div class="ds-conf-lista"><div class="ds-conf-faixa"><span class="ds-conf-rotulo">Avisar sobre prazos</span><span class="ds-conf-apoio" id="mwNotifDiasTexto">até 7 dias antes</span><input type="range" id="mwNotifDias" min="1" max="30" step="1" value="7" aria-label="Quantos dias antes avisar sobre um prazo"></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 8h18c0-1-3-1-3-8"/><path d="M10 21h4"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Incluir aulas de hoje</span><span class="ds-conf-apoio">Só muda algo se você cadastrou horário nas disciplinas</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwNotifAulas" aria-label="Incluir aulas de hoje"></button></div></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">No aparelho</h2><div class="ds-conf-lista"><p class="ds-conf-info"><strong>Em breve.</strong> Um aviso que chega com o app fechado precisa de um servidor de push, que ainda não existe. Enquanto isso os lembretes acima aparecem no sino quando você abre o Workspace — nada é enviado para fora daqui.</p></div></section></div>
+<div class="ds-conf ds-conf-tela" data-conf-tela="seguranca" hidden><div class="ds-conf-cabeca"><button type="button" class="ds-conf-voltar" data-conf-voltar aria-label="Voltar para Configurações"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h2>Segurança</h2></div><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Neste aparelho</h2><div class="ds-conf-lista"><div id="mwFaceIdGroup" hidden><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10" width="15" height="10.5" rx="2.4"/><path d="M8 10V7.2a4 4 0 0 1 8 0V10"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Face ID</span><span class="ds-conf-apoio">Entrar sem digitar, usando o Face ID deste aparelho</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwFaceIdToggle" aria-label="Entrar com Face ID"></button></div></div><div id="mwPinGroup"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 3.5a5 5 0 0 1 0 10 5 5 0 0 1-2.4-.6L10 15h-2v2H6v2H3v-3l6.1-6.1a5 5 0 0 1 5.4-6.4Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Código de acesso</span><span class="ds-conf-apoio"><span id="mwPinEstado">Nenhum código definido.</span></span></span><span class="ds-conf-acoes"><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwPinDefinir">Definir</button><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p mw-pin-remover" id="mwPinRemover" hidden>Remover</button></span></div></div></div></section><p class="ds-conf-info" id="mwFaceIdStatus" hidden></p><p class="ds-conf-info" id="mwPinStatus" hidden></p><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Sessões</h2><div class="ds-conf-lista"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 3.5h3a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-3"/><path d="M10 16.5 5.5 12 10 7.5"/><path d="M5.5 12h9"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Sair dos outros aparelhos</span><span class="ds-conf-apoio">Encerra a sessão em todo lugar, menos aqui</span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwSairOutrosAparelhos">Encerrar</button></div><p class="ds-conf-info" id="mwSairOutrosStatus" hidden></p><p class="ds-conf-info">A lista de aparelhos conectados depende de um registro no servidor que ainda não existe. O que funciona hoje é encerrar as outras sessões de uma vez.</p></div></section></div>
+<div class="ds-conf ds-conf-tela" data-conf-tela="ia" hidden><div class="ds-conf-cabeca"><button type="button" class="ds-conf-voltar" data-conf-voltar aria-label="Voltar para Configurações"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h2>Nyc AI</h2></div><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Conversas</h2><div class="ds-conf-lista"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 2 5.2 5.2 2-5.2 2-2 5.2-2-5.2-5.2-2 5.2-2L12 3Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Conversas guardadas</span><span class="ds-conf-apoio"><span id="mwIaContagem">Nenhuma conversa ainda.</span></span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p ds-btn-perigo" id="mwIaLimpar">Apagar</button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 11.2v5"/><circle cx="12" cy="8" r=".9" fill="currentColor" stroke="none"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Ditar por voz</span><span class="ds-conf-apoio"><span id="mwIaVozEstado">Verificando…</span></span></span><span class="mw-id-beta" id="mwIaVozSelo" hidden>Indisponível</span></div></div></section><p class="ds-conf-info">As conversas ficam guardadas neste navegador, junto com o resto do workspace. Nada delas é usado para treinar nada.</p></div>
+<div class="ds-conf ds-conf-tela" data-conf-tela="privacidade" hidden><div class="ds-conf-cabeca"><button type="button" class="ds-conf-voltar" data-conf-voltar aria-label="Voltar para Configurações"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h2>Privacidade</h2></div><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Visível no seu perfil</h2><div class="ds-conf-lista"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 5 6v5.4c0 4.2 2.9 7.6 7 9.4 4.1-1.8 7-5.2 7-9.4V6l-7-2.8Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Bio</span><span class="ds-conf-apoio">A frase que descreve você</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwVisBio" data-conf-visivel="bio" aria-label="Bio"></button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 5 6v5.4c0 4.2 2.9 7.6 7 9.4 4.1-1.8 7-5.2 7-9.4V6l-7-2.8Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Curso e instituição</span><span class="ds-conf-apoio">Onde e o que você estuda</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwVisCurso" data-conf-visivel="curso" aria-label="Curso e instituição"></button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 5 6v5.4c0 4.2 2.9 7.6 7 9.4 4.1-1.8 7-5.2 7-9.4V6l-7-2.8Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Números</span><span class="ds-conf-apoio">Quantas disciplinas, projetos e atividades</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwVisNumeros" data-conf-visivel="numeros" aria-label="Números"></button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 5 6v5.4c0 4.2 2.9 7.6 7 9.4 4.1-1.8 7-5.2 7-9.4V6l-7-2.8Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Projetos</span><span class="ds-conf-apoio">A lista dos seus projetos</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwVisProjetos" data-conf-visivel="projetos" aria-label="Projetos"></button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 5 6v5.4c0 4.2 2.9 7.6 7 9.4 4.1-1.8 7-5.2 7-9.4V6l-7-2.8Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Links</span><span class="ds-conf-apoio">Instagram, GitHub, LinkedIn, site</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwVisLinks" data-conf-visivel="links" aria-label="Links"></button></div></div></section><p class="ds-conf-info">Estas chaves já gravam a sua escolha e o seu próprio Perfil já as respeita. Uma página de perfil que <em>outra pessoa</em> possa abrir ainda não existe — quando existir, ela lê daqui.</p><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Backup</h2><div class="ds-conf-lista"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.6V4.4"/><path d="m8 8.2 4-3.8 4 3.8"/><path d="M4.6 15.2v3.2a1.6 1.6 0 0 0 1.6 1.6h11.6a1.6 1.6 0 0 0 1.6-1.6v-3.2"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Exportar backup</span><span class="ds-conf-apoio">Um arquivo com tudo o que está neste navegador</span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="exportBackup">Exportar</button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m8 11.4 4 3.8 4-3.8"/><path d="M4.6 19.4h14.8"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Importar backup</span><span class="ds-conf-apoio">Restaura de um arquivo exportado antes</span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="importBackupBtn">Importar</button><input type="file" id="importBackupFile" accept="application/json" hidden></div><p class="ds-conf-info" id="importBackupError"></p></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Dados</h2><div class="ds-conf-lista"><div class="ds-conf-linha ds-conf-perigo"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 6.6h14.4"/><path d="M9.4 6.6V4.8h5.2v1.8"/><path d="M6.6 6.6 7.4 20a1.4 1.4 0 0 0 1.4 1.3h6.4a1.4 1.4 0 0 0 1.4-1.3l.8-13.4"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Apagar todos os dados</span><span class="ds-conf-apoio">Disciplinas, atividades, projetos e anotações deste navegador</span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p ds-btn-perigo mw-clear-btn" id="clearAll">Apagar</button></div><p class="ds-conf-info">Veja também a <a href="javascript:void(0)" data-footer-link="privacidade">Política de Privacidade</a>.</p></div></section></div>
+<div class="ds-conf ds-conf-tela" data-conf-tela="aplicativo" hidden><div class="ds-conf-cabeca"><button type="button" class="ds-conf-voltar" data-conf-voltar aria-label="Voltar para Configurações"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h2>Aplicativo</h2></div><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Instalação</h2><div class="ds-conf-lista"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.8" width="11" height="18.4" rx="2.4"/><path d="M10.7 5.6h2.6"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Instalar o Workspace</span><span class="ds-conf-apoio"><span id="mwSettingsInstallDesc">Adicione à tela de início para abrir como um app.</span></span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwSettingsInstallBtn">Instalar</button></div></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Mesma conta no app</h2><div class="ds-conf-lista"><div id="mwTransfereGrupo"><p class="ds-conf-info" id="mwTransfereOnde"></p><ol class="ds-conf-info mw-transfere-passos"><li id="mwPasso1"><b>No Safari:</b> toque em <b>Copiar código</b>.</li><li id="mwPasso2"><b>No app da tela de início:</b> abra Configurações e toque em <b>Colar código</b>.</li><li>Entre com o <b>mesmo usuário e senha</b> de sempre.</li></ol><div class="ds-conf-acoes ds-conf-acoes-bloco"><button type="button" class="ds-btn ds-btn-secundario ds-btn-p" id="mwTransfereCopiar">Copiar código</button><button type="button" class="ds-btn ds-btn-secundario ds-btn-p" id="mwTransfereColar">Colar código</button></div><textarea id="mwTransfereCodigo" rows="3" readonly hidden aria-label="Código da conta"></textarea><p class="ds-conf-info" id="mwTransfereStatus" hidden></p><p class="ds-conf-info">O código é uma <b>cópia do momento</b>, não uma sincronização.</p></div></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Sobre</h2><div class="ds-conf-lista"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 11.2v5"/><circle cx="12" cy="8" r=".9" fill="currentColor" stroke="none"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Versão</span><span class="ds-conf-apoio"><span id="mwAppVersao">—</span></span></span></div><button class="ds-conf-linha ds-conf-nav" type="button" data-conf-ir="__suporte"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 11.2v5"/><circle cx="12" cy="8" r=".9" fill="currentColor" stroke="none"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Suporte</span><span class="ds-conf-apoio">Falar com quem cuida do Workspace</span></span></button></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Manutenção</h2><div class="ds-conf-lista"><details class="ds-conf-detalhe"><summary class="ds-conf-linha ds-conf-nav"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12h3.6l2-5.4 3.4 11 2.2-5.6h5.8"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Diagnóstico avançado</span><span class="ds-conf-apoio">Mede o que este navegador realmente suporta</span></span></summary><p class="ds-conf-info" id="mwDiagResumo">Nada verificado ainda.</p><div class="mw-diag-lista ds-conf-info" id="mwDiagLista"></div><div class="ds-conf-acoes ds-conf-acoes-bloco"><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwDiagRodar">Verificar agora</button><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwDiagCopiar">Copiar relatório</button></div><textarea id="mwDiagBruto" readonly aria-label="Relatório do diagnóstico em texto" placeholder="O relatório aparece aqui depois de verificar."></textarea></details></div></section></div>
+<div class="ds-conf ds-conf-tela" data-conf-tela="sessao" hidden><div class="ds-conf-cabeca"><button type="button" class="ds-conf-voltar" data-conf-voltar aria-label="Voltar para Configurações"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h2>Sessão</h2></div><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Sair</h2><div class="ds-conf-lista"><div class="ds-conf-linha ds-conf-perigo"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 3.5h3a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-3"/><path d="M10 16.5 5.5 12 10 7.5"/><path d="M5.5 12h9"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Sair desta conta</span><span class="ds-conf-apoio">Será preciso entrar de novo com usuário e senha</span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p ds-btn-perigo mw-logout-btn" id="logout">Sair</button></div></div></section><p class="ds-conf-info">Sua conta fica guardada neste navegador. Para encerrar em OUTROS aparelhos, use Segurança › Sessões.</p></div>
+</div>
+</section>
+<style id="mw-conf-css">
+/* Peças pequenas de Configurações que não pertencem ao sistema inteiro:
+   o campo somente-leitura das linhas de Conta, a fileira de ações e o
+   recolhível do diagnóstico. Ficam aqui, ao lado da tela que as usa. */
+#view-settings .ds-conf-campo{
+  border:0; background:transparent; padding:0; margin:0; width:100%;
+  font:inherit; font-size:var(--mw-t-micro); color:var(--mw-txt-3);
+  text-overflow:ellipsis;
+}
+#view-settings .ds-conf-campo:focus{ outline:none; }
+#view-settings .ds-conf-acoes{ display:flex; gap:var(--mw-e-2); flex:0 0 auto; }
+#view-settings .ds-conf-acoes-bloco{ padding:0 var(--mw-e-4) var(--mw-e-3); }
+#view-settings .mw-transfere-passos{ margin:0; padding:0 var(--mw-e-4) 0 calc(var(--mw-e-4) + 16px); }
+#view-settings .ds-conf-detalhe > summary{ list-style:none; cursor:pointer; }
+#view-settings .ds-conf-detalhe > summary::-webkit-details-marker{ display:none; }
+#view-settings .ds-conf-detalhe[open] > summary::after{ transform:rotate(135deg); }
+#view-settings #mwDiagBruto{
+  width:calc(100% - var(--mw-e-4) * 2); margin:0 var(--mw-e-4) var(--mw-e-3);
+  min-height:90px; border-radius:var(--mw-r-2); border:1px solid var(--mw-borda);
+  background:var(--mw-sup-afundada); color:var(--mw-txt-2); padding:var(--mw-e-2);
+  font-size:var(--mw-t-micro);
+}
+</style>
+<script id="mw-conf-js">
+(function(){
+  'use strict';
+  var raiz = document.getElementById('view-settings');
+  if (!raiz) return;
 
-             fica visível ENQUANTO durar a reformulação e os testes;
+  /* ---------- 1. PILHA DE TELAS (§14) ---------------------------------
+     Abrir uma categoria não rola a página: troca de tela. A pilha vive
+     dentro da view, então a barra de baixo e a lateral continuam
+     respondendo — ninguém fica preso numa sub-tela. */
+  function telas(){ return raiz.querySelectorAll('[data-conf-tela]'); }
+  function mostra(nome){
+    var achou = false;
+    telas().forEach(function(t){
+      var minha = t.getAttribute('data-conf-tela') === nome;
+      t.hidden = !minha;
+      if (minha) achou = true;
+    });
+    if (!achou) return mostra('indice');
+    raiz.dataset.confAtual = nome;
+    /* Volta ao topo: entrar numa categoria e cair no meio dela é o tipo
+       de detalhe que faz uma tela parecer página web. */
+    var rolador = document.querySelector('#app .main') || window;
+    if (rolador.scrollTo) rolador.scrollTo({ top: 0, behavior: 'auto' });
+    var t = raiz.querySelector('[data-conf-tela="' + nome + '"] h2');
+    if (t && nome !== 'indice') t.setAttribute('tabindex','-1'), t.focus({preventScroll:true});
+  }
+  window.mwConfMostra = mostra;
 
-             quando a reformulação estiver fechada e validada em Safari,
-             Chrome, iOS, Android, tablet e desktop, esta seção SAI da
-             interface principal;
+  raiz.addEventListener('click', function(ev){
+    var ir = ev.target.closest('[data-conf-ir]');
+    if (ir){
+      var destino = ir.getAttribute('data-conf-ir');
+      if (destino === '__suporte'){ window.showView && window.showView('support'); return; }
+      mostra(destino); return;
+    }
+    if (ev.target.closest('[data-conf-voltar]')){ mostra('indice'); return; }
+  });
 
-             se ainda for útil para manutenção, ela vai para
-             Suporte › Diagnóstico avançado — escondida, não como um
-             recurso normal do produto.
+  /* Sair de Configurações volta a pilha ao índice: reabrir a área no
+     meio de uma sub-tela de outra vez é desorientador. */
+  var app = document.getElementById('app');
+  if (app){
+    var ultima = '';
+    new MutationObserver(function(){
+      var ativa = app.querySelector('.view.active');
+      var id = ativa ? ativa.id : '';
+      if (id === ultima) return;
+      ultima = id;
+      if (id !== 'view-settings') mostra('indice');
+    }).observe(app, { subtree:true, attributes:true, attributeFilter:['class'] });
+  }
 
-           Quem for mexer aqui depois: o critério de saída é a validação
-           nos seis ambientes, não uma data. -->
-      <details class="ds-grupo mw-diag" data-mw-grupo>
-        <summary class="ds-grupo-titulo">Diagnóstico avançado</summary>
-        <p class="ds-grupo-apoio">Ferramenta de manutenção, não recurso do app: mede o que <em>este</em> navegador realmente suporta. Abra só se algo parecer errado e alguém pedir o relatório.</p>
-        <p>Roda uma verificação do que este navegador realmente suporta e mostra o resultado. Serve para quando algo parecer errado: o relatório diz o que falhou, em vez de a gente ficar adivinhando.</p>
-        <p class="mw-diag-resumo" id="mwDiagResumo">Nada verificado ainda.</p>
-        <div class="mw-diag-lista" id="mwDiagLista"></div>
-        <div class="ds-dialogo-acoes">
-          <button class="ds-btn ds-btn-fantasma ds-btn-p" id="mwDiagRodar">Verificar agora</button>
-          <button class="ds-btn ds-btn-fantasma ds-btn-p" id="mwDiagCopiar">Copiar relatório</button>
-        </div>
-        <textarea id="mwDiagBruto" readonly aria-label="Relatório do diagnóstico em texto" placeholder="O relatório aparece aqui depois de verificar."></textarea>
-      </details>
-      <h3 class="ds-categoria" data-mw-categoria>Sessão</h3>
-      <div class="ds-grupo" data-mw-grupo><h4 class="ds-grupo-titulo">Sair desta conta</h4><p class="ds-grupo-apoio">Sua conta fica guardada neste navegador. Ao sair, será preciso entrar de novo com seu usuário e senha.</p><div class="ds-dialogo-acoes"><button class="ds-btn ds-btn-fantasma ds-btn-p mw-logout-btn" id="logout">Sair</button><button class="ds-btn ds-btn-fantasma ds-btn-p" id="mwSairOutrosAparelhos">Sair de todos os outros aparelhos</button></div><p class="form-error" id="mwSairOutrosStatus" hidden></p></div>
-    </section></section>
+  /* ---------- 2. PREFERÊNCIAS QUE PERSISTEM (§26) ---------------------
+     Um lugar só lê e grava, e ele é o mesmo blob do resto do app. */
+  function dados(){
+    try { return JSON.parse(localStorage.getItem('mateusWorkspaceV4') || '{}'); }
+    catch(e){ return {}; }
+  }
+  function prefs(){
+    var d = dados();
+    d.settings = d.settings || {};
+    return d.settings;
+  }
+  function grava(mut){
+    var d = dados();
+    d.settings = d.settings || {};
+    mut(d.settings);
+    try { localStorage.setItem('mateusWorkspaceV4', JSON.stringify(d)); } catch(e){}
+    if (window.data && window.data.settings) window.data.settings = d.settings;
+  }
+
+  var PADRAO = { tema:'escuro', vidro:'medio', densidade:'confortavel' };
+
+  function aplica(campo, valor){
+    var html = document.documentElement;
+    if (campo === 'tema'){
+      var claro = valor === 'claro' ||
+        (valor === 'sistema' && window.matchMedia('(prefers-color-scheme: light)').matches);
+      document.body.classList.toggle('light', claro);
+      html.setAttribute('data-ds-tema', claro ? 'claro' : 'escuro');
+      html.classList.add('mw-troca-tema');
+      clearTimeout(aplica._t);
+      aplica._t = setTimeout(function(){ html.classList.remove('mw-troca-tema'); }, 320);
+    }
+    if (campo === 'vidro')     html.setAttribute('data-vidro', valor);
+    if (campo === 'densidade') html.setAttribute('data-densidade', valor);
+  }
+
+  /* "Sistema" precisa CONTINUAR ouvindo: se a pessoa mudar o aparelho de
+     claro para escuro com o app aberto, ele acompanha. Sem isto,
+     "Sistema" seria só um valor lido uma vez. */
+  var mq = window.matchMedia('(prefers-color-scheme: light)');
+  (mq.addEventListener ? mq.addEventListener.bind(mq,'change') : mq.addListener.bind(mq))(function(){
+    if ((prefs().tema || PADRAO.tema) === 'sistema') aplica('tema','sistema');
+  });
+
+  function pintaSeletores(){
+    var p = prefs();
+    raiz.querySelectorAll('[data-conf-opcao]').forEach(function(bt){
+      var par = bt.getAttribute('data-conf-opcao').split(':');
+      var atual = p[par[0]] || PADRAO[par[0]];
+      bt.setAttribute('aria-pressed', String(atual === par[1]));
+    });
+  }
+
+  raiz.addEventListener('click', function(ev){
+    var bt = ev.target.closest('[data-conf-opcao]');
+    if (!bt) return;
+    var par = bt.getAttribute('data-conf-opcao').split(':');
+    grava(function(st){ st[par[0]] = par[1]; });
+    aplica(par[0], par[1]);
+    pintaSeletores();
+    resumo();
+  });
+
+  /* ---------- 3. VISIBILIDADE DO PERFIL (§11) -------------------------
+     Grava em `profile.visibility`, que é onde o Perfil já lê. */
+  var VIS_PADRAO = { bio:true, curso:true, numeros:true, projetos:true, links:true };
+  function visibilidade(){
+    var d = dados();
+    return (d.profile && d.profile.visibility) || {};
+  }
+  function gravaVis(campo, valor){
+    var d = dados();
+    d.profile = d.profile || {};
+    d.profile.visibility = d.profile.visibility || {};
+    d.profile.visibility[campo] = valor;
+    try { localStorage.setItem('mateusWorkspaceV4', JSON.stringify(d)); } catch(e){}
+    if (window.data){ window.data.profile = window.data.profile || {}; window.data.profile.visibility = d.profile.visibility; }
+    if (window.mwPerfilPinta) window.mwPerfilPinta();
+  }
+  function pintaVis(){
+    var v = visibilidade();
+    raiz.querySelectorAll('[data-conf-visivel]').forEach(function(bt){
+      var c = bt.getAttribute('data-conf-visivel');
+      var on = (c in v) ? !!v[c] : VIS_PADRAO[c];
+      bt.setAttribute('aria-checked', String(on));
+    });
+  }
+  raiz.addEventListener('click', function(ev){
+    var bt = ev.target.closest('[data-conf-visivel]');
+    if (!bt) return;
+    var novo = bt.getAttribute('aria-checked') !== 'true';
+    bt.setAttribute('aria-checked', String(novo));
+    gravaVis(bt.getAttribute('data-conf-visivel'), novo);
+  });
+
+  /* ---------- 4. AS CHAVES DE NOTIFICAÇÃO ----------------------------
+     `#mwNotifAulas` deixou de ser <input type=checkbox> e virou a chave
+     do sistema; quem lia o `.checked` continua funcionando porque o
+     estado também é espelhado no dado. */
+  function pintaNotif(){
+    var p = prefs();
+    var aulas = raiz.querySelector('#mwNotifAulas');
+    if (aulas) aulas.setAttribute('aria-checked', String(!!p.notifAulas));
+    var dias = raiz.querySelector('#mwNotifDias');
+    var txt = raiz.querySelector('#mwNotifDiasTexto');
+    if (dias){ dias.value = p.notifDias || 7; }
+    if (txt) txt.textContent = 'até ' + (p.notifDias || 7) + ' dias antes';
+  }
+  raiz.addEventListener('click', function(ev){
+    var bt = ev.target.closest('#mwNotifAulas');
+    if (!bt) return;
+    var novo = bt.getAttribute('aria-checked') !== 'true';
+    bt.setAttribute('aria-checked', String(novo));
+    grava(function(st){ st.notifAulas = novo; });
+  });
+  raiz.addEventListener('input', function(ev){
+    if (!ev.target.closest('#mwNotifDias')) return;
+    var v = parseInt(ev.target.value, 10) || 7;
+    grava(function(st){ st.notifDias = v; });
+    var txt = raiz.querySelector('#mwNotifDiasTexto');
+    if (txt) txt.textContent = 'até ' + v + ' dias antes';
+  });
+
+  /* ---------- 5. OS DOIS BOTÕES QUE NÃO FAZIAM NADA -------------------
+     A auditoria (§29) achou "Apagar histórico" da Nyc AI e "Copiar
+     código" da transferência sem gancho nenhum. Estavam na tela havia
+     rodadas, com aparência de função. */
+  raiz.addEventListener('click', function(ev){
+    if (ev.target.closest('#mwIaLimpar')){
+      if (!confirm('Apagar todas as conversas guardadas da Nyc AI? Não dá para desfazer.')) return;
+      var d = dados();
+      d.aiThreads = []; d.aiConversas = [];
+      try { localStorage.setItem('mateusWorkspaceV4', JSON.stringify(d)); } catch(e){}
+      if (window.data){ window.data.aiThreads = []; window.data.aiConversas = []; }
+      contaConversas();
+      if (window.toast) window.toast('Histórico da Nyc AI apagado.');
+    }
+    if (ev.target.closest('#mwTransfereCopiar')){
+      var area = raiz.querySelector('#mwTransfereCodigo');
+      var st = raiz.querySelector('#mwTransfereStatus');
+      var codigo = '';
+      try { codigo = btoa(unescape(encodeURIComponent(localStorage.getItem('mateusWorkspaceV4') || '{}'))); }
+      catch(e){ codigo = ''; }
+      if (!codigo){ if (st){ st.hidden=false; st.textContent='Não consegui ler os dados deste navegador.'; } return; }
+      if (area){ area.hidden = false; area.value = codigo; area.select(); }
+      var pronto = function(){ if (st){ st.hidden=false; st.textContent='Código copiado. Cole no outro lado.'; } };
+      if (navigator.clipboard && navigator.clipboard.writeText)
+        navigator.clipboard.writeText(codigo).then(pronto, function(){ if(st){st.hidden=false;st.textContent='Copie o código do campo acima.';} });
+      else { try { document.execCommand('copy'); pronto(); } catch(e){ if(st){st.hidden=false;st.textContent='Copie o código do campo acima.';} } }
+    }
+  });
+
+  function contaConversas(){
+    var el = raiz.querySelector('#mwIaContagem');
+    if (!el) return;
+    var d = dados();
+    var n = (d.aiThreads || d.aiConversas || []).length;
+    el.textContent = n ? (n + (n === 1 ? ' conversa guardada.' : ' conversas guardadas.'))
+                       : 'Nenhuma conversa ainda.';
+  }
+
+  /* ---------- 6. VERSÃO REAL, lida do service worker (§16) ------------- */
+  function versao(){
+    var el = raiz.querySelector('#mwAppVersao');
+    if (!el) return;
+    var carimbo = document.querySelector('meta[name="mw-versao"]');
+    el.textContent = carimbo ? carimbo.content
+      : (document.documentElement.dataset.mwVersao || 'beta');
+  }
+
+  /* ---------- 7. O RESUMO DE CADA LINHA DO ÍNDICE ---------------------
+     A linha mostra o estado atual: é o que faz o índice informar em vez
+     de só listar. */
+  var NOME = { escuro:'Escuro', claro:'Claro', sistema:'Sistema',
+               discreto:'Discreto', medio:'Médio', intenso:'Intenso',
+               compacta:'Compacta', confortavel:'Confortável', espacosa:'Espaçosa' };
+  function resumo(){
+    var p = prefs();
+    var linha = raiz.querySelector('[data-conf-ir="aparencia"] .ds-conf-apoio');
+    if (linha) linha.textContent = (NOME[p.tema || PADRAO.tema] || 'Escuro') +
+      ' · vidro ' + (NOME[p.vidro || PADRAO.vidro] || 'Médio').toLowerCase();
+  }
+
+  function inicia(){
+    var p = prefs();
+    aplica('tema', p.tema || PADRAO.tema);
+    aplica('vidro', p.vidro || PADRAO.vidro);
+    aplica('densidade', p.densidade || PADRAO.densidade);
+    pintaSeletores(); pintaVis(); pintaNotif(); contaConversas(); versao(); resumo();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', inicia);
+  else inicia();
+  window.mwConfInicia = inicia;
+})();
+</script>
 
     <section class="view" id="view-admin">
       <section class="card section mw-admin-warning" id="mwAdminAviso" role="alert">
@@ -12167,7 +12379,17 @@ html body.light .eva-voice{
         if (el.id === 'profileAvatarPreview' && ini) ini.style.display = 'none';
       } else {
         el.style.removeProperty('--mw-photo');
-        el.style.setProperty('background-image', 'none', 'important');
+        /* REMOVER, não escrever `none !important`.
+           A linha era `setProperty('background-image','none','important')`,
+           escrita quando uma folha legada pintava esses avatares com um
+           gradiente `!important` que só um `!important` derrubava. Essa
+           folha saiu; a declaração ficou — e passou a derrubar o
+           gradiente do próprio sistema. Efeito medido: sem foto, o
+           avatar da folha do perfil aparecia como texto solto no vazio,
+           sem o círculo de acento. Tirar a propriedade devolve a
+           palavra a quem hoje manda na aparência, que é a folha do
+           sistema; forçar `none` era brigar com o próprio time. */
+        el.style.removeProperty('background-image');
         el.classList.remove('has-avatar', 'has-photo');
         if (el.id === 'mwSidebarAvatar' || el.id === 'profileBtn') el.textContent = initials;
         const ini = q('#profileAvatarInitials');
@@ -16823,18 +17045,19 @@ html body #mwBottomNav button:active{transform:scale(.88)!important}
    Dashboard, ocupando o mesmo lugar do menu-hambúrguer (que já fica
    escondido nesse breakpoint, substituído pela bottom nav). */
 html body #app #mwBackBtn{display:none}
+/* Este bloco decide APENAS ONDE o botão aparece — no telefone, e não no
+   desktop, onde a lateral está sempre na tela e voltar não faz falta.
+   A APARÊNCIA saiu daqui: ele é um `.ds-topo-icone` como os outros, e
+   quem o pinta é o sistema. O que havia era um quadrado de canto 13px
+   com degradê ciano→azul e texto #eaf6ff, cravados nesta folha e
+   alcançando marcação nova pelo próprio id — a mesma brecha de sempre.
+   Na tela era o único botão azul de uma barra inteira de ícones
+   neutros, e destoava de qualquer cor de destaque que não fosse azul. */
 @media(max-width:860px){
-  html body #app #mwBackBtn{
-    display:grid!important;place-items:center;
-    width:40px;height:40px;min-width:40px;border-radius:13px;border:0;
-    background:linear-gradient(145deg,rgba(56,189,248,.18),rgba(37,99,235,.14));
-    color:#eaf6ff;transition:transform .18s ease,background .2s ease;
-  }
+  html body #app #mwBackBtn{ display:grid!important; }
   html body #app #mwBackBtn[hidden]{display:none!important}
-  html body #app #mwBackBtn:active{transform:scale(.9)}
   html body #app #mwBackBtn svg{transition:transform .2s cubic-bezier(.34,1.56,.64,1)}
   html body #app #mwBackBtn:active svg{transform:translateX(-3px)}
-  html body.light #app #mwBackBtn{background:linear-gradient(145deg,rgba(37,99,235,.14),rgba(14,116,144,.10));color:#0b1830}
 }
 </style>
 <script id="mw-back-button-js">
@@ -20188,22 +20411,15 @@ html body.mw-in-app.mw-tela-folha #mwBottomNav.mwbn{display:none!important}
    página. Some com ele para o conteúdo não terminar num vazio. */
 html body.mw-in-app.mw-tela-folha #app .main{padding-bottom:24px!important}
 
-@media(max-width:860px){
-  html body.mw-in-app #app #mwBackBtn{
-    width:44px!important;height:44px!important;min-width:44px!important;
-    border:1px solid rgba(99,170,255,.22)!important;
-    box-shadow:0 4px 14px rgba(2,6,23,.28)!important;
-  }
-  html body.light.mw-in-app #app #mwBackBtn{
-    border-color:rgba(37,99,235,.20)!important;
-    box-shadow:0 4px 14px rgba(30,64,175,.10)!important;
-  }
-  /* Numa tela-folha ele é a saída principal, então ganha peso. */
-  html body.mw-in-app.mw-tela-folha #app #mwBackBtn{
-    background:linear-gradient(145deg,rgba(56,189,248,.28),rgba(37,99,235,.22))!important;
-    border-color:rgba(99,170,255,.34)!important;
-  }
-}
+/* Aqui havia três regras que engordavam o botão de voltar dentro do app
+   instalado: 44px, borda azul, sombra, e um degradê ciano→azul quando a
+   tela era uma folha. Duas coisas estavam erradas. A primeira, os 44px:
+   isso é o alvo de toque do sistema (`--mw-alvo-confortavel`), que todo
+   `.ds-topo-icone` já tem — repetir com `!important` era manter viva uma
+   medida que o sistema pode mudar num lugar só. A segunda, a cor: azul
+   fixo, num app onde o destaque é escolhido pelo usuário entre seis.
+   O "ele é a saída principal, então ganha peso" continua verdadeiro, e
+   segue implementado no sistema — com superfície, não com cor. */
 </style>
 <script id="mw-telas-folha-js">
 /* Marca no <body> quando a tela atual é uma folha. Um lugar só decide,
@@ -24258,70 +24474,27 @@ html body #app #view-profile .save-btn{
 }
 </style>
 
-<script id="mw-perfil-cabecalho-js">
-(function(){
-  'use strict';
-  /* Preenche o cabeçalho de identidade. Lê das MESMAS fontes que o
-     resto da tela já usa (data.profile e data.college), então não há
-     um segundo lugar guardando nome ou foto — se divergisse do
-     formulário logo abaixo, seria pior que não existir. */
-  function pinta(){
-    var d = window.data || {};
-    var perfil = d.profile || {};
-    var col = d.college || {};
-    var nome = String(perfil.name || '').trim() || 'Seu nome';
-    var alvoNome = document.getElementById('mwPerfilNome');
-    var alvoLinha = document.getElementById('mwPerfilLinha');
-    var foto = document.getElementById('mwPerfilFoto');
-    var iniciais = document.getElementById('mwPerfilIniciais');
-    if (alvoNome) alvoNome.textContent = nome;
-    if (alvoLinha) {
-      var partes = [];
-      if (col.course) partes.push(col.course);
-      if (col.institution) partes.push(col.institution);
-      if (col.semester) partes.push(col.semester + 'º semestre');
-      alvoLinha.textContent = partes.length ? partes.join(' • ') : 'Complete seus dados em Faculdade';
-    }
-    if (foto) {
-      var url = String(perfil.photo || '').trim();
-      if (url) {
-        foto.innerHTML = '<img alt="" src="' + url.replace(/"/g, '&quot;') + '">';
-      } else {
-        /* Iniciais a partir do nome real: primeira letra do primeiro e
-           do último nome, como qualquer app faz. Nada de "MW" fixo, que
-           é a marca e não a pessoa. */
-        var ps = nome.split(/\s+/).filter(Boolean);
-        var letras = ps.length > 1 ? (ps[0][0] + ps[ps.length - 1][0]) : (ps[0] || 'S')[0];
-        foto.innerHTML = '<span id="mwPerfilIniciais">' + letras.toUpperCase() + '</span>';
-        /* O avatar pequeno do seletor de foto mostrava só a primeira
-           letra: "M" no cartão e "MA" no topo, duas iniciais diferentes
-           para a mesma pessoa na mesma tela. Mesmo cálculo nos dois. */
-        var pequeno = document.getElementById('profileAvatarInitials');
-        if (pequeno && !pequeno.querySelector('img')) pequeno.textContent = letras.toUpperCase();
-      }
-    }
-  }
+<!-- O SEGUNDO PINTOR DO CABEÇALHO DO PERFIL FOI RETIRADO.
+     Aqui morava `mw-perfil-cabecalho-js`: um bloco que preenchia nome,
+     linha de curso e foto do topo do Perfil. Ele foi escrito antes da
+     reconstrução do Perfil, e desde então havia DOIS pintores para o
+     mesmo cabeçalho — este e o `pintaHero` do controlador do Perfil,
+     lendo as mesmas `data.profile` e `data.college`.
 
-  var anterior = window.mwDashRefresh;
-  window.mwDashRefresh = function(d){
-    if (typeof anterior === 'function') { try { anterior(d); } catch (e) {} }
-    try { pinta(); } catch (e) {}
-  };
+     Não era só redundância. Duas coisas quebravam:
 
-  /* Também repinta ao ENTRAR na tela: o cabeçalho depende de dados que
-     podem ter mudado noutra área (Faculdade, Configurações) sem passar
-     por um save() do painel. */
-  var app = document.getElementById('app');
-  if (app) {
-    new MutationObserver(function(){
-      var ativa = app.querySelector('.view.active');
-      if (ativa && ativa.id === 'view-profile') pinta();
-    }).observe(app, { subtree: true, attributes: true, attributeFilter: ['class'] });
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', pinta);
-  else pinta();
-})();
-</script>
+     1. `#mwPerfilLinha`, que este bloco preenchia, não existe mais no
+        documento (a identidade virou @usuário + bio + selos). Metade do
+        trabalho dele já caía no vazio.
+     2. Ele escrevia `foto.innerHTML = '<span id=mwPerfilIniciais>…'`, e
+        isso APAGAVA a insígnia de câmera que fica dentro do círculo —
+        medido: o sinal de "dá para tocar aqui" sumia meio segundo
+        depois de a tela abrir, sempre. Um pintor destruía a marcação
+        que o outro dependia.
+
+     O `pintaHero` cobre tudo o que este fazia, com foto por
+     `background-image` (que preserva os filhos) em vez de innerHTML.
+     Um cabeçalho, um pintor (§29). -->
 
 <style id="mw-instituicoes">
 /* A lista de instituições usa a mesma linha (.list-item) das outras
@@ -25221,9 +25394,13 @@ html body #app .mw-cor:focus-visible{ outline:3px solid color-mix(in srgb,var(--
     if (!caixa || caixa.dataset.pronto) return;
     caixa.dataset.pronto = '1';
     caixa.innerHTML = CORES.map(function(c){
-      return '<button type="button" class="mw-cor" role="radio" aria-checked="false" data-cor="' + c.id + '"' +
+      /* `ds-conf-cor` é o nome do sistema; `mw-cor` fica como gancho dos
+         seletores que já existiam neste arquivo (o pintor logo acima e a
+         navegação por setas logo abaixo). Duas classes, um botão só — o
+         contrário de dois botões com a mesma função. */
+      return '<button type="button" class="ds-conf-cor mw-cor" role="radio" aria-checked="false" data-cor="' + c.id + '"' +
         ' title="' + c.nome + '" aria-label="Cor de destaque ' + c.nome + '"' +
-        ' style="background:linear-gradient(135deg,' + c.a + ',' + c.b + ')"></button>';
+        ' style="--mw-conf-cor:linear-gradient(135deg,' + c.a + ',' + c.b + ')"></button>';
     }).join('');
     caixa.addEventListener('click', function(ev){
       var bt = ev.target.closest('.mw-cor');
@@ -31423,12 +31600,47 @@ html body .mw-pular:focus{ transform: translateY(0); }
       return;
     }
     if (t.closest('#saveProfile')){ ev.preventDefault(); ev.stopPropagation(); salva(); return; }
-    /* Os dois botões de escolher foto abrem o MESMO seletor: um fluxo só. */
-    if (t.closest('#mwPerfilEscolherFoto')){
-      ev.preventDefault();
-      var b = qi('chooseProfilePhoto'); if (b) b.click();
-    }
+    /* Aqui havia uma ponte: o "Escolher foto" da caixa permanente
+       clicava na insígnia de câmera do topo, porque eram dois botões
+       para a mesma tarefa. Com a caixa virando folha, sobrou UM botão,
+       e a ponte deixou de ter as duas pontas. */
+
+    /* A FOTO ABRE A FOLHA. Vale para o toque e para o teclado — o
+       círculo é `role="button" tabindex="0"`, e sem tratar Enter/Espaço
+       ele seria um botão que só o mouse alcança. */
+    if (t.closest('#mwPerfilFoto')){ ev.preventDefault(); abreFolhaFoto(); return; }
   }, true);
+
+  /* ---- folha da foto: abrir, fechar, devolver o foco ---------------- */
+  function folhaFoto(){ return qi('mwFotoFolha'); }
+  function abreFolhaFoto(){
+    var f = folhaFoto(); if (!f) return;
+    f.hidden = false;
+    /* Quem tem foto pode ajustar ou remover; quem não tem, só escolher.
+       Botão que não faz nada é botão morto (§25) — então ele some. */
+    var tem = !!((window.data && window.data.profile && window.data.profile.photo) || '');
+    var aj = qi('editProfilePhoto'), rm = qi('removeProfilePhoto');
+    if (aj) aj.hidden = !tem;
+    if (rm) rm.hidden = !tem;
+  }
+  function fechaFolhaFoto(){ var f = folhaFoto(); if (f) f.hidden = true; }
+  window.mwFotoFolhaFechar = fechaFolhaFoto;
+  document.addEventListener('click', function(ev){
+    var f = folhaFoto(); if (!f || f.hidden) return;
+    /* Tocar FORA do cartão fecha — o alvo é a própria cobertura. */
+    if (ev.target === f || (ev.target.closest && ev.target.closest('[data-fechar]'))) fechaFolhaFoto();
+  });
+  document.addEventListener('keydown', function(ev){
+    if (ev.key !== 'Enter' && ev.key !== ' ' && ev.key !== 'Spacebar') return;
+    if (!ev.target || !ev.target.closest) return;
+    if (ev.target.closest('#mwPerfilFoto')){ ev.preventDefault(); abreFolhaFoto(); }
+  });
+  /* Terminou a tarefa, a folha sai de cena: salvar o recorte e remover
+     a foto são os dois pontos em que ela não tem mais o que fazer. */
+  document.addEventListener('click', function(ev){
+    if (!ev.target || !ev.target.closest) return;
+    if (ev.target.closest('.crop-save, #removeProfilePhoto')) setTimeout(fechaFolhaFoto, 80);
+  });
 
   document.addEventListener('change', function(ev){
     var c = ev.target;
