@@ -75,6 +75,7 @@ declare -a NOMES=(
   "19 contraste · tela de entrada"
   "20 navegação · lateral, baixo e topo"
   "21 acento · a matriz tema × cor (§45)"
+  "22 acento · alcança as peças de destaque"
 )
 declare -a CMDS=(
   "node tools/testes/1-regressao.mjs"
@@ -113,6 +114,7 @@ declare -a CMDS=(
   "for l in 1440 834 390; do for t in dark light; do node tools/testes/7b-contraste-login.mjs \$l \$t || exit 1; done; done; python3 tools/testes/7-contraste-medir.py"
   "for m in desktop celular instalado; do node tools/testes/20-navegacao.mjs \$m || exit 1; done; for a in lateral topo baixo; do for t in claro escuro; do node tools/ds/quem-vence.mjs \$a \$t | sed -n 2p || exit 1; done; done"
   "node tools/testes/21-acento.mjs"
+  "node tools/testes/22-acento-alcanca.mjs"
 )
 
 SO_ESTES=("$@")

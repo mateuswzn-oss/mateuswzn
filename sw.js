@@ -1,3 +1,58 @@
+/* v103 (BETA — os defeitos que a CAPTURA mostrou, e a régua nova para
+   eles não voltarem)
+
+   Fui olhar as duas capturas do Perfil em vez de reportar teste verde, e
+   a tela contava coisas que a suíte não sabia perguntar.
+
+   1) O TÍTULO DO TOPO DIZIA "INÍCIO" COM O PERFIL NA TELA
+      O título era pintado embrulhando `showView` — o que cobre a barra
+      lateral e a de baixo, mas não a foto do topo, que vai para o Perfil
+      por um caminho próprio. Embrulhar o segundo caminho deixaria o
+      terceiro quebrado; o título passa a ler a classe `.active` da seção
+      visível, que é verdade para qualquer caminho.
+
+   2) OS DOIS BOTÕES DE SALVAR SAÍAM CIANO → AZUL
+      Com o resto da tela em violeta — o §2 quebrado, e a suíte verde.
+      A causa: regras legadas pegam o botão PELO ID, com !important. O id
+      é a única brecha por onde a folha velha alcança marcação nova: o
+      isolamento do sistema é feito de NOMES (`ds-*`), e um id não é um
+      nome do sistema. Saíram das listas de seletor `#saveProfile`
+      (dezenove regras) e `#saveCollege` (oito). Onde o seletor também
+      cita `.save-btn` ou `.modal-submit`, só o fragmento do botão saiu:
+      o resto segue vestindo as telas ainda não migradas.
+
+   3) A BARRA DE SALVAR COBRIA O CAMPO "@USUÁRIO"
+      Medido, não suposto: a barra parava em y=726 e o campo ficava
+      embaixo, borrado. Era uma pílula de vidro flutuando no meio do
+      formulário; virou rodapé sólido do painel — largura toda, borda em
+      cima. Vidro ali seria materialmente defensável (ela se sobrepõe a
+      conteúdo), mas atrás dela há texto de formulário, não paisagem.
+
+   4) A ABA "SOBRE" FICAVA FORA DA TELA EM 390px
+      E é onde mora toda a edição do Perfil. Rolar funcionava; descobrir
+      que dava para rolar, não. Ganhou máscara na borda direita, que some
+      sozinha ao chegar ao fim.
+
+   5) OS DADOS ACADÊMICOS QUEBRAVAM COM UM PONTINHO ÓRFÃO
+      O separador inline cabia numa linha e, ao quebrar no telefone, a
+      segunda começava com um ponto apontando para nada. Viraram chips. E
+      o selo passa a dizer "Perfil público" / "Perfil restrito" — o
+      conceito do §13 — em vez de "Tudo visível".
+
+   6) A primeira área do app se chamava "Dashboard" na lateral. Início.
+
+   O TESTE 22 — A COR DE DESTAQUE ALCANÇA AS PEÇAS DE DESTAQUE
+   O teste 21 mede a ORIGEM (as seis sementes, `--id-ac`, a lateral) e
+   estava verde com o botão ciano na tela. O 22 mede o DESTINO: para cada
+   peça que o sistema declara como de acento, a cor tem que mudar quando
+   o acento muda. Catorze áreas, seis cores, dois temas. Ele achou
+   sozinho o segundo botão preso — o "Salvar organização" da Faculdade —
+   que eu não tinha visto.
+
+   Medido de passagem: 169 elementos do sistema ainda são alcançados por
+   regra legada pelo próprio id. Dois fechados, o resto virou tarefa.
+*/
+
 /* v102 (BETA — §13 do prompt mestre: O PERFIL DEIXA DE SER UM FORMULÁRIO)
 
    O QUE O PERFIL ERA
@@ -2177,7 +2232,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v102-beta';
+const CACHE_NAME = 'mw-shell-v103-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

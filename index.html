@@ -9055,17 +9055,7 @@ body.light #view-college .college-setup input{
 }
 body.light #view-college .college-setup label{color:#1d4ed8 !important}
 
-/* Settings buttons compact + hover inteligente */
-#saveCollege.college-save{
-  height: 36px !important; padding: 0 14px !important; font-size: 12px !important;
-  width: auto !important; min-width: 0 !important;
-  background: linear-gradient(135deg,#38bdf8,#2563eb) !important;
-  color: #fff !important;
-}#saveCollege.college-save:hover{
-  filter: brightness(1.12) !important;
-  background: linear-gradient(135deg,#7dd3fc,#3b82f6) !important;
-  color: #fff !important;
-}#chooseProfilePhoto, #editProfilePhoto{
+/* Settings buttons compact + hover inteligente */#chooseProfilePhoto, #editProfilePhoto{
   /* Etapa 0: fundo e cor eram valores de tema escuro cravados; no claro os
      dois botões da foto mediam 2,65:1. Passam a ler o sistema, que muda
      com o tema (o Perfil carrega `ds`). */
@@ -9419,7 +9409,7 @@ img,svg,video,canvas{max-width:100%}
   .cal-nav{width:100%!important;display:flex!important;align-items:center!important;justify-content:space-between!important}
   #calPrev,#calNext{width:44px!important;height:44px!important}#academicCalendarPanel .calendar-day{min-height:38px!important;padding:5px 2px!important;font-size:12px!important}
   #academicCalendarPanel .calendar-day small,.event-dot{display:none!important}
-  #app .add-btn,#app .small-btn,#app .save-btn{min-height:44px!important}#saveCollege{width:100%!important;height:48px!important}#app input:not([data-mw-migrada] *), #app select:not([data-mw-migrada] *), #app textarea:not([data-mw-migrada] *){font-size:16px!important}
+  #app .add-btn,#app .small-btn,#app .save-btn{min-height:44px!important}#app input:not([data-mw-migrada] *), #app select:not([data-mw-migrada] *), #app textarea:not([data-mw-migrada] *){font-size:16px!important}
   .mateus-ai-card,.eva-pro{width:100%!important;height:100dvh!important;max-height:100dvh!important;border-radius:0!important}
   #app .stat:hover,#app .activity-card:hover{transform:none!important}
 }
@@ -9585,10 +9575,6 @@ html body #app .sidebar{
     border-radius: 14px !important;
     height: 48px !important;
     color: #eef6ff !important;
-  }#saveCollege{
-    width:100% !important;
-    min-height:48px !important;
-    margin: 12px 0 16px !important;
   }
 }
 @media (min-width:861px){
@@ -20085,7 +20071,7 @@ html body.light #app .danger-btn:hover{background:#ffe9ec!important}
 
    Especificidade alta de propósito: quase todas as folhas antigas
    marcam !important, então uma regra curta não venceria. */
-html body #app .save-btn, html body #app .add-btn, html body #app .modal-submit, html body #app .college-save, html body #app #saveCollege{
+html body #app .save-btn, html body #app .add-btn, html body #app .modal-submit, html body #app .college-save{
   background:linear-gradient(135deg,#38bdf8 0%,#2563eb 62%,#1d4ed8 100%)!important;
   color:var(--mw-txt-sobre-acento,#02122e)!important/*Etapa 0: quase-preto cravado sobre o degradê de acento — 3,14:1 no botão primário. Dentro do sistema o token resolve; fora dele o valor antigo continua valendo.*/;
   border:0!important;
@@ -26493,7 +26479,7 @@ html body #loginScreen .mw-btn-inner{ border-radius: 999px !important; }
    azul de agora isso dá 2,9:1: mede pior que o texto secundário da
    mesma tela, num elemento que é o alvo principal da ação. Em branco
    sobe para 6,3:1. */
-html body #app .save-btn:not([data-mw-migrada] *), html body #app .college-save:not([data-mw-migrada] *), html body #app .modal-submit:not([data-mw-migrada] *), html body #app .main .save-btn:not([data-mw-migrada] *), html body #app .main .modal-submit:not([data-mw-migrada] *), html body #app #saveCollege:not([data-mw-migrada] *){
+html body #app .save-btn:not([data-mw-migrada] *), html body #app .college-save:not([data-mw-migrada] *), html body #app .modal-submit:not([data-mw-migrada] *), html body #app .main .save-btn:not([data-mw-migrada] *), html body #app .main .modal-submit:not([data-mw-migrada] *){
   color: #fff !important;
   /* Não é o degradê de destaque puro: a ponta violeta dele mede 4,38:1
      com texto branco, logo abaixo do mínimo. Um escurecimento de 8%
@@ -26507,7 +26493,7 @@ html body #app .save-btn:not([data-mw-migrada] *), html body #app .college-save:
   border-radius: 999px !important;
   font-weight: 700 !important;
   box-shadow: 0 8px 22px color-mix(in srgb, var(--ds-ac) 38%, transparent) !important;
-}html body.light #app .save-btn:not([data-mw-migrada] *), html body.light #app .college-save:not([data-mw-migrada] *), html body.light #app .modal-submit:not([data-mw-migrada] *), html body.light #app .main .save-btn:not([data-mw-migrada] *), html body.light #app #saveCollege:not([data-mw-migrada] *){ color: #fff !important; }
+}html body.light #app .save-btn:not([data-mw-migrada] *), html body.light #app .college-save:not([data-mw-migrada] *), html body.light #app .modal-submit:not([data-mw-migrada] *), html body.light #app .main .save-btn:not([data-mw-migrada] *){ color: #fff !important; }
 
 /* --- Tema claro da entrada -------------------------------------------
    A tela de login foi desenhada só para o escuro: no claro, as cores de
@@ -26897,7 +26883,7 @@ html body #mwBottomNav.mwbn #mwNavMais svg{ width: 21px !important; height: 21px
    com id+classe vencia e o botão voltava ao violeta claro de 4,2:1 —
    e como o valor computado dizia uma coisa e o pixel outra, só a
    medição da tela flagrou. */
-html body #app #view-college #saveCollege.save-btn:not([data-mw-migrada] *), html body #app #view-settings #darkModeBtn.theme-btn.active:not([data-mw-migrada] *), html body #app #view-settings #lightModeBtn.theme-btn.active:not([data-mw-migrada] *), html body #app .save-btn:not([data-mw-migrada] *), html body #app .college-save:not([data-mw-migrada] *), html body #app .modal-submit:not([data-mw-migrada] *), html body #app .main .save-btn:not([data-mw-migrada] *), html body #app .main .modal-submit:not([data-mw-migrada] *), html body #app #saveCollege:not([data-mw-migrada] *), html body.light #app #saveCollege:not([data-mw-migrada] *){
+html body #app #view-settings #darkModeBtn.theme-btn.active:not([data-mw-migrada] *), html body #app #view-settings #lightModeBtn.theme-btn.active:not([data-mw-migrada] *), html body #app .save-btn:not([data-mw-migrada] *), html body #app .college-save:not([data-mw-migrada] *), html body #app .modal-submit:not([data-mw-migrada] *), html body #app .main .save-btn:not([data-mw-migrada] *), html body #app .main .modal-submit:not([data-mw-migrada] *){
   background-image: linear-gradient(135deg,
       color-mix(in srgb, var(--ds-ac) 84%, #000) 0%,
       color-mix(in srgb, var(--ds-ac-2) 72%, #000) 100%) !important;
