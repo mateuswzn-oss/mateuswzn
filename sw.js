@@ -1,3 +1,48 @@
+/* v102 (BETA — §13 do prompt mestre: O PERFIL DEIXA DE SER UM FORMULÁRIO)
+
+   O QUE O PERFIL ERA
+   Uma tela de Configurações com outro título. Grupos empilhados, um
+   rótulo e um campo por linha, foto de 64px perdida no meio. Nada ali
+   dizia "esta é uma pessoa" — dizia "preencha estes campos".
+
+   O QUE O PERFIL PASSA A SER
+   Uma tela de produto, na ordem em que se lê uma pessoa:
+
+     1. HERO — foto grande (112px no celular, 132px no desktop) com o
+        botão de câmera EM CIMA dela, e não numa linha de formulário
+        três telas abaixo. Ao lado: o nome em tamanho de título, o
+        @usuário, a bio, e os dados acadêmicos como selos separados por
+        ponto (instituição · curso · 5º semestre) em vez de quatro
+        linhas de rótulo e valor. Links sociais viram ícones.
+
+     2. NÚMEROS — disciplinas, projetos, atividades e progresso numa
+        fila só, no mesmo componente que o Início usa. Um só desenho de
+        número no app inteiro.
+
+     3. ABAS — Visão geral, Projetos, Atividades e Sobre. A edição toda
+        mora em "Sobre": quem entra no Perfil para OLHAR não tropeça num
+        formulário, e quem entra para EDITAR tem tudo num lugar só.
+
+   PÚBLICO E PRIVADO (§13)
+   O selo ao lado do nome diz, em português, o que a conta está: "Perfil
+   público" ou "Perfil privado". Não é enfeite — é o mesmo dado que a
+   chave em Sobre grava. Enquanto não existir uma página de perfil que
+   outra pessoa possa abrir, o selo diz o que o dado significa hoje e
+   não promete uma vitrine que não existe.
+
+   A BARRA DE SALVAR
+   Fica colada no fim da aba Sobre, e o painel reserva a altura dela.
+   Antes, uma barra grudada cobria o último campo — o defeito que o §14
+   chama de "conteúdo coberto".
+
+   O TESTE 16 ESTAVA MEDINDO O NOME, NÃO A COISA
+   Ele contava `[data-mw-grupo]` e exigia pelo menos 4 no Perfil. A
+   reformulação trocou grupos por faixas e chapas; a contagem foi a zero
+   numa tela que ficou MAIS organizada. O teste passou a contar também
+   `.ds-faixa` e `.ds-chapa`. Corrigir a régua, não remendar a parede
+   para caber na régua velha (§42).
+*/
+
 /* v101 (BETA — FASE 1 a 3 do prompt mestre: a auditoria, a identidade e a
    COR DE DESTAQUE que finalmente funciona):
 
@@ -2132,7 +2177,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v101-beta';
+const CACHE_NAME = 'mw-shell-v102-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

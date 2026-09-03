@@ -84,10 +84,19 @@ const base = await p.evaluate(a => {
     texto: (v.textContent || '').replace(/\s+/g, ' ').trim().length,
     /* A unidade de leitura destas telas é a CAIXA: um assunto por caixa.
        Em Perfil e Configurações ela se chama grupo de ajuste; em
-       Faculdade, Relatórios, Foco e Calendário ela é um cartão. O nome
-       muda com a migração, então conta-se pelos dois nomes e pelo gancho
-       durável. */
-    caixas: v.querySelectorAll('[data-mw-grupo], .settings-group, .ds-cartao, .card').length,
+       Faculdade, Relatórios, Foco e Calendário ela é um cartão; nas telas
+       já reformuladas ela é uma faixa (rótulo + conteúdo, sem moldura) ou
+       uma chapa (superfície sólida). O nome muda com a migração, então
+       conta-se por todos eles.
+
+       O que se mede é a INTENÇÃO — "o assunto está separado do assunto
+       seguinte", não "existe uma div com esta classe". Quando a
+       reformulação do Perfil trocou os grupos por faixas e chapas, a
+       contagem caiu a zero numa tela que ficou MAIS organizada do que
+       antes. Corrigir aqui, e não remendar a marcação nova para caber num
+       nome velho. */
+    caixas: v.querySelectorAll('[data-mw-grupo], .settings-group, .ds-cartao, .card,'
+                             + ' .ds-faixa, .ds-chapa').length,
     categorias: [...v.querySelectorAll('[data-mw-categoria], .mw-settings-categoria, .ds-tela-titulo')]
       .map(e => e.textContent.trim()).filter(Boolean)
   };
