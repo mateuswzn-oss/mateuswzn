@@ -1,3 +1,45 @@
+/* v108 (BETA — a lupa consertada de verdade, e o topo trocado)
+
+   A LUPA TINHA CINCO DONOS
+   Cinco blocos diferentes abriam e fechavam a busca, cada um com o seu
+   "fechar ao clicar fora". Um deles procurava `.search-wrap`, seletor
+   que a marcação nova não tem, e fechava o que os outros abriam.
+
+   Mas a causa raiz era outra, e só apareceu medindo evento por evento:
+   ao PRESSIONAR a lupa, o envoltório se reposiciona (o campo abre) e o
+   botão ANDA 136px para a esquerda entre o `mousedown` e o `mouseup`. O
+   navegador então entrega o `click` ao ancestral comum, não ao botão —
+   o clique nunca chegava em ninguém. Um controle que move a si mesmo ao
+   ser acionado não pode depender de `click`, que só existe se o dedo
+   terminar onde começou. Agora abre no `pointerdown`.
+
+   Faltava ainda o "fechar ao tocar fora" ser registrado DEPOIS do gesto
+   que abriu (senão o mesmo toque abre e fecha), e o painel de resultados
+   parava de aparecer no telefone porque QUALQUER rolagem o derrubava — e
+   focar o campo faz o navegador rolar sozinho.
+
+   Medido nos dois: digita "Física" e o resultado aparece. Era a primeira
+   vez que a busca funcionava de ponta a ponta no app.
+
+   O CANTO DIREITO VIROU NAVEGAÇÃO
+   A foto saiu do topo (o Perfil já tem porta na barra de baixo) e no
+   lugar dela ficaram o ☰ — que antes morava na ponta esquerda, longe do
+   polegar, e era por isso que a gaveta "custava a aparecer" — e uma
+   ENGRENAGEM para Configurações, que só existia dentro da gaveta.
+
+   DOIS DEFEITOS QUE ESSA TROCA REVELOU, e que os testes pegaram:
+   • o cartão de perfil da lateral chamava `#profileBtn.onclick()` em vez
+     de abrir a tela: dependia de um botão de outra área existir. Agora
+     vai direto ao destino.
+   • o ajudante dos testes também só sabia o caminho antigo, e acusava
+     "o Perfil tem altura 0" quando o Perfil estava inteiro — o caminho é
+     que havia sumido.
+
+   Ícones dos atalhos do Início agora são redondos.
+
+   Medido: etapas 3, 7, 12, 13, 16, 20, 22 e 23 verdes.
+*/
+
 /* v107 (BETA — o relato do Mateus: topo, Nyc AI, barra de baixo, cores)
 
    FEITO NESTA RODADA
@@ -2399,7 +2441,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v107-beta';
+const CACHE_NAME = 'mw-shell-v108-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

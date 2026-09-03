@@ -118,9 +118,25 @@ export const AREAS = ['home','college','institutions','subjects','projects','act
 export async function vaiPara(p, area){
   await p.evaluate(nome => {
     const bt = document.querySelector(`#nav button[data-view="${nome}"]`);
-    if (bt) bt.click();
-    else if (nome === 'profile') document.getElementById('profileBtn')?.click();
-    else if (window.showView) window.showView(nome);
+    if (bt) { bt.click(); return; }
+    /* O Perfil já teve UMA porta (o avatar no canto do topo) e o ajudante
+       decorou o id dela. Quando o topo virou ☰ + engrenagem e a foto
+       passou a morar só na barra de baixo, `#profileBtn` deixou de
+       existir — e o teste parou de conseguir ABRIR a tela, acusando "a
+       tela tem conteúdo FALHOU altura:0" como se o Perfil tivesse
+       quebrado. Não tinha: o caminho é que sumiu.
+
+       Agora tenta as portas que existem, em ordem, e cai em `showView`
+       como último recurso. Um teste que só sabe um caminho reprova a
+       cada mudança de navegação. */
+    const portas = ['#mwBottomNav [data-view="profile"]', '#mwSidebarProfileBtn', '#profileBtn'];
+    if (nome === 'profile') {
+      for (const sel of portas) {
+        const e = document.querySelector(sel);
+        if (e && e.offsetWidth) { e.click(); return; }
+      }
+    }
+    if (window.showView) window.showView(nome);
   }, area);
 }
 
