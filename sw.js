@@ -1,3 +1,74 @@
+/* v101 (BETA — FASE 1 a 3 do prompt mestre: a auditoria, a identidade e a
+   COR DE DESTAQUE que finalmente funciona):
+
+   §6 — O ÍCONE DO APP DESENHAVA "EW"
+   Você disse "não utilizar EW", e eu fui procurar. O símbolo de DENTRO do
+   app (`mwi-marca`) desenha MW corretamente — mas os PNGs do PWA eram um
+   desenho DIFERENTE, de outra rodada: um M angular com pé horizontal no
+   topo que, no tamanho da tela de início do iPhone, lê E. Ou seja, a
+   identidade tinha dois desenhos, e o que aparecia no seu telefone era o
+   errado. Os cinco ícones (192, 512, os dois maskable e o apple-touch)
+   passam a sair do MESMO path do símbolo. Uma marca só.
+
+   §2 — A COR DE DESTAQUE: POR QUE ELA NÃO FUNCIONAVA
+   Havia um seletor de cor em Configurações desde antes desta rodada. Ele
+   não funcionava direito, e a causa tem três partes — todas visíveis na
+   tela:
+
+   1. Ele gravava `--id-ac`, `--id-ac-2` e `--id-ac-grad` como ESTILO
+      INLINE no <html>. Estilo inline vence qualquer folha, então nenhuma
+      regra CSS conseguia participar da cor — incluindo as do tema claro.
+   2. Ele escrevia TRÊS dos tokens de acento. `--id-ac-suave` e
+      `--id-ac-txt` continuavam com o valor índigo cravado. Ao escolher
+      verde, o app ficava verde nos botões e ROXO nos realces e nos links.
+      Era daí que vinha a mistura de cores que você viu.
+   3. Não havia versão para o tema claro: a mesma cor luminosa ia para
+      cima do branco, e o texto branco em cima dela não passava de 4,5:1.
+
+   AGORA: existe UMA SEMENTE por cor e por tema (`--sem-1`/`--sem-2`) e
+   todo o resto é DERIVADO com `color-mix` — inclusive os dois tokens que
+   faltavam. A função de aplicar voltou a ter uma responsabilidade só:
+   escrever o atributo `data-acento`. As 80 regras que leem `--ds-ac` e as
+   35 que leem `--mw-ac` passaram a nascer da mesma semente, então
+   acompanham sem que exista uma linha "se a cor for verde então...".
+
+   O literal antigo foi APAGADO na origem, não sobrescrito. Enquanto os
+   dois existissem, empurrar o novo por especificidade seria exatamente a
+   camada em cima que o §42 proíbe.
+
+   E EU QUASE CRIEI UMA SEGUNDA IMPLEMENTAÇÃO
+   Antes de encontrar a que já existia, eu tinha escrito um seletor de cor
+   novo, com UI própria e lista de cores própria. Seriam dois seletores da
+   mesma coisa em Configurações — o "componente duplicado" que o pedido
+   proíbe. Apaguei o meu e consertei o que existia, mantendo os seis ids
+   originais (índigo, ciano, violeta, verde, âmbar, rosa).
+
+   §5 — A TROCA NÃO PISCA MAIS
+   Tema e cor compartilham a mesma transição de 240ms, aplicada só às
+   propriedades que mudam de cor (fundo, borda, texto, sombra) e só
+   enquanto a troca acontece. Transicionar `all` faria o app inteiro
+   rastejar a cada troca de tela.
+
+   §45 — A MATRIZ VIROU TESTE (teste 21)
+   Doze combinações olhadas à mão uma vez não garantem nada na décima
+   terceira rodada. O teste 21 percorre 6 cores × 2 temas e verifica: que
+   a semente muda em todas; que o acento derivado acompanha (se não
+   acompanhar, existe valor cravado ou estilo inline no caminho — foi
+   assim que o defeito apareceu); e que o item ativo da lateral tem
+   aparência distinta em cada cor.
+   Custou uma rodada descobrir dois cuidados de medida: comparar só os
+   primeiros 44 caracteres do `background-image` dava "tudo igual",
+   porque os 44 primeiros são o véu escuro que vem antes do gradiente; e
+   as sementes do tema claro moram em `body.light`, então lê-las no <html>
+   devolve sempre a do escuro.
+
+   O QUE AINDA NÃO FOI FEITO — e continua na fila do prompt mestre
+   Perfil (§13), Configurações reorganizadas (§14), Login (§16), Cadastro
+   (§17), busca (§8), notificações (§9), sidebar do desktop (§12), a
+   bottom nav com rótulo abaixo do ícone (§11), e as telas de coleção.
+   Cada uma vem como TELA RECONSTRUÍDA, no método que a v100 estabeleceu:
+   markup novo com nomes do sistema, legado sem alvo apagado.
+*/
 /* v100 (BETA — A REFORMULAÇÃO DE VERDADE COMEÇA AQUI: o Início e a
    moldura foram RECONSTRUÍDOS, não repintados):
 
@@ -2061,7 +2132,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v100-beta';
+const CACHE_NAME = 'mw-shell-v101-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

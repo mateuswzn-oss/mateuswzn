@@ -74,6 +74,7 @@ declare -a NOMES=(
   "18 pele · quem veste (RELATÓRIO, não reprova)"
   "19 contraste · tela de entrada"
   "20 navegação · lateral, baixo e topo"
+  "21 acento · a matriz tema × cor (§45)"
 )
 declare -a CMDS=(
   "node tools/testes/1-regressao.mjs"
@@ -111,6 +112,7 @@ declare -a CMDS=(
   "for a in login lateral topo baixo home files profile settings college reports focus calendar institutions subjects projects activities notes support; do for t in escuro claro; do printf '%-14s %-7s ' \$a \$t; printf '%s regra(s) legada(s) vestindo peça do sistema\\n' \$(node tools/ds/quem-veste.mjs \$a \$t | grep -c ' :: ' || true); done; done; true"
   "for l in 1440 834 390; do for t in dark light; do node tools/testes/7b-contraste-login.mjs \$l \$t || exit 1; done; done; python3 tools/testes/7-contraste-medir.py"
   "for m in desktop celular instalado; do node tools/testes/20-navegacao.mjs \$m || exit 1; done; for a in lateral topo baixo; do for t in claro escuro; do node tools/ds/quem-vence.mjs \$a \$t | sed -n 2p || exit 1; done; done"
+  "node tools/testes/21-acento.mjs"
 )
 
 SO_ESTES=("$@")

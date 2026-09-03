@@ -133,12 +133,17 @@
   --mw-txt-3:var(--mw-p-gelo-500);
   --mw-txt-sobre-acento:#ffffff;
 
-  /* acento */
-  --mw-ac:var(--mw-p-azul-500);
-  --mw-ac-2:var(--mw-p-violeta-500);
-  --mw-ac-txt:var(--mw-p-azul-300);
-  --mw-ac-suave:rgba(91,108,255,.16);
-  --mw-ac-grad:linear-gradient(135deg, var(--mw-p-azul-600) 0%, var(--mw-p-violeta-500) 100%);
+  /* ACENTO — derivado da semente única do app (§2).
+     Os valores da paleta ficam como RECUO: se a folha de acento não
+     estiver carregada (a galeria do sistema, por exemplo), o sistema
+     continua com o par índigo→violeta. Mas dentro do app quem manda é
+     `--id-ac`, que por sua vez nasce de `--sem-1`/`--sem-2` — então a cor
+     escolhida nas Configurações chega aqui sem nenhuma regra a mais. */
+  --mw-ac:var(--id-ac, var(--mw-p-azul-500));
+  --mw-ac-2:var(--id-ac-2, var(--mw-p-violeta-500));
+  --mw-ac-txt:var(--id-ac-txt, var(--mw-p-azul-300));
+  --mw-ac-suave:var(--id-ac-suave, rgba(91,108,255,.16));
+  --mw-ac-grad:var(--id-ac-grad, linear-gradient(135deg, var(--mw-p-azul-600) 0%, var(--mw-p-violeta-500) 100%));
   /* Um véu escuro sobre o gradiente. Texto branco sobre o acento puro mede
      4,0–4,4:1; com o véu passa de 4,5:1 sem mudar a cor percebida. */
   --mw-ac-grad-forte:linear-gradient(rgba(0,0,0,.16), rgba(0,0,0,.16)), var(--mw-ac-grad);
@@ -193,9 +198,9 @@ body.light .ds{
   --mw-txt-3:var(--mw-p-tinta-500);
   --mw-txt-sobre-acento:#ffffff;
 
-  --mw-ac:var(--mw-p-azul-600);
+  --mw-ac:var(--id-ac, var(--mw-p-azul-600));
   --mw-ac-txt:#3a49d8;
-  --mw-ac-suave:rgba(91,108,255,.10);
+  --mw-ac-suave:var(--id-ac-suave, rgba(91,108,255,.10));
 
   /* Medido no pixel: com fundo translúcido (12-14%), o selo no tema claro
      não pinta o suficiente para dominar — quem estabelece o contraste vira a
@@ -237,9 +242,9 @@ body.light .ds{
     --mw-txt-1:var(--mw-p-tinta-900);
     --mw-txt-2:var(--mw-p-tinta-700);
     --mw-txt-3:var(--mw-p-tinta-500);
-    --mw-ac:var(--mw-p-azul-600);
+    --mw-ac:var(--id-ac, var(--mw-p-azul-600));
     --mw-ac-txt:#3a49d8;
-    --mw-ac-suave:rgba(91,108,255,.10);
+    --mw-ac-suave:var(--id-ac-suave, rgba(91,108,255,.10));
     --mw-ok:var(--mw-p-verde-700); --mw-ok-bg:#e2f7f0;  --mw-ok-bd:rgba(4,120,87,.26);
     --mw-alerta:var(--mw-p-ambar-800); --mw-alerta-bg:#fef3e2;  --mw-alerta-bd:rgba(146,64,14,.26);
     --mw-perigo:var(--mw-p-rubro-700); --mw-perigo-bg:#fde9e9;  --mw-perigo-bd:rgba(185,28,28,.26);
@@ -1549,7 +1554,10 @@ body.light .ds{
   flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px;
   height: 36px; padding: 0 var(--mw-e-3); margin-left: 2px;
   border: 1px solid transparent; border-radius: 999px;
-  background: var(--mw-ac-grad); color: var(--mw-txt-sobre-acento);
+  /* `-grad-forte`, não `-grad`: o gradiente puro do acento dá 4,25:1 com o
+     branco em cima. A variante com véu escuro existe no sistema para
+     exatamente isto, e passa dos 4,5:1 sem mudar a cor percebida. */
+  background: var(--mw-ac-grad-forte); color: var(--mw-txt-sobre-acento);
   font: inherit; font-size: var(--mw-t-micro); font-weight: 650;
   cursor: pointer; box-shadow: var(--mw-sombra-1);
   transition: transform 90ms var(--mw-curva), box-shadow var(--mw-d-rapida) var(--mw-curva);
@@ -1763,3 +1771,32 @@ body.light .ds{
   .ds .ds-med:nth-child(odd){ border-left: 0; }
   .ds .ds-med-n{ font-size: 26px; }
 }
+
+/* ---- SELETOR DE COR DE DESTAQUE (Configurações › Aparência) -------------- */
+.ds .ds-cores{ display: flex; flex-wrap: wrap; gap: var(--mw-e-3); }
+.ds .ds-cor{
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: var(--mw-e-2); border: 1px solid transparent; border-radius: var(--mw-r-3);
+  background: none; font: inherit; cursor: pointer; min-width: 62px;
+  transition: background var(--mw-d-rapida) var(--mw-curva),
+              border-color var(--mw-d-rapida) var(--mw-curva);
+}
+.ds .ds-cor:hover{ background: var(--mw-sup-2); }
+.ds .ds-cor-disco{
+  width: 34px; height: 34px; border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.18);
+  transition: transform var(--mw-d-rapida) var(--mw-curva-mola),
+              box-shadow var(--mw-d-rapida) var(--mw-curva);
+}
+.ds .ds-cor-nome{ font-size: var(--mw-t-micro); font-weight: 600; color: var(--mw-txt-3); }
+.ds .ds-cor[aria-pressed="true"]{ border-color: var(--mw-borda-forte); background: var(--mw-sup-2); }
+.ds .ds-cor[aria-pressed="true"] .ds-cor-disco{
+  transform: scale(1.06);
+  /* O anel usa a cor do CHÃO como separador, então o disco não encosta no
+     anel — é o mesmo desenho do foco do sistema, e funciona em qualquer
+     cor sem precisar de uma regra por cor. */
+  box-shadow: 0 0 0 2px var(--mw-sup-1), 0 0 0 4px var(--mw-txt-2),
+              inset 0 0 0 1px rgba(255,255,255,.22);
+}
+.ds .ds-cor[aria-pressed="true"] .ds-cor-nome{ color: var(--mw-txt-1); }
+.ds .ds-cor:focus-visible{ outline: none; box-shadow: var(--mw-foco); }

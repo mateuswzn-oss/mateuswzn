@@ -33,7 +33,17 @@ def razao(a, b):
     return (max(L1,L2)+.05) / (min(L1,L2)+.05)
 
 def parse(c):
+    """Aceita `rgb(r g b)` E `color(srgb r g b)`.
+
+    O segundo formato apareceu quando o acento passou a ser derivado com
+    `color-mix()`: o Chromium devolve o resultado como
+    `color(srgb 0.601255 0.642588 1)`, com os componentes de 0 a 1 e não de
+    0 a 255. Lendo "0.601" como se fosse 0–255 dava PRETO, e o medidor
+    passou a acusar 49 falhas de contraste em textos que na tela estão
+    perfeitamente legíveis — um defeito da régua, não da parede."""
     n = [float(x) for x in re.findall(r'[\d.]+', c)]
+    if c.strip().startswith('color('):
+        return tuple(int(round(max(0.0, min(1.0, x)) * 255)) for x in n[:3])
     return tuple(int(x) for x in n[:3])
 
 def invisivel(c):
