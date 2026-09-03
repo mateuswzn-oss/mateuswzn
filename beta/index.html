@@ -37,6 +37,12 @@ try {
 (function(){try{
   var d = JSON.parse(localStorage.getItem('mateusWorkspaceV4') || '{}');
   document.documentElement.setAttribute('data-ds-tema', d.theme === 'light' ? 'claro' : 'escuro');
+  /* A COR DE DESTAQUE entra aqui pelo mesmo motivo que o tema: ela é a
+     semente de onde nascem todos os tokens de acento. Se fosse aplicada
+     depois, o primeiro quadro sairia roxo e viraria verde na frente da
+     pessoa — o "pisca" que o §5 manda não existir. */
+  var cor = ((d.settings || {}).accent) || 'indigo';
+  document.documentElement.setAttribute('data-acento', cor);
 }catch(e){ document.documentElement.setAttribute('data-ds-tema','escuro'); }})();
 </script>
 <link rel="stylesheet" href="ds/mw-ds.css">
@@ -22857,12 +22863,13 @@ html:root{
   --id-txt:#e9eefb;
   --id-txt-2:#b0bcd8; /* Etapa 0: era #a6b2ce e batia EXATAMENTE em 4,5:1 sobre o cartão de entrada — no limite, ou seja, reprovando por arredondamento. Clareado o suficiente para sair do fio da navalha. */
   --id-txt-3:#7b88a6;
-  /* acento: azul que caminha pro violeta */
-  --id-ac:#5b6cff;
-  --id-ac-2:#8b5cf6;
-  --id-ac-grad:linear-gradient(135deg,#4f5bff 0%,#8b5cf6 100%);
-  --id-ac-suave:rgba(91,108,255,.16);
-  --id-ac-txt:#93a3ff;
+  /* O ACENTO SAIU DAQUI (§2, §42).
+     Estes cinco eram hexadecimais escritos à mão, e enquanto existissem
+     não havia como trocar a cor do app sem caçar cada um. Agora eles
+     nascem todos da semente `--sem-1`/`--sem-2`, na folha
+     `mw-acento-configuravel` logo abaixo — uma origem só. Apagar aqui é o
+     conserto na origem; deixar os dois e empurrar o novo com
+     especificidade seria a camada em cima que não pode existir. */
   /* semânticas — cada uma com o par cor/fundo já resolvido */
   --id-ok:#34d399;      --id-ok-bg:rgba(16,185,129,.15);   --id-ok-bd:rgba(16,185,129,.26);
   --id-alerta:#fbbf24;  --id-alerta-bg:rgba(245,158,11,.15); --id-alerta-bd:rgba(245,158,11,.26);
@@ -22891,11 +22898,7 @@ html body.light{
      achatar os dois no mesmo tom só pra passar. */
   --id-txt-2:#4d5875;
   --id-txt-3:#5f6983;
-  --id-ac:#4f5bff;
-  --id-ac-2:#7c3aed;
-  --id-ac-grad:linear-gradient(135deg,#4f5bff 0%,#7c3aed 100%);
-  --id-ac-suave:rgba(79,91,255,.10);
-  --id-ac-txt:#4338ca;
+  /* idem para o tema claro: a semente do claro vive na folha do acento. */
   /* no claro o texto da cor precisa escurecer pra manter AA sobre o
      fundo tonalizado — não basta reusar o tom do escuro */
   --id-ok:#047857;      --id-ok-bg:rgba(5,150,105,.11);    --id-ok-bd:rgba(5,150,105,.24);
@@ -22905,6 +22908,87 @@ html body.light{
   --id-neutro:#475569;  --id-neutro-bg:rgba(71,85,105,.09); --id-neutro-bd:rgba(71,85,105,.18);
   --id-sombra:0 1px 2px rgba(20,40,90,.06),0 10px 28px rgba(20,40,90,.08);
   --id-sombra-alta:0 2px 4px rgba(20,40,90,.08),0 18px 44px rgba(20,40,90,.12);
+}
+</style>
+
+<style id="mw-acento-configuravel">
+/* =====================================================================
+   §2 — A COR DE DESTAQUE, CONFIGURÁVEL
+   =====================================================================
+   Antes desta folha o acento era um par de hexadecimais escritos à mão em
+   `--id-ac` / `--id-ac-2`, e mais uns tantos espalhados. Trocar a cor do
+   app significaria caçar todos eles — que é exatamente como o arquivo
+   ficou com azul, roxo, laranja e verde convivendo sem ninguém mandar.
+
+   Agora existe UMA SEMENTE por tema (`--sem-1`, `--sem-2`) e todo o resto
+   é DERIVADO dela com `color-mix`. Trocar a cor é trocar duas variáveis;
+   as 80 regras que leem `--ds-ac` e as 35 que leem `--mw-ac` acompanham
+   sozinhas, porque as duas famílias passam a nascer da mesma semente.
+
+   Por que semente diferente no claro: a mesma cor não serve nos dois
+   fundos. Sobre azul-noite o acento precisa ser mais luminoso para
+   aparecer; sobre branco precisa ser mais fundo para o texto branco em
+   cima dele passar de 4,5:1. Não é "inverter" — é reequilibrar.
+
+   O acento é IDENTIDADE, não papel de parede (§2): ele pinta o que é
+   ação, estado e marca. Superfície e fundo continuam neutros e frios —
+   é o contraste entre os dois que faz a cor ser percebida como escolha.
+   ===================================================================== */
+
+/* ---- as sementes, por cor (tema ESCURO) ----
+   Os ids são os que o seletor de Configurações já usava — índigo, ciano,
+   violeta, verde, âmbar, rosa. Não inventei nomes novos: a lista de cores
+   já existia, o que faltava era ela chegar até aqui. */
+html:root                          { --sem-1:#5b6cff; --sem-2:#8b5cf6; }  /* índigo — padrão */
+html:root[data-acento="ciano"]     { --sem-1:#0ea5e9; --sem-2:#22d3ee; }
+html:root[data-acento="violeta"]   { --sem-1:#8b5cf6; --sem-2:#d946ef; }
+html:root[data-acento="verde"]     { --sem-1:#10b981; --sem-2:#34d399; }
+html:root[data-acento="ambar"]     { --sem-1:#f59e0b; --sem-2:#fbbf24; }
+html:root[data-acento="rosa"]      { --sem-1:#ec4899; --sem-2:#f472b6; }
+
+/* ---- as sementes, por cor (tema CLARO) ----
+   Mais fundas: a mesma cor que brilha sobre azul-noite fica lavada sobre
+   branco, e o texto branco em cima dela não chega a 4,5:1. Não é inverter,
+   é reequilibrar — que é o que o §4 pede. */
+html:root body.light                        { --sem-1:#4f5bff; --sem-2:#7c3aed; }
+html:root[data-acento="ciano"] body.light   { --sem-1:#0369a1; --sem-2:#0e7490; }
+html:root[data-acento="violeta"] body.light { --sem-1:#7c3aed; --sem-2:#a21caf; }
+html:root[data-acento="verde"] body.light   { --sem-1:#047857; --sem-2:#0f766e; }
+html:root[data-acento="ambar"] body.light   { --sem-1:#b45309; --sem-2:#a16207; }
+html:root[data-acento="rosa"] body.light    { --sem-1:#be185d; --sem-2:#a21caf; }
+
+/* ---- tudo o mais deriva ---- */
+html:root, html:root body.light{
+  --id-ac:      var(--sem-1);
+  --id-ac-2:    var(--sem-2);
+  --id-ac-grad: linear-gradient(135deg, var(--sem-1) 0%, var(--sem-2) 100%);
+  --id-ac-suave:color-mix(in srgb, var(--sem-1) 15%, transparent);
+  --id-ac-forte:color-mix(in srgb, var(--sem-1) 88%, black);
+  --id-ac-brilho:color-mix(in srgb, var(--sem-1) 38%, transparent);
+}
+/* Texto DA cor sobre superfície: no escuro clareia, no claro escurece —
+   senão um dos dois some no fundo. */
+html:root      { --id-ac-txt: color-mix(in srgb, var(--sem-1) 62%, #ffffff); }
+html:root body.light { --id-ac-txt: color-mix(in srgb, var(--sem-1) 86%, #000000); }
+
+/* ---- transição de tema e de cor (§5) ----
+   Só o que muda de cor transita, e por 240ms. Transicionar `all` faria o
+   app inteiro rastejar a cada troca de tela. */
+html.mw-troca-tema body,
+html.mw-troca-tema .ds-topo,
+html.mw-troca-tema .sidebar,
+html.mw-troca-tema #mwBottomNav,
+html.mw-troca-tema .ds-chapa,
+html.mw-troca-tema .ds-peca,
+html.mw-troca-tema .ds-agora,
+html.mw-troca-tema .ds-btn,
+html.mw-troca-tema .ds-nav-item{
+  transition: background-color 240ms ease, background-image 240ms ease,
+              border-color 240ms ease, color 240ms ease,
+              box-shadow 240ms ease !important;
+}
+@media (prefers-reduced-motion: reduce){
+  html.mw-troca-tema *{ transition: none !important; }
 }
 </style>
 
@@ -24925,10 +25009,33 @@ html body #app .mw-cor:focus-visible{ outline:3px solid color-mix(in srgb,var(--
      aqui repinta navegação, chips, links e marca de uma vez. */
   function aplicaCor(){
     var c = corDe(prefs().accent);
-    var raiz = document.documentElement.style;
-    raiz.setProperty('--id-ac', c.a);
-    raiz.setProperty('--id-ac-2', c.b);
-    raiz.setProperty('--id-ac-grad', 'linear-gradient(135deg,' + c.a + ' 0%,' + c.b + ' 100%)');
+    var raiz = document.documentElement;
+    /* ANTES: esta função gravava --id-ac, --id-ac-2 e --id-ac-grad como
+       ESTILO INLINE no <html>. Três problemas, e todos apareciam na tela:
+
+       1. inline vence qualquer folha, então nenhuma regra CSS conseguia
+          participar da cor — inclusive as do tema claro;
+       2. só três dos tokens de acento eram escritos. `--id-ac-suave` e
+          `--id-ac-txt` continuavam com o valor índigo original, então ao
+          escolher verde o app ficava verde nos botões e ROXO nos realces
+          e nos links. Era daí que vinha a mistura de cores;
+       3. não havia versão para o tema claro: a mesma cor luminosa ia
+          para cima do branco e o texto branco em cima dela não passava
+          de 4,5:1.
+
+       AGORA: escreve só o ATRIBUTO. A folha `mw-acento-configuravel`
+       tem a semente de cada cor nos dois temas e DERIVA todo o resto com
+       color-mix — inclusive os dois tokens que faltavam. A função voltou
+       a ter uma responsabilidade só: dizer qual cor está escolhida. */
+    raiz.setAttribute('data-acento', c.id);
+    var st = raiz.style;
+    st.removeProperty('--id-ac');
+    st.removeProperty('--id-ac-2');
+    st.removeProperty('--id-ac-grad');
+    /* A troca não pode piscar (§5). */
+    raiz.classList.add('mw-troca-tema');
+    clearTimeout(aplicaCor._t);
+    aplicaCor._t = setTimeout(function(){ raiz.classList.remove('mw-troca-tema'); }, 320);
     document.querySelectorAll('#mwCores .mw-cor').forEach(function(bt){
       bt.setAttribute('aria-checked', bt.getAttribute('data-cor') === c.id ? 'true' : 'false');
     });
@@ -31063,7 +31170,7 @@ html body .mw-pular:focus{ transform: translateY(0); }
   /* O carimbo entra depois do preloader para não brigar com a abertura
      da marca, e sai sozinho. window.MW_PREVIA fica disponível para
      conferir a versão pelo console sem depender de ver o carimbo. */
-  window.MW_PREVIA = 'v100-beta';
+  window.MW_PREVIA = 'v101-beta';
   function mostra(){
     if (document.getElementById('mwPreviaCarimbo')) return;
     var el = document.createElement('div');
