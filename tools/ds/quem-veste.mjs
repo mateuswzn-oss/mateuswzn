@@ -30,7 +30,7 @@ const area = process.argv[2] || 'login';
    despercebida por isso. Uma tela tem dois temas; medir um é medir
    metade. */
 const tema = process.argv[3] || 'escuro';
-const MOLDURA = { lateral: '.sidebar', topo: '.topbar', baixo: '#mwBottomNav' };
+const MOLDURA = { lateral: '.sidebar', topo: '.ds-topo', baixo: '#mwBottomNav' };
 const RAIZ = area === 'login' ? '#loginScreen' : (MOLDURA[area] || '#view-' + area);
 const b = await chromium.launch(ep ? { executablePath: ep } : {});
 const p = await b.newPage({ viewport: area === 'baixo'

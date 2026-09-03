@@ -65,7 +65,7 @@ const ELOGIN = area === 'login';
 /* A moldura não é uma `#view-` nem uma tela: são três pedaços que
    convivem com todas as áreas. Medir cada um por si, porque cada um tem
    folhas e problemas próprios. */
-const MOLDURA = { lateral: '.sidebar', topo: '.topbar', baixo: '#mwBottomNav' };
+const MOLDURA = { lateral: '.sidebar', topo: '.ds-topo', baixo: '#mwBottomNav' };
 const RAIZ = ELOGIN ? '#loginScreen' : (MOLDURA[area] || '#view-' + area);
 
 const { b, p } = ELOGIN ? await abreLogin(tema) : await abre({

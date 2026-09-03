@@ -1,3 +1,95 @@
+/* v100 (BETA — A REFORMULAÇÃO DE VERDADE COMEÇA AQUI: o Início e a
+   moldura foram RECONSTRUÍDOS, não repintados):
+
+   O QUE ESTAVA ERRADO EM TODAS AS RODADAS ANTERIORES
+   Cada mudança minha foi sobre QUAL REGRA CSS pintava o markup existente.
+   O markup nunca mudou. O Início emitia `<section class="card">` catorze
+   vezes — então, ganhasse a regra que ganhasse, ele renderizava catorze
+   cartões. Era isto que você via: "a mesma aplicação com Glassmorphism
+   por cima".
+
+   A MEDIDA QUE DESTRAVOU TUDO
+   Dos 6.511 seletores do arquivo, apenas 462 (7,1%) alcançam markup que
+   NÃO carrega nome de classe legado — e esses 462 são todos de raiz
+   (html, body, #app, :root) mexendo em fundo e tokens. Nenhum desenha
+   nada dentro de uma tela.
+   Conclusão: markup novo com nomes `ds-*` fica fora do alcance do CSS
+   antigo por construção. Sem guarda, sem !important, sem camada nova.
+   A reformulação passa a ser REESCREVER A TELA, e o legado sem alvo
+   simplesmente deixa de casar — e aí pode ser apagado.
+
+   O SISTEMA GANHOU MATERIAIS, E ISSO É O FIM DA PAREDE DE CARTÕES
+     CHAPA  conteúdo parado. Sólida, fio de 1px, SEM blur. É a maioria.
+     VIDRO  só o que FLUTUA sobre conteúdo: barra de baixo, topo quando
+            sobrepõe, diálogos, popovers. Aí a transparência tem função.
+     PLANO  nada. Só ritmo e um rótulo (`ds-faixa`) — a peça que quebra a
+            grade de caixas, porque a maior parte de uma tela boa é
+            conteúdo AGRUPADO, não encaixotado.
+   Regra: se não se sobrepõe a nada, não é de vidro. O popover do sino,
+   por exemplo, virou chapa — havia texto para ler ali, e vidro só baixava
+   o contraste (o teste 20 pegou isso de frente).
+   Junto vieram: métricas em linha com divisores (quatro números, UMA
+   peça, não quatro caixas), trilho horizontal, linha do tempo, pílula,
+   ESTADO DE PARTIDA com ação, e os tokens de movimento (pressão de 90ms,
+   entrada em cascata de 34ms, esqueleto).
+
+   O TOPO — reconstruído
+   Ele carregava a SAUDAÇÃO ("Olá, Mateus!" mais o curso, duas linhas).
+   No telefone isso comia a largura, as três ações não cabiam e o
+   navegador as empilhava em coluna — o defeito da sua foto. Não era CSS:
+   a saudação estava no lugar errado. Agora o topo carrega só o CONTEXTO
+   (o nome da área, uma linha), em UMA linha, com altura proporcional
+   (56px no telefone), safe-area como padding, e vidro só quando há
+   rolagem. A saudação virou o hero do Início. O bloco que copiava a
+   saudação da barra para dentro da tela — remendo sobre o lugar errado,
+   com MutationObserver e tudo — foi apagado.
+
+   A BARRA DE BAIXO — cinco lugares
+   INÍCIO · FACULDADE · + · ARQUIVOS · PERFIL. O "+" ocupa o centro
+   geométrico, que é onde o polegar alcança, e abre o MESMO fluxo de
+   criação do "+" do topo (um fluxo, não dois). A Nyc AI saiu da barra e
+   foi para o topo com identidade própria: assistente é ação especial,
+   não destino de navegação.
+
+   O INÍCIO — de catorze cartões a uma composição
+   contexto (data, saudação, semestre, quatro métricas numa linha) →
+   agora (a única coisa que pede atenção) → atalhos (trilho) →
+   próximos dias (linha do tempo própria) → progresso do semestre →
+   disciplinas (trilho) → projetos (trilho) → aulas → o que vem.
+   Todos os 42 IDs foram preservados, então nenhuma função de render
+   quebrou; o que mudou foi a árvore, os tipos de elemento e cada nome de
+   classe.
+
+   DOIS DEFEITOS ESTRUTURAIS QUE APARECERAM AO MEXER
+   1. Um script ARRANCAVA o calendário e as aulas de onde o markup os
+      punha e os embrulhava num `.mw-home-extras` "lado a lado como no
+      vídeo" — deixando a faixa "Próximos dias" com o título e nada
+      embaixo. Apagado: posição é do markup, script não muda tela de
+      lugar.
+   2. O painel do calendário era declarado no Início e um `traz()` o
+      arrastava para a área Calendário a cada visita. Agora ele é
+      declarado onde vive, e o Início tem a sua própria agenda.
+
+   O QUE A SUÍTE PEGOU, E QUE ESTÁ CORRIGIDO
+   · `$('.hello h2').textContent` estourava ao salvar o perfil (a barra
+     não tem mais saudação);
+   · `--mw-p-gelo-500` dava 4,41–4,49:1 em seis telas — abaixo do mínimo
+     por uma casa decimal. Foi para #94a0bd. (É a segunda vez que um
+     token de texto empata com o piso do AA; o gelo-300 foi na v99.)
+   · o rótulo da Nyc AI estava lendo `--mw-txt-1` sobre o acento — no
+     claro, tinta escura sobre violeta. Agora usa `--mw-txt-sobre-acento`.
+   · o "Sair" no tema claro media 4,15:1 (branco sobre azul): recebeu o
+     véu escuro que o sistema já tinha para esse caso exato.
+   · a ação de faixa media 94x17 de alvo de toque: ganhou área sem mudar
+     de aparência.
+
+   Contraste: 0 achados em três larguras e dois temas. Suíte: 20/20.
+
+   O QUE AINDA NÃO FOI FEITO — e é a próxima rodada
+   Perfil, Configurações, Login/Cadastro, as telas de coleção, a Nyc AI e
+   o QA visual das 18 telas. Cada um vem como TELA RECONSTRUÍDA, no mesmo
+   método: markup novo com nomes do sistema, legado sem alvo apagado.
+*/
 /* v99 (BETA — ETAPA 0 DA REFORMULAÇÃO: desfazer as 263 guardas indevidas.
    Não é uma melhoria: é a retirada de um método errado, antes de começar):
 
@@ -1969,7 +2061,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v99-beta';
+const CACHE_NAME = 'mw-shell-v100-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

@@ -114,7 +114,7 @@ await vaiPara(p, AREAS[0]);
 await p.waitForTimeout(340);
 const daMoldura = await p.evaluate(() => {
   const out = [];
-  for (const raiz of document.querySelectorAll('.sidebar, .topbar, #mwBottomNav')) {
+  for (const raiz of document.querySelectorAll('.sidebar, .ds-topo, #mwBottomNav')) {
     raiz.querySelectorAll('p,span,small,label,li,b,strong,em,a,h1,h2,h3,h4,button').forEach(e => {
       if (e.children.length) return;
       const t = (e.textContent || '').trim(); if (t.length < 3) return;
