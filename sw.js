@@ -1,3 +1,51 @@
+/* v107 (BETA — o relato do Mateus: topo, Nyc AI, barra de baixo, cores)
+
+   FEITO NESTA RODADA
+
+   1. O NOME FICA EMBAIXO DO ÍCONE, na barra de baixo (§11).
+      Havia DUAS implementações do rótulo. A viva punha o nome ao lado,
+      crescendo o item na horizontal. A outra — rótulo absoluto, posição
+      medida em JS — perdia a cascata havia rodadas, mas o `transform`
+      dela SOBREVIVIA, porque a vencedora não declara essa propriedade:
+      empilhado, o nome nascia 11px fora da pílula. Apagada. Sobrou uma.
+
+   2. A NYC AI SAIU DA BARRA, por tempo indeterminado.
+      Marcada com `hidden`, e continuava aparecendo: o atributo só vale
+      enquanto ninguém declara `display`, e a peça declarava. O sistema
+      passa a honrar `hidden`. A área, as conversas e o ajuste em
+      Configurações continuam de pé — guardar não é arrancar.
+
+   3. O TOPO DEIXOU DE SER UMA RÉGUA DE CAIXINHAS.
+      Botões redondos. O que os mantinha quadrados era legado alcançando
+      a marcação nova por ARIA-LABEL (`button[aria-label*="Notifica"]`):
+      depois do id, é a segunda porta. Rotular para leitor de tela não
+      pode custar o desenho.
+
+   4. AS SUPERFÍCIES SEGUEM O ACENTO — e é isso que tirava o azul.
+      Cartões, chips e campos eram um azul-marinho FIXO. Com a cor em
+      âmbar, a tela inteira continuava azul por baixo. Agora a superfície
+      carrega uma dose pequena do acento (7-13%): continua neutra, mas da
+      família certa. O §2 pede a cor no app inteiro sem desequilibrar o
+      fundo; as duas coisas convivem na dose.
+
+   5. A "CENTRAL DE DESENVOLVIMENTO" SAIU.
+      Três cartões que um script pendurava no fim do Início, com ciano
+      cravado e colados depois da tela pronta — daí o desalinho. Além
+      disso duplicavam os atalhos e a faixa "Próximos dias". Saíram com
+      eles dois vizinhos do mesmo bloco ("Foco da semana" e "Pomodoro
+      local"), que duplicavam a área Foco e a agenda.
+
+   6. O RODAPÉ DA MARCA SÓ NA TELA INICIAL, com as marcas oficiais
+      (formas cheias) de Instagram e Facebook ao lado dos selos de App
+      Store e Google Play. Assinatura se diz uma vez.
+
+   AINDA NÃO FEITO (dito em voz alta, não esquecido): seguidores/seguindo,
+   escolher a foto tocando na própria foto com recorte, e a retirada da
+   linha de foto das Configurações.
+
+   Medido: etapas 3, 7, 13, 16, 20, 22 e 23 verdes.
+*/
+
 /* v106 (BETA — o topo que estava quebrado: cinco controles apagados,
    um cabeçalho espremido e dois sistemas de ícone brigando)
 
@@ -2351,7 +2399,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v106-beta';
+const CACHE_NAME = 'mw-shell-v107-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

@@ -135,11 +135,24 @@ const topo = await p.evaluate(() => {
     config: algum(['#mwSidebarSettings', '#nav [data-view="settings"]']),
     busca: algum(['#searchToggle', '#globalSearch']),
     sino:  algum(['#notificationBtn']),
+    /* A Nyc AI está GUARDADA por tempo indeterminado (pedido do Mateus,
+       03/09/2026): o botão existe com `hidden`. Aqui não se cobra que ela
+       apareça — cobra-se COERÊNCIA: guardada, tem que estar realmente
+       fora da tela; de volta (sem `hidden`), tem que estar ao alcance.
+       Assim o teste não vira uma exceção permanente que esconde uma
+       regressão no dia em que ela voltar. */
+    iaGuardada: !!document.querySelector('#mateusAiBtn[hidden]'),
     ia:    algum(['#mateusAiBtn'])
   };
 });
+/* A Nyc AI sai da conta das funções obrigatórias enquanto estiver
+   guardada — e só enquanto estiver: se alguém tirar o `hidden` sem
+   devolvê-la à barra, a checagem seguinte reprova. */
+const { ia, iaGuardada, ...moldura } = topo;
 ok('toda função da moldura está ao alcance em algum lugar',
-   Object.values(topo).every(Boolean), topo);
+   Object.values(moldura).every(Boolean), moldura);
+ok('a Nyc AI está guardada, e de forma coerente',
+   iaGuardada ? !ia : ia, { guardada: iaGuardada, aparece: ia });
 
 const sino = await p.evaluate(async () => {
   document.getElementById('notificationBtn')?.click();
