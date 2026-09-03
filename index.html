@@ -4034,7 +4034,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
     <div class="mw-reference-divider" aria-hidden="true"></div>
 
     <nav class="nav ds-nav mw-reference-nav" id="nav">
-      <button class="ds-nav-item active" aria-current="page" data-view="home"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-dashboard"/></svg></span><span class="label">Dashboard</span></button>
+      <button class="ds-nav-item active" aria-current="page" data-view="home"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-dashboard"/></svg></span><span class="label">Início</span></button>
       <button class="ds-nav-item" data-view="college"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-college"/></svg></span><span class="label">Faculdade</span></button>
       <button class="ds-nav-item" data-view="institutions"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-institutions"/></svg></span><span class="label">Instituições</span></button>
       <button class="ds-nav-item" data-view="subjects"><span class="nav-icon"><svg class="mw-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#mwi-subjects"/></svg></span><span class="label">Disciplinas</span></button>
@@ -4556,12 +4556,12 @@ body.light .mw-faceid-gate-card p{color:#526988}
 <div class="ds-med-fila ds-perfil-numeros" id="mwPerfilNumeros" style="--i:1"></div>
 
 <!-- 3 · ABAS -->
-<div class="ds-abas ds-perfil-abas" role="tablist" aria-label="Seções do perfil" style="--i:2">
+<div class="ds-perfil-abas-caixa" style="--i:2"><div class="ds-abas ds-perfil-abas" role="tablist" aria-label="Seções do perfil">
 <button type="button" class="ds-aba" role="tab" data-aba="visao" aria-selected="true">Vis&atilde;o geral</button>
 <button type="button" class="ds-aba" role="tab" data-aba="projetos" aria-selected="false">Projetos</button>
 <button type="button" class="ds-aba" role="tab" data-aba="atividades" aria-selected="false">Atividades</button>
 <button type="button" class="ds-aba" role="tab" data-aba="sobre" aria-selected="false">Sobre</button>
-</div>
+</div></div>
 
 <!-- 4 · PAINÉIS -->
 <div class="ds-perfil-painel" data-painel="visao" style="--i:3">
@@ -9055,13 +9055,13 @@ body.light #view-college .college-setup input{
 }
 body.light #view-college .college-setup label{color:#1d4ed8 !important}
 
-/* Settings buttons compact + hover inteligente */#saveProfile, #saveCollege.college-save{
+/* Settings buttons compact + hover inteligente */
+#saveCollege.college-save{
   height: 36px !important; padding: 0 14px !important; font-size: 12px !important;
   width: auto !important; min-width: 0 !important;
   background: linear-gradient(135deg,#38bdf8,#2563eb) !important;
   color: #fff !important;
-}
-#saveProfile:hover, #saveCollege.college-save:hover{
+}#saveCollege.college-save:hover{
   filter: brightness(1.12) !important;
   background: linear-gradient(135deg,#7dd3fc,#3b82f6) !important;
   color: #fff !important;
@@ -9419,8 +9419,7 @@ img,svg,video,canvas{max-width:100%}
   .cal-nav{width:100%!important;display:flex!important;align-items:center!important;justify-content:space-between!important}
   #calPrev,#calNext{width:44px!important;height:44px!important}#academicCalendarPanel .calendar-day{min-height:38px!important;padding:5px 2px!important;font-size:12px!important}
   #academicCalendarPanel .calendar-day small,.event-dot{display:none!important}
-  #app .add-btn,#app .small-btn,#app .save-btn{min-height:44px!important}
-  #saveProfile,#saveCollege{width:100%!important;height:48px!important}#app input:not([data-mw-migrada] *), #app select:not([data-mw-migrada] *), #app textarea:not([data-mw-migrada] *){font-size:16px!important}
+  #app .add-btn,#app .small-btn,#app .save-btn{min-height:44px!important}#saveCollege{width:100%!important;height:48px!important}#app input:not([data-mw-migrada] *), #app select:not([data-mw-migrada] *), #app textarea:not([data-mw-migrada] *){font-size:16px!important}
   .mateus-ai-card,.eva-pro{width:100%!important;height:100dvh!important;max-height:100dvh!important;border-radius:0!important}
   #app .stat:hover,#app .activity-card:hover{transform:none!important}
 }
@@ -9586,7 +9585,7 @@ html body #app .sidebar{
     border-radius: 14px !important;
     height: 48px !important;
     color: #eef6ff !important;
-  }#saveCollege, #saveProfile{
+  }#saveCollege{
     width:100% !important;
     min-height:48px !important;
     margin: 12px 0 16px !important;
@@ -10610,14 +10609,7 @@ body.light #app .search-icon svg{ stroke:#0b1830 !important; }
   outline: none !important;
 }
 #view-settings .settings-group h4,
-#view-settings .settings-group p{ border:0 !important; }#saveProfile{
-  height:38px !important;
-  padding:0 16px !important;
-  background:linear-gradient(135deg,#2563eb,#1d4ed8) !important;
-  color:#fff !important;
-  border:0 !important;
-  border-radius:12px !important;
-}#clearAll.mw-clear-btn{
+#view-settings .settings-group p{ border:0 !important; }#clearAll.mw-clear-btn{
   height:38px !important;
   padding:0 16px !important;
   background:rgba(239,68,68,.14) !important;
@@ -10873,15 +10865,7 @@ body.light #mateusAiBtn.mateus-ai-btn::after{
 body.light #view-settings .settings-group{
   background: #fff !important;
   border-color: rgba(15,40,80,.10) !important;
-}#saveProfile{
-  height: 38px !important;
-  padding: 0 16px !important;
-  background: linear-gradient(135deg,#2563eb,#1d4ed8) !important;
-  color: #fff !important;
-  border: 0 !important;
-  border-radius: 12px !important;
-}
-#saveProfile:hover{ filter: brightness(1.08) !important; background: linear-gradient(135deg,#3b82f6,#2563eb) !important; color:#fff !important; }#clearAll.mw-clear-btn, #clearAll{
+}#clearAll.mw-clear-btn, #clearAll{
   height: 38px !important;
   padding: 0 16px !important;
   background: #7f1d1d !important;
@@ -11514,11 +11498,6 @@ html body #app .profile-photo-actions .small-btn.danger{
   background: rgba(239,68,68,.12) !important;
   border-color: rgba(239,68,68,.28) !important;
   color: #fecaca !important;
-}html body #app #saveProfile{
-  height: 40px !important;
-  padding: 0 18px !important;
-  border-radius: 12px !important;
-  font-size: 13.5px !important;
 }html body #app #logout.mw-logout-btn, html body #app #logout{
   width: auto !important;
   min-width: 88px !important;
@@ -12031,25 +12010,6 @@ html body #app .profile-photo-actions .small-btn.danger{
   background: rgba(239,68,68,.12) !important;
   border-color: rgba(239,68,68,.28) !important;
   color: #fecaca !important;
-}html body #app #saveProfile, html body #app #saveProfile.save-btn, html body #app #view-settings #saveProfile{
-  height: 40px !important;
-  padding: 0 18px !important;
-  border-radius: 12px !important;
-  font-size: 13.5px !important;
-  font-weight: 750 !important;
-  background: linear-gradient(135deg, #38bdf8, #2563eb) !important;
-  color: #fff !important;
-  border: 0 !important;
-  filter: none !important;
-  width: auto !important;
-}
-html body #app #saveProfile:hover,
-html body #app #view-settings #saveProfile:hover,
-html body #app #view-settings .settings-group #saveProfile:hover{
-  background: linear-gradient(135deg, #7dd3fc, #3b82f6) !important;
-  color: #fff !important;
-  filter: none !important;
-  transform: translateY(-1px) !important;
 }html body #app #logout, html body #app #logout.mw-logout-btn, html body #app #view-settings #logout{
   width: auto !important;
   min-width: 84px !important;
@@ -12087,9 +12047,6 @@ html body #app #clearAll:hover{
   background: #fff !important;
   border-color: #c9d4e4 !important;
   color: #152033 !important;
-}html body.light #app #saveProfile:not([data-mw-migrada] *){
-  background: linear-gradient(135deg, #38bdf8, #2563eb) !important;
-  color: #fff !important;
 }html body.light #app #logout:not([data-mw-migrada] *){
   background: #fff !important;
   color: #1d2430 !important;
@@ -20081,13 +20038,11 @@ html body.light #app #searchWrap input::placeholder{color:#6b80a0!important}
    O gradiente principal é o mesmo dos dois temas (é o acento da
    marca), mas no claro ele precisa de texto branco e sombra mais
    discreta: sobre fundo claro, a sombra pesada do escuro vira uma
-   mancha. */html body.light #app .save-btn:not([data-mw-migrada] *), html body.light #app .add-btn:not([data-mw-migrada] *), html body.light #app .modal-submit:not([data-mw-migrada] *), html body.light #app .college-save:not([data-mw-migrada] *), html body.light #app #saveProfile:not([data-mw-migrada] *){
+   mancha. */
+html body.light #app .save-btn:not([data-mw-migrada] *), html body.light #app .add-btn:not([data-mw-migrada] *), html body.light #app .modal-submit:not([data-mw-migrada] *), html body.light #app .college-save:not([data-mw-migrada] *){
   color:#fff!important;
   box-shadow:0 5px 16px rgba(37,99,235,.22)!important;
-}
-html body.light #app .save-btn:hover:not(:disabled),
-html body.light #app .add-btn:hover:not(:disabled),
-html body.light #app #saveProfile:hover:not(:disabled){
+}html body.light #app .save-btn:hover:not(:disabled), html body.light #app .add-btn:hover:not(:disabled){
   box-shadow:0 9px 22px rgba(37,99,235,.28)!important;
 }
 html body.light #app .small-btn,
@@ -20129,7 +20084,8 @@ html body.light #app .danger-btn:hover{background:#ffe9ec!important}
      PERIGO     — o que apaga
 
    Especificidade alta de propósito: quase todas as folhas antigas
-   marcam !important, então uma regra curta não venceria. */html body #app .save-btn, html body #app .add-btn, html body #app .modal-submit, html body #app .college-save, html body #app #saveProfile, html body #app #saveCollege{
+   marcam !important, então uma regra curta não venceria. */
+html body #app .save-btn, html body #app .add-btn, html body #app .modal-submit, html body #app .college-save, html body #app #saveCollege{
   background:linear-gradient(135deg,#38bdf8 0%,#2563eb 62%,#1d4ed8 100%)!important;
   color:var(--mw-txt-sobre-acento,#02122e)!important/*Etapa 0: quase-preto cravado sobre o degradê de acento — 3,14:1 no botão primário. Dentro do sistema o token resolve; fora dele o valor antigo continua valendo.*/;
   border:0!important;
@@ -20139,22 +20095,13 @@ html body.light #app .danger-btn:hover{background:#ffe9ec!important}
   letter-spacing:.01em!important;
   box-shadow:0 6px 18px rgba(37,99,235,.28)!important;
   transition:transform .16s cubic-bezier(.22,.8,.24,1),box-shadow .16s ease,filter .16s ease!important;
-}
-html body #app .save-btn:hover:not(:disabled),
-html body #app .add-btn:hover:not(:disabled),
-html body #app .modal-submit:hover:not(:disabled),
-html body #app .college-save:hover:not(:disabled),
-html body #app #saveProfile:hover:not(:disabled){
+}html body #app .save-btn:hover:not(:disabled), html body #app .add-btn:hover:not(:disabled), html body #app .modal-submit:hover:not(:disabled), html body #app .college-save:hover:not(:disabled){
   transform:translateY(-1px)!important;
   box-shadow:0 10px 26px rgba(37,99,235,.36)!important;
   filter:saturate(1.06)!important;
 }
 /* O toque tem que responder no dedo, não só no mouse. */
-html body #app .save-btn:active:not(:disabled),
-html body #app .add-btn:active:not(:disabled),
-html body #app .modal-submit:active:not(:disabled),
-html body #app .college-save:active:not(:disabled),
-html body #app #saveProfile:active:not(:disabled){
+html body #app .save-btn:active:not(:disabled), html body #app .add-btn:active:not(:disabled), html body #app .modal-submit:active:not(:disabled), html body #app .college-save:active:not(:disabled){
   transform:translateY(0) scale(.975)!important;
   box-shadow:0 4px 12px rgba(37,99,235,.24)!important;
 }
@@ -26545,7 +26492,8 @@ html body #loginScreen .mw-btn-inner{ border-radius: 999px !important; }
    texto quase preto —, pensada para quando o botão era claro. Sobre o
    azul de agora isso dá 2,9:1: mede pior que o texto secundário da
    mesma tela, num elemento que é o alvo principal da ação. Em branco
-   sobe para 6,3:1. */html body #app .save-btn:not([data-mw-migrada] *), html body #app .college-save:not([data-mw-migrada] *), html body #app .modal-submit:not([data-mw-migrada] *), html body #app .main .save-btn:not([data-mw-migrada] *), html body #app .main .modal-submit:not([data-mw-migrada] *), html body #app #saveProfile:not([data-mw-migrada] *), html body #app #saveCollege:not([data-mw-migrada] *){
+   sobe para 6,3:1. */
+html body #app .save-btn:not([data-mw-migrada] *), html body #app .college-save:not([data-mw-migrada] *), html body #app .modal-submit:not([data-mw-migrada] *), html body #app .main .save-btn:not([data-mw-migrada] *), html body #app .main .modal-submit:not([data-mw-migrada] *), html body #app #saveCollege:not([data-mw-migrada] *){
   color: #fff !important;
   /* Não é o degradê de destaque puro: a ponta violeta dele mede 4,38:1
      com texto branco, logo abaixo do mínimo. Um escurecimento de 8%
@@ -26559,7 +26507,7 @@ html body #loginScreen .mw-btn-inner{ border-radius: 999px !important; }
   border-radius: 999px !important;
   font-weight: 700 !important;
   box-shadow: 0 8px 22px color-mix(in srgb, var(--ds-ac) 38%, transparent) !important;
-}html body.light #app .save-btn:not([data-mw-migrada] *), html body.light #app .college-save:not([data-mw-migrada] *), html body.light #app .modal-submit:not([data-mw-migrada] *), html body.light #app .main .save-btn:not([data-mw-migrada] *), html body.light #app #saveProfile:not([data-mw-migrada] *), html body.light #app #saveCollege:not([data-mw-migrada] *){ color: #fff !important; }
+}html body.light #app .save-btn:not([data-mw-migrada] *), html body.light #app .college-save:not([data-mw-migrada] *), html body.light #app .modal-submit:not([data-mw-migrada] *), html body.light #app .main .save-btn:not([data-mw-migrada] *), html body.light #app #saveCollege:not([data-mw-migrada] *){ color: #fff !important; }
 
 /* --- Tema claro da entrada -------------------------------------------
    A tela de login foi desenhada só para o escuro: no claro, as cores de
@@ -26948,7 +26896,8 @@ html body #mwBottomNav.mwbn #mwNavMais svg{ width: 21px !important; height: 21px
    âncora profunda (view + id + classe). Sem elas, alguma camada antiga
    com id+classe vencia e o botão voltava ao violeta claro de 4,2:1 —
    e como o valor computado dizia uma coisa e o pixel outra, só a
-   medição da tela flagrou. */html body #app #view-profile #saveProfile.save-btn:not([data-mw-migrada] *), html body #app #view-college #saveCollege.save-btn:not([data-mw-migrada] *), html body #app #view-settings #darkModeBtn.theme-btn.active:not([data-mw-migrada] *), html body #app #view-settings #lightModeBtn.theme-btn.active:not([data-mw-migrada] *), html body #app .save-btn:not([data-mw-migrada] *), html body #app .college-save:not([data-mw-migrada] *), html body #app .modal-submit:not([data-mw-migrada] *), html body #app .main .save-btn:not([data-mw-migrada] *), html body #app .main .modal-submit:not([data-mw-migrada] *), html body #app #saveProfile:not([data-mw-migrada] *), html body #app #saveCollege:not([data-mw-migrada] *), html body.light #app #saveProfile:not([data-mw-migrada] *), html body.light #app #saveCollege:not([data-mw-migrada] *){
+   medição da tela flagrou. */
+html body #app #view-college #saveCollege.save-btn:not([data-mw-migrada] *), html body #app #view-settings #darkModeBtn.theme-btn.active:not([data-mw-migrada] *), html body #app #view-settings #lightModeBtn.theme-btn.active:not([data-mw-migrada] *), html body #app .save-btn:not([data-mw-migrada] *), html body #app .college-save:not([data-mw-migrada] *), html body #app .modal-submit:not([data-mw-migrada] *), html body #app .main .save-btn:not([data-mw-migrada] *), html body #app .main .modal-submit:not([data-mw-migrada] *), html body #app #saveCollege:not([data-mw-migrada] *), html body.light #app #saveCollege:not([data-mw-migrada] *){
   background-image: linear-gradient(135deg,
       color-mix(in srgb, var(--ds-ac) 84%, #000) 0%,
       color-mix(in srgb, var(--ds-ac-2) 72%, #000) 100%) !important;
@@ -31122,8 +31071,14 @@ html body .mw-pular:focus{ transform: translateY(0); }
 
     var vs = qi('mwPerfilVisib');
     if (vs){
+      /* §13 pede o conceito público/privado, e "Tudo visível" não é uma
+         das duas coisas: é o resultado de uma contagem interna. Quem lê
+         quer o ESTADO da conta primeiro, e o detalhe depois. */
       var fechados = CHAVES.filter(function(k){ return !ve(k[0]); }).length;
-      vs.textContent = fechados ? fechados + ' de ' + CHAVES.length + ' seções ocultas' : 'Tudo visível';
+      vs.textContent = fechados
+        ? 'Perfil restrito · ' + fechados + ' de ' + CHAVES.length + ' seções ocultas'
+        : 'Perfil público';
+      vs.setAttribute('data-estado', fechados ? 'restrito' : 'publico');
     }
   }
 
@@ -31583,8 +31538,33 @@ html body .mw-pular:focus{ transform: translateY(0); }
     }, true);
   }
 
+  /* ---- 5b. O título segue a TELA, não a função que a trocou ----------
+     `engancha()` embrulha `window.showView`, e isso cobre a navegação da
+     barra lateral e da barra de baixo. Não cobre a foto do topo: ela vai
+     para o Perfil por um caminho próprio, e o título continuava dizendo
+     "Início" com o Perfil na tela — visível nas duas capturas da rodada,
+     no telefone e no desktop.
+
+     Embrulhar também o segundo caminho seria remendar o sintoma e deixar
+     um terceiro caminho quebrado. O que é sempre verdade é a classe
+     `.active` na seção visível; então é ela que o título passa a ler. */
+  function observaTela(){
+    var app = document.getElementById('app'); if (!app) return;
+    var ultima = '';
+    function ver(){
+      var ativa = app.querySelector('.view.active');
+      var id = ativa ? String(ativa.id).replace(/^view-/, '') : '';
+      if (!id || id === ultima) return;
+      ultima = id;
+      try { tudo(id); } catch(e){}
+    }
+    new MutationObserver(ver).observe(app, {
+      subtree: true, attributes: true, attributeFilter: ['class'] });
+    ver();
+  }
+
   function inicia(){
-    engancha(); ligaRolagem(); ligaMais();
+    engancha(); ligaRolagem(); ligaMais(); observaTela();
     var v = (q('#app .view.active') || {}).id || 'view-home';
     tudo(String(v).replace(/^view-/, ''));
   }

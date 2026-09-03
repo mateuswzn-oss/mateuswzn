@@ -1857,14 +1857,19 @@ body.light .ds{
   color: var(--mw-txt-2); max-width: 60ch;
 }
 .ds .ds-perfil-bio:empty{ display: none; }
+/* Os dados acadêmicos como CHIPS, e não como uma frase separada por
+   pontinhos. O separador inline parecia certo até a linha quebrar no
+   telefone: "Engenharia da Computação · UFPA" cabia, e a segunda linha
+   começava com um pontinho solto, apontando para nada. Um chip tem começo
+   e fim próprios — quebra onde quiser e continua legível. */
 .ds .ds-perfil-selos{ display: flex; flex-wrap: wrap; gap: var(--mw-e-2); margin-top: var(--mw-e-3); }
 .ds .ds-perfil-selo{
-  display: inline-flex; align-items: center; gap: 6px;
+  display: inline-flex; align-items: center;
+  height: 26px; padding: 0 10px;
+  border: 1px solid var(--mw-borda); border-radius: 999px;
+  background: var(--mw-sup-2);
   font-size: var(--mw-t-micro); font-weight: 600; color: var(--mw-txt-2);
-}
-.ds .ds-perfil-selo + .ds-perfil-selo::before{
-  content: ''; width: 3px; height: 3px; border-radius: 50%;
-  background: var(--mw-txt-3); margin-right: 2px;
+  white-space: nowrap;
 }
 .ds .ds-perfil-links{ display: flex; flex-wrap: wrap; gap: var(--mw-e-2); margin-top: var(--mw-e-3); }
 .ds .ds-perfil-links a{
@@ -1879,9 +1884,24 @@ body.light .ds{
 .ds .ds-perfil-links a svg{ width: 14px; height: 14px; }
 
 .ds .ds-perfil-acoes{ display: flex; flex-direction: column; align-items: flex-end; gap: var(--mw-e-2); }
+/* O estado da conta é informação, não rodapé do botão: ganha a forma de
+   um selo, e a cor sai do acento quando o perfil está aberto. */
 .ds .ds-perfil-visib{
-  font-size: var(--mw-t-micro); color: var(--mw-txt-3); white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 26px; padding: 0 10px;
+  border: 1px solid var(--mw-borda); border-radius: 999px;
+  font-size: var(--mw-t-micro); font-weight: 600; color: var(--mw-txt-3);
+  white-space: nowrap;
 }
+.ds .ds-perfil-visib::before{
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--mw-txt-3);
+}
+.ds .ds-perfil-visib[data-estado="publico"]{
+  color: var(--mw-ac-txt);
+  border-color: color-mix(in srgb, var(--mw-ac) 40%, var(--mw-borda));
+}
+.ds .ds-perfil-visib[data-estado="publico"]::before{ background: var(--mw-ac); }
 .ds .ds-perfil-numeros{
   padding-top: var(--mw-e-4); border-top: 1px solid var(--mw-divisor);
 }
@@ -1909,16 +1929,26 @@ body.light .ds{
    campo ficava por baixo, que é o defeito de "conteúdo coberto" que o §14
    proíbe. O painel reserva a altura da barra no seu recheio de baixo. */
 .ds .ds-perfil-painel[data-painel="sobre"]{ padding-bottom: 76px; }
+/* A barra de salvar: RODAPÉ DO PAINEL, e não um botão flutuante.
+   Como pílula de vidro no meio da tela ela cobria o campo "@usuário" —
+   medido, não suposto: a barra parava em y=726 e o campo ficava embaixo
+   dela, borrado. Um botão que paira sobre um campo editável lê como
+   defeito, e é o "conteúdo coberto" que o §14 proíbe.
+
+   Uma barra que ocupa a largura toda, tem borda em cima e fundo SÓLIDO
+   lê como o fim da área: o que passa por baixo dela está claramente
+   "abaixo da dobra", não escondido atrás de um borrão. Vidro aqui seria
+   materialmente defensável (ela se sobrepõe a conteúdo), mas legibilidade
+   ganha de material: por trás dela há texto de formulário, não paisagem. */
 .ds .ds-perfil-salvar{
   display: flex; align-items: center; gap: var(--mw-e-3); flex-wrap: wrap;
-  position: sticky; bottom: var(--mw-e-4); z-index: 5;
-  margin-bottom: calc(var(--mw-e-4) * -1);
-  padding: var(--mw-e-3); border-radius: var(--mw-r-4);
-  background: var(--mw-vidro-cor);
-  -webkit-backdrop-filter: saturate(150%) blur(18px);
-  backdrop-filter: saturate(150%) blur(18px);
-  border: 1px solid var(--mw-vidro-borda);
-  box-shadow: var(--mw-sombra-2);
+  position: sticky; bottom: 0; z-index: 5;
+  margin: 0;
+  padding: var(--mw-e-3) var(--mw-e-4);
+  border-radius: var(--mw-r-3) var(--mw-r-3) 0 0;
+  background: var(--mw-sup-1);
+  border-top: 1px solid var(--mw-borda);
+  box-shadow: 0 -10px 24px -18px rgba(0,0,0,.75);
 }
 
 @media (max-width: 760px){
@@ -1955,3 +1985,28 @@ body.light .ds{
 }
 .ds .ds-perfil-abas::-webkit-scrollbar{ display: none; }
 .ds .ds-perfil-abas .ds-aba{ flex: 0 0 auto; white-space: nowrap; }
+
+/* As quatro abas não cabem em 390px, e a quarta ("Sobre" — onde mora TODA
+   a edição) ficava fora da tela sem nada indicando que havia mais. Rolar
+   funcionava; descobrir que dava para rolar, não. A máscara apaga a borda
+   direita enquanto houver conteúdo além dela, que é o sinal que um trilho
+   horizontal precisa dar. Some sozinha quando a rolagem chega ao fim
+   (`animation-timeline: scroll`) e, onde isso não existe, fica um degradê
+   fixo — discreto, e nunca uma informação errada. */
+.ds .ds-perfil-abas-caixa{ position: relative; }
+.ds .ds-perfil-abas-caixa::after{
+  content: ''; position: absolute; inset: 0 0 1px auto; width: 40px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--mw-fundo) 85%);
+}
+@supports (animation-timeline: scroll(self inline)){
+  .ds .ds-perfil-abas{ scroll-timeline: --abas inline; }
+  .ds .ds-perfil-abas-caixa::after{
+    animation: mw-some-fim linear both;
+    animation-timeline: --abas; animation-range: contain;
+  }
+}
+@keyframes mw-some-fim{ from{ opacity: 1 } 92%{ opacity: 1 } to{ opacity: 0 } }
+@media (prefers-reduced-motion: reduce){
+  .ds .ds-perfil-abas-caixa::after{ animation: none; }
+}
