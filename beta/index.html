@@ -9430,12 +9430,30 @@ img,svg,video,canvas{max-width:100%}
   if (!scrim) {
     scrim = document.createElement('div');
     scrim.id = 'mwSidebarScrim';
-    document.body.appendChild(scrim);
   }
-  // O scrim é filho de <body>, não de #app — a regra em CSS
-  // "#app.mw-mobile-open #mwSidebarScrim" nunca bate por causa disso, então
-  // o fundo escurecido (e o toque-fora-pra-fechar) mostra/esconde direto
-  // aqui via JS, sem depender daquele seletor quebrado.
+  /* O VÉU MORA DENTRO DE #app, E ISSO NÃO É DETALHE.
+     Ele já foi filho de <body>, e o efeito disso era a tela inteira ficar
+     BORRADA e A GAVETA PARAR DE RESPONDER AO TOQUE — foi assim que apareceu
+     no iPhone.
+
+     A causa: `#app` tem `isolation: isolate`, ou seja, é um contexto de
+     empilhamento próprio. O `z-index:120` da gaveta só disputa DENTRO do
+     #app; o véu, pendurado no <body> com `z-index:110`, disputava lá
+     fora. Os dois números pareciam certos e não eram comparáveis: o #app
+     inteiro — gaveta junto — pintava por baixo do véu.
+
+     Duas consequências, e a segunda é a pior:
+       1. o `backdrop-filter` do véu borrava a própria gaveta, não só o
+          conteúdo atrás dela;
+       2. `elementFromPoint` no meio da gaveta devolvia o VÉU, então tocar
+          em "Disciplinas" fechava o menu em vez de abrir a área.
+
+     Com o véu dentro do #app os dois z-index passam a se comparar de
+     verdade (110 embaixo, 120 em cima) — e a regra
+     `#app.mw-mobile-open #mwSidebarScrim`, que a rodada anterior deu por
+     "quebrada" e contornou por JS, volta a bater. O JS abaixo continua
+     sendo o dono do abre/fecha, para haver um lugar só decidindo isso. */
+  if (scrim.parentElement !== app) app.appendChild(scrim);
   const close = () => { app.classList.remove('mw-mobile-open'); scrim.style.display = 'none'; document.body.style.overflow=''; };
   const open = () => {
     app.classList.add('mw-mobile-open');
@@ -9449,8 +9467,28 @@ img,svg,video,canvas{max-width:100%}
     app.classList.contains('mw-mobile-open') ? close() : open();
   });
   scrim.addEventListener('click', close);
-  document.querySelectorAll('#app .nav button:not([data-mw-migrada]):not([data-mw-migrada] *), #mwSidebarSettings, #mwSidebarLogout, #mwSidebarProfileBtn').forEach(b => {
-    b.addEventListener('click', () => { if (innerWidth <= 860) close(); });
+
+  /* ESCOLHER UMA ÁREA FECHA A GAVETA — e isso estava desligado.
+     A versão anterior amarrava o "fechar" a cada botão, com o seletor
+     `#app .nav button:not([data-mw-migrada]):not([data-mw-migrada] *)`.
+     Aquela guarda era da época em que a lateral ainda não tinha migrado
+     para o Design System. Depois que ela migrou, o `:not(...)` passou a
+     excluir TODOS os itens, e nenhum recebeu o gancho.
+
+     Ninguém notou porque o véu, mal empilhado, comia o toque e fechava a
+     gaveta por acidente — um defeito escondendo o outro. Consertado o
+     empilhamento, o menu passou a ficar aberto por cima da área recém
+     escolhida.
+
+     Agora é DELEGAÇÃO na própria lateral, sem guarda de migração e sem
+     depender de os botões existirem no momento em que este código roda:
+     qualquer coisa que leve a uma área (`[data-view]`) ou que seja uma
+     das três ações do rodapé fecha a gaveta no celular. */
+  document.querySelector('#app .sidebar')?.addEventListener('click', (ev) => {
+    if (innerWidth > 860) return;
+    const alvo = ev.target.closest(
+      '[data-view], #mwSidebarSettings, #mwSidebarLogout, #mwSidebarProfileBtn');
+    if (alvo) close();
   });
   addEventListener('resize', () => { if (innerWidth > 860) close(); });
 })();
@@ -31603,7 +31641,7 @@ html body .mw-pular:focus{ transform: translateY(0); }
   /* O carimbo entra depois do preloader para não brigar com a abertura
      da marca, e sai sozinho. window.MW_PREVIA fica disponível para
      conferir a versão pelo console sem depender de ver o carimbo. */
-  window.MW_PREVIA = 'v104-beta';
+  window.MW_PREVIA = 'v105-beta';
   function mostra(){
     if (document.getElementById('mwPreviaCarimbo')) return;
     var el = document.createElement('div');
