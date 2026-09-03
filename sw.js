@@ -1,3 +1,50 @@
+/* v106 (BETA — o topo que estava quebrado: cinco controles apagados,
+   um cabeçalho espremido e dois sistemas de ícone brigando)
+
+   O Mateus escreveu: "lupa bugada, top bar bugado, não aparece o perfil,
+   botões com cores diferentes, o sidebar não funciona". Fui olhar a tela
+   em vez de supor. Eram cinco defeitos, e nenhum deles apareceu em teste.
+
+   1. CINCO CONTROLES DO TOPO ESTAVAM COM display:none
+      `#profileBtn`, `#globalSearch`, `#quickAdd`, `#themeToggle` e a
+      marca. Regras legadas, todas pelo ID, todas com !important, escritas
+      quando o topo não tinha esses controles (o tema e o perfil moravam
+      na lateral). O topo reconstruído os tem de volta, e as regras os
+      apagavam. É a mesma brecha dos botões de salvar: um id não é um nome
+      do sistema.
+
+   2. A LUPA ABRIA E NADA ACONTECIA
+      A regra que ESCONDE o campo sobreviveu à migração; a que o MOSTRA
+      (`.search-wrap.open`) ficou para trás, porque o campo agora vive em
+      `.ds-busca`. Sobrou meia funcionalidade. E no celular eu nunca tinha
+      escrito o estado "aberta" — a lupa era decorativa ali. Agora abre
+      sobre a barra inteira e o foco cai no campo, com fonte de 16px para
+      o iOS não dar zoom.
+
+   3. O CABEÇALHO ERA ESPREMIDO DE 64px PARA 45px
+      Defeito meu, no Design System: o <main> é um flex column e o topo
+      era um item com `flex-shrink:1`. Quando o conteúdo passa da altura
+      da tela, o navegador encolhe o cabeçalho. Altura declarada não basta
+      num container flex — é preciso dizer que ela não se negocia.
+
+   4. DOIS ÍCONES EM CADA BOTÃO
+      O sistema antigo desenhava ícones num `::before` com máscara CSS; a
+      marcação nova traz `<svg>`. Os dois valiam ao mesmo tempo e, como o
+      botão é `display:grid`, viravam DUAS LINHAS: sol em cima e lua
+      embaixo, dois sinais de "+" empilhados. Fica o svg, sai o
+      pseudo-elemento.
+
+   5. O TEXTO DE ACENTO NÃO SEGUIA A COR ESCOLHIDA (tema claro)
+      `--mw-ac-txt` estava cravado em #3a49d8. No claro, TODO texto de
+      acento saía azul mesmo com a cor em verde ou âmbar. Descobri ao
+      caçar um contraste de 4,48:1: mexi no token do app e o pixel não
+      mudou, o que denunciou o literal. Agora deriva do acento, e a razão
+      das seis cores foi calculada antes de escolher o valor (a pior vai a
+      4,96:1).
+
+   Medido: etapas 3, 7, 12, 13, 16, 20, 22 e 23 verdes.
+*/
+
 /* v105 (BETA — A TELA BORRADA NO IPHONE: dois defeitos, um escondendo o
    outro. Nenhum dos dois veio desta reformulação; são de cf0b42a e
    e226e2e, rodadas anteriores.)
@@ -2304,7 +2351,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v105-beta';
+const CACHE_NAME = 'mw-shell-v106-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
