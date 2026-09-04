@@ -1,3 +1,65 @@
+/* v110 (BETA — o Calendário, e o painel que respondia por um nome antigo)
+
+   O PASSADOR DO MÊS SAÍA DO CARD
+   A barra do mês tinha 28px de altura e os botões de trocar de mês,
+   32px: eles transbordavam 2px em cima e 2px embaixo. Era isso que o
+   print mostrava como "botões sobrepostos, saindo do card" — e 32px
+   ainda é menos que o alvo de toque. Agora a linha é uma GRADE de três
+   colunas (botão, mês, botão) com 44px em cada ponta: quem define a
+   altura é o item mais alto, e uma grade não deixa nada transbordar.
+   A seta virou `<svg>`: o "›" tipográfico mudava de tamanho e de linha
+   de base entre plataformas, e era por isso que parecia torto no iPhone.
+
+   TRINTA E CINCO CAIXAS VIRARAM UMA GRADE
+   Cada dia era uma caixa com borda e fundo. Calendário se lê pelo
+   alinhamento — as linhas e colunas já separam os dias, e desenhar uma
+   moldura em cada um é repetir com tinta o que a grade já diz. Ficaram
+   três marcas, com três significados: círculo cheio no dia de hoje,
+   anel no dia escolhido, ponto no dia que tem compromisso.
+
+   HOJE VEM DO RELÓGIO DO APARELHO, E JÁ VEM ESCOLHIDO
+   O dia de hoje é calculado, nunca escrito. E a tela abre com ele já
+   selecionado: antes, chegar ao Calendário era ver o mês e um vazio de
+   350px embaixo até tocar em algum dia. Um botão "Hoje" aparece só
+   quando se está olhando outro mês.
+
+   O TECLADO NÃO ABRE MAIS A CADA TOQUE
+   Escolher um dia é ler o que tem nele; escrever é outra intenção. O
+   foco automático no campo abria o teclado em cada toque e empurrava
+   metade do mês para fora da tela.
+
+   O PAINEL DEIXOU DE ATENDER PELO NOME ANTIGO
+   Enquanto se chamou `#academicCalendarPanel`, QUARENTA E CINCO lugares
+   do arquivo o alcançavam por esse id — de quando o mês era um
+   quadradinho do dashboard. Três larguras máximas diferentes (620, 520
+   e 380px), três raios, um `display:none!important` e um
+   `display:block!important` disputando, e cores cravadas. Somados, eram
+   eles o "excesso de caixas", o azul a mais e o desalinhamento. Nada
+   disso se vence por especificidade: id com !important só se vence com
+   outro !important. A saída não foi gritar mais alto — foi dar ao
+   painel o nome que ele tem hoje (`#mwCalMes`). Com o nome novo, as
+   quarenta e cinco regras deixam de casar sozinhas, e caíram junto
+   TRÊS blocos de JavaScript que ainda arrastavam o painel para dentro
+   do Início e ligavam/desligavam o `display` a cada troca de área.
+
+   O CAMPO DE MARCAR ESTAVA NU
+   Aparecia com fundo cinza-esverdeado, 24px de altura e canto reto —
+   o campo padrão do navegador. Não era preenchimento automático, como
+   parecia: o desligamento do legado declara `all: revert-layer` para os
+   campos dentro de cada área migrada, e `revert-layer` FORA de camada
+   volta à origem do navegador. A regra do sistema estava fora da
+   camada, então perdia. Dentro de `mw.componente`, `revert-layer`
+   devolve exatamente o que o sistema manda — que é o que o
+   desligamento sempre quis dizer.
+
+   O MÊS NÃO FICA MELHOR POR SER MAIOR
+   Solto no desktop, o mês dava dias de 155px de diâmetro; no tablet,
+   107px. A largura de leitura do mês é a mesma em qualquer tela. O que
+   muda com o espaço é o que fica AO LADO: a partir de 900px o dia
+   escolhido passa a ser a coluna da direita, e no celular continua
+   embaixo, porque não há onde mais pôr.
+*/
+
 /* v109 (BETA — Configurações como área nativa, e a foto que virou botão)
 
    CONFIGURAÇÕES DEIXOU DE SER UMA PÁGINA
@@ -2489,7 +2551,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v109-beta';
+const CACHE_NAME = 'mw-shell-v110-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

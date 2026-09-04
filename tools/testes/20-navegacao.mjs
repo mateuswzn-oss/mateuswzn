@@ -260,14 +260,15 @@ if (modo === 'instalado') {
   ok('e cada um com altura de toque (>=44px)',
      baixo.itens && baixo.itens.every(x => x.alt >= 44), baixo.itens);
 
-  /* O item de PERFIL não navega: ele abre a gaveta lateral. Foi decisão
-     de uma rodada anterior — no app instalado o hambúrguer foi
-     substituído pela foto de perfil, e ela virou a porta do menu. Um
-     teste que espera `view-profile.active` ali reprova o desenho, não o
-     defeito. */
+  /* O item de PERFIL NAVEGA, como todos os outros (§5).
+     Esta régua guardava a decisão contrária, de uma rodada anterior: no
+     app instalado o hambúrguer tinha sido trocado pela foto, e a foto
+     virara a porta da gaveta. O pedido é explícito no sentido oposto —
+     tocar na foto abre o PERFIL, e a gaveta tem botão próprio no topo.
+     São duas peças diferentes, e nenhuma deve abrir a interface da
+     outra. Por isso o item de perfil deixou de ser exceção no laço. */
   const troca = [];
   for (const it of (baixo.itens || [])) {
-    if (it.view === 'profile') continue;
     await p.evaluate(v => document.querySelector(`#mwBottomNav button[data-view="${v}"]`)?.click(), it.view);
     await p.waitForTimeout(420);
     const r = await p.evaluate(v => ({
@@ -281,19 +282,31 @@ if (modo === 'instalado') {
   const avatar = await p.evaluate(async () => {
     document.querySelector('#mwBottomNav [data-view="profile"]')?.click();
     await new Promise(r => setTimeout(r, 900));
-    const aberta = document.body.classList.contains('mw-drawer-open');
-    document.getElementById('mwSidebarScrim')?.click();
-    await new Promise(r => setTimeout(r, 800));
-    return { aberta, fechou: !document.body.classList.contains('mw-drawer-open') };
+    return {
+      perfilAberto: !!document.getElementById('view-profile')?.classList.contains('active'),
+      gaveta: document.body.classList.contains('mw-drawer-open'),
+      barraNaTela: !!document.getElementById('mwBottomNav')?.getBoundingClientRect().height,
+      marcadas: [...document.querySelectorAll('#mwBottomNav button.active')].map(b => b.dataset.view)
+    };
   });
-  ok('e o item de perfil abre o menu lateral', avatar.aberta && avatar.fechou, avatar);
+  ok('a foto da barra de baixo abre o Perfil, e não a gaveta',
+     avatar.perfilAberto && !avatar.gaveta, avatar);
+  /* §5: a barra continua na tela e o Perfil continua marcado — o Perfil
+     não é uma tela-folha, é um dos caminhos principais. */
+  ok('e o Perfil segue marcado, com a barra de baixo no lugar',
+     avatar.barraNaTela && avatar.marcadas.length === 1 && avatar.marcadas[0] === 'profile', avatar);
 
   /* A tela-folha, agora como afirmação e não como acidente: ao abrir
      Configurações a barra sai e a seta de voltar entra; ao voltar, o
      contrário. É o que dá à pessoa um caminho de saída sem depender do
      gesto do sistema — que no app instalado nem sempre existe. */
   const folha = await p.evaluate(async () => {
-    document.getElementById('mwSidebarSettings')?.click();
+    /* Pela ENGRENAGEM DO TOPO. A linha "Configurações" da lateral saiu
+       no §10 — havia duas portas para a mesma área — e esta chamada
+       ficou apontando para o id que já não existe: o clique virava um
+       no-op silencioso e a régua acusava uma tela-folha que nunca
+       chegou a abrir. */
+    document.getElementById('mwTopoConfig')?.click();
     await new Promise(r => setTimeout(r, 800));
     const nav = document.getElementById('mwBottomNav');
     const volta = document.getElementById('mwBackBtn');

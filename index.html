@@ -6201,8 +6201,15 @@ window.toast = toast;
   if(search)search.addEventListener('input',()=>{const term=search.value.trim().toLowerCase();qa('.card,.lecture-card,.sem-item').forEach(el=>{el.style.display=!term||el.textContent.toLowerCase().includes(term)?'':'none'})});
 
   /* Academic calendar */
-  function buildCalendar(){const box=q('#academicCalendar');if(!box)return;const now=new Date(),y=now.getFullYear(),m=now.getMonth(),first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();let h='';['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].forEach(d=>h+=`<div style="font-size:11px;color:var(--muted);padding:0 6px 3px">${d}</div>`);for(let i=0;i<first;i++)h+='<div></div>';for(let d=1;d<=days;d++){const today=d===now.getDate();h+=`<div class="calendar-day ${today?'today':''}"><strong>${d}</strong>${today?'<span class="event-dot">Hoje</span>':''}</div>`}box.innerHTML=h}
-  buildCalendar();
+  /* O SEGUNDO PINTOR DO MÊS FOI RETIRADO.
+     Havia um `buildCalendar()` aqui que escrevia o mês inteiro dentro de
+     `#academicCalendar` com a marcação antiga — `<strong>` e um selo
+     "Hoje" —, sem cabeçalho de dias da semana, sem `data-dia` e sem
+     nada em que se possa tocar. Ele rodava no carregamento e era
+     repintado logo depois pelo pintor de verdade (`paintCalendar`), que
+     é quem sabe o dia escolhido, as marcas e os compromissos. Dois
+     pintores para a mesma grade é como se chega a duas grades que
+     discordam — e, no meio do caminho, a um piscar do mês antigo. */
 
   /* O SEGUNDO PINTOR DA GRADE DE AULAS FOI RETIRADO.
      `renderLectures` escrevia em `#lectureGrid` — o mesmo elemento que
@@ -12863,7 +12870,7 @@ body.light #app .mw-aula-empty strong:not([data-mw-migrada] *){ color:#152033 !i
          decide por conta se um campo de texto solto merece preenchimento
          automático, e quando decide que sim pinta o fundo de amarelo por
          cima do que a folha mandou. O atributo no `<form>` não basta. */
-      '<input id="mwCalAddInput" type="text" maxlength="80" autocomplete="off" autocapitalize="sentences" placeholder="Digite o que quer marcar…" />'+
+      '<input id="mwCalAddInput" type="text" maxlength="80" autocomplete="off" autocapitalize="sentences" aria-label="O que marcar neste dia" placeholder="Digite o que quer marcar…" />'+
       '<button type="submit">Marcar</button></form>';
     /* SEM FOCO AUTOMÁTICO. Escolher um dia é ler o que tem nele; digitar
        é outra intenção. Com o foco automático, cada toque num dia abria
