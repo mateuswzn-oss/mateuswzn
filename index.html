@@ -1590,9 +1590,16 @@ body.light #app .mw-sidebar-profile{border-top-color:rgba(25,35,48,.10)!importan
   flex:0 0 auto!important;
   display:flex!important;
   align-items:center!important;
-  gap:10px!important;
-  padding:4px 6px 12px!important;
+  /* O mesmo `gap` das linhas (9px) e o mesmo recuo: o MW é o primeiro
+     item da coluna, e o §9 pede o eixo dele junto com o da foto, do nome
+     e dos ícones. Com 6px de recuo e 10 de gap ele ficava 4px à esquerda
+     de todo o resto — pouco para nomear, o bastante para a coluna
+     parecer torta. */
+  gap:9px!important;
+  padding:4px var(--mw-lat-recuo,8px) 12px!important;
 }
+/* A marca pode ser maior que um ícone de lista — nada se alinha por
+   baixo dela. O lado ESQUERDO é que tem de bater, e bate pelo recuo. */
 #app .mw-reference-sidebar .mw-brand-copy strong{
   font-size:14px!important;
   font-weight:800!important;
@@ -1603,18 +1610,48 @@ body.light #app .mw-sidebar-profile{border-top-color:rgba(25,35,48,.10)!importan
   margin-left:auto!important;
   flex:0 0 30px!important;
 }
+/* ===== UM EIXO SÓ (§9) =====================================================
+   Medido na lateral aberta a 390px, ANTES desta correção:
+
+     cartão de perfil   linha em x=13   avatar em x=37   avatar 35px
+     itens de navegação linha em x=13   ícone  em x=…    ícone  29px
+     rodapé (tema/sair) linha em x=16   ícone  em x=35   ícone  27px
+
+   Três grupos, três recuos e três tamanhos de ícone. Era isso que o
+   Mateus via como "foto, MW, nome e ícones desalinhados": não é um
+   elemento fora do lugar, é a AUSÊNCIA de um eixo — cada grupo tinha o
+   seu, e nenhum estava errado sozinho.
+
+   A partir daqui existe um número só: `--mw-lat-recuo` para a distância
+   da borda e `--mw-lat-icone` para a caixa do ícone. Todo grupo lê os
+   dois. Um ícone de tamanho diferente não desalinha só a si mesmo:
+   empurra o RÓTULO junto, e é o rótulo que o olho usa para achar a
+   coluna. Por isso o avatar também entra na mesma medida — a hierarquia
+   do cartão de perfil se faz com superfície e peso de texto, que não
+   movem eixo nenhum. */
+#app .mw-reference-sidebar,
+#app aside.sidebar{
+  /* 19px porque era o que a maioria dos grupos já praticava (cartão de
+     perfil e rodapé); unificar para baixo moveria dois grupos só para
+     acertar um. */
+  --mw-lat-recuo:19px;
+}
 #app .mw-reference-profile{
   flex:0 0 auto!important;
-  padding:5px 5px 12px!important;
+  padding:5px 0 12px!important;
 }
 #app .mw-reference-profile .mw-profile-main{
   width:100%!important;
-  padding:5px 4px!important;
+  padding:6px var(--mw-lat-recuo,8px)!important;
 }
 #app .mw-reference-profile .mw-profile-avatar{
-  width:35px!important;height:35px!important;min-width:35px!important;
-  border-radius:11px!important;
+  border-radius:9px!important;
 }
+/* O TAMANHO dos ícones já estava resolvido: um bloco mais abaixo fixa
+   avatar, ícone de navegação e ícone de rodapé nos mesmos 34px. Medi
+   antes de mexer e os três batiam. O que NÃO batia era o recuo — e foi
+   só isso que mudou aqui. Escrever de novo o tamanho seria repetir uma
+   regra vencida por outra: código que parece decidir e não decide. */
 #app .mw-reference-profile .mw-profile-copy strong{
   font-size:10px!important;font-weight:750!important;
 }
@@ -1638,15 +1675,13 @@ body.light #app .mw-reference-divider{
 }
 #app .mw-reference-nav button{
   min-height:41px!important;
-  padding:0 9px!important;
+  padding:0 var(--mw-lat-recuo,8px)!important;
   border-radius:12px!important;
 }
 #app .mw-reference-nav button::before{
   left:4px!important;top:7px!important;bottom:7px!important;
 }
-#app .mw-reference-nav .nav-icon{
-  width:29px!important;height:29px!important;min-width:29px!important;
-}
+
 #app .mw-reference-spacer{
   flex:1 1 auto!important;
   min-height:10px!important;
@@ -1656,7 +1691,7 @@ body.light #app .mw-reference-divider{
   display:flex!important;
   flex-direction:column!important;
   gap:2px!important;
-  padding:7px 3px 1px!important;
+  padding:7px 0 1px!important;
   border-top:1px solid rgba(255,255,255,.08)!important;
 }
 body.light #app .mw-reference-footer{
@@ -1665,7 +1700,7 @@ body.light #app .mw-reference-footer{
 #app .mw-reference-row{
   min-height:37px!important;
   width:100%!important;
-  padding:0 7px!important;
+  padding:0 var(--mw-lat-recuo,8px)!important;
   border:1px solid transparent!important;
   border-radius:10px!important;
   background:transparent!important;
@@ -1686,7 +1721,6 @@ body.light #app .mw-reference-footer{
   transform:translateX(1px)!important;
 }
 #app .mw-row-icon{
-  width:27px!important;height:27px!important;min-width:27px!important;
   display:grid!important;place-items:center!important;
   border-radius:9px!important;
   font-size:14px!important;
@@ -4061,10 +4095,16 @@ body.light .mw-faceid-gate-card p{color:#526988}
         <span class="mw-switch" aria-hidden="true"><i></i></span>
       </button>
 
-      <button type="button" class="mw-reference-row" id="mwSidebarSettings" aria-label="Abrir configurações">
-        <span class="mw-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd"><path d="M11.05 2.25h1.9c.48 0 .88.34.97.8l.3 1.52c.55.16 1.07.4 1.55.7l1.4-.66c.45-.21.98.02 1.2.46l.95 1.64c.23.4.12.92-.26 1.18l-1.2.82c.2.5.35 1.03.43 1.58l1.52.3c.47.1.8.5.8.97v1.9c0 .48-.33.88-.8.97l-1.52.3c-.08.55-.23 1.08-.43 1.58l1.2.82c.38.26.49.78.26 1.18l-.95 1.64c-.22.44-.75.67-1.2.46l-1.4-.66c-.48.3-1 .54-1.55.7l-.3 1.52c-.09.46-.49.8-.97.8h-1.9c-.48 0-.88-.34-.97-.8l-.3-1.52a7.6 7.6 0 0 1-1.55-.7l-1.4.66c-.45.21-.98-.02-1.2-.46l-.95-1.64a.9.9 0 0 1 .26-1.18l1.2-.82a7.6 7.6 0 0 1-.43-1.58l-1.52-.3c-.47-.1-.8-.5-.8-.97v-1.9c0-.48.33-.88.8-.97l1.52-.3c.08-.55.23-1.08.43-1.58l-1.2-.82a.9.9 0 0 1-.26-1.18l.95-1.64c.22-.44.75-.67 1.2-.46l1.4.66c.48-.3 1-.54 1.55-.7l.3-1.52c.09-.46.49-.8.97-.8zM12 9.15a2.85 2.85 0 1 0 0 5.7 2.85 2.85 0 0 0 0-5.7z"/></svg></span>
-        <span class="mw-row-label label">Configurações</span>
-      </button>
+      <!-- CONFIGURAÇÕES SAIU DAQUI (§10).
+           Havia duas portas para a mesma área: esta linha e a engrenagem
+           do topo. Duas portas para um lugar só não é conveniência — é
+           uma pergunta a mais ("são a mesma coisa?") e um lugar a mais
+           para divergir quando uma das duas mudar. A engrenagem fica,
+           porque está sempre na tela; esta sai.
+
+           O cartão de perfil no topo da lateral continua levando ao
+           PERFIL, que é outra área. Quem quiser Configurações usa a
+           engrenagem do topo. -->
 
       <button type="button" class="mw-reference-row mw-reference-logout" id="mwSidebarLogout" aria-label="Fazer logout">
         <span class="mw-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M10.2 3.4H7.4A3.2 3.2 0 0 0 4.2 6.6v10.8A3.2 3.2 0 0 0 7.4 20.6h2.8a.9.9 0 1 0 0-1.8H7.4a1.4 1.4 0 0 1-1.4-1.4V6.6c0-.8.6-1.4 1.4-1.4h2.8a.9.9 0 1 0 0-1.8z"/><path d="M10.6 12a.9.9 0 0 0 .9.9h6.04l-1.72 1.72a.9.9 0 1 0 1.28 1.28l3.3-3.3a.9.9 0 0 0 0-1.28l-3.3-3.3a.9.9 0 1 0-1.28 1.28L17.54 11.1H11.5a.9.9 0 0 0-.9.9z"/></svg></span>
@@ -7772,7 +7812,6 @@ body.light #app .search-wrap input:focus{
 <script id="mw-reference-exact-js">
 (() => {
   const q = s => document.querySelector(s);
-  const profileSettings = q('#mwSidebarSettings');
   const profileBtn = q('#profileBtn');
   const syncProfile = () => {
     try {
@@ -7792,11 +7831,14 @@ body.light #app .search-wrap input:focus{
       if (avatar) avatar.textContent = name.slice(0,2).toUpperCase();
     } catch {}
   };
-  // Antes, o botão de engrenagem ("Abrir configurações") só reaproveitava
-  // o clique do avatar — os dois iam pro mesmo lugar porque Perfil e
-  // Configurações eram a mesma tela. Agora que são telas separadas, cada
-  // botão precisa ir pro seu próprio destino.
-  profileSettings?.addEventListener('click', () => window.showView?.('settings'));
+  /* O ouvinte de Configurações saiu junto com a linha da lateral (§10).
+     Ele vivia aqui e apontava para `#mwSidebarSettings`; com o elemento
+     removido, a variável que o guardava também saiu, e deixar a linha
+     seria uma referência a nome inexistente — erro em tempo de execução,
+     não código morto silencioso. O caminho para Configurações continua
+     inteiro pela engrenagem do topo (`#mwTopoConfig`) e pelo botão do
+     cartão de perfil (`#mwSidebarProfileSettings`), que tem ouvinte
+     próprio alguns blocos acima. */
   syncProfile();
   window.addEventListener('storage', syncProfile);
 })();
@@ -9697,7 +9739,7 @@ img,svg,video,canvas{max-width:100%}
   document.querySelector('#app .sidebar')?.addEventListener('click', (ev) => {
     if (innerWidth > 860) return;
     const alvo = ev.target.closest(
-      '[data-view], #mwSidebarSettings, #mwSidebarLogout, #mwSidebarProfileBtn');
+      '[data-view], #mwSidebarLogout, #mwSidebarProfileBtn');
     if (alvo) close();
   });
   addEventListener('resize', () => { if (innerWidth > 860) close(); });
@@ -10042,9 +10084,15 @@ html body #app .sidebar{
      ação explícita do usuário. O DOM é uma consequência dela,
      nunca a fonte. */
   const NAV_STATES = ['home', 'college', 'files', 'profile'];
-  // Views que a barra representa diretamente. 'profile' não é view:
-  // abre a gaveta lateral.
-  const NAV_VIEWS = { home: 'home', college: 'college', files: 'files' };
+  /* Views que a barra representa diretamente.
+     O `profile` FALTAVA AQUI, e a linha que o tratava logo abaixo
+     mandava abrir a gaveta lateral. Era isso, e só isso: tocar na foto
+     da barra de baixo abria o MENU em vez do PERFIL. O §5 do pedido
+     nomeia o caso — "ABRIR DIRETAMENTE O PERFIL. NÃO abrir Sidebar" —
+     e o comentário que estava aqui ("'profile' não é view: abre a
+     gaveta lateral") descrevia uma época em que Perfil de fato não era
+     uma tela. Virou tela; a barra não soube. */
+  const NAV_VIEWS = { home: 'home', college: 'college', files: 'files', profile: 'profile' };
 
   let navState = 'home';
   /* Última coisa que o USUÁRIO pediu explicitamente. Os observadores de
@@ -10076,9 +10124,16 @@ html body #app .sidebar{
     render();
     if (!navigate) return;
     if (NAV_VIEWS[next]) {
-      document.querySelector(`#nav [data-view="${NAV_VIEWS[next]}"]`)?.click();
-    } else if (next === 'profile') {
-      document.getElementById('mwMobileMenu')?.click();
+      /* O caminho preferido continua sendo clicar no item da lateral:
+         ele já carrega tudo o que aquele item faz além de trocar de
+         view. Mas PERFIL não tem item na lateral (chega-se a ele pelo
+         cartão de perfil), então a busca devolvia `null` e o clique
+         morria em silêncio — a barra acendia o Perfil e a tela seguia
+         no Início. Sem o segundo caminho, "abrir o Perfil" dependia de
+         existir um botão que nunca existiu. */
+      const item = document.querySelector(`#nav [data-view="${NAV_VIEWS[next]}"]`);
+      if (item) item.click();
+      else if (typeof window.showView === 'function') window.showView(NAV_VIEWS[next]);
     }
   };
   window.mwSetNavState = setNavState;
@@ -10101,6 +10156,36 @@ html body #app .sidebar{
     const id = b.dataset.view;
     b.addEventListener('click', () => setNavState(id));
   });
+
+  /* ---- A BARRA NÃO ACENDE O QUE NÃO É DELA (§6) ----------------------
+     Configurações é área própria e não tem item na barra. Sem esta
+     leitura, entrar nela deixava aceso o que estava aceso antes — na
+     prática o Perfil, porque é de onde se costuma ir para lá. A pessoa
+     lia "estou no Perfil" numa tela que não é o Perfil.
+
+     O comentário acima avisa que os observadores NÃO podiam recalcular
+     o estado a partir do DOM: isso sobrescrevia o estado da Nyc AI, que
+     era um estado da barra sem view correspondente. A Nyc AI saiu da
+     barra por decisão do Mateus, e com ela o motivo do veto. O que
+     sobrou é o caso oposto e simples: a view ativa É a verdade, e
+     quando ela não tem item na barra, a barra não acende nada.
+
+     `navState = null` em vez de uma string: nenhum botão tem
+     `data-view === null`, então `render()` apaga todos sem precisar de
+     um caso especial. */
+  const seguirView = () => {
+    const ativa = app.querySelector('.view.active');
+    const id = ativa ? ativa.id.replace('view-', '') : null;
+    const alvo = NAV_STATES.includes(id) ? id : null;
+    if (alvo === navState) return;
+    navState = alvo;
+    userIntent = alvo;
+    render();
+  };
+  new MutationObserver(seguirView).observe(app, {
+    subtree: true, attributes: true, attributeFilter: ['class']
+  });
+  seguirView();
 
   /* A IA e a gaveta podem ser fechadas por fora da barra (X, Esc,
      clique no scrim). Esses observadores só informam o fato; quem
@@ -16384,16 +16469,26 @@ html body #mwBottomNav{
      que altera o tamanho aparente é a escala da barra inteira no
      scroll, e aí os quatro encolhem juntos, na mesma proporção, porque
      são a mesma peça. */
-  --mw-icon:30px;
-  --mw-avatar:41px;
-  /* 13,4 -> 8,6: a coluna cresceu de 30 para 44px ao receber o nome
-     embaixo do ícone. Sem baixar o respiro, a cápsula passaria de
-     57 para 71px de altura e comeria a tela no telefone. */
-  --mw-pad-y:7px;
-  --mw-pad-x:17.4px;
-  --mw-gap:9.4px;
+  /* MEDIDA, NÃO GOSTO. A cápsula estava com 68px de altura no iPhone —
+     8% da tela útil para uma barra que só precisa levar a cinco lugares.
+     O Mateus mandou o print e a palavra foi "enorme".
+
+     A conta que sobrou: 24 do ícone + 3 de respiro + 13 do nome = 40, e
+     o botão fica em 44px, que é o alvo de toque mínimo e portanto o piso
+     real — abaixo disso não se encolhe mais, por acessibilidade e não
+     por estética. Com 6 de respiro em cima e embaixo, a cápsula fecha em
+     56px: 18% menor, com o mesmo alvo de dedo de antes.
+
+     O avatar cai de 41 para 28 pelo mesmo motivo que o ícone cai de 30
+     para 24: ele É um dos cinco itens, e um item maior que os outros
+     desalinha a fileira inteira. */
+  --mw-icon:24px;
+  --mw-avatar:28px;
+  --mw-pad-y:6px;
+  --mw-pad-x:14px;
+  --mw-gap:6px;
   --mw-btn-w:52.6px;
-  --mw-btn-pad:12.2px;
+  --mw-btn-pad:8px;
   /* 1 → 0,822 é a razão medida na referência. */
   --mw-nav-scale:calc(1 - var(--mw-nav-compact,0) * .178);
 
@@ -17173,9 +17268,30 @@ body.light [tabindex]:focus-visible{
    que a regra antiga, então o eixo vertical do ícone fica idêntico em
    qualquer plataforma (a lógica é puramente estrutural, não depende de
    iOS/Android/web). */
-html body #app .mw-reference-sidebar .mw-reference-profile .mw-profile-main{
-  padding-left:19px!important;
+/* ===== O EIXO DA LATERAL, NUM LUGAR SÓ (§9) ================================
+   Aqui havia um `padding-left:19px` só para o cartão de perfil: uma
+   tentativa antiga de acertar o alinhamento empurrando UM grupo até
+   parecer certo. Empurrar um grupo é como se conserta um sintoma; o
+   defeito era não existir um número compartilhado.
+
+   Medido na lateral aberta a 390px, antes desta regra:
+     marca            recuo  8px
+     cartão de perfil recuo 19px
+     itens de menu    recuo 13px
+     rodapé           recuo 19px
+
+   Agora os quatro leem `--mw-lat-recuo`. Os itens de menu descontam 1px
+   porque têm borda de 1px e a borda soma ao recuo — o eixo que o olho vê
+   é a face interna, não a externa. */
+html body #app .mw-reference-sidebar .mw-sidebar-brand,
+html body #app .mw-reference-sidebar .mw-reference-profile .mw-profile-main,
+html body #app .mw-reference-sidebar .mw-reference-footer .mw-reference-row{
+  padding-left:var(--mw-lat-recuo,19px)!important;
 }
+/* Os itens de menu são alcançados por `#nav button` (regra por id), que
+   vence qualquer regra por classe — o desconto de 1px do menu está lá,
+   junto do resto do que aquela regra decide. Repetir aqui seria escrever
+   uma regra que nunca vale. */
 </style>
 
 <script id="mw-account-data-resync-fix">
@@ -20013,20 +20129,8 @@ body.light #app .mw-reference-profile.mw-estado-ativo .mw-profile-main{
   background:linear-gradient(100deg,rgba(37,99,235,.13),rgba(124,92,255,.10))!important;
   border-color:rgba(37,99,235,.18)!important;
 }
-/* Mesmo tratamento pro botão de Configurações — agora tela própria,
-   separada do Perfil, precisa do mesmo destaque quando ativa. */
-#app .mw-reference-row#mwSidebarSettings.mw-estado-ativo{
-  color:#fff!important;
-  background:linear-gradient(100deg,rgba(102,224,255,.14),rgba(124,92,255,.16))!important;
-  border-color:rgba(102,224,255,.15)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 8px 22px rgba(20,45,120,.12)!important;
-}
-#app .mw-reference-row#mwSidebarSettings.mw-estado-ativo *{color:inherit!important}
-body.light #app .mw-reference-row#mwSidebarSettings.mw-estado-ativo{
-  color:#0b1830!important;
-  background:linear-gradient(100deg,rgba(37,99,235,.13),rgba(124,92,255,.10))!important;
-  border-color:rgba(37,99,235,.18)!important;
-}
+/* O destaque da linha de Configurações da lateral saiu junto com a
+   linha: sem elemento, a regra não veste ninguém. */
 </style>
 <script id="mw-perfil-estado-real-js">
 /* ============================================================
@@ -20086,14 +20190,8 @@ body.light #app .mw-reference-row#mwSidebarSettings.mw-estado-ativo{
   function pintar(){
     var estado = ondeEstou();
     var noPerfil = estado === 'perfil';
-    var linhaConfig = document.getElementById('mwSidebarSettings');
-
     if (linhaPerfil) linhaPerfil.classList.toggle('mw-estado-ativo', noPerfil);
     if (botaoPerfil) botaoPerfil.setAttribute('aria-current', noPerfil ? 'page' : 'false');
-    // Configurações ganhou o mesmo tratamento de destaque, agora que é
-    // uma tela própria (antes ficava sem nada aceso, porque a marcação
-    // toda ia pro Perfil mesmo estando nas duas juntas).
-    if (linhaConfig) { linhaConfig.classList.toggle('mw-estado-ativo', estado === 'settings'); linhaConfig.setAttribute('aria-current', estado === 'settings' ? 'page' : 'false'); }
 
     /* Um ativo só, e a marca é DERIVADA do estado — não "tirada" numa
        hora e "reposta" noutra. A primeira versão disto só removia a
@@ -20427,7 +20525,17 @@ html body.mw-in-app.mw-tela-folha #app .main{padding-bottom:24px!important}
 (function(){
   var app = document.getElementById('app');
   if (!app || !window.MutationObserver) return;
-  var FOLHAS = ['view-profile', 'view-settings', 'view-support', 'view-admin'];
+  /* PERFIL SAIU DA LISTA (§5).
+     Folha é a tela onde a barra de baixo NÃO ajuda — aquela a que se
+     chega de dentro de outra e de onde só se volta. O Perfil deixou de
+     ser isso no momento em que ganhou item próprio na barra: esconder a
+     barra ali significa que tocar na foto para chegar ao Perfil apaga o
+     caminho de volta para o Início, e o §5 pede o oposto — "bottom
+     navigation continua presente", com o Perfil aceso.
+
+     Configurações continua folha: chega-se pela engrenagem, não tem
+     item na barra, e a saída é o voltar. */
+  var FOLHAS = ['view-settings', 'view-support', 'view-admin'];
 
   function marcar(){
     var v = app.querySelector('.view.active');
@@ -25921,7 +26029,16 @@ html body #app .notification-menu{ border-radius: var(--ds-r-4) !important; }
    selecionado em vez de item destacado. */html body #app #nav button{
   position: relative;
   border-radius: var(--ds-r-2) !important;
-  padding: 11px 13px !important;
+  /* 13 -> 16: era ESTE número que torcia a coluna. Todo o resto da
+     lateral (cartão de perfil, tema, sair) recua 16px; só os itens de
+     navegação recuavam 13, porque esta regra é alcançada pelo id `#nav`
+     e vence qualquer regra por classe que tente unificar o recuo. Três
+     pixels não se nomeiam olhando, mas o olho lê a coluna torta. */
+  /* -2px: este botão tem borda de 1px e a pílula do ativo entra por
+     baixo com 1px de folga; o eixo que o olho vê é a face interna do
+     ícone, não a externa da caixa. Medido: com o mesmo número dos
+     outros grupos o ícone caía 1px à direita deles. */
+  padding: 11px calc(var(--mw-lat-recuo, 19px) - 1px) !important;
   font-size: 13px !important;
   font-weight: 600 !important;
   color: var(--ds-txt-2) !important;
@@ -26966,6 +27083,15 @@ html body:not(.mw-in-app) #mwSidebarScrim{ display: none !important; }
 html body.mw-in-app #mwBottomNav.mwbn{
   display: flex !important;
 }
+/* O ESPAÇO QUE A BARRA OCUPA, DECLARADO UMA VEZ.
+   56 de altura + 16 do afastamento do fundo + 8 de respiro = 80, mais a
+   área segura do aparelho. Quem precisa desviar da barra — a faixa de
+   "Salvar perfil" do Perfil, por exemplo — lê este número em vez de
+   repetir a conta. Fora do app instalado não há barra, e o valor não é
+   declarado: o padrão de quem lê é zero. */
+html body.mw-in-app{
+  --mw-nav-espaco: calc(80px + env(safe-area-inset-bottom, 0px));
+}
 html body.mw-in-app #mwBottomNav.mwbn,
 html body #mwBottomNav.mwbn{
   align-items: center !important;
@@ -27055,14 +27181,16 @@ html body #mwBottomNav.mwbn > button{
   flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
-  /* A coluna precisa de caixa própria: 30 do ícone + 3 de respiro + 14
-     do nome = 47. O botão vinha com 44 de altura e 10 de respiro em cima
-     e embaixo, ou seja, 24 úteis — o ícone já transbordava e o nome
-     caía FORA da pílula, que é desenhada com `inset:0` sobre o botão.
-     Com 54 e respiro de 4, a pílula volta a envolver os dois. */
-  min-height: 54px !important;
-  padding-top: 4px !important;
-  padding-bottom: 4px !important;
+  /* A coluna precisa de caixa própria: 24 do ícone + 2 de respiro + 13
+     do nome = 39, dentro dos 44 do botão com 3 de respiro. A pílula é
+     desenhada com `inset:0` sobre o botão, então ela envolve os dois —
+     era isso que se perdia quando a conta não fechava, e o nome caía
+     fora da pílula.
+
+     44 é o piso: é o alvo de toque, não uma medida de estilo. */
+  min-height: 44px !important;
+  padding-top: 3px !important;
+  padding-bottom: 3px !important;
 }
 html body #mwBottomNav.mwbn .mwnav-label{
   position: static !important;
@@ -27077,7 +27205,7 @@ html body #mwBottomNav.mwbn .mwnav-label{
   margin-top: 0 !important;
   overflow: hidden !important;
   white-space: nowrap !important;
-  font-size: 10.5px !important;
+  font-size: 9.5px !important;
   font-weight: 700 !important;
   line-height: 1.15 !important;
   letter-spacing: .01em !important;
@@ -27085,8 +27213,8 @@ html body #mwBottomNav.mwbn .mwnav-label{
 }
 html body #mwBottomNav.mwbn button.active .mwnav-label{
   opacity: 1 !important;
-  max-height: 14px !important;
-  margin-top: 3px !important;
+  max-height: 13px !important;
+  margin-top: 2px !important;
 }
 /* O item ativo deixa de dividir a largura igualmente com os outros e
    passa a se dimensionar pelo conteúdo: com "flex:1 1 0" ele competia
@@ -27105,23 +27233,37 @@ html body #mwBottomNav.mwbn > button.active{
 
 /* --- O + central -----------------------------------------------------
    Fica no meio porque é a única ação da barra que CRIA algo — as outras
-   levam a algum lugar. Elevado e em cor de destaque para não ser lido
-   como uma quinta seção. */
+   levam a algum lugar.
+
+   ELE ERA O SEGUNDO BLOCO SÓLIDO DE ACENTO. No print do Mateus a barra
+   tinha DUAS manchas roxas do mesmo tamanho e do mesmo peso: o item
+   ativo e o "+". Duas ênfases iguais na mesma fileira não são hierarquia
+   — é ruído, e nenhuma das duas manda. Quem tem de mandar é o item
+   ATIVO, porque ele responde à pergunta "onde eu estou".
+
+   Então o "+" troca preenchimento por CONTORNO: vidro do sistema, sem
+   sombra colorida, e o desenho do sinal na cor de destaque. Continua
+   sendo lido como ação, e não como sexta seção — o que o distingue é a
+   forma (quadrado arredondado no meio de círculos) e a cor do traço,
+   não uma segunda mancha. */
 html body #mwBottomNav.mwbn #mwNavMais{
   flex: 0 0 auto !important;
-  width: 46px !important; height: 46px !important;
+  width: 38px !important; height: 38px !important;
   align-self: center !important;
   margin: 0 2px !important;
-  border-radius: 16px !important;
-  background: var(--ds-ac-grad) !important;
-  color: #fff !important;
-  box-shadow: 0 8px 22px color-mix(in srgb, var(--ds-ac) 55%, transparent),
-              inset 0 1px 0 rgba(255,255,255,.28) !important;
-  transition: transform .2s var(--ds-mola), box-shadow .2s var(--ds-suave) !important;
+  border-radius: 13px !important;
+  background: color-mix(in srgb, var(--ds-ac) 14%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--ds-ac) 34%, transparent) !important;
+  color: var(--ds-ac) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.14) !important;
+  transition: transform .2s var(--ds-mola), background .2s var(--ds-suave) !important;
+}
+html body #mwBottomNav.mwbn #mwNavMais:hover{
+  background: color-mix(in srgb, var(--ds-ac) 22%, transparent) !important;
 }
 html body #mwBottomNav.mwbn #mwNavMais::before{ display: none !important; }
 html body #mwBottomNav.mwbn #mwNavMais:active{ transform: scale(.92) !important; }
-html body #mwBottomNav.mwbn #mwNavMais svg{ width: 21px !important; height: 21px !important; fill: currentColor !important; }
+html body #mwBottomNav.mwbn #mwNavMais svg{ width: 19px !important; height: 19px !important; fill: none !important; stroke: currentColor !important; }
 
 @media (prefers-reduced-motion: reduce){
   html body #mwBottomNav.mwbn button,

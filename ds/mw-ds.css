@@ -2160,7 +2160,14 @@ body.mw-tela-folha .ds .ds-topo-voltar:active{ transform: scale(.92); }
    ganha de material: por trás dela há texto de formulário, não paisagem. */
 .ds .ds-perfil-salvar{
   display: flex; align-items: center; gap: var(--mw-e-3); flex-wrap: wrap;
-  position: sticky; bottom: 0; z-index: 5;
+  /* `bottom` LÊ O ESPAÇO DA BARRA DE BAIXO, e não zero.
+     Uma peça grudada gruda no fundo do CONTÊINER DE ROLAGEM — o
+     `padding-bottom` que o `<main>` reserva para a barra flutuante não a
+     empurra, porque ela não está no fluxo quando está grudada. Medido no
+     Perfil a 390px: a barra de salvar ocupava 773–844 e a de navegação
+     772–828; os dois botões dividiam os mesmos pixels.
+     `--mw-nav-espaco` vale 0 fora do app instalado, onde não há barra. */
+  position: sticky; bottom: var(--mw-nav-espaco, 0px); z-index: 5;
   margin: 0;
   padding: var(--mw-e-3) var(--mw-e-4);
   border-radius: var(--mw-r-3) var(--mw-r-3) 0 0;

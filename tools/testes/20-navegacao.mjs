@@ -97,12 +97,19 @@ const tema = await p.evaluate(async () => {
 ok('o interruptor de tema da lateral troca e volta',
    tema.antes !== tema.depois && tema.antes === tema.volta, tema);
 
+/* A LINHA "CONFIGURAÇÕES" DA LATERAL NÃO EXISTE MAIS, e não é falta:
+   havia duas portas para a mesma área — esta linha e a engrenagem do
+   topo — e o pedido do Mateus (§10) manda ficar com uma. O que este
+   teste tem de garantir continua sendo o mesmo: existe UM caminho de um
+   toque até Configurações, e ele funciona. Só mudou qual. */
 const config = await p.evaluate(async () => {
-  document.getElementById('mwSidebarSettings')?.click();
+  document.getElementById('mwTopoConfig')?.click();
   await new Promise(r => setTimeout(r, 700));
-  return { ativa: document.getElementById('view-settings')?.classList.contains('active') };
+  return { ativa: document.getElementById('view-settings')?.classList.contains('active'),
+           duplicada: !!document.getElementById('mwSidebarSettings') };
 });
-ok('"Configurações" da lateral abre Configurações', config.ativa, config);
+ok('a engrenagem do topo abre Configurações', config.ativa, config);
+ok('e não há uma segunda porta na lateral', !config.duplicada, config);
 
 const perfil = await p.evaluate(async () => {
   document.getElementById('mwSidebarProfileBtn')?.click();
@@ -132,7 +139,7 @@ const topo = await p.evaluate(() => {
   return {
     tema:  algum(['#themeToggle', '#mwSidebarDarkToggle']),
     perfil: algum(['#profileBtn', '#mwSidebarProfileBtn', '#mwBottomNav [data-view="profile"]']),
-    config: algum(['#mwSidebarSettings', '#nav [data-view="settings"]']),
+    config: algum(['#mwTopoConfig', '#nav [data-view="settings"]']),
     busca: algum(['#searchToggle', '#globalSearch']),
     sino:  algum(['#notificationBtn']),
     /* A Nyc AI está GUARDADA por tempo indeterminado (pedido do Mateus,
