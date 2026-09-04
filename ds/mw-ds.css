@@ -2435,6 +2435,23 @@ html[data-densidade]{ --mw-alvo:44px; --mw-alvo-confortavel:44px; }
    e descem para baixo dela: aí precisam do mesmo recuo lateral da
    linha, senão encostam na borda do cartão. */
 .ds .ds-conf-acoes{ display: flex; gap: var(--mw-e-2); flex: 0 0 auto; }
+
+/* ---- QUANDO ---------------------------------------------------------------
+   O carimbo de tempo de uma linha de atividade ("há 2 h"). Fica à
+   direita, discreto e com números de largura fixa — numa coluna deles,
+   dígitos de larguras diferentes fazem a coluna tremer. */
+.ds .ds-conf-quando{
+  flex: 0 0 auto; align-self: flex-start; margin-top: 2px;
+  font-size: var(--mw-t-micro); color: var(--mw-txt-3);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+/* Linha que existe só para dizer que a lista está vazia: sem ícone, sem
+   alvo de toque, e sem a altura mínima de uma linha acionável — ela não
+   é acionável. */
+.ds .ds-conf-linha-vazia{
+  min-height: 0; padding-block: var(--mw-e-3);
+  color: var(--mw-txt-3);
+}
 .ds .ds-conf-acoes-bloco{ padding: 0 var(--mw-e-4) var(--mw-e-3); }
 
 /* ---- RECOLHÍVEL -----------------------------------------------------------

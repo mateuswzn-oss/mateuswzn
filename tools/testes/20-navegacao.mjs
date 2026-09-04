@@ -186,26 +186,38 @@ ok('o atalho da busca leva ao Início e foca o campo',
 ok('a Nyc AI está guardada, e de forma coerente',
    iaGuardada ? !ia : ia, { guardada: iaGuardada, aparece: ia });
 
-const sino = await p.evaluate(async () => {
+/* O SINO VIROU CORAÇÃO E DEIXOU DE ABRIR UM MENU (§22/§23).
+   O que este teste protegia era real: um menu translúcido sobre o
+   conteúdo já foi defeito relatado, e ele cobrava fundo próprio e
+   opaco. Só que o menu não existe mais — uma lista com histórico e três
+   origens não cabe num painel de 310px preso ao topo.
+
+   O que se cobra agora é o que substituiu: o coração abre a TELA de
+   Atividade, e as três seções que o §23 pede estão nela. Um menu com
+   fundo bonito não valia nada se a lista não coubesse; uma tela que não
+   abre não vale nada por mais bonita que seja. */
+const atividade = await p.evaluate(async () => {
   document.getElementById('notificationBtn')?.click();
-  /* 400ms media o menu NO MEIO da transição de abertura: opacidade 0 e
-     um relatório de "menu invisível" que não existe. Esperar o fim. */
   await new Promise(r => setTimeout(r, 900));
-  const m = document.getElementById('notificationMenu');
-  const aberto = m && !m.classList.contains('hidden');
-  const cs = m ? getComputedStyle(m) : null;
-  /* Menu translúcido sobre o conteúdo já foi defeito relatado: tem de
-     ter fundo PRÓPRIO e opaco o bastante para ler. E o fundo pode vir
-     de `background-image` (é um degradê aqui), não só de
-     `background-color` — olhar só a cor dá alpha 0 num menu sólido. */
-  const alpha = cs ? Number((cs.backgroundColor.match(/[\d.]+/g)||[0,0,0,1])[3] ?? 1) : 0;
-  const temDegrade = !!cs && cs.backgroundImage !== 'none';
-  const opaco = cs ? +cs.opacity : 0;
-  document.getElementById('notificationBtn')?.click();
-  return { aberto, alpha, temDegrade, opaco };
+  const tela = document.getElementById('view-notifications');
+  const secao = id => {
+    const e = document.getElementById(id);
+    return !!(e && e.getBoundingClientRect().height > 10);
+  };
+  return {
+    abriu: !!(tela && tela.classList.contains('active')),
+    academico: secao('mwNotifAcademicoLista'),
+    social: secao('mwNotifSocialLista'),
+    sistema: secao('mwNotifSistemaLista'),
+    /* Nenhum resquício do menu antigo: se alguém o trouxer de volta sem
+       tirar a tela, passam a existir dois caminhos para a mesma coisa. */
+    menuAntigo: !!document.getElementById('notificationMenu')
+  };
 });
-ok('o sino abre um menu com fundo próprio e opaco',
-   sino.aberto && sino.opaco > .9 && (sino.alpha > .8 || sino.temDegrade), sino);
+ok('o coração abre a tela de Atividade, com as três origens',
+   atividade.abriu && atividade.academico && atividade.social &&
+   atividade.sistema && !atividade.menuAntigo, atividade);
+
 
 /* ---- 4. a barra de baixo -------------------------------------------- */
 /* Ela é do APP INSTALADO, não do navegador. A regra que decide isso

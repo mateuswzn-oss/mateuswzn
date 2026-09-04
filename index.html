@@ -4131,7 +4131,17 @@ body.light .mw-faceid-gate-card p{color:#526988}
      aberto, embaixo da saudação. É o MESMO elemento, com os mesmos ids
      e o mesmo motor de busca: mudou o lugar, não a implementação. -->
 
-<div class="ds-topo-sino"><button class="ds-topo-icone ds-btn ds-btn-fantasma ds-btn-icone" id="notificationBtn" aria-label="Notificações" title="Notificações"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 2a6.5 6.5 0 0 0-6.5 6.5c0 4.6-1.8 6.6-2.4 7.2A1 1 0 0 0 4 17.8h16a1 1 0 0 0 .9-1.6c-.6-.6-2.4-2.6-2.4-7.2A6.5 6.5 0 0 0 12 2zm-1.6 18a1.6 1.6 0 0 0 3.2 0z"/></svg><span class="ds-topo-ponto"></span></button><div class="ds-topo-aviso ds-chapa hidden" id="notificationMenu"><strong>Notificações</strong><div id="notificationList"><div class="ds-topo-aviso-item">Nada novo por agora.</div></div></div></div>
+<!-- O SINO VIROU CORAÇÃO (§22), e o motivo não é enfeite: sino é
+     alarme, e o que passa por aqui não é só alarme. Um prazo é aviso,
+     mas "alguém começou a te seguir" é ATIVIDADE. O coração é o que a
+     pessoa já aprendeu a ler como "o que aconteceu enquanto eu não
+     estava olhando".
+
+     E ele deixou de abrir um painelzinho de 310px preso ao topo: abre
+     uma TELA, com as três origens separadas (§23). Uma lista com
+     histórico não cabe num menu suspenso — e um menu suspenso que
+     precisa rolar já é uma tela mal-feita. -->
+<button class="ds-topo-icone ds-topo-sino ds-btn ds-btn-fantasma ds-btn-icone" id="notificationBtn" aria-label="Atividade e notificações" title="Atividade"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.3s-7.6-4.6-7.6-9.6A4.3 4.3 0 0 1 12 7.9a4.3 4.3 0 0 1 7.6 2.8c0 5-7.6 9.6-7.6 9.6Z"/></svg><span class="ds-topo-ponto"></span></button>
 <button class="ds-topo-icone mwv2-theme-btn ds-btn ds-btn-fantasma ds-btn-icone" id="themeToggle" title="Alternar tema"><svg class="mwv2-icon-sun" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.5v2.4M12 19.1v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/></svg><span class="mwv2-moon-glow" aria-hidden="true"></span><svg class="mwv2-icon-moon" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z"/></svg><span class="mwv2-star s1" aria-hidden="true"></span><span class="mwv2-star s2" aria-hidden="true"></span></button>
 <button class="ds-topo-icone ds-topo-so-desktop ds-btn ds-btn-fantasma ds-btn-icone" id="quickAdd" aria-label="Adicionar" title="Adicionar"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
 <!-- A Nyc AI está FORA DA BARRA por tempo indeterminado, a pedido do
@@ -4748,6 +4758,45 @@ body.light .mw-faceid-gate-card p{color:#526988}
 <input id="profileEmail" type="hidden">
 </div>
 
+</div>
+</section>
+
+<!-- ATIVIDADE (§23) — três origens, e cada uma diz de onde vem.
+     ACADÊMICO é DERIVADO: aula de hoje e prazo dentro do horizonte que a
+     pessoa escolheu em Configurações. Não se guarda nada — a verdade é a
+     lista de atividades, e guardar uma cópia dela só criaria duas
+     verdades para divergirem.
+     SISTEMA é GRAVADO: entrar num aparelho, exportar um backup, trocar
+     e-mail ou senha, definir o código. São fatos que acontecem uma vez e
+     não podem ser recalculados depois, então ficam no workspace.
+     SOCIAL depende de um servidor de perfis que ainda não existe. A
+     seção está aqui, com a arquitetura pronta e dizendo isso em voz
+     alta — não com três seguidores inventados. -->
+<section class="view ds" id="view-notifications" data-mw-migrada="1">
+<div class="ds-conf-pilha ds-tela">
+<div class="ds-conf">
+
+<section class="ds-conf-secao" id="mwNotifAcademico">
+<h2 class="ds-conf-titulo">Acadêmico</h2>
+<div class="ds-conf-lista" id="mwNotifAcademicoLista"></div>
+</section>
+
+<section class="ds-conf-secao" id="mwNotifSocial">
+<h2 class="ds-conf-titulo">Social</h2>
+<div class="ds-conf-lista" id="mwNotifSocialLista"></div>
+<p class="ds-conf-info" id="mwNotifSocialNota"></p>
+</section>
+
+<section class="ds-conf-secao" id="mwNotifSistema">
+<h2 class="ds-conf-titulo">Sistema</h2>
+<div class="ds-conf-lista" id="mwNotifSistemaLista"></div>
+<div class="ds-conf-acoes ds-conf-acoes-bloco">
+<button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwNotifLimpar">Limpar histórico</button>
+</div>
+</section>
+
+<p class="ds-conf-info">O histórico do sistema guarda os últimos <b>30 dias</b> e fica neste aparelho, junto com o resto do workspace.</p>
+</div>
 </div>
 </section><section class="view ds" id="view-settings" data-mw-migrada="1">
 <div class="ds-conf-pilha ds-tela">
@@ -5768,7 +5817,23 @@ const username=$('#username'),password=$('#password'),loginButton=$('#loginButto
 function updateLogin(){loginButton.disabled=false}
 username.addEventListener('input',updateLogin);password.addEventListener('input',updateLogin);
 $('#togglePassword').onclick=()=>{const show=password.type==='password';password.type=show?'text':'password';$('#togglePassword').textContent=show?'◉':'◌'};
-function enterApp(){localStorage.setItem('mwSession','1');$('#loginScreen').classList.add('hidden');$('#app').classList.remove('hidden');window.scrollTo(0,0);renderAll()}
+function enterApp(){
+  /* SÓ QUANDO A SESSÃO NÃO EXISTIA. `enterApp` também roda a cada
+     recarregamento com sessão viva — registrar aqui sem a pergunta
+     encheria a Atividade de "você entrou" toda vez que a pessoa
+     atualizasse a página. O que interessa é a ENTRADA, e entrada é a
+     transição de "sem sessão" para "com sessão". */
+  var entradaNova = localStorage.getItem('mwSession') !== '1';
+  localStorage.setItem('mwSession','1');
+  $('#loginScreen').classList.add('hidden');
+  $('#app').classList.remove('hidden');
+  window.scrollTo(0,0);
+  renderAll();
+  if (entradaNova) setTimeout(function(){
+    window.mwNotificar?.('sistema', 'Entrada neste aparelho',
+      'Uma sessão foi aberta com o seu usuário e senha.');
+  }, 400);
+}
 loginButton.onclick=()=>{if(loginButton.disabled)return;status.textContent='Entrando...';setTimeout(enterApp,400)};
 /* Microsoft modal: local simulation only; no real password is stored or sent anywhere. */
 const msModal=$('#msModal'),msForm=$('#msForm'),msEmail=$('#msEmail'),msError=$('#msError'),msTitle=$('#msTitle'),msDescription=$('#msDescription'),msContinue=$('#msContinue');
@@ -5982,6 +6047,10 @@ $('#exportBackup').onclick=()=>{
   document.body.appendChild(a);a.click();a.remove();
   URL.revokeObjectURL(url);
   toast('Backup exportado');
+  /* Fato do sistema, não recalculável: se não ficar registrado agora,
+     ninguém consegue responder depois "quando foi o último backup?". */
+  window.mwNotificar?.('sistema', 'Backup exportado',
+    'Um arquivo com todo o workspace foi salvo neste aparelho.');
 };
 $('#importBackupBtn').onclick=()=>$('#importBackupFile').click();
 $('#importBackupFile').onchange=(e)=>{
@@ -5996,6 +6065,8 @@ $('#importBackupFile').onchange=(e)=>{
       data={...defaults,...incoming};
       save();applyTheme();loadProfileFields();
       toast('Backup importado');
+      window.mwNotificar?.('sistema', 'Backup restaurado',
+        'O workspace deste aparelho foi substituído pelo conteúdo de um arquivo.');
     }catch(err){
       errEl.textContent='Não foi possível ler esse arquivo de backup.';
     }
@@ -6053,8 +6124,8 @@ window.toast = toast;
   const enterApp=()=>{try{localStorage.setItem('mwSession','1')}catch(e){}q('#loginScreen')?.classList.add('hidden');const app=q('#app');if(app){app.classList.remove('hidden');app.style.display=''};window.scrollTo(0,0)};
 
   /* Search + notifications */
-  const nb=q('#notificationBtn'),nm=q('#notificationMenu');
-  if(nb&&nm){nb.addEventListener('click',e=>{e.stopPropagation();nm.classList.toggle('hidden')});document.addEventListener('click',()=>nm.classList.add('hidden'))}
+  /* O abre-e-fecha do menu suspenso de notificações saiu: o coração
+     agora abre uma tela, e quem trata o clique é o `mw-atividade-js`. */
   const search=q('#globalSearch');
   if(search)search.addEventListener('input',()=>{const term=search.value.trim().toLowerCase();qa('.card,.lecture-card,.sem-item').forEach(el=>{el.style.display=!term||el.textContent.toLowerCase().includes(term)?'':'none'})});
 
@@ -12679,12 +12750,7 @@ html body #app #notificationBtn.has-alerts .bell-dot{
   display:block !important;
   background:#38bdf8 !important;
 }
-html body #app #notificationList .notification-item{
-  cursor:pointer;
-}
-html body #app #notificationList .notification-item small{
-  display:block; margin-top:3px; color:#9aa8bc !important; font-size:11px;
-}
+/* As regras do painelzinho de notificações saíram com ele. */
 
 body.light #app .mw-welcome{
   background: linear-gradient(145deg, #eef4ff, #e4edfb) !important;
@@ -12781,6 +12847,15 @@ body.light #app .mw-promo-row b{ color:#152033 !important; }body.light #app .mw-
       };
     }).filter(Boolean);
   }
+
+  /* A tela de Atividade precisa das aulas de hoje e não pode ter a sua
+     própria cópia de `lecturesFrom` — seriam duas leituras do mesmo
+     dado, livres para divergirem. Um dono, uma porta. */
+  window.mwAulasDeHoje = function(){
+    var d = window.data || {};
+    var hoje = new Date().getDay();
+    return lecturesFrom(d).filter(function(l){ return l.weekday === hoje; });
+  };
 
   function eventsOn(data, y, m, d) {
     const list = [];
@@ -12894,48 +12969,22 @@ body.light #app .mw-promo-row b{ color:#152033 !important; }body.light #app .mw-
     setTimeout(() => q('#mwCalAddInput')?.focus(), 30);
   }
 
-  function paintBell(data) {
-    const btn = q('#notificationBtn');
-    const list = q('#notificationList');
-    const items = [];
-    const now = new Date();
-    const todayWd = now.getDay();
-    const tIso = todayIso();
-    const prefs = typeof window.mwPrefs === 'function' ? window.mwPrefs() : {};
-    if (prefs.notifAulas !== false) {
-      lecturesFrom(data).filter(l => l.weekday === todayWd).forEach(l => {
-        items.push({ title: 'Aula hoje · ' + l.name, meta: l.time + ' · ' + l.room, go: 'home' });
-      });
-    }
-    (data.activities || []).forEach(a => {
-      if (!a.date) return;
-      const humana = typeof window.mwDataHumana === 'function' ? window.mwDataHumana(a.date) : a.date;
-      if (a.date === tIso) { items.push({ title: 'Entrega hoje · ' + (a.name || 'Atividade'), meta: a.description || humana, go: 'activities' }); return; }
-      if (a.date < tIso) return;
-      /* Qualquer prazo futuro entrava no sino — inclusive um de quatro
-         meses. Um aviso que aparece cedo demais deixa de ser aviso e
-         vira ruído permanente, e quando o prazo chega de verdade ele já
-         está lá há tanto tempo que ninguém olha. O horizonte é uma
-         escolha da pessoa em Configurações; 7 dias é o padrão. */
-      const limite = (typeof window.mwPrefs === 'function' ? Number(window.mwPrefs().notifDias) : 0) || 7;
-      const dias = Math.round((new Date(a.date + 'T00:00:00') - new Date(tIso + 'T00:00:00')) / 86400000);
-      if (dias > limite) return;
-      items.push({ title: 'Prazo · ' + (a.name || 'Atividade'), meta: humana, go: 'activities' });
-    });
-    const alerts = items.slice(0, 6);
-    if (btn) btn.classList.toggle('has-alerts', alerts.length > 0);
-    if (list) {
-      if (!alerts.length) list.innerHTML = '<div class="notification-item">Nada novo por agora. O sino só acende com aula hoje ou prazo de atividade.</div>';
-      else list.innerHTML = alerts.map(it => '<div class="notification-item" data-go="'+it.go+'"><b>'+esc(it.title)+'</b><small>'+esc(it.meta)+'</small></div>').join('');
-    }
-  }
+  /* O PINTOR DO PAINELZINHO DO SINO FOI RETIRADO.
+     Ele montava a lista dentro de `#notificationMenu` — um menu suspenso
+     de 310px preso ao topo — misturando aula de hoje e prazo numa
+     sequência só, sem histórico e sem separar de onde cada aviso vinha.
+
+     O §23 pede uma TELA com Social, Acadêmico e Sistema separados, e é o
+     `mw-atividade-js` que a pinta. A parte acadêmica dele é a mesma ideia
+     daqui (derivar da lista de atividades), agora com atrasadas
+     destacadas e lendo as aulas por `window.mwAulasDeHoje`, para não
+     existir uma segunda leitura de `lecturesFrom`. */
 
   function refresh(data) {
     const d = data && typeof data === 'object' ? data : read();
     paintHome(d);
     paintAulas(d);
     paintCalendar(d);
-    paintBell(d);
   }
   window.mwDashRefresh = refresh;
 
@@ -12947,13 +12996,9 @@ body.light #app .mw-promo-row b{ color:#152033 !important; }body.light #app .mw-
     const add = e.target.closest('[data-go-add]');
     if (add) goAdd(add.getAttribute('data-go-add'));
   });
-  q('#notificationList')?.addEventListener('click', e => {
-    const item = e.target.closest('[data-go]');
-    if (!item) return;
-    const view = item.getAttribute('data-go');
-    if (view === 'home') q('#nav [data-view="home"]')?.click();
-    else go(view);
-  });
+  /* O ouvinte da lista do painelzinho saiu com o painelzinho. Na tela de
+     Atividade, cada linha é um botão com `data-notif-ir`, tratado pelo
+     bloco dono da tela. */
   q('#statSubjects')?.closest('.stat')?.addEventListener('click', () => go('subjects'));
   q('#statActivities')?.closest('.stat')?.addEventListener('click', () => go('activities'));
   q('#statProjects')?.closest('.stat')?.addEventListener('click', () => go('projects'));
@@ -19729,6 +19774,13 @@ body.light .mw-transfere-nota b{color:#0b1830}
             pintar();
             aviso(rotulo + ' atualizado.', true);
             if (typeof toast === 'function') toast(rotulo + ' atualizado');
+            /* Trocar usuário, e-mail ou senha é o tipo de coisa sobre a
+               qual a pessoa vai querer perguntar "isso fui eu?" três
+               semanas depois. Sem registro, não há resposta. O VALOR
+               nunca entra no texto — o registro diz o que mudou, não
+               qual é a senha nova. */
+            window.mwNotificar?.('sistema', rotulo + ' alterado',
+              'A alteração foi confirmada com a sua senha ou o código de acesso.');
           });
         });
       });
@@ -20590,6 +20642,250 @@ html body.mw-in-app.mw-tela-folha #app .main{padding-bottom:24px!important}
    O "ele é a saída principal, então ganha peso" continua verdadeiro, e
    segue implementado no sistema — com superfície, não com cor. */
 </style>
+<script id="mw-atividade-js">
+(function(){
+  'use strict';
+  /* ======================================================================
+     ATIVIDADE — o que aconteceu enquanto você não estava olhando (§23)
+
+     TRÊS ORIGENS, TRÊS NATUREZAS DIFERENTES. Isto não é organização
+     visual: é o que decide onde cada coisa mora.
+
+     ACADÊMICO é DERIVADO. "Prazo da Lista 4 em dois dias" não é um
+     acontecimento: é uma leitura da lista de atividades feita agora. Se
+     eu gravasse isso, teria duas verdades — a atividade e o aviso sobre
+     ela — e no dia em que a pessoa mudasse a data, uma das duas ficaria
+     velha. Então não se guarda: recalcula-se toda vez.
+
+     SISTEMA é GRAVADO. "Você entrou neste aparelho" acontece uma vez e
+     não pode ser recalculado depois: ou ficou registrado, ou some. Vai
+     para `data.notifications`, junto com o resto do workspace.
+
+     SOCIAL depende de um servidor de perfis que ainda não existe. A
+     seção fica, com a arquitetura pronta — `mwNotificar('social', …)` já
+     grava do mesmo jeito que o sistema — e dizendo em voz alta que não
+     há de onde vir. Três seguidores inventados seriam mais bonitos e
+     mentira.
+
+     JANELA DE 30 DIAS. A poda acontece na ESCRITA, não na leitura: uma
+     lista que só é podada quando alguém abre a tela cresce sem limite em
+     quem nunca abre.
+     ====================================================================== */
+  var DIAS = 30;
+  var TETO = 200;   /* trava dura: 30 dias de uso intenso não passam disso */
+
+  function q(s){ return document.querySelector(s); }
+  function esc(v){ return String(v==null?'':v).replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function dados(){
+    var d = window.data;
+    if (!d || typeof d !== 'object') { try { d = JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}'); } catch(e){ d = {}; } }
+    return d;
+  }
+  function grava(){
+    if (typeof window.persistWorkspace === 'function') { window.persistWorkspace(); return; }
+    try { localStorage.setItem('mateusWorkspaceV4', JSON.stringify(window.data || {})); } catch(e){}
+  }
+  function lista(){
+    var d = dados();
+    if (!Array.isArray(d.notifications)) d.notifications = [];
+    return d.notifications;
+  }
+  function poda(arr){
+    var corte = Date.now() - DIAS * 86400000;
+    var vivas = arr.filter(function(n){ return Number(n.em) >= corte; });
+    return vivas.slice(0, TETO);
+  }
+
+  /* PONTO ÚNICO DE ENTRADA. Quem tem um fato para registrar chama isto —
+     e só isto. Sem um ponto único, cada bloco inventaria o seu formato e
+     a tela teria de adivinhar. */
+  window.mwNotificar = function(tipo, titulo, apoio){
+    if (tipo !== 'sistema' && tipo !== 'social') return;
+    var d = dados();
+    d.notifications = poda([{
+      id: 'n' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      tipo: tipo,
+      titulo: String(titulo || '').slice(0, 120),
+      apoio: String(apoio || '').slice(0, 180),
+      em: Date.now(),
+      lido: false
+    }].concat(lista()));
+    grava();
+    pinta();
+  };
+
+  /* ---- tempo em palavra ------------------------------------------------
+     "há 2 h" diz mais que um carimbo de data numa lista de atividade —
+     a pergunta é "faz quanto tempo?", não "que horas eram?". */
+  function quando(ms){
+    var seg = Math.max(0, Math.round((Date.now() - Number(ms)) / 1000));
+    if (seg < 60) return 'agora';
+    var min = Math.round(seg / 60);        if (min < 60) return 'há ' + min + ' min';
+    var h = Math.round(min / 60);          if (h < 24)  return 'há ' + h + ' h';
+    var dd = Math.round(h / 24);           if (dd < 7)  return 'há ' + dd + (dd === 1 ? ' dia' : ' dias');
+    var sem = Math.round(dd / 7);
+    return 'há ' + sem + (sem === 1 ? ' semana' : ' semanas');
+  }
+
+  /* ---- ACADÊMICO, calculado agora -------------------------------------- */
+  function hojeIso(){
+    var h = new Date();
+    return h.getFullYear() + '-' + String(h.getMonth()+1).padStart(2,'0') + '-' + String(h.getDate()).padStart(2,'0');
+  }
+  function prefs(){ return typeof window.mwPrefs === 'function' ? (window.mwPrefs() || {}) : {}; }
+  function academico(){
+    var d = dados(), out = [], hoje = hojeIso(), p = prefs();
+    var limite = Number(p.notifDias) || 7;
+    var hum = function(v){ return typeof window.mwDataHumana === 'function' ? window.mwDataHumana(v) : v; };
+
+    if (p.notifAulas !== false && typeof window.mwAulasDeHoje === 'function') {
+      (window.mwAulasDeHoje() || []).forEach(function(a){
+        out.push({ titulo: 'Aula hoje · ' + a.name, apoio: [a.time, a.room].filter(Boolean).join(' · '), ir: 'subjects', peso: 2 });
+      });
+    }
+    (Array.isArray(d.activities) ? d.activities : []).forEach(function(a){
+      if (!a.date) return;
+      if (a.date < hoje) { out.push({ titulo: 'Atrasada · ' + (a.name || 'Atividade'), apoio: 'Era para ' + hum(a.date), ir: 'activities', urgente: true, peso: 0 }); return; }
+      if (a.date === hoje) { out.push({ titulo: 'Entrega hoje · ' + (a.name || 'Atividade'), apoio: a.description || hum(a.date), ir: 'activities', urgente: true, peso: 1 }); return; }
+      var dias = Math.round((new Date(a.date + 'T00:00:00') - new Date(hoje + 'T00:00:00')) / 86400000);
+      if (dias > limite) return;
+      out.push({ titulo: 'Prazo · ' + (a.name || 'Atividade'), apoio: hum(a.date), ir: 'activities', peso: 3 });
+    });
+    /* ORDEM POR URGÊNCIA, não pela ordem em que a pessoa cadastrou.
+       A lista saía na ordem do array de atividades, e uma entrega
+       ATRASADA aparecia depois de um prazo de daqui a cinco dias só
+       porque foi cadastrada depois. Numa tela cuja pergunta é "o que
+       preciso ver agora", a ordem É a informação. */
+    /* `(a.peso || 2)` seria um erro silencioso: o peso da ATRASADA é 0,
+       e 0 é falso em JavaScript — ela cairia no padrão 2 e apareceria
+       depois da aula de hoje. Medido antes de escrever esta linha: era
+       exatamente o que acontecia. */
+    var peso = function(x){ return typeof x.peso === 'number' ? x.peso : 2; };
+    return out.sort(function(a, b){ return peso(a) - peso(b); });
+  }
+
+  /* ---- desenho ---------------------------------------------------------- */
+  function icone(nome){
+    var p = {
+      prazo:'<path d="M12 3.4a8.6 8.6 0 1 0 0 17.2 8.6 8.6 0 0 0 0-17.2Z"/><path d="M12 7.6V12l3 1.8"/>',
+      social:'<path d="M12 12a3.8 3.8 0 1 0 0-7.6 3.8 3.8 0 0 0 0 7.6Z"/><path d="M4.8 20c0-3.3 3.2-5.5 7.2-5.5s7.2 2.2 7.2 5.5"/>',
+      sistema:'<rect x="4.4" y="5" width="15.2" height="12" rx="2.2"/><path d="M9 20h6"/>'
+    }[nome] || '';
+    return '<span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + p + '</svg></span>';
+  }
+  function linha(ic, titulo, apoio, extra, ir){
+    return '<' + (ir ? 'button type="button" class="ds-conf-linha ds-conf-nav" data-notif-ir="' + esc(ir) + '"' : 'div class="ds-conf-linha"') + '>' +
+      icone(ic) +
+      '<span class="ds-conf-corpo">' +
+        '<span class="ds-conf-rotulo">' + esc(titulo) + '</span>' +
+        '<span class="ds-conf-apoio">' + esc(apoio) + '</span>' +
+      '</span>' +
+      (extra ? '<span class="ds-conf-quando">' + esc(extra) + '</span>' : '') +
+      '</' + (ir ? 'button' : 'div') + '>';
+  }
+  function vazio(texto){
+    return '<div class="ds-conf-linha ds-conf-linha-vazia"><span class="ds-conf-corpo"><span class="ds-conf-apoio">' + esc(texto) + '</span></span></div>';
+  }
+
+  function pinta(){
+    var ac = academico();
+    var caixaAc = q('#mwNotifAcademicoLista');
+    if (caixaAc) {
+      caixaAc.innerHTML = ac.length
+        ? ac.map(function(n){ return linha('prazo', n.titulo, n.apoio, '', n.ir); }).join('')
+        : vazio('Nada com prazo por agora. Isto acende com aula de hoje, entrega de hoje ou prazo próximo.');
+    }
+
+    var guardadas = poda(lista());
+    var social = guardadas.filter(function(n){ return n.tipo === 'social'; });
+    var caixaSo = q('#mwNotifSocialLista');
+    if (caixaSo) {
+      caixaSo.innerHTML = social.length
+        ? social.map(function(n){ return linha('social', n.titulo, n.apoio, quando(n.em), ''); }).join('')
+        : vazio('Nada por aqui ainda.');
+    }
+    var nota = q('#mwNotifSocialNota');
+    if (nota) {
+      nota.innerHTML = 'Seguidores, seguindo e interações precisam de um <b>servidor de perfis</b>, que o MW ainda não tem. ' +
+                       'Quando existir, cada novo seguidor entra nesta lista — o caminho já está pronto e é o mesmo que o Sistema usa.';
+    }
+
+    var sistema = guardadas.filter(function(n){ return n.tipo === 'sistema'; });
+    var caixaSi = q('#mwNotifSistemaLista');
+    if (caixaSi) {
+      caixaSi.innerHTML = sistema.length
+        ? sistema.map(function(n){ return linha('sistema', n.titulo, n.apoio, quando(n.em), ''); }).join('')
+        : vazio('Nenhum registro nos últimos 30 dias.');
+    }
+    var limpar = q('#mwNotifLimpar');
+    if (limpar) limpar.hidden = !(social.length || sistema.length);
+
+    /* O ponto do coração: acende com o que EXIGE atenção hoje (atrasada
+       ou entrega de hoje) ou com registro não lido. Um ponto que acende
+       por qualquer prazo dos próximos sete dias fica aceso o semestre
+       inteiro e deixa de significar alguma coisa. */
+    var urgentes = ac.filter(function(n){ return n.urgente; }).length;
+    var naoLidas = guardadas.filter(function(n){ return !n.lido; }).length;
+    var botao = q('#notificationBtn');
+    if (botao) {
+      var tem = urgentes + naoLidas > 0;
+      botao.classList.toggle('has-alerts', tem);
+      botao.setAttribute('aria-label', tem ? 'Atividade — há novidades' : 'Atividade e notificações');
+    }
+  }
+  window.mwAtividadePinta = pinta;
+
+  /* Abrir a tela marca o guardado como lido: o ponto responde a "há algo
+     novo?", e depois de ler não há. */
+  function marcaLidas(){
+    var arr = lista(), mudou = false;
+    arr.forEach(function(n){ if (!n.lido) { n.lido = true; mudou = true; } });
+    if (mudou) grava();
+  }
+
+  document.addEventListener('click', function(ev){
+    var t = ev.target;
+    if (!t || !t.closest) return;
+    if (t.closest('#notificationBtn')) {
+      ev.preventDefault();
+      if (typeof window.showView === 'function') window.showView('notifications');
+      return;
+    }
+    if (t.closest('#mwNotifLimpar')) {
+      if (!confirm('Apagar o histórico de atividade deste aparelho?')) return;
+      var d = dados(); d.notifications = []; grava(); pinta();
+      return;
+    }
+    var ir = t.closest('[data-notif-ir]');
+    if (ir && typeof window.showView === 'function') window.showView(ir.getAttribute('data-notif-ir'));
+  });
+
+  /* Repinta ao ENTRAR na tela e sempre que o workspace mudar: a parte
+     acadêmica é derivada, e uma lista derivada que não repinta é uma
+     lista velha. */
+  var app = document.getElementById('app');
+  if (app && window.MutationObserver) {
+    var ultima = null;
+    new MutationObserver(function(){
+      var v = app.querySelector('.view.active');
+      var id = v ? v.id : null;
+      if (id === ultima) return;
+      ultima = id;
+      if (id === 'view-notifications') { pinta(); marcaLidas(); setTimeout(pinta, 60); }
+      else pinta();
+    }).observe(app, { subtree: true, attributes: true, attributeFilter: ['class'] });
+  }
+  var anterior = window.mwDashRefresh;
+  window.mwDashRefresh = function(d){
+    if (typeof anterior === 'function') { try { anterior(d); } catch(e){} }
+    try { pinta(); } catch(e){}
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', pinta);
+  else pinta();
+})();
+</script>
+
 <script id="mw-telas-folha-js">
 /* Marca no <body> quando a tela atual é uma folha. Um lugar só decide,
    e o CSS acima é consequência — mesma escolha do resto do projeto:
@@ -20608,7 +20904,7 @@ html body.mw-in-app.mw-tela-folha #app .main{padding-bottom:24px!important}
 
      Configurações continua folha: chega-se pela engrenagem, não tem
      item na barra, e a saída é o voltar. */
-  var FOLHAS = ['view-settings', 'view-support', 'view-admin'];
+  var FOLHAS = ['view-settings', 'view-support', 'view-admin', 'view-notifications'];
 
   function marcar(){
     var v = app.querySelector('.view.active');
@@ -31919,7 +32215,8 @@ html body .mw-pular:focus{ transform: translateY(0); }
     subjects:'Disciplinas', projects:'Projetos', activities:'Atividades',
     calendar:'Calendário', focus:'Foco', reports:'Relatórios',
     notes:'Anotações', files:'Arquivos', support:'Suporte',
-    profile:'Perfil', settings:'Configurações', admin:'Painel Admin'
+    profile:'Perfil', settings:'Configurações', admin:'Painel Admin',
+    notifications:'Atividade'
   };
   function pintaTitulo(v){
     var h = q('#mwTopoTitulo'); if (!h) return;

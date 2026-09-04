@@ -112,8 +112,15 @@ export async function abre(dados, opcoes = {}) {
 }
 
 /* Todas as áreas navegáveis, na ordem em que aparecem na navegação. */
+/* Toda área que existe como `#view-*` entra aqui. Quando a Atividade
+   nasceu, o teste 13 a acusou de "área migrada que o sistema não pinta":
+   ela estava na lista de migradas (lida do DOM) mas fora desta lista
+   (escrita à mão), então nunca era ativada — e uma view inativa mede
+   0x0 com a folha ligada e desligada. O achado era da régua, não da
+   tela; a lição é que esta lista precisa acompanhar o DOM. */
 export const AREAS = ['home','college','institutions','subjects','projects','activities',
-                      'calendar','focus','reports','notes','files','settings','support','profile'];
+                      'calendar','focus','reports','notes','files','settings','support','profile',
+                      'notifications'];
 
 export async function vaiPara(p, area){
   await p.evaluate(nome => {
