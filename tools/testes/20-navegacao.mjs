@@ -140,7 +140,12 @@ const topo = await p.evaluate(() => {
     tema:  algum(['#themeToggle', '#mwSidebarDarkToggle']),
     perfil: algum(['#profileBtn', '#mwSidebarProfileBtn', '#mwBottomNav [data-view="profile"]']),
     config: algum(['#mwTopoConfig', '#nav [data-view="settings"]']),
-    busca: algum(['#searchToggle', '#globalSearch']),
+    /* A BUSCA SAIU DA MOLDURA (§24) e mora no Início, aberta. Não é
+       uma função perdida: é uma função com endereço fixo, do mesmo
+       jeito que "Adicionar disciplina" mora em Disciplinas. Cobrar que
+       ela apareça na barra do topo seria cobrar a arquitetura antiga.
+       O que se cobra está logo abaixo, e é mais forte: o campo existe
+       no Início e o atalho leva até ele. */
     sino:  algum(['#notificationBtn']),
     /* A Nyc AI está GUARDADA por tempo indeterminado (pedido do Mateus,
        03/09/2026): o botão existe com `hidden`. Aqui não se cobra que ela
@@ -158,6 +163,26 @@ const topo = await p.evaluate(() => {
 const { ia, iaGuardada, ...moldura } = topo;
 ok('toda função da moldura está ao alcance em algum lugar',
    Object.values(moldura).every(Boolean), moldura);
+
+/* ---- 3b. a busca tem endereço, e o atalho leva até ele --------------
+   Medida direta do que o §24 pede: de OUTRA área, o atalho global tem
+   de trazer a pessoa ao Início e deixar o cursor dentro do campo. Se
+   um dia o campo mudar de casa de novo, é esta linha que reprova. */
+await vaiPara(p, 'subjects');
+await p.waitForTimeout(500);
+const busca = await p.evaluate(async () => {
+  window.mwBuscaAbrir?.();
+  await new Promise(r => setTimeout(r, 700));
+  const campo = document.getElementById('globalSearch');
+  const r = campo ? campo.getBoundingClientRect() : null;
+  return {
+    telaAtual: document.querySelector('#app .view.active')?.id,
+    visivel: !!(r && r.width > 40 && r.height > 10),
+    focado: document.activeElement === campo
+  };
+});
+ok('o atalho da busca leva ao Início e foca o campo',
+   busca.telaAtual === 'view-home' && busca.visivel && busca.focado, busca);
 ok('a Nyc AI está guardada, e de forma coerente',
    iaGuardada ? !ia : ia, { guardada: iaGuardada, aparece: ia });
 

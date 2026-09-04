@@ -4118,7 +4118,19 @@ body.light .mw-faceid-gate-card p{color:#526988}
 <span class="ds-topo-marca" aria-hidden="true"><svg viewBox="0 0 64 44"><use href="#mwi-marca"/></svg></span>
 <h1 class="ds-topo-titulo" id="mwTopoTitulo">Início</h1>
 <div class="ds-topo-acoes">
-<div class="ds-busca" id="searchWrap"><button type="button" class="ds-topo-icone ds-busca-lupa ds-btn ds-btn-fantasma ds-btn-icone" id="searchToggle" aria-label="Pesquisar" title="Pesquisar (Ctrl+K)"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="m16.2 16.2 3.6 3.6"/></svg></button><input id="globalSearch" class="ds-entrada ds-busca-campo" type="search" placeholder="Pesquisar..."></div>
+<!-- A BUSCA SAIU DAQUI (§24).
+     Ela era uma lupa que abria um campo, e abrir era justamente o que
+     não funcionava: o botão anda 136px entre o apertar e o soltar (o
+     campo se abre e reposiciona o envoltório), então o `click` nunca
+     chegava nele. Consertei o gesto na rodada passada, e no aplicativo
+     instalado o resultado ainda era o que o print do Mateus mostra —
+     lupa solta de um lado, "Pesqu" cortado do outro.
+
+     Um controle que precisa de três consertos para abrir é um controle
+     que não devia precisar abrir. O campo passa a morar na Home, já
+     aberto, embaixo da saudação. É o MESMO elemento, com os mesmos ids
+     e o mesmo motor de busca: mudou o lugar, não a implementação. -->
+
 <div class="ds-topo-sino"><button class="ds-topo-icone ds-btn ds-btn-fantasma ds-btn-icone" id="notificationBtn" aria-label="Notificações" title="Notificações"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 2a6.5 6.5 0 0 0-6.5 6.5c0 4.6-1.8 6.6-2.4 7.2A1 1 0 0 0 4 17.8h16a1 1 0 0 0 .9-1.6c-.6-.6-2.4-2.6-2.4-7.2A6.5 6.5 0 0 0 12 2zm-1.6 18a1.6 1.6 0 0 0 3.2 0z"/></svg><span class="ds-topo-ponto"></span></button><div class="ds-topo-aviso ds-chapa hidden" id="notificationMenu"><strong>Notificações</strong><div id="notificationList"><div class="ds-topo-aviso-item">Nada novo por agora.</div></div></div></div>
 <button class="ds-topo-icone mwv2-theme-btn ds-btn ds-btn-fantasma ds-btn-icone" id="themeToggle" title="Alternar tema"><svg class="mwv2-icon-sun" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.5v2.4M12 19.1v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/></svg><span class="mwv2-moon-glow" aria-hidden="true"></span><svg class="mwv2-icon-moon" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z"/></svg><span class="mwv2-star s1" aria-hidden="true"></span><span class="mwv2-star s2" aria-hidden="true"></span></button>
 <button class="ds-topo-icone ds-topo-so-desktop ds-btn ds-btn-fantasma ds-btn-icone" id="quickAdd" aria-label="Adicionar" title="Adicionar"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
@@ -4151,7 +4163,11 @@ body.light .mw-faceid-gate-card p{color:#526988}
 <header class="ds-hero" style="--i:0">
 <p class="ds-hero-data" id="mwResumoDataTexto"></p>
 <h2 class="ds-hero-ola">Ol&aacute;, <b id="mwOlaNome">voc&ecirc;</b></h2>
+
 <p class="ds-hero-ctx" id="mwResumoSemestre"></p>
+<!-- Busca ABERTA, logo abaixo da saudação e do contexto (§24). Sem estado, sem
+     alternância, sem nada para descobrir: o campo está lá. -->
+<div class="ds-busca ds-busca-aberta" id="searchWrap"><button type="button" class="ds-topo-icone ds-busca-lupa ds-btn ds-btn-fantasma ds-btn-icone" id="searchToggle" aria-label="Pesquisar" title="Pesquisar (Ctrl+K)"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="m16.2 16.2 3.6 3.6"/></svg></button><input id="globalSearch" class="ds-entrada ds-busca-campo" type="search" placeholder="Pesquisar no Workspace" aria-label="Pesquisar no Workspace" autocomplete="off"></div>
 <div class="ds-med-fila ds-hero-med" id="mwGradeStats"><div class="ds-med"><span class="ds-med-n" id="statSubjects">0</span><span class="ds-med-r">Disciplinas</span><span class="ds-med-ap" id="statSubjectsHint">—</span></div><div class="ds-med"><span class="ds-med-n" id="statActivities">0</span><span class="ds-med-r">Atividades</span><span class="ds-med-ap" id="statActivitiesHint">—</span></div><div class="ds-med"><span class="ds-med-n" id="statProjects">0</span><span class="ds-med-r">Projetos</span><span class="ds-med-ap" id="statProjectsHint">—</span></div><div class="ds-med"><span class="ds-med-n" id="statProgress">0%</span><span class="ds-med-r">Progresso</span><span class="ds-med-ap" id="statProgressHint">—</span></div></div>
 </header>
 
@@ -4213,16 +4229,23 @@ body.light .mw-faceid-gate-card p{color:#526988}
 <div class="ds-trilho" id="lectureGrid"></div>
 </section>
 
-<!-- 10 · O QUE VEM — três linhas numa chapa, não três cartões. -->
-<section class="ds-faixa" id="homePromo" style="--i:9">
-<div class="ds-chapa ds-chapa-p">
-<div class="ds-lista">
-<div class="ds-item" id="promoActivities"><div class="ds-item-texto"><div class="ds-item-titulo">Pr&oacute;ximas atividades</div><div class="ds-item-apoio" id="promoActivitiesBody">Organize tarefas, prazos e compromissos em um s&oacute; lugar.</div></div></div>
-<div class="ds-item" id="promoProjects"><div class="ds-item-texto"><div class="ds-item-titulo">Projetos em andamento</div><div class="ds-item-apoio" id="promoProjectsBody">Acompanhe projetos pessoais e da faculdade sem perder o contexto.</div></div></div>
-<div class="ds-item" id="promoProgress"><div class="ds-item-texto"><div class="ds-item-titulo">Progresso</div><div class="ds-item-apoio" id="collegeProgress">0% &mdash; calculado com os seus registros.</div></div></div>
-</div>
-</div>
-</section>
+<!-- 10 · A SEÇÃO "O QUE VEM" FOI RETIRADA — ELA DIZIA TUDO DE NOVO.
+     Eram três linhas: "Próximas atividades", "Projetos em andamento" e
+     "Progresso". As três já estavam na mesma tela, mais acima e melhor
+     apresentadas: "Próximos dias" (com o dia da semana e a disciplina),
+     "Projetos recentes" (com o selo de status) e "Progresso do semestre"
+     (com a barra de cada disciplina). Rolar o Início era ler a mesma
+     coisa duas vezes, a segunda com menos informação.
+
+     A origem: este bloco nasceu como PROMOÇÃO, com texto de vitrine
+     ("Organize tarefas, prazos e compromissos em um só lugar"). Depois
+     alguém o ligou aos dados reais, e ele virou a terceira cópia. É o
+     "coleção de cards genéricos" que o §1 recusa e o "card dentro de
+     card" do §25: uma moldura sem título envolvendo três outras.
+
+     `#collegeProgress` morava aqui e é escrito pelo `renderAll`. A
+     escrita virou opcional lá — ver o comentário no ponto. -->
+
 
 </div>
 </section><section class="view ds" id="view-college" data-mw-migrada="1"><section class="ds-cartao"><div class="ds-secao-cabeca" data-mw-cabeca><div><h2 class="ds-titulo">Faculdade</h2><p class="ds-micro">Seu contexto acadêmico</p></div></div><div class="ds-grade"><div class="ds-cartao ds-cartao-compacto"><h3 class="ds-rotulo" id="collegeCourseLabel">Seu curso</h3><p class="ds-micro" id="collegeSemesterLabel">1º semestre</p></div><div class="ds-cartao ds-cartao-compacto"><h3 class="ds-rotulo">Progresso do curso</h3><p class="ds-micro" id="collegeProgress2">0% calculado a partir das suas disciplinas</p></div><div class="ds-cartao ds-cartao-compacto"><h3 class="ds-rotulo">Organização</h3><p class="ds-micro">Use Disciplinas, Atividades e Projetos para montar seu Workspace.</p></div></div><div class="ds-grade-fixa-2" data-mw-grupo><div class="ds-campo"><label for="collegeInstitution">Instituição</label><input id="collegeInstitution" class="ds-entrada" list="collegeInstitutionOptions" placeholder="Sua faculdade ou universidade" autocomplete="organization"><datalist id="collegeInstitutionOptions"></datalist></div><div class="ds-campo"><label for="collegeCourse">Curso</label><input id="collegeCourse" class="ds-entrada" list="collegeCourseOptions" placeholder="Seu curso"><datalist id="collegeCourseOptions"></datalist></div><div class="ds-campo"><label for="collegeArea">Área/Especialização (opcional)</label><input id="collegeArea" class="ds-entrada" list="collegeAreaOptions" placeholder="Sua área de interesse"><datalist id="collegeAreaOptions"></datalist></div><div class="ds-campo"><label for="collegeSemester">Semestre atual</label><input id="collegeSemester" class="ds-entrada" type="number" min="1" max="20" value="1"></div></div><div class="ds-dialogo-acoes"><button class="ds-btn ds-btn-primario" id="saveCollege">Salvar organização</button></div></section></section>
@@ -5921,7 +5944,7 @@ function empty(text, area){
     : `<div class="empty"><strong>${esc(text)}</strong><span>Use o botão + para começar.</span></div>`;
 }
 function projectHtml(p){return `<div class="project"><b>${esc(p.name)}</b><p>${esc(p.description||'Projeto acadêmico ou pessoal.')}</p><div class="tags"><span class="tag">${esc(p.tag||'Projeto')}</span></div></div>`}
-function renderAll(){const p=progress();$('#statSubjects').textContent=data.subjects.length;$('#statActivities').textContent=data.activities.length;$('#statProjects').textContent=data.projects.length;$('#statProgress').textContent=p+'%';$('#statSubjectsHint').textContent=data.subjects.length?'cadastradas no semestre':'Nenhuma cadastrada';$('#statActivitiesHint').textContent=data.activities.length?'registradas':'Nenhuma cadastrada';$('#statProjectsHint').textContent=data.projects.length?'cadastrados':'Nenhum cadastrado';$('#statProgressHint').textContent=data.subjects.length?'média das disciplinas':'Sem dados ainda';$('#subjectsCountLabel').textContent=`${data.subjects.length} cadastrada${data.subjects.length===1?'':'s'}`;$('#projectsCountLabel').textContent=`${data.projects.length} cadastrado${data.projects.length===1?'':'s'}`;$('#collegeProgress').textContent=p+'% — calculado automaticamente com seus registros.';$('#collegeProgress2').textContent=p+'% calculado a partir das suas disciplinas';$('#homeSubjects').innerHTML=data.subjects.length?data.subjects.slice(0,5).map(s=>`<div class="course"><div class="course-dot">${esc((s.name||'DS').slice(0,2).toUpperCase())}</div><div><b>${esc(s.name)}</b><small>${esc(s.description||'Disciplina do semestre')}</small></div><div class="progress"><i style="width:${Math.max(0,Math.min(100,Number(s.progress)||0))}%"></i></div></div>`).join(''):empty('Nenhuma disciplina cadastrada.');$('#homeProjects').innerHTML=data.projects.length?data.projects.slice(0,4).map(projectHtml).join(''):empty('Nenhum projeto cadastrado.');$('#subjectsList').innerHTML=data.subjects.length?data.subjects.map((s,i)=>mwLinha('subjects',i,esc(s.name),`${esc(s.description||'Sem descrição')} · ${Number(s.progress)||0}%`)).join(''):empty('Nenhuma disciplina cadastrada.','subjects');$('#projectsList').innerHTML=data.projects.length?data.projects.map((p,i)=>mwLinha('projects',i,esc(p.name),esc(p.description||'Sem descrição'),mwSelos('projects',p))).join(''):empty('Nenhum projeto cadastrado.','projects');$('#activitiesList').innerHTML=data.activities.length?data.activities.map((a,i)=>{const today=new Date();today.setHours(0,0,0,0);const due=a.date?new Date(a.date+'T00:00:00'):null;const overdue=!!(due&&due<today);const isToday=!!(due&&due.getTime()===today.getTime());const badge=overdue?'<span class="mw-due-badge overdue">Atrasada</span>':isToday?'<span class="mw-due-badge today">Hoje</span>':'';return mwLinha('activities',i,esc(a.name),`${esc(a.description||'Sem descrição')} · ${esc(mwDataHumana(a.date))}`,badge+mwSelos('activities',a),overdue?'mw-overdue':'')}).join(''):empty('Nenhuma atividade cadastrada.','activities');$('#notesList').innerHTML=data.notes.length?data.notes.map((n,i)=>mwLinha('notes',i,esc(n.title),esc(n.body||''))).join(''):empty('Nenhuma anotação criada.','notes');$$('[data-delete]').forEach(b=>b.onclick=()=>{data[b.dataset.delete].splice(Number(b.dataset.index),1);save();toast('Item removido')});if(typeof window.mwDashRefresh==='function')window.mwDashRefresh(data)}
+function renderAll(){const p=progress();$('#statSubjects').textContent=data.subjects.length;$('#statActivities').textContent=data.activities.length;$('#statProjects').textContent=data.projects.length;$('#statProgress').textContent=p+'%';$('#statSubjectsHint').textContent=data.subjects.length?'cadastradas no semestre':'Nenhuma cadastrada';$('#statActivitiesHint').textContent=data.activities.length?'registradas':'Nenhuma cadastrada';$('#statProjectsHint').textContent=data.projects.length?'cadastrados':'Nenhum cadastrado';$('#statProgressHint').textContent=data.subjects.length?'média das disciplinas':'Sem dados ainda';$('#subjectsCountLabel').textContent=`${data.subjects.length} cadastrada${data.subjects.length===1?'':'s'}`;$('#projectsCountLabel').textContent=`${data.projects.length} cadastrado${data.projects.length===1?'':'s'}`;/* opcional: o cartão que trazia este texto no Início era a terceira cópia do mesmo número e saiu; em Faculdade o irmão #collegeProgress2 continua. */const elProg=$('#collegeProgress');if(elProg)elProg.textContent=p+'% — calculado automaticamente com seus registros.';$('#collegeProgress2').textContent=p+'% calculado a partir das suas disciplinas';$('#homeSubjects').innerHTML=data.subjects.length?data.subjects.slice(0,5).map(s=>`<div class="course"><div class="course-dot">${esc((s.name||'DS').slice(0,2).toUpperCase())}</div><div><b>${esc(s.name)}</b><small>${esc(s.description||'Disciplina do semestre')}</small></div><div class="progress"><i style="width:${Math.max(0,Math.min(100,Number(s.progress)||0))}%"></i></div></div>`).join(''):empty('Nenhuma disciplina cadastrada.');$('#homeProjects').innerHTML=data.projects.length?data.projects.slice(0,4).map(projectHtml).join(''):empty('Nenhum projeto cadastrado.');$('#subjectsList').innerHTML=data.subjects.length?data.subjects.map((s,i)=>mwLinha('subjects',i,esc(s.name),`${esc(s.description||'Sem descrição')} · ${Number(s.progress)||0}%`)).join(''):empty('Nenhuma disciplina cadastrada.','subjects');$('#projectsList').innerHTML=data.projects.length?data.projects.map((p,i)=>mwLinha('projects',i,esc(p.name),esc(p.description||'Sem descrição'),mwSelos('projects',p))).join(''):empty('Nenhum projeto cadastrado.','projects');$('#activitiesList').innerHTML=data.activities.length?data.activities.map((a,i)=>{const today=new Date();today.setHours(0,0,0,0);const due=a.date?new Date(a.date+'T00:00:00'):null;const overdue=!!(due&&due<today);const isToday=!!(due&&due.getTime()===today.getTime());const badge=overdue?'<span class="mw-due-badge overdue">Atrasada</span>':isToday?'<span class="mw-due-badge today">Hoje</span>':'';return mwLinha('activities',i,esc(a.name),`${esc(a.description||'Sem descrição')} · ${esc(mwDataHumana(a.date))}`,badge+mwSelos('activities',a),overdue?'mw-overdue':'')}).join(''):empty('Nenhuma atividade cadastrada.','activities');$('#notesList').innerHTML=data.notes.length?data.notes.map((n,i)=>mwLinha('notes',i,esc(n.title),esc(n.body||''))).join(''):empty('Nenhuma anotação criada.','notes');$$('[data-delete]').forEach(b=>b.onclick=()=>{data[b.dataset.delete].splice(Number(b.dataset.index),1);save();toast('Item removido')});if(typeof window.mwDashRefresh==='function')window.mwDashRefresh(data)}
 /* Forms — o modal legado foi removido daqui.
    Ele já era inalcançável: o bloco de criação novo escuta o clique na
    FASE DE CAPTURA do document e chama stopImmediatePropagation(), então
@@ -6039,8 +6062,17 @@ window.toast = toast;
   function buildCalendar(){const box=q('#academicCalendar');if(!box)return;const now=new Date(),y=now.getFullYear(),m=now.getMonth(),first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();let h='';['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].forEach(d=>h+=`<div style="font-size:11px;color:var(--muted);padding:0 6px 3px">${d}</div>`);for(let i=0;i<first;i++)h+='<div></div>';for(let d=1;d<=days;d++){const today=d===now.getDate();h+=`<div class="calendar-day ${today?'today':''}"><strong>${d}</strong>${today?'<span class="event-dot">Hoje</span>':''}</div>`}box.innerHTML=h}
   buildCalendar();
 
-  function renderLectures(){const box=q('#lectureGrid');if(!box)return;let d={};try{d=JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}')}catch{};const subjects=Array.isArray(d.subjects)?d.subjects:[];if(!subjects.length){box.innerHTML='<div class="empty-state">Nenhuma aula cadastrada ainda.</div>';return}box.innerHTML=subjects.slice(0,6).map((x,i)=>{const name=typeof x==='string'?x:(x.name||x.title||`Disciplina ${i+1}`);const p=Number(x.progress||0);return `<div class="lecture-card"><strong>${escSafe(name)}</strong><div class="lecture-meta">Próxima aula • ${['Seg','Ter','Qua','Qui','Sex'][i%5]} • 19:00</div><div class="progress-line"><i style="width:${Math.max(0,Math.min(100,p))}%"></i></div><div class="lecture-meta">${Math.max(0,Math.min(100,p))}% concluído</div></div>`}).join('')}
-  renderLectures();
+  /* O SEGUNDO PINTOR DA GRADE DE AULAS FOI RETIRADO.
+     `renderLectures` escrevia em `#lectureGrid` — o mesmo elemento que
+     o `paintAulas` pinta — e escrevia FICÇÃO:
+
+         Próxima aula • ${['Seg','Ter','Qua','Qui','Sex'][i%5]} • 19:00
+
+     Dia da semana pelo índice da disciplina, horário fixo às 19:00 para
+     todo mundo. Como este bloco roda antes, era a versão dele que ficava
+     na tela: a grade de aulas do Início mostrava um horário que ninguém
+     digitou. Um pintor por elemento, e a informação vem do que a pessoa
+     gravou (§39). */
 
   /* Account login — never auto-creates an account. */
   const userInput=q('#username'),passInput=q('#password'),loginBtn=q('#loginButton');
@@ -8763,8 +8795,10 @@ body.light .eva-attach{color:#1e3a5f;background:rgba(0,0,0,.04);border-color:rgb
 }
 body.light #searchWrap .search-icon{color:#1e3a5f;background:rgba(255,255,255,.86)}
 body.light #searchWrap .search-icon:hover{background:#fff;color:#0b1830}
-#searchWrap #globalSearch{opacity:0;pointer-events:none;padding-left:46px}
-#searchWrap.open #globalSearch,#searchWrap:focus-within #globalSearch{opacity:1;pointer-events:auto}
+/* O campo era invisível até a lupa abrir. Não abre mais: mora no
+   Início, aberto. Guardar aqui `opacity:0` era manter um campo
+   invisível e intocável no meio da tela. */
+
 
 /* Bell */
 .bell-btn{display:grid!important;place-items:center!important;position:relative}
@@ -12575,9 +12609,7 @@ html body #app .mw-welcome-actions button{
   cursor:pointer;
 }
 html body #app .mw-welcome-actions button:hover{ background: rgba(59,130,246,.32); }
-html body #app #homePromo[hidden]{ display:none !important; }
-html body #app #promoActivitiesBody,
-html body #app #promoProjectsBody{ min-height: 42px; }
+/* As regras da seção "O que vem" saíram junto com a seção. */
 html body #app .mw-promo-row{
   display:flex; align-items:baseline; justify-content:space-between; gap:10px;
   padding:8px 0; border-bottom:1px solid rgba(255,255,255,.06);
@@ -12683,8 +12715,9 @@ body.light #app .mw-promo-row b{ color:#152033 !important; }body.light #app .mw-
   const WEEK = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
   const WEEK_SHORT = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
   const MONTHS = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-  const ROOMS = ['Lab 01','Sala 12','Lab 02','Sala 08','Auditório'];
-  const TIMES = ['19:00','20:40'];
+  /* ROOMS e TIMES saíram: eram as listas de onde a grade tirava sala e
+     horário pelo índice da disciplina. Sem elas o código não tem de onde
+     inventar. */
 
   const read = () => { try { return JSON.parse(localStorage.getItem(STORE) || '{}'); } catch { return {}; } };
   const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -12700,18 +12733,53 @@ body.light #app .mw-promo-row b{ color:#152033 !important; }body.light #app .mw-
     setTimeout(() => q('[data-add="'+type+'"]')?.click(), 50);
   }
 
+  /* AS AULAS ERAM INVENTADAS, E ISSO APARECIA EM DUAS TELAS.
+     O que estava escrito aqui:
+
+         weekday: (i % 5) + 1,
+         time:    TIMES[i % 2],
+         room:    ROOMS[i % ROOMS.length],
+
+     Dia da semana, horário e sala saíam da POSIÇÃO da disciplina na
+     lista. A primeira matéria cadastrada "tinha aula" segunda às 19:00
+     no Lab 01; a segunda, terça às 20:40 na Sala 12. Nada disso foi
+     digitado por ninguém, e mudava sozinho se a ordem da lista mudasse.
+     Pior: `eventsOn` empurrava essas aulas para o CALENDÁRIO, então o
+     mês vinha pontilhado de compromissos que não existem.
+
+     Agora a grade lê o que a pessoa gravou na disciplina — `weekday`,
+     `time` e `room`, os três campos que o formulário de Disciplinas
+     passou a oferecer. Quem não preencheu não tem aula na grade, e a
+     tela diz isso em vez de preencher por conta própria. Um horário em
+     branco é informação; um horário inventado é mentira. */
+  /* O formulário grava o dia como a PALAVRA que a pessoa escolheu
+     ("Segunda"), e não como número: o blob do workspace é lido por gente
+     em exportações e backups, e "3" não diz nada ali. A tradução para
+     índice acontece aqui, num lugar só, e aceita as duas formas — quem
+     tiver dados antigos com número continua funcionando. */
+  const DIA_INDICE = { 'domingo':0,'segunda':1,'terça':2,'terca':2,'quarta':3,
+                       'quinta':4,'sexta':5,'sábado':6,'sabado':6 };
+  function diaDaSemana(v){
+    if (typeof v === 'number' && Number.isInteger(v) && v >= 0 && v <= 6) return v;
+    const chave = String(v || '').trim().toLowerCase();
+    return Object.prototype.hasOwnProperty.call(DIA_INDICE, chave) ? DIA_INDICE[chave] : null;
+  }
   function lecturesFrom(data) {
     const subjects = Array.isArray(data.subjects) ? data.subjects : [];
-    return subjects.map((s, i) => {
-      const name = typeof s === 'string' ? s : (s.name || s.title || 'Disciplina');
+    return subjects.map(s => {
+      if (typeof s !== 'object' || !s) return null;
+      const dia = diaDaSemana(s.weekday);
+      if (dia === null) return null;
+      const hora = String(s.time || '').trim();
+      if (!hora) return null;
       return {
-        name,
-        weekday: (i % 5) + 1,
-        time: TIMES[i % 2],
-        room: ROOMS[i % ROOMS.length],
-        progress: Number((s && s.progress) || 0)
+        name: s.name || s.title || 'Disciplina',
+        weekday: dia,
+        time: hora,
+        room: String(s.room || '').trim(),
+        progress: Number(s.progress || 0)
       };
-    });
+    }).filter(Boolean);
   }
 
   function eventsOn(data, y, m, d) {
@@ -12719,7 +12787,7 @@ body.light #app .mw-promo-row b{ color:#152033 !important; }body.light #app .mw-
     const wd = new Date(y, m, d).getDay();
     const key = iso(y, m, d);
     lecturesFrom(data).forEach(l => {
-      if (l.weekday === wd) list.push({ kind: 'aula', title: l.name, meta: l.time + ' · ' + l.room, go: 'subjects' });
+      if (l.weekday === wd) list.push({ kind: 'aula', title: l.name, meta: [l.time, l.room].filter(Boolean).join(' · '), go: 'subjects' });
     });
     (data.activities || []).forEach(a => {
       if (a.date === key) list.push({ kind: 'atividade', title: a.name || 'Atividade', meta: a.description || 'Entrega', go: 'activities' });
@@ -12735,21 +12803,10 @@ body.light #app .mw-promo-row b{ color:#152033 !important; }body.light #app .mw-
     const activities = data.activities || [];
     const empty = !subjects.length && !projects.length && !activities.length;
     const welcome = q('#homeWelcome');
-    const promo = q('#homePromo');
     if (welcome) welcome.hidden = true;
-    if (promo) promo.hidden = false;
-
-    const actBody = q('#promoActivitiesBody');
-    if (actBody) {
-      const upcoming = activities.slice().sort((a,b) => String(a.date||'9999').localeCompare(String(b.date||'9999'))).slice(0,3);
-      if (!upcoming.length) actBody.innerHTML = '<p class="mw-promo-empty">Nenhuma atividade com prazo ainda.</p>';
-      else actBody.innerHTML = upcoming.map(a => '<div class="mw-promo-row"><b>'+esc(a.name||'Atividade')+'</b><span>'+esc(typeof window.mwDataHumana==='function'?window.mwDataHumana(a.date):(a.date||'Sem data'))+'</span></div>').join('');
-    }
-    const projBody = q('#promoProjectsBody');
-    if (projBody) {
-      if (!projects.length) projBody.innerHTML = '<p class="mw-promo-empty">Nenhum projeto em andamento.</p>';
-      else projBody.innerHTML = projects.slice(0,3).map(p => '<div class="mw-promo-row"><b>'+esc(p.name||'Projeto')+'</b><span>'+esc(p.tag||'Projeto')+'</span></div>').join('');
-    }
+    /* O que vinha depois daqui pintava a seção "O que vem", retirada da
+       marcação por repetir três blocos que já estavam na tela. Sem
+       elemento, o pintor não tem o que pintar. */
   }
 
   function paintAulas(data) {
@@ -12758,7 +12815,18 @@ body.light #app .mw-promo-row b{ color:#152033 !important; }body.light #app .mw-
     const lectures = lecturesFrom(data);
     const todayWd = new Date().getDay();
     if (!lectures.length) {
-      box.innerHTML = '<div class="mw-aula-empty"><strong>Nenhuma aula na grade</strong><span>Cadastre uma disciplina para montar o horário da semana. Os pontos aparecem no calendário.</span><button type="button" data-go-add="subjects">Adicionar disciplina</button></div>';
+      /* Estado vazio no material do sistema (`ds-partida`), o mesmo que
+         o Início já usa quando não há nada — e não uma caixa própria com
+         botão de largura inteira, que era o que se via aqui. O texto diz
+         o que FALTA: não é "cadastre uma disciplina" (a pessoa pode ter
+         dez), é preencher o dia e o horário nelas. */
+      box.classList.remove('ds-trilho');
+      box.innerHTML =
+        '<div class="ds-partida">' +
+          '<h4 class="ds-partida-titulo">Nenhum horário preenchido</h4>' +
+          '<p class="ds-partida-texto">A grade da semana sai do <b>dia</b> e do <b>horário</b> que você grava em cada disciplina. Preencha numa delas e ela aparece aqui e no calendário.</p>' +
+          '<div class="ds-partida-acoes"><button type="button" class="ds-btn ds-btn-secundario" data-view="subjects">Abrir Disciplinas</button></div>' +
+        '</div>';
       return;
     }
     const ordered = lectures.slice().sort((a,b) => {
@@ -12768,7 +12836,8 @@ body.light #app .mw-promo-row b{ color:#152033 !important; }body.light #app .mw-
     }).slice(0, 4);
     box.innerHTML = ordered.map(l => {
       const when = l.weekday === todayWd ? 'Hoje · ' + l.time : WEEK_SHORT[l.weekday] + ' · ' + l.time;
-      return '<div class="mw-aula"><div class="mw-aula-when">'+esc(when)+'</div><strong>'+esc(l.name)+'</strong><span>'+esc(l.room)+' · '+(l.progress||0)+'% concluído</span></div>';
+      const apoio = [l.room, (l.progress || 0) + '% concluído'].filter(Boolean).join(' · ');
+      return '<div class="mw-aula"><div class="mw-aula-when">'+esc(when)+'</div><strong>'+esc(l.name)+'</strong><span>'+esc(apoio)+'</span></div>';
     }).join('');
   }
 
@@ -13988,7 +14057,7 @@ body.light #app .workspace-form input,body.light #app .workspace-form textarea,b
   window.mwRepovoaSelects = mwRepovoaSelects;
   const configs = {
     institutions:{ title:'Instituições', intro:'Registre onde você estuda. Uma pessoa pode ter mais de uma — graduação, técnico, curso livre — e cada disciplina aponta para a sua.', action:'Nova instituição', fields:[['name','Nome da instituição','text','Ex.: Universidade Federal do seu estado',true],['short','Sigla','text','Ex.: UFXX',false],['kind','Tipo','select','Universidade',false,['Universidade','Faculdade','Instituto','Centro universitário','Escola técnica','Curso livre','Outro']],['course','Curso','text','Ex.: o curso que você faz aqui',false],['city','Cidade','text','Ex.: sua cidade',false],['site','Site','text','Ex.: site oficial da instituição',false]] },
-    subjects:{ title:'Disciplinas', intro:'Planeje suas matérias, acompanhe progresso e mantenha o semestre sob controle.', action:'Nova disciplina', fields:[['name','Nome da disciplina','text','Ex.: Programação Web',true],['description','Objetivo ou descrição','text','Ex.: Front-end e aplicações',false],['progress','Progresso (%)','number','0',false],['code','Código da disciplina','text','Ex.: PWEB-2026',false],['institution','Instituição','select','',false,'@institutions'],['semester','Semestre','number','',false]] },
+    subjects:{ title:'Disciplinas', intro:'Planeje suas matérias, acompanhe progresso e mantenha o semestre sob controle.', action:'Nova disciplina', fields:[['name','Nome da disciplina','text','Ex.: Programação Web',true],['description','Objetivo ou descrição','text','Ex.: Front-end e aplicações',false],['progress','Progresso (%)','number','0',false],['code','Código da disciplina','text','Ex.: PWEB-2026',false],['institution','Instituição','select','',false,'@institutions'],['semester','Semestre','number','',false],['weekday','Dia da aula','select','Sem dia fixo',false,['Sem dia fixo','Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado']],['time','Horário da aula','text','Ex.: 19:00',false],['room','Sala','text','Ex.: Lab 01',false]] },
     projects:{ title:'Projetos', intro:'Centralize ideias, entregas e prazos dos projetos que importam agora.', action:'Novo projeto', fields:[['name','Nome do projeto','text','Ex.: Trabalho de conclusão',true],['description','Resumo do objetivo','textarea','O que você está construindo?',true],['tag','Área / tag','text','Ex.: Pesquisa',false],['status','Status','select','Em andamento',false,['Planejamento','Em andamento','Em revisão','Concluído','Arquivado']],['priority','Prioridade','select','Média',false,['Baixa','Média','Alta']],['subject','Disciplina','select','',false,'@subjects'],['members','Integrantes','text','Ex.: você, Ana, Bruno',false],['deadline','Prazo','date','',false]] },
     activities:{ title:'Atividades', intro:'Organize tarefas e prazos para saber exatamente o que fazer a seguir.', action:'Nova atividade', fields:[['name','Título da atividade','text','Ex.: Entregar trabalho',true],['description','Detalhes','textarea','Inclua o que precisa ser feito.',false],['date','Prazo','date','',false],['priority','Prioridade','select','Média',false,['Baixa','Média','Alta']],['subject','Disciplina','select','',false,'@subjects'] ] },
     notes:{ title:'Anotações', intro:'Registre decisões, referências e ideias sem perder o contexto do estudo.', action:'Nova anotação', fields:[['title','Título','text','Ex.: Ideias para a entrega',true],['body','Conteúdo','textarea','Escreva sua anotação...',true],['category','Categoria','select','Estudos',false,['Estudos','Projeto','Referência','Pessoal']] ] }
@@ -14409,29 +14478,29 @@ html body #app #logout:hover{background:linear-gradient(135deg,#38bdf8,#2563eb)!
 html body #app .search-wrap,html body #app .search-wrap.open,html body #app .search-wrap:focus-within{transition:width .52s cubic-bezier(.2,.75,.2,1),background .30s ease,box-shadow .30s ease!important;}
 @media(max-width:860px){#app .mw-insights{grid-template-columns:1fr;}}
 </style>
-<script id="mw-elite-dashboard-insights">
-(() => {
-  const home=document.getElementById('view-home'); if(!home)return;
-  if(!document.getElementById('mwInsights')){
-    const section=document.createElement('section'); section.id='mwInsights'; section.className='mw-insights';
-    section.innerHTML='<article class="card mw-insight"><h4>Ritmo de aprendizagem</h4><p>Progresso médio das suas disciplinas.</p><div class="mw-ring-wrap"><div class="mw-ring" id="mwProgressRing"><b id="mwProgressRingValue">0%</b></div><p id="mwProgressNarrative">Cadastre uma disciplina para iniciar.</p></div></article><article class="card mw-insight"><h4>Atividade da semana</h4><p>Distribuição visual das entregas registradas.</p><div class="mw-bars" id="mwWeekBars"><i style="--h:20%"></i><i style="--h:28%"></i><i style="--h:16%"></i><i style="--h:35%"></i><i style="--h:22%"></i><i style="--h:42%"></i><i style="--h:30%"></i></div></article><article class="card mw-insight"><h4>Projetos em curso</h4><p>Organize sua stack e próximos entregáveis.</p><strong class="mw-deadline-number" id="mwProjectTotal">0</strong><button class="mw-insight-action" type="button" data-dashboard-go="projects">Abrir projetos →</button></article>';
-    home.appendChild(section);
-  }
-  const read=()=>{try{return JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}')}catch{return {}}};
-  const refresh=(d=read())=>{
-    const subjects=Array.isArray(d.subjects)?d.subjects:[], projects=Array.isArray(d.projects)?d.projects:[], activities=Array.isArray(d.activities)?d.activities:[];
-    const avg=subjects.length?Math.round(subjects.reduce((sum,s)=>sum+(Number(s.progress)||0),0)/subjects.length):0;
-    const ring=document.getElementById('mwProgressRing'),value=document.getElementById('mwProgressRingValue'),note=document.getElementById('mwProgressNarrative'),project=document.getElementById('mwProjectTotal');
-    if(ring)ring.style.setProperty('--p',avg); if(value)value.textContent=avg+'%'; if(note)note.textContent=subjects.length?`${subjects.length} disciplina${subjects.length===1?'':'s'} em acompanhamento.`:'Cadastre uma disciplina para iniciar.'; if(project)project.textContent=projects.length;
-    const today=new Date(), start=new Date(today);start.setDate(today.getDate()-today.getDay());
-    const days=Array(7).fill(0);activities.forEach(a=>{if(!a.date)return;const date=new Date(a.date+'T12:00:00');const index=Math.round((date-start)/86400000);if(index>=0&&index<7)days[index]++;});
-    const max=Math.max(1,...days);document.querySelectorAll('#mwWeekBars i').forEach((bar,i)=>bar.style.setProperty('--h',Math.max(16,Math.round(days[i]/max*100))+'%'));
-  };
-  const current=window.mwDashRefresh;window.mwDashRefresh=(d)=>{if(typeof current==='function')current(d);refresh(d);};refresh();
-  const surface=()=>{const photo=document.getElementById('profilePhoto')?.value||'';const name=document.getElementById('profileName')?.value||'Mateus';const targets=[document.getElementById('workspaceProfileSocialBtn')].filter(Boolean);targets.forEach(el=>{if(photo){el.style.backgroundImage=`url("${photo}")`;el.style.backgroundSize='cover';el.style.backgroundPosition='center';el.textContent='';}else{el.style.backgroundImage='';el.textContent=String(name).split(/\s+/).map(x=>x[0]).slice(0,2).join('').toUpperCase();}});};
-  document.addEventListener('click',event=>{if(event.target.closest('.crop-save,#removeProfilePhoto,#saveProfile'))setTimeout(surface,30);});surface();
-})();
-</script>
+<!-- OS TRÊS CARTÕES DO FIM DO INÍCIO FORAM RETIRADOS.
+     `mw-elite-dashboard-insights` injetava, no fim da tela inicial:
+
+       · "Ritmo de aprendizagem" — o mesmo 55% que já aparece no cartão
+         de números lá em cima E no "Foco do semestre" logo abaixo dele.
+         Era a TERCEIRA vez que o mesmo número aparecia na mesma rolagem.
+       · "Atividade da semana" — sete barras que o `refresh` preenche com
+         as entregas da semana; a mesma informação da faixa "Carga de
+         estudos", que já mostra as próximas oito semanas.
+       · "Projetos em curso" — a contagem de projetos, que já está no
+         cartão de números e em "Projetos recentes".
+
+     Nada disso estava errado por si. O defeito é de conjunto: o §1 pede
+     um aplicativo, não "uma coleção de cards genéricos", e uma tela que
+     repete o mesmo número três vezes com três desenhos diferentes é
+     exatamente isso. Eles vinham de uma época em que o Início era só
+     estes cartões; o Início de hoje já responde às três perguntas antes
+     de a pessoa chegar aqui.
+
+     Junto saiu um `surface()` que era o QUARTO sincronizador de avatar
+     do arquivo — os outros três continuam, e o caminho canônico é o
+     `mwApplyNavPhoto`. -->
+
 <script id="mw-local-persistence-fix">
 (() => {
   const workspaceKey = 'mateusWorkspaceV4';
@@ -14938,8 +15007,11 @@ body::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,rgba(90,17
 }
 #app #searchWrap .search-icon:hover{transform:scale(1.045)!important;color:#7dd3fc!important;background:rgba(56,189,248,.075)!important}
 #app #searchWrap .search-icon:focus-visible{outline:2px solid rgba(56,189,248,.42);outline-offset:-3px}
+/* O recuo de 44px à esquerda existia para a lupa ABSOLUTA que ficava
+   sobre o campo. Na busca aberta a lupa é um irmão no fluxo, e um recuo
+   de 44px em cima disso empurrava o texto para longe dela. */
 #app #searchWrap #globalSearch{
-  height:100%!important;width:100%!important;margin:0!important;padding:0 14px 0 44px!important;
+  height:100%!important;width:100%!important;margin:0!important;padding:0!important;
   border:0!important;outline:none!important;border-radius:inherit!important;
   background:transparent!important;color:var(--text)!important;
   caret-color:#67c7ff!important;cursor:text!important;
@@ -14947,10 +15019,7 @@ body::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,rgba(90,17
      inteira dar zoom sozinha ao focar o campo, e o usuário precisa dar
      um pinça pra voltar ao tamanho normal. */
   font-size:16px!important;letter-spacing:.005em;
-  opacity:0;pointer-events:none;
-  transition:opacity .18s ease!important;
 }
-#app #searchWrap.open #globalSearch,#app #searchWrap:focus-within #globalSearch{opacity:1;pointer-events:auto}
 #app #searchWrap #globalSearch::placeholder{color:rgba(185,210,235,.48)!important}
 #app #searchWrap #globalSearch:focus{caret-color:#67c7ff!important}
 
@@ -15039,7 +15108,11 @@ html body #app #searchWrap.search-wrap.open .search-icon.icon-btn{
 html body #app #searchWrap .search-icon svg{width:18px!important;height:18px!important;display:block!important}
 html body #app #globalSearch{
   position:relative!important;z-index:1!important;
-  color:#eaf6ff!important;padding-left:42px!important;
+  /* `color` cravado saiu junto com o `padding-left:42px`: o primeiro é
+     um branco-gelo que no tema claro fica ilegível, e o segundo é o
+     mesmo recuo da lupa absoluta que não existe mais. Quem pinta o
+     campo é o sistema. */
+  color:var(--mw-txt-1)!important;
 }
 body.light html body #app #searchWrap.search-wrap{background:rgba(255,255,255,.7)!important;border-color:rgba(37,99,235,.18)!important}
 body.light html body #app #searchWrap .search-icon.icon-btn{color:#2563eb!important}
@@ -24223,100 +24296,63 @@ html body.light #mateusAiTitle .mw-id-beta{
 <script id="mw-busca-abre-js">
 (function(){
   'use strict';
-  /* O DONO ÚNICO DE ABRIR, FECHAR E FOCAR A BUSCA.
+  /* O QUE SOBROU DEPOIS QUE A BUSCA DEIXOU DE ABRIR (§24).
 
-     Havia TRÊS lugares fazendo isto: dois blocos legados quase idênticos
-     (cada um com o seu `wrap.classList.add('open')` e o seu setTimeout de
-     80ms para focar) e o atalho Ctrl+K, que simulava um clique no botão e
-     torcia para o resto acontecer. O efeito era o que o Mateus via: no
-     navegador a lupa "não fazia nada" (o campo já está sempre visível no
-     desktop, então abrir não muda nada — e ninguém levava o FOCO até ele,
-     que era o que faltava), e no app o campo não abria.
+     Este bloco existia para resolver um problema que não existe mais.
+     Ele era o dono único de abrir, fechar e focar a busca, e a maior
+     parte dele era conserto de um gesto: a lupa, ao ser pressionada,
+     abria o campo, o campo reposicionava o envoltório, e o botão andava
+     136px entre o `mousedown` e o `mouseup` — então o `click` era
+     entregue ao ancestral comum e nunca chegava em quem escutava.
+     Depois vieram o "fechar ao tocar fora" registrado num quadro
+     seguinte (senão o mesmo toque abria e fechava) e o painel que
+     morria em qualquer rolagem (porque focar o campo rola a página).
 
-     A regra, agora escrita num lugar só:
+     Três consertos para abrir uma caixa de texto. O campo agora mora no
+     Início, aberto, e nada disso precisa existir: não há estado, não há
+     `.open`, não há toque fora, não há reabrir. O que continua sendo
+     verdade é só isto — tocar na lupa leva o cursor para o campo, e o
+     Ctrl+K também.
 
-       DESKTOP (>=901px) — o campo é permanente. Clicar na lupa não abre
-       coisa alguma; ele apenas LEVA O FOCO para o campo. Era exatamente
-       o passo que faltava.
-
-       TELEFONE — a lupa alterna `.open` no envoltório, e o foco vai para
-       o campo depois que ele ganha caixa (dois quadros, não um timeout
-       chutado: focar um elemento ainda sem layout falha em silêncio, e
-       era isso que acontecia de vez em quando).
-
-     Fechar: Escape sempre; clique fora e blur só quando o campo está
-     vazio — quem digitou não perde o que escreveu por encostar na tela. */
+     As duas funções globais ficam porque outros blocos as chamam
+     (Ctrl+K, a gaveta, o Escape); mudou o que elas fazem, não o nome. */
   var envolucro = document.getElementById('searchWrap');
   var botao     = document.getElementById('searchToggle');
   var campo     = document.getElementById('globalSearch');
   if (!envolucro || !botao || !campo) return;
 
-  var permanente = function(){ return window.matchMedia('(min-width: 901px)').matches; };
-
   function foca(){
+    /* Dois quadros: focar um elemento que ainda não tem caixa falha em
+       silêncio. Aqui o campo já está na tela, mas o Início pode estar
+       entrando com animação — e aí ele ainda não tem. */
     requestAnimationFrame(function(){
-      requestAnimationFrame(function(){ try { campo.focus({ preventScroll: true }); } catch(e){ campo.focus(); } });
-    });
-  }
-  function abre(){
-    if (!permanente()) { envolucro.classList.add('open'); ouveFora(); }
-    foca();
-  }
-  function fecha(){
-    envolucro.classList.remove('open');
-    if (document.activeElement === campo) campo.blur();
-  }
-  /* Exposto para o Ctrl+K falar com o dono em vez de imitar um clique. */
-  window.mwBuscaAbrir = abre;
-  window.mwBuscaFechar = fecha;
-
-  /* `pointerdown`, NÃO `click` — e isto é o coração do defeito.
-
-     Medido: ao pressionar a lupa, o envoltório da busca se reposiciona
-     (o campo abre e ocupa a barra), e o botão ANDA 136px para a
-     esquerda entre o `mousedown` e o `mouseup`. O navegador então
-     entrega o `click` ao ancestral comum (`#searchWrap`), não ao botão:
-     o clique simplesmente nunca chegava em quem escuta. Era isso, e não
-     um handler faltando, que fazia a lupa "não fazer nada" — no
-     navegador e no app.
-
-     Um controle que MOVE A SI MESMO ao ser acionado não pode depender
-     de `click`, que só existe se o dedo terminar onde começou. */
-  botao.addEventListener('pointerdown', function(ev){
-    ev.preventDefault();
-    if (!permanente() && envolucro.classList.contains('open') && !campo.value) { fecha(); return; }
-    abre();
-  });
-  /* O clique que não chega ao botão chega ao envoltório: é o mesmo
-     gesto, e ignorá-lo aqui evita que o listener de "clique fora"
-     feche o que acabou de abrir. */
-  envolucro.addEventListener('click', function(ev){ ev.stopPropagation(); });
-  campo.addEventListener('keydown', function(ev){ if (ev.key === 'Escape') fecha(); });
-  campo.addEventListener('blur', function(){ if (!campo.value) envolucro.classList.remove('open'); });
-  /* FECHAR AO TOCAR FORA — registrado DEPOIS do gesto que abriu.
-
-     Abrir no `pointerdown` e fechar no `click` do documento significa que
-     o MESMO toque faz as duas coisas: abre no primeiro evento e fecha no
-     segundo. Era o que sobrava depois de remover as cópias legadas — a
-     classe `.open` entrava e saía no mesmo gesto, e no telefone a busca
-     parecia não abrir.
-
-     A escuta de fora só passa a existir no próximo quadro, quando o
-     toque que abriu já terminou. */
-  var foraLigado = false;
-  function ouveFora(){
-    if (foraLigado) return;
-    foraLigado = true;
-    requestAnimationFrame(function(){
-      document.addEventListener('click', function aoClicarFora(ev){
-        if (envolucro.contains(ev.target)) return;
-        if (String(campo.value || '').trim()) return;
-        envolucro.classList.remove('open');
-        document.removeEventListener('click', aoClicarFora);
-        foraLigado = false;
+      requestAnimationFrame(function(){
+        try { campo.focus({ preventScroll: true }); } catch(e){ campo.focus(); }
       });
     });
   }
+  function abre(){
+    /* A busca vive no Início. Chamada de outra área, leva para lá antes
+       de focar — senão o Ctrl+K focaria um campo fora da tela. */
+    var home = document.getElementById('view-home');
+    if (home && !home.classList.contains('active') && typeof window.showView === 'function') {
+      window.showView('home');
+    }
+    foca();
+  }
+  function fecha(){
+    campo.value = '';
+    campo.dispatchEvent(new Event('input', { bubbles: true }));
+    if (document.activeElement === campo) campo.blur();
+  }
+  window.mwBuscaAbrir = abre;
+  window.mwBuscaFechar = fecha;
+
+  /* `pointerdown` continua, por um motivo menor mas real: no telefone o
+     `click` num rótulo de campo às vezes chega depois do teclado subir,
+     e o foco pisca. Aqui o campo não se move, então é só antecipação. */
+  botao.addEventListener('pointerdown', function(ev){ ev.preventDefault(); foca(); });
+  campo.addEventListener('keydown', function(ev){ if (ev.key === 'Escape') fecha(); });
 })();
 </script>
 <script id="mw-busca-global-js">
@@ -31960,17 +31996,18 @@ html body .mw-pular:focus{ transform: translateY(0); }
       alvoP.classList.toggle('ds-trilho', projs.length > 0);
     }
 
-    var aulas = q('#lectureGrid');
-    if (aulas){
-      aulas.innerHTML = subs.length
-        ? subs.slice(0,8).map(function(s){
-            return peca(s.name||'Disciplina', 'Progresso da disciplina', s.progress);
-          }).join('')
-        : partida('Sem aulas cadastradas',
-                  'As aulas saem das suas disciplinas — cadastre a primeira e elas aparecem aqui.',
-                  'Adicionar disciplina', 'subjects');
-      aulas.classList.toggle('ds-trilho', subs.length > 0);
-    }
+    /* O TERCEIRO PINTOR DA GRADE DE AULAS SAIU DAQUI.
+       Ele escrevia em `#lectureGrid` a MESMA peça de "Suas disciplinas",
+       trocando só a legenda para "Progresso da disciplina". Duas seções
+       na mesma tela, o mesmo conteúdo, o mesmo número — e, como este
+       bloco roda por último na corrente do `mwDashRefresh`, era esta
+       cópia que ficava na tela.
+
+       Aula não é disciplina: aula é disciplina COM dia e horário. Quem
+       pinta a grade agora é o `paintAulas`, que lê os campos que o
+       formulário de Disciplinas passou a oferecer — e, quando nenhuma
+       disciplina tem horário, diz isso em vez de mostrar a lista de
+       disciplinas outra vez. */
   }
 
   /* ---- 5. A AGENDA DO INÍCIO -----------------------------------------
