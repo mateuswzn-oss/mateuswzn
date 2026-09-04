@@ -120,7 +120,7 @@ export async function abre(dados, opcoes = {}) {
    tela; a lição é que esta lista precisa acompanhar o DOM. */
 export const AREAS = ['home','college','institutions','subjects','projects','activities',
                       'calendar','focus','reports','notes','files','settings','support','profile',
-                      'notifications'];
+                      'notifications','profile-edit'];
 
 export async function vaiPara(p, area){
   await p.evaluate(nome => {

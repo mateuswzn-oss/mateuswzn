@@ -196,31 +196,60 @@ ok('todo alvo tem 24px (exceção de link em frase)', !pequenos.length, pequenos
 /* ---- 4. o que se edita, grava — e sobrevive ao recarregamento ---------
    É a única pergunta que importa numa tela de ajustes, e a única que a
    inspeção visual não responde. */
+/* A EDIÇÃO DO PERFIL MUDOU DE TELA E DE MECÂNICA (§13).
+   Antes: um formulário dentro de uma aba do Perfil, com `#profileName` e
+   um botão "Salvar". Agora: uma tela própria, "Editar perfil", que grava
+   enquanto se digita — e o botão saiu, porque um "Salvar" no fim de uma
+   lista de nove campos é onde o trabalho se perde.
+
+   A pergunta que este teste faz continua sendo a certa, e é a única que
+   a inspeção visual não responde: o que se edita GRAVA, e sobrevive ao
+   recarregamento? Só mudou onde se edita e o que conta como salvar.
+
+   E ele passa a cobrar também o que estava quebrado antes desta rodada:
+   um link social digitado tem de estar lá depois do F5. Não estava —
+   `profile.links` era uma lista e a tela escrevia propriedade nomeada
+   nela, que o `JSON.stringify` descarta. Nenhum teste perguntava isso. */
 if (area === 'profile') {
   const NOVO = 'Nome Trocado No Teste';
-  const gravou = await p.evaluate(async novo => {
-    const campo = document.getElementById('profileName');
-    if (!campo) return { erro: 'não achei #profileName' };
+  const REDE = 'testedomateus';
+  const gravou = await p.evaluate(async ({ novo, rede }) => {
+    document.getElementById('mwPerfilEditar')?.click();
+    await new Promise(r => setTimeout(r, 800));
+    const campo = document.getElementById('mwEditNome');
+    if (!campo) return { erro: 'não achei #mwEditNome' };
     campo.value = novo;
     campo.dispatchEvent(new Event('input', { bubbles: true }));
-    const salvar = [...document.querySelectorAll('#view-profile button')]
-      .find(b => /salvar/i.test(b.textContent || ''));
-    if (!salvar) return { erro: 'não achei o botão de salvar' };
-    salvar.click();
-    await new Promise(r => setTimeout(r, 700));
-    return { noDado: (window.data.profile || {}).name };
-  }, NOVO);
-  ok('editar e salvar grava no dado', gravou.noDado === NOVO, gravou);
+    const ig = document.querySelector('#mwEditRedes [data-rede="instagram"] input');
+    if (!ig) return { erro: 'não achei o campo de Instagram' };
+    ig.value = rede;
+    ig.dispatchEvent(new Event('input', { bubbles: true }));
+    /* Sem botão: a gravação é adiada para não escrever a cada tecla. */
+    await new Promise(r => setTimeout(r, 900));
+    const guardado = JSON.parse(localStorage.getItem('mateusWorkspaceV4') || '{}');
+    const links = (guardado.profile || {}).links || [];
+    const acho = (Array.isArray(links) ? links : []).find(l => l && l.id === 'instagram');
+    return { noDado: (window.data.profile || {}).name, noArmazenamento: acho ? acho.url : null };
+  }, { novo: NOVO, rede: REDE });
+  ok('editar grava no dado, sem botão de salvar', gravou.noDado === NOVO, gravou);
+  ok('e a rede social chega ao armazenamento', gravou.noArmazenamento === REDE, gravou);
 
   await p.reload({ waitUntil: 'domcontentloaded' });
   await p.waitForTimeout(2200);
   await vaiPara(p, 'profile');
   await p.waitForTimeout(700);
-  const depois = await p.evaluate(() => ({
-    noDado: (window.data.profile || {}).name,
-    naTela: (document.getElementById('profileName') || {}).value
-  }));
-  ok('e continua lá depois de recarregar', depois.noDado === NOVO && depois.naTela === NOVO, depois);
+  const depois = await p.evaluate(async () => {
+    document.getElementById('mwPerfilEditar')?.click();
+    await new Promise(r => setTimeout(r, 800));
+    const ig = document.querySelector('#mwEditRedes [data-rede="instagram"] input');
+    return {
+      noDado: (window.data.profile || {}).name,
+      naTela: (document.getElementById('mwEditNome') || {}).value,
+      redeNaTela: ig ? ig.value : null
+    };
+  });
+  ok('e continua lá depois de recarregar',
+     depois.noDado === NOVO && depois.naTela === NOVO && depois.redeNaTela === REDE, depois);
 }
 
 if (area === 'settings') {

@@ -4680,41 +4680,12 @@ body.light .mw-faceid-gate-card p{color:#526988}
 
 <!-- 5 · SOBRE = a edição, no lugar. Sem mandar para outra tela. -->
 <div class="ds-perfil-painel" data-painel="sobre" hidden style="--i:3">
-<section class="ds-faixa">
-<div class="ds-faixa-cabeca"><h3 class="ds-faixa-titulo">Quem &eacute; voc&ecirc;</h3></div>
-<div class="ds-chapa">
-<div class="ds-grade-fixa-2">
-<div class="ds-campo"><label for="profileName">Nome de exibi&ccedil;&atilde;o</label><input id="profileName" class="ds-entrada" type="text" placeholder="Seu nome"></div>
-<div class="ds-campo"><label for="mwPerfilCampoUsuario">Nome de usu&aacute;rio</label><input id="mwPerfilCampoUsuario" class="ds-entrada" type="text" placeholder="seuusuario" autocapitalize="none" spellcheck="false"></div>
-<div class="ds-campo ds-largo"><label for="mwPerfilCampoBio">Bio</label><textarea id="mwPerfilCampoBio" class="ds-entrada" rows="3" maxlength="220" placeholder="Uma linha sobre voc&ecirc; e o que voc&ecirc; estuda."></textarea><small class="ds-micro" id="mwPerfilBioConta"></small></div>
-</div>
-</div>
-</section>
-
-<section class="ds-faixa">
-<div class="ds-faixa-cabeca"><h3 class="ds-faixa-titulo">Contexto acad&ecirc;mico</h3><span class="ds-faixa-apoio">O mesmo dado da &aacute;rea Faculdade — editar aqui muda l&aacute;</span></div>
-<div class="ds-chapa">
-<div class="ds-grade-fixa-2">
-<div class="ds-campo"><label for="mwPerfilCampoInst">Institui&ccedil;&atilde;o</label><input id="mwPerfilCampoInst" class="ds-entrada" type="text" placeholder="Onde voc&ecirc; estuda"></div>
-<div class="ds-campo"><label for="mwPerfilCampoCurso">Curso</label><input id="mwPerfilCampoCurso" class="ds-entrada" type="text" placeholder="Seu curso"></div>
-<div class="ds-campo"><label for="mwPerfilCampoSemestre">Semestre</label><input id="mwPerfilCampoSemestre" class="ds-entrada" type="number" min="1" max="20" step="1" placeholder="1"></div>
-<div class="ds-campo"><label for="mwPerfilCampoArea">&Aacute;rea / especializa&ccedil;&atilde;o</label><input id="mwPerfilCampoArea" class="ds-entrada" type="text" placeholder="Opcional"></div>
-</div>
-</div>
-</section>
-
-<section class="ds-faixa">
-<div class="ds-faixa-cabeca"><h3 class="ds-faixa-titulo">Links</h3><span class="ds-faixa-apoio">Aparecem no topo do perfil</span></div>
-<div class="ds-chapa">
-<div class="ds-grade-fixa-2">
-<div class="ds-campo"><label for="mwLinkInstagram">Instagram</label><input id="mwLinkInstagram" class="ds-entrada" type="text" inputmode="url" placeholder="@usuario"></div>
-<div class="ds-campo"><label for="mwLinkGithub">GitHub</label><input id="mwLinkGithub" class="ds-entrada" type="text" inputmode="url" placeholder="usuario"></div>
-<div class="ds-campo"><label for="mwLinkLinkedin">LinkedIn</label><input id="mwLinkLinkedin" class="ds-entrada" type="text" inputmode="url" placeholder="in/usuario"></div>
-<div class="ds-campo"><label for="mwLinkSite">Site</label><input id="mwLinkSite" class="ds-entrada" type="text" inputmode="url" placeholder="https://"></div>
-</div>
-</div>
-</section>
-
+<!-- OS CAMPOS SAÍRAM DAQUI PARA A TELA "EDITAR PERFIL" (§13).
+     Este painel era um formulário de duas colunas dentro de uma aba do
+     próprio Perfil: a pessoa clicava em "Editar perfil" e continuava na
+     mesma tela, com o cabeçalho social ainda em cima. Editar virou uma
+     tela, com cabeçalho de voltar e a foto no alto — o que ficou aqui é
+     o que é do PERFIL e não da edição: as chaves de privacidade. -->
 <section class="ds-faixa">
 <div class="ds-faixa-cabeca"><h3 class="ds-faixa-titulo">Privacidade</h3><span class="ds-faixa-apoio">O que outra pessoa veria</span></div>
 <div class="ds-chapa">
@@ -4725,10 +4696,14 @@ body.light .mw-faceid-gate-card p{color:#526988}
 
 </div>
 
-<div class="ds-perfil-salvar">
-<button class="ds-btn ds-btn-primario ds-btn-g" id="saveProfile">Salvar perfil</button>
-<span class="ds-micro" id="mwPerfilSalvoAviso"></span>
-</div>
+<!-- "SALVAR PERFIL" SAIU, E TINHA DE SAIR.
+     Com a edição numa tela própria que grava enquanto se digita, este
+     botão não teria mais o que salvar — mas o problema era pior do que
+     inútil: ele lia `mwPerfilCampoUsuario`, `mwPerfilCampoBio`,
+     `mwPerfilCampoInst` e companhia, campos que saíram daqui. Campo
+     inexistente devolve string vazia, e o save gravava vazio por cima
+     de usuário, bio, instituição, curso e área. Um botão "Salvar" que
+     apaga é o pior defeito possível numa tela de perfil. -->
 </div>
 
 <!-- A MESMA CAIXA, AGORA CONTEXTUAL (§13/§14).
@@ -4772,6 +4747,72 @@ body.light .mw-faceid-gate-card p{color:#526988}
      SOCIAL depende de um servidor de perfis que ainda não existe. A
      seção está aqui, com a arquitetura pronta e dizendo isso em voz
      alta — não com três seguidores inventados. -->
+<!-- EDITAR PERFIL (§13) — tela própria, não uma aba escondida.
+     Antes, "Editar perfil" trocava para a aba "Sobre" dentro do próprio
+     Perfil: a pessoa continuava na mesma tela, com as abas em cima e o
+     cabeçalho social ainda ali, editando num formulário de duas colunas
+     com cara de painel administrativo.
+
+     A referência que o Mateus mandou (o Editar perfil do Instagram) é
+     clara sobre a forma, e ela não é o visual: é a HIERARQUIA. Primeiro
+     a foto, centralizada, com uma única palavra embaixo. Depois os
+     campos em LINHAS — rótulo à esquerda, valor à direita —, que é como
+     se lê uma ficha, não como se preenche um cadastro.
+
+     Reaproveita os componentes da tela de Configurações de propósito: é
+     a mesma ideia de lista agrupada com divisores, e inventar um segundo
+     vocabulário para o mesmo desenho seria criar dois lugares para
+     consertar a mesma coisa.
+
+     (O teste 13 varre o HTML inteiro atrás de nomes do sistema, e não
+     sabe distinguir comentário de marcação — decisão dele, documentada
+     lá: afrouxar exigiria entender três sintaxes de comentário no mesmo
+     arquivo. Por isso este texto não escreve o prefixo com curinga: era
+     a minha prosa que virava um nome inexistente. O texto muda, a
+     checagem não.) -->
+<section class="view ds" id="view-profile-edit" data-mw-migrada="1">
+<div class="ds-conf-pilha ds-tela">
+<div class="ds-conf">
+
+<div class="ds-perfil-edit-foto">
+<div class="ds-perfil-foto ds-perfil-foto-g" id="mwEditFoto" role="button" tabindex="0" aria-label="Foto do perfil — tocar para alterar">
+<span id="mwEditFotoIniciais" aria-hidden="true">M</span>
+</div>
+<button type="button" class="ds-perfil-edit-foto-btn" id="mwEditFotoBtn">Editar foto</button>
+</div>
+
+<section class="ds-conf-secao">
+<h2 class="ds-conf-titulo">Sobre você</h2>
+<div class="ds-conf-lista">
+<label class="ds-conf-linha"><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Nome</span></span><input class="ds-conf-campo ds-conf-campo-edit" id="mwEditNome" type="text" placeholder="Seu nome" autocomplete="name"></label>
+<label class="ds-conf-linha"><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Nome de usuário</span></span><input class="ds-conf-campo ds-conf-campo-edit" id="mwEditUsuario" type="text" placeholder="seuusuario" autocapitalize="none" autocorrect="off" spellcheck="false"></label>
+<label class="ds-conf-linha"><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Pronomes</span></span><input class="ds-conf-campo ds-conf-campo-edit" id="mwEditPronomes" type="text" list="mwPronomesSugestoes" placeholder="ele/dele, ela/dela, elu/delu…"><datalist id="mwPronomesSugestoes"><option value="ele/dele"></option><option value="ela/dela"></option><option value="elu/delu"></option><option value="ele/ela"></option></datalist></label>
+<label class="ds-conf-linha ds-conf-linha-alta"><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Bio</span><span class="ds-conf-apoio"><span id="mwEditBioContador">0/220</span></span></span><textarea class="ds-conf-campo ds-conf-campo-edit ds-conf-campo-area" id="mwEditBio" rows="2" maxlength="220" placeholder="Uma linha sobre você"></textarea></label>
+<label class="ds-conf-linha"><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Gênero</span></span><select class="ds-conf-campo ds-conf-campo-edit" id="mwEditGenero"><option value="">Prefiro não informar</option><option value="Homem">Homem</option><option value="Mulher">Mulher</option><option value="Não binário">Não binário</option><option value="Outro">Outro</option></select></label>
+</div>
+<p class="ds-conf-info">Pronomes e gênero são opcionais, e cada um tem a sua chave em <b>Privacidade</b>: preencher aqui não é o mesmo que mostrar no perfil.</p>
+</section>
+
+<section class="ds-conf-secao">
+<h2 class="ds-conf-titulo">Contexto acadêmico</h2>
+<div class="ds-conf-lista">
+<label class="ds-conf-linha"><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Curso</span></span><input class="ds-conf-campo ds-conf-campo-edit" id="mwEditCurso" type="text" placeholder="Seu curso"></label>
+<label class="ds-conf-linha"><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Instituição</span></span><input class="ds-conf-campo ds-conf-campo-edit" id="mwEditInst" type="text" placeholder="Onde você estuda"></label>
+<label class="ds-conf-linha"><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Semestre</span></span><input class="ds-conf-campo ds-conf-campo-edit" id="mwEditSemestre" type="number" min="1" max="20" step="1" placeholder="1"></label>
+<label class="ds-conf-linha"><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Área</span></span><input class="ds-conf-campo ds-conf-campo-edit" id="mwEditArea" type="text" placeholder="Opcional"></label>
+</div>
+<p class="ds-conf-info">É o mesmo dado da área <b>Faculdade</b> — mudar aqui muda lá, porque é o mesmo dado e não uma cópia.</p>
+</section>
+
+<section class="ds-conf-secao">
+<h2 class="ds-conf-titulo">Redes sociais</h2>
+<div class="ds-conf-lista" id="mwEditRedes"></div>
+<p class="ds-conf-info">Digite o nome de usuário ou cole o link inteiro — o endereço final aparece embaixo de cada um. Rede sem nada preenchido não aparece no perfil.</p>
+</section>
+
+</div>
+</div>
+</section>
 <section class="view ds" id="view-notifications" data-mw-migrada="1">
 <div class="ds-conf-pilha ds-tela">
 <div class="ds-conf">
@@ -4806,7 +4847,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
 <div class="ds-conf ds-conf-tela" data-conf-tela="notificacoes" hidden><div class="ds-conf-cabeca"><button type="button" class="ds-conf-voltar" data-conf-voltar aria-label="Voltar para Configurações"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h2>Notificações</h2></div><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Lembretes e prazos</h2><div class="ds-conf-lista"><div class="ds-conf-faixa"><span class="ds-conf-rotulo">Avisar sobre prazos</span><span class="ds-conf-apoio" id="mwNotifDiasTexto">até 7 dias antes</span><input type="range" id="mwNotifDias" min="1" max="30" step="1" value="7" aria-label="Quantos dias antes avisar sobre um prazo"></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 8h18c0-1-3-1-3-8"/><path d="M10 21h4"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Incluir aulas de hoje</span><span class="ds-conf-apoio">Só muda algo se você cadastrou horário nas disciplinas</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwNotifAulas" aria-label="Incluir aulas de hoje"></button></div></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">No aparelho</h2><div class="ds-conf-lista"><p class="ds-conf-info"><strong>Em breve.</strong> Um aviso que chega com o app fechado precisa de um servidor de push, que ainda não existe. Enquanto isso os lembretes acima aparecem no sino quando você abre o Workspace — nada é enviado para fora daqui.</p></div></section></div>
 <div class="ds-conf ds-conf-tela" data-conf-tela="seguranca" hidden><div class="ds-conf-cabeca"><button type="button" class="ds-conf-voltar" data-conf-voltar aria-label="Voltar para Configurações"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h2>Segurança</h2></div><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Neste aparelho</h2><div class="ds-conf-lista"><div id="mwFaceIdGroup" hidden><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10" width="15" height="10.5" rx="2.4"/><path d="M8 10V7.2a4 4 0 0 1 8 0V10"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Face ID</span><span class="ds-conf-apoio">Entrar sem digitar, usando o Face ID deste aparelho</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwFaceIdToggle" aria-label="Entrar com Face ID"></button></div></div><div id="mwPinGroup"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 3.5a5 5 0 0 1 0 10 5 5 0 0 1-2.4-.6L10 15h-2v2H6v2H3v-3l6.1-6.1a5 5 0 0 1 5.4-6.4Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Código de acesso</span><span class="ds-conf-apoio"><span id="mwPinEstado">Nenhum código definido.</span></span></span><span class="ds-conf-acoes"><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwPinDefinir">Definir</button><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p mw-pin-remover" id="mwPinRemover" hidden>Remover</button></span></div></div></div></section><p class="ds-conf-info" id="mwFaceIdStatus" hidden></p><p class="ds-conf-info" id="mwPinStatus" hidden></p><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Sessões</h2><div class="ds-conf-lista"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 3.5h3a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-3"/><path d="M10 16.5 5.5 12 10 7.5"/><path d="M5.5 12h9"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Sair dos outros aparelhos</span><span class="ds-conf-apoio">Encerra a sessão em todo lugar, menos aqui</span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwSairOutrosAparelhos">Encerrar</button></div><p class="ds-conf-info" id="mwSairOutrosStatus" hidden></p><p class="ds-conf-info">A lista de aparelhos conectados depende de um registro no servidor que ainda não existe. O que funciona hoje é encerrar as outras sessões de uma vez.</p></div></section></div>
 <div class="ds-conf ds-conf-tela" data-conf-tela="ia" hidden><div class="ds-conf-cabeca"><button type="button" class="ds-conf-voltar" data-conf-voltar aria-label="Voltar para Configurações"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h2>Nyc AI</h2></div><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Conversas</h2><div class="ds-conf-lista"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 2 5.2 5.2 2-5.2 2-2 5.2-2-5.2-5.2-2 5.2-2L12 3Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Conversas guardadas</span><span class="ds-conf-apoio"><span id="mwIaContagem">Nenhuma conversa ainda.</span></span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p ds-btn-perigo" id="mwIaLimpar">Apagar</button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 11.2v5"/><circle cx="12" cy="8" r=".9" fill="currentColor" stroke="none"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Ditar por voz</span><span class="ds-conf-apoio"><span id="mwIaVozEstado">Verificando…</span></span></span><span class="mw-id-beta" id="mwIaVozSelo" hidden>Indisponível</span></div></div></section><p class="ds-conf-info">As conversas ficam guardadas neste navegador, junto com o resto do workspace. Nada delas é usado para treinar nada.</p></div>
-<div class="ds-conf ds-conf-tela" data-conf-tela="privacidade" hidden><div class="ds-conf-cabeca"><button type="button" class="ds-conf-voltar" data-conf-voltar aria-label="Voltar para Configurações"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h2>Privacidade</h2></div><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Visível no seu perfil</h2><div class="ds-conf-lista"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 5 6v5.4c0 4.2 2.9 7.6 7 9.4 4.1-1.8 7-5.2 7-9.4V6l-7-2.8Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Bio</span><span class="ds-conf-apoio">A frase que descreve você</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwVisBio" data-conf-visivel="bio" aria-label="Bio"></button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 5 6v5.4c0 4.2 2.9 7.6 7 9.4 4.1-1.8 7-5.2 7-9.4V6l-7-2.8Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Curso e instituição</span><span class="ds-conf-apoio">Onde e o que você estuda</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwVisCurso" data-conf-visivel="curso" aria-label="Curso e instituição"></button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 5 6v5.4c0 4.2 2.9 7.6 7 9.4 4.1-1.8 7-5.2 7-9.4V6l-7-2.8Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Números</span><span class="ds-conf-apoio">Quantas disciplinas, projetos e atividades</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwVisNumeros" data-conf-visivel="numeros" aria-label="Números"></button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 5 6v5.4c0 4.2 2.9 7.6 7 9.4 4.1-1.8 7-5.2 7-9.4V6l-7-2.8Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Projetos</span><span class="ds-conf-apoio">A lista dos seus projetos</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwVisProjetos" data-conf-visivel="projetos" aria-label="Projetos"></button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 5 6v5.4c0 4.2 2.9 7.6 7 9.4 4.1-1.8 7-5.2 7-9.4V6l-7-2.8Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Links</span><span class="ds-conf-apoio">Instagram, GitHub, LinkedIn, site</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwVisLinks" data-conf-visivel="links" aria-label="Links"></button></div></div></section><p class="ds-conf-info">Estas chaves já gravam a sua escolha e o seu próprio Perfil já as respeita. Uma página de perfil que <em>outra pessoa</em> possa abrir ainda não existe — quando existir, ela lê daqui.</p><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Backup</h2><div class="ds-conf-lista"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.6V4.4"/><path d="m8 8.2 4-3.8 4 3.8"/><path d="M4.6 15.2v3.2a1.6 1.6 0 0 0 1.6 1.6h11.6a1.6 1.6 0 0 0 1.6-1.6v-3.2"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Exportar backup</span><span class="ds-conf-apoio">Um arquivo com tudo o que está neste navegador</span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="exportBackup">Exportar</button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m8 11.4 4 3.8 4-3.8"/><path d="M4.6 19.4h14.8"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Importar backup</span><span class="ds-conf-apoio">Restaura de um arquivo exportado antes</span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="importBackupBtn">Importar</button><input type="file" id="importBackupFile" accept="application/json" hidden></div><p class="ds-conf-info" id="importBackupError"></p></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Dados</h2><div class="ds-conf-lista"><div class="ds-conf-linha ds-conf-perigo"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 6.6h14.4"/><path d="M9.4 6.6V4.8h5.2v1.8"/><path d="M6.6 6.6 7.4 20a1.4 1.4 0 0 0 1.4 1.3h6.4a1.4 1.4 0 0 0 1.4-1.3l.8-13.4"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Apagar todos os dados</span><span class="ds-conf-apoio">Disciplinas, atividades, projetos e anotações deste navegador</span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p ds-btn-perigo mw-clear-btn" id="clearAll">Apagar</button></div><p class="ds-conf-info">Veja também a <a href="javascript:void(0)" data-footer-link="privacidade">Política de Privacidade</a>.</p></div></section></div>
+<div class="ds-conf ds-conf-tela" data-conf-tela="privacidade" hidden><div class="ds-conf-cabeca"><button type="button" class="ds-conf-voltar" data-conf-voltar aria-label="Voltar para Configurações"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h2>Privacidade</h2></div><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Visível no seu perfil</h2><div class="ds-conf-lista"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 5 6v5.4c0 4.2 2.9 7.6 7 9.4 4.1-1.8 7-5.2 7-9.4V6l-7-2.8Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Bio</span><span class="ds-conf-apoio">A frase que descreve você</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwVisBio" data-conf-visivel="bio" aria-label="Bio"></button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 5 6v5.4c0 4.2 2.9 7.6 7 9.4 4.1-1.8 7-5.2 7-9.4V6l-7-2.8Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Pronomes</span><span class="ds-conf-apoio">Como você prefere ser tratado</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwVisPronomes" data-conf-visivel="pronomes" aria-label="Pronomes"></button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 5 6v5.4c0 4.2 2.9 7.6 7 9.4 4.1-1.8 7-5.2 7-9.4V6l-7-2.8Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Gênero</span><span class="ds-conf-apoio">Aparece junto do seu nome</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwVisGenero" data-conf-visivel="genero" aria-label="Gênero"></button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 5 6v5.4c0 4.2 2.9 7.6 7 9.4 4.1-1.8 7-5.2 7-9.4V6l-7-2.8Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Curso e instituição</span><span class="ds-conf-apoio">Onde e o que você estuda</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwVisCurso" data-conf-visivel="curso" aria-label="Curso e instituição"></button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 5 6v5.4c0 4.2 2.9 7.6 7 9.4 4.1-1.8 7-5.2 7-9.4V6l-7-2.8Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Números</span><span class="ds-conf-apoio">Quantas disciplinas, projetos e atividades</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwVisNumeros" data-conf-visivel="numeros" aria-label="Números"></button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 5 6v5.4c0 4.2 2.9 7.6 7 9.4 4.1-1.8 7-5.2 7-9.4V6l-7-2.8Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Projetos</span><span class="ds-conf-apoio">A lista dos seus projetos</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwVisProjetos" data-conf-visivel="projetos" aria-label="Projetos"></button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 5 6v5.4c0 4.2 2.9 7.6 7 9.4 4.1-1.8 7-5.2 7-9.4V6l-7-2.8Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Links</span><span class="ds-conf-apoio">Instagram, GitHub, LinkedIn, site</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwVisLinks" data-conf-visivel="links" aria-label="Links"></button></div></div></section><p class="ds-conf-info">Estas chaves já gravam a sua escolha e o seu próprio Perfil já as respeita. Uma página de perfil que <em>outra pessoa</em> possa abrir ainda não existe — quando existir, ela lê daqui.</p><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Backup</h2><div class="ds-conf-lista"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.6V4.4"/><path d="m8 8.2 4-3.8 4 3.8"/><path d="M4.6 15.2v3.2a1.6 1.6 0 0 0 1.6 1.6h11.6a1.6 1.6 0 0 0 1.6-1.6v-3.2"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Exportar backup</span><span class="ds-conf-apoio">Um arquivo com tudo o que está neste navegador</span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="exportBackup">Exportar</button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m8 11.4 4 3.8 4-3.8"/><path d="M4.6 19.4h14.8"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Importar backup</span><span class="ds-conf-apoio">Restaura de um arquivo exportado antes</span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="importBackupBtn">Importar</button><input type="file" id="importBackupFile" accept="application/json" hidden></div><p class="ds-conf-info" id="importBackupError"></p></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Dados</h2><div class="ds-conf-lista"><div class="ds-conf-linha ds-conf-perigo"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 6.6h14.4"/><path d="M9.4 6.6V4.8h5.2v1.8"/><path d="M6.6 6.6 7.4 20a1.4 1.4 0 0 0 1.4 1.3h6.4a1.4 1.4 0 0 0 1.4-1.3l.8-13.4"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Apagar todos os dados</span><span class="ds-conf-apoio">Disciplinas, atividades, projetos e anotações deste navegador</span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p ds-btn-perigo mw-clear-btn" id="clearAll">Apagar</button></div><p class="ds-conf-info">Veja também a <a href="javascript:void(0)" data-footer-link="privacidade">Política de Privacidade</a>.</p></div></section></div>
 <div class="ds-conf ds-conf-tela" data-conf-tela="aplicativo" hidden><div class="ds-conf-cabeca"><button type="button" class="ds-conf-voltar" data-conf-voltar aria-label="Voltar para Configurações"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h2>Aplicativo</h2></div><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Instalação</h2><div class="ds-conf-lista"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.8" width="11" height="18.4" rx="2.4"/><path d="M10.7 5.6h2.6"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Instalar o Workspace</span><span class="ds-conf-apoio"><span id="mwSettingsInstallDesc">Adicione à tela de início para abrir como um app.</span></span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwSettingsInstallBtn">Instalar</button></div></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Mesma conta no app</h2><div class="ds-conf-lista"><div id="mwTransfereGrupo"><p class="ds-conf-info" id="mwTransfereOnde"></p><ol class="ds-conf-info mw-transfere-passos"><li id="mwPasso1"><b>No Safari:</b> toque em <b>Copiar código</b>.</li><li id="mwPasso2"><b>No app da tela de início:</b> abra Configurações e toque em <b>Colar código</b>.</li><li>Entre com o <b>mesmo usuário e senha</b> de sempre.</li></ol><div class="ds-conf-acoes ds-conf-acoes-bloco"><button type="button" class="ds-btn ds-btn-secundario ds-btn-p" id="mwTransfereCopiar">Copiar código</button><button type="button" class="ds-btn ds-btn-secundario ds-btn-p" id="mwTransfereColar">Colar código</button></div><textarea id="mwTransfereCodigo" rows="3" readonly hidden aria-label="Código da conta"></textarea><p class="ds-conf-info" id="mwTransfereStatus" hidden></p><p class="ds-conf-info">O código é uma <b>cópia do momento</b>, não uma sincronização.</p></div></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Sobre</h2><div class="ds-conf-lista"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 11.2v5"/><circle cx="12" cy="8" r=".9" fill="currentColor" stroke="none"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Versão</span><span class="ds-conf-apoio"><span id="mwAppVersao">—</span></span></span></div><button class="ds-conf-linha ds-conf-nav" type="button" data-conf-ir="__suporte"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 11.2v5"/><circle cx="12" cy="8" r=".9" fill="currentColor" stroke="none"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Suporte</span><span class="ds-conf-apoio">Falar com quem cuida do Workspace</span></span></button></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Manutenção</h2><div class="ds-conf-lista"><details class="ds-conf-detalhe"><summary class="ds-conf-linha ds-conf-nav"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12h3.6l2-5.4 3.4 11 2.2-5.6h5.8"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Diagnóstico avançado</span><span class="ds-conf-apoio">Mede o que este navegador realmente suporta</span></span></summary><p class="ds-conf-info" id="mwDiagResumo">Nada verificado ainda.</p><div class="mw-diag-lista ds-conf-info" id="mwDiagLista"></div><div class="ds-conf-acoes ds-conf-acoes-bloco"><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwDiagRodar">Verificar agora</button><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwDiagCopiar">Copiar relatório</button></div><textarea id="mwDiagBruto" readonly aria-label="Relatório do diagnóstico em texto" placeholder="O relatório aparece aqui depois de verificar."></textarea></details></div></section></div>
 <div class="ds-conf ds-conf-tela" data-conf-tela="sessao" hidden><div class="ds-conf-cabeca"><button type="button" class="ds-conf-voltar" data-conf-voltar aria-label="Voltar para Configurações"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h2>Sessão</h2></div><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Sair</h2><div class="ds-conf-lista"><div class="ds-conf-linha ds-conf-perigo"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 3.5h3a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-3"/><path d="M10 16.5 5.5 12 10 7.5"/><path d="M5.5 12h9"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Sair desta conta</span><span class="ds-conf-apoio">Será preciso entrar de novo com usuário e senha</span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p ds-btn-perigo mw-logout-btn" id="logout">Sair</button></div></div></section><p class="ds-conf-info">Sua conta fica guardada neste navegador. Para encerrar em OUTROS aparelhos, use Segurança › Sessões.</p></div>
 </div>
@@ -6031,12 +6072,24 @@ function renderAll(){const p=progress();$('#statSubjects').textContent=data.subj
 function applyTheme(){document.documentElement.setAttribute('data-ds-tema',data.theme==='light'?'claro':'escuro');document.body.classList.toggle('light',data.theme==='light');const tt=$('#themeToggle');if(tt)tt.classList.toggle('is-light',data.theme==='light');$('#darkModeBtn').classList.toggle('active',data.theme==='dark');$('#lightModeBtn').classList.toggle('active',data.theme==='light')}
 function setTheme(theme){data.theme=theme;if(persistWorkspace())applyTheme();toast(theme==='light'?'Modo claro ativado':'Modo escuro ativado')}
 $('#themeToggle').onclick=()=>setTheme(data.theme==='light'?'dark':'light');$('#darkModeBtn').onclick=()=>setTheme('dark');$('#lightModeBtn').onclick=()=>setTheme('light');
-function loadProfileFields(){const p=data.profile||defaults.profile;$('#profileName').value=p.name||'';$('#profileEmail').value=p.email||'';$('#profilePhoto').value=p.photo||''}/* Atribuir data.profile = {name,email,photo} SUBSTITUÍA o objeto
+function loadProfileFields(){
+  /* `#profileName` foi embora com o formulário antigo do Perfil, e este
+     bloco o acessava sem guarda: `null.value = …` derrubava a função
+     inteira toda vez que alguém abria o Perfil. Os outros dois seguem
+     existindo, escondidos, como carregadores da foto. */
+  const p = data.profile || defaults.profile;
+  const põe = (sel, v) => { const e = $(sel); if (e) e.value = v || ''; };
+  põe('#profileEmail', p.email);
+  põe('#profilePhoto', p.photo);
+}/* Atribuir data.profile = {name,email,photo} SUBSTITUÍA o objeto
    inteiro: salvar o nome apagava silenciosamente @usuário, bio,
    tecnologias, links e as escolhas de privacidade. Agora só os três
    campos deste formulário são atualizados; o resto do perfil é
    preservado. */
-$('#saveProfile').onclick=()=>{data.profile=Object.assign({},data.profile||{},{name:$('#profileName').value.trim()||'Mateus',email:$('#profileEmail').value.trim(),photo:$('#profilePhoto').value.trim()});save();/* a saudação saiu da barra de cima e virou o hero do Início; quem a escreve agora é o mw-inicio-js, a partir do dado — este `$('.hello h2')` estourava com null desde a mudança */toast('Perfil salvo')};
+/* O ouvinte do "Salvar perfil" saiu com o botão: ele lia `#profileName`,
+   que não existe mais, e a linha nem chegava a rodar — `$('#saveProfile')`
+   já era `null`, e atribuir `.onclick` em `null` derrubava o resto deste
+   bloco. Quem grava o perfil agora é a tela de Editar perfil. */
 $('#clearAll').onclick=()=>{window.mwConfirmar('Apagar todos os dados?','Isso remove disciplinas, projetos, atividades e anotações deste aparelho. Não dá para desfazer.',{sim:'Apagar tudo',icone:'!'}).then(ok=>{if(!ok)return;data.subjects=[];data.projects=[];data.activities=[];data.notes=[];save();toast('Dados apagados')})};
 $('#exportBackup').onclick=()=>{
   const payload={mateusWorkspaceBackup:1,exportedAt:new Date().toISOString(),data};
@@ -20642,6 +20695,254 @@ html body.mw-in-app.mw-tela-folha #app .main{padding-bottom:24px!important}
    O "ele é a saída principal, então ganha peso" continua verdadeiro, e
    segue implementado no sistema — com superfície, não com cor. */
 </style>
+<script id="mw-perfil-editar-js">
+(function(){
+  'use strict';
+  /* ======================================================================
+     EDITAR PERFIL (§13–§21)
+
+     UM MODELO DE REDES, E ELE PRECISAVA MUDAR DE FORMA.
+     Havia DOIS. Um, no bloco de identidade, guardava `profile.links` como
+     LISTA de {id, url, visible} — a forma certa. Outro, na aba "Sobre" do
+     Perfil, escrevia `links.instagram = '@fulano'` na MESMA lista, como
+     propriedade nomeada de um array.
+
+     Isso não dá erro em JavaScript: dá silêncio. `JSON.stringify` de um
+     array ignora propriedades nomeadas. Medido antes de escrever este
+     bloco: digitei "@mateuswzn" no Instagram, salvei o perfil, e o que
+     foi para o armazenamento foi `[]`. Todo link social que alguém
+     tenha digitado no MW até hoje foi perdido no primeiro save — sem
+     aviso, sem erro, sem pista.
+
+     E o bloco que tinha a forma certa nunca chegava à tela: ele procura
+     um `.ds-cartao` dentro do Perfil para se montar, e a reconstrução do
+     Perfil tirou esse cartão. Ficou ~1000 linhas de código inalcançável
+     guardando o único modelo que funcionava.
+
+     Aqui fica um só, na forma que sobrevive.
+     ====================================================================== */
+  var REDES = [
+    { id:'instagram', nome:'Instagram', dica:'@usuario ou link', base:'https://instagram.com/',
+      caminho:'M12 2.2c-2.7 0-3 .01-4.05.06-1.06.05-1.79.22-2.42.46a4.9 4.9 0 0 0-1.77 1.15A4.9 4.9 0 0 0 2.6 5.64c-.24.63-.4 1.35-.46 2.41C2.1 9.1 2.08 9.4 2.08 12.1s.01 3 .06 4.05c.05 1.06.22 1.78.46 2.41a4.9 4.9 0 0 0 1.16 1.77 4.9 4.9 0 0 0 1.77 1.15c.63.25 1.36.41 2.42.46 1.06.05 1.4.06 4.05.06s3-.01 4.05-.06c1.06-.05 1.79-.21 2.42-.46a5.1 5.1 0 0 0 2.92-2.92c.24-.63.41-1.35.46-2.41.05-1.06.06-1.4.06-4.05s-.01-3-.06-4.05c-.05-1.06-.22-1.78-.46-2.41a4.9 4.9 0 0 0-1.16-1.77 4.9 4.9 0 0 0-1.76-1.15c-.63-.24-1.36-.41-2.42-.46C15.03 2.21 14.7 2.2 12 2.2zm0 1.8c2.6 0 2.92.01 3.95.06.95.04 1.47.2 1.81.34.46.17.78.38 1.12.72.34.34.55.66.73 1.12.13.34.29.86.33 1.81.05 1.03.06 1.34.06 3.95s-.01 2.92-.06 3.95c-.04.95-.2 1.47-.33 1.81-.18.46-.39.78-.73 1.12-.34.34-.66.55-1.12.72-.34.14-.86.3-1.81.34-1.03.05-1.34.06-3.95.06s-2.92-.01-3.95-.06c-.95-.04-1.47-.2-1.81-.34a3.02 3.02 0 0 1-1.12-.72 3.02 3.02 0 0 1-.73-1.12c-.13-.34-.29-.86-.33-1.81-.05-1.03-.06-1.34-.06-3.95s.01-2.92.06-3.95c.04-.95.2-1.47.33-1.81.18-.46.39-.78.73-1.12.34-.34.66-.55 1.12-.72.34-.14.86-.3 1.81-.34C9.08 4.01 9.4 4 12 4z M12 7.06a5.04 5.04 0 1 0 0 10.08 5.04 5.04 0 0 0 0-10.08zm0 8.31a3.27 3.27 0 1 1 0-6.54 3.27 3.27 0 0 1 0 6.54z M18.44 6.86a1.18 1.18 0 1 1-2.36 0 1.18 1.18 0 0 1 2.36 0z' },
+    { id:'x', nome:'X', dica:'@usuario ou link', base:'https://x.com/',
+      caminho:'M17.9 3.2h2.9l-6.35 7.26 7.47 9.88h-5.85l-4.58-6-5.24 6H3.35l6.79-7.77L3 3.2h6l4.14 5.47zm-1.02 15.4h1.6L7.86 4.84H6.14z' },
+    { id:'tiktok', nome:'TikTok', dica:'@usuario ou link', base:'https://tiktok.com/@',
+      caminho:'M16.6 2h-3.06v13.1a2.66 2.66 0 1 1-2.66-2.66c.16 0 .32.02.47.05V9.4a5.9 5.9 0 0 0-.47-.02 5.72 5.72 0 1 0 5.72 5.72V8.66a7.1 7.1 0 0 0 4.14 1.33V6.93A4.1 4.1 0 0 1 16.6 2z' },
+    { id:'youtube', nome:'YouTube', dica:'@canal ou link', base:'https://youtube.com/@',
+      caminho:'M21.58 7.19a2.5 2.5 0 0 0-1.76-1.77C18.25 5 12 5 12 5s-6.25 0-7.82.42A2.5 2.5 0 0 0 2.42 7.2 26 26 0 0 0 2 12a26 26 0 0 0 .42 4.81 2.5 2.5 0 0 0 1.76 1.77C5.75 19 12 19 12 19s6.25 0 7.82-.42a2.5 2.5 0 0 0 1.76-1.77A26 26 0 0 0 22 12a26 26 0 0 0-.42-4.81zM10 15.02V8.98L15.2 12 10 15.02z' },
+    { id:'facebook', nome:'Facebook', dica:'usuario ou link', base:'https://facebook.com/',
+      caminho:'M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.9h2.54V9.85c0-2.52 1.5-3.91 3.77-3.91 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.45 2.9h-2.33V22c4.78-.76 8.44-4.92 8.44-9.94z' },
+    { id:'linkedin', nome:'LinkedIn', dica:'in/usuario ou link', base:'https://linkedin.com/',
+      caminho:'M4.6 3.2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM2.9 8.9h3.4v11.9H2.9zM10 8.9h3.25v1.63h.05c.45-.86 1.56-1.76 3.21-1.76 3.43 0 4.07 2.26 4.07 5.2v6.83h-3.4v-6.06c0-1.44-.03-3.3-2.01-3.3-2.01 0-2.32 1.57-2.32 3.19v6.17H10z' },
+    { id:'github', nome:'GitHub', dica:'usuario ou link', base:'https://github.com/',
+      caminho:'M12 2.2a9.8 9.8 0 0 0-3.1 19.1c.49.09.67-.21.67-.47l-.01-1.66c-2.72.59-3.3-1.31-3.3-1.31-.45-1.13-1.09-1.44-1.09-1.44-.89-.61.07-.6.07-.6.98.07 1.5 1.01 1.5 1.01.88 1.5 2.3 1.07 2.86.82.09-.64.34-1.07.62-1.32-2.17-.25-4.45-1.09-4.45-4.83 0-1.07.38-1.94 1-2.62-.1-.25-.44-1.24.1-2.58 0 0 .82-.26 2.7 1a9.3 9.3 0 0 1 4.9 0c1.87-1.26 2.69-1 2.69-1 .54 1.34.2 2.33.1 2.58.63.68 1 1.55 1 2.62 0 3.75-2.29 4.58-4.47 4.82.35.3.67.9.67 1.82l-.01 2.7c0 .26.18.57.68.47A9.8 9.8 0 0 0 12 2.2z' },
+    { id:'discord', nome:'Discord', dica:'usuario ou convite', base:'https://discord.com/users/',
+      caminho:'M19.3 5.34A16.5 16.5 0 0 0 15.2 4l-.2.4a15.4 15.4 0 0 1 3.6 1.42 12.9 12.9 0 0 0-11.2 0A15.4 15.4 0 0 1 11 4.4L10.8 4a16.5 16.5 0 0 0-4.1 1.34C4.1 9.24 3.4 13.04 3.75 16.8a16.6 16.6 0 0 0 5.06 2.56l.4-.56a11 11 0 0 1-1.72-.83l.42-.33a11.8 11.8 0 0 0 10.18 0l.42.33c-.55.32-1.13.6-1.73.83l.4.56a16.6 16.6 0 0 0 5.07-2.56c.42-4.35-.7-8.11-2.95-11.46zM9.4 14.63c-.99 0-1.8-.9-1.8-2.02s.8-2.03 1.8-2.03 1.82.92 1.8 2.03c0 1.11-.8 2.02-1.8 2.02zm5.2 0c-.99 0-1.8-.9-1.8-2.02s.8-2.03 1.8-2.03 1.81.92 1.79 2.03c0 1.11-.8 2.02-1.8 2.02z' },
+    { id:'site', nome:'Site', dica:'seusite.com', base:'https://',
+      caminho:'M12 2.2a9.8 9.8 0 1 0 0 19.6 9.8 9.8 0 0 0 0-19.6zm6.9 6.9h-2.87a15.3 15.3 0 0 0-1.35-4.24A8.05 8.05 0 0 1 18.9 9.1zM12 4.1c.72.99 1.35 2.66 1.7 5h-3.4c.35-2.34.98-4.01 1.7-5zM4.15 13.9a8.1 8.1 0 0 1 0-3.8h3.28a19 19 0 0 0 0 3.8zm.76 1.8h2.87c.3 1.6.75 3.04 1.35 4.24a8.05 8.05 0 0 1-4.22-4.24zm2.87-7.4H4.91a8.05 8.05 0 0 1 4.22-4.24 15.3 15.3 0 0 0-1.35 4.24zM12 19.9c-.72-.99-1.35-2.66-1.7-5h3.4c-.35 2.34-.98 4.01-1.7 5zm2.02-6.8H9.98a17 17 0 0 1 0-3.8h4.04a17 17 0 0 1 0 3.8zm.86 6.34c.6-1.2 1.05-2.64 1.35-4.24h2.87a8.05 8.05 0 0 1-4.22 4.24zm1.69-6.04a19 19 0 0 0 0-3.8h3.28a8.1 8.1 0 0 1 0 3.8z' }
+  ];
+  function q(s){ return document.querySelector(s); }
+  function esc(v){ return String(v==null?'':v).replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function dados(){
+    var d = window.data;
+    if (!d || typeof d !== 'object') { try { d = JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}'); } catch(e){ d = {}; } }
+    return d;
+  }
+  function perfil(){ var d = dados(); d.profile = d.profile || {}; return d.profile; }
+  function faculdade(){ var d = dados(); d.college = d.college || {}; return d.college; }
+  function grava(){
+    if (typeof window.persistWorkspace === 'function') { window.persistWorkspace(); return; }
+    try { localStorage.setItem('mateusWorkspaceV4', JSON.stringify(window.data || {})); } catch(e){}
+  }
+
+  /* ---- o modelo de links, numa porta só ---------------------------------
+     Aceita as duas formas ANTIGAS na leitura: a lista certa e o objeto
+     que alguém possa ter salvo antes. Quem migra dados não pode exigir
+     que o passado tivesse acertado. */
+  function todosOsLinks(){
+    var p = perfil();
+    if (Array.isArray(p.links)) return p.links;
+    if (p.links && typeof p.links === 'object') {
+      var lista = [];
+      Object.keys(p.links).forEach(function(k){
+        var v = String(p.links[k] || '').trim();
+        if (v) lista.push({ id: k, url: v, visible: true });
+      });
+      p.links = lista;
+      return lista;
+    }
+    p.links = [];
+    return p.links;
+  }
+  function linkDe(id){
+    var lista = todosOsLinks(), achado = null;
+    lista.forEach(function(l){ if (l && l.id === id) achado = l; });
+    if (!achado) { achado = { id: id, url: '', visible: true }; lista.push(achado); }
+    return achado;
+  }
+  /* O endereço final a partir do que foi digitado. Quem escreve
+     "@fulano" espera o perfil; quem cola a URL inteira espera a URL. */
+  window.mwRedeEndereco = function(rede, valor){
+    var v = String(valor || '').trim();
+    if (!v) return '';
+    if (/^https?:\/\//i.test(v)) return v;
+    if (/^[a-z0-9.-]+\.[a-z]{2,}(\/|$)/i.test(v)) return 'https://' + v;
+    return rede.base + v.replace(/^@/, '');
+  };
+  window.mwRedes = REDES;
+  window.mwLinkDe = linkDe;
+
+  function iconeRede(r){
+    return '<span class="ds-conf-icone ds-conf-icone-marca" aria-hidden="true">' +
+      '<svg viewBox="0 0 24 24" fill="currentColor"><path d="' + r.caminho + '"/></svg></span>';
+  }
+
+  /* ---- desenhar as linhas de rede --------------------------------------- */
+  function desenhaRedes(){
+    var caixa = q('#mwEditRedes');
+    if (!caixa) return;
+    if (!caixa.dataset.pronto) {
+      caixa.dataset.pronto = '1';
+      caixa.innerHTML = REDES.map(function(r){
+        return '<label class="ds-conf-linha ds-conf-linha-rede" data-rede="' + r.id + '">' +
+          iconeRede(r) +
+          '<span class="ds-conf-corpo">' +
+            '<span class="ds-conf-rotulo">' + esc(r.nome) + '</span>' +
+            '<span class="ds-conf-apoio ds-conf-destino" data-destino="' + r.id + '"></span>' +
+          '</span>' +
+          '<input class="ds-conf-campo ds-conf-campo-edit" type="text" inputmode="url" ' +
+            'autocapitalize="none" autocorrect="off" spellcheck="false" ' +
+            'aria-label="' + esc(r.nome) + '" placeholder="' + esc(r.dica) + '">' +
+          '</label>';
+      }).join('');
+      caixa.addEventListener('input', function(ev){
+        var linha = ev.target.closest('[data-rede]');
+        if (!linha || ev.target.tagName !== 'INPUT') return;
+        var id = linha.getAttribute('data-rede');
+        linkDe(id).url = ev.target.value.trim();
+        destino(id);
+        agendaGravar();
+      });
+    }
+    REDES.forEach(function(r){
+      var linha = caixa.querySelector('[data-rede="' + r.id + '"]');
+      if (!linha) return;
+      linha.querySelector('input').value = linkDe(r.id).url || '';
+      destino(r.id);
+    });
+  }
+  /* §21: dizer para ONDE aquilo vai. Um campo de link sem destino é um
+     pedido de fé — a pessoa só descobre se está certo depois de
+     publicar e alguém reclamar. */
+  function destino(id){
+    var r = null;
+    REDES.forEach(function(x){ if (x.id === id) r = x; });
+    var alvo = q('[data-destino="' + id + '"]');
+    if (!r || !alvo) return;
+    var url = window.mwRedeEndereco(r, linkDe(id).url);
+    alvo.textContent = url ? url.replace(/^https?:\/\//, '') : '';
+    alvo.hidden = !url;
+  }
+
+  /* ---- os campos simples ------------------------------------------------- */
+  var CAMPOS = [
+    ['mwEditNome',     function(v){ perfil().name = v; }, function(){ return perfil().name || ''; }],
+    ['mwEditUsuario',  function(v){ perfil().username = v.replace(/^@/,''); }, function(){ return perfil().username || ''; }],
+    ['mwEditPronomes', function(v){ perfil().pronouns = v; }, function(){ return perfil().pronouns || ''; }],
+    ['mwEditBio',      function(v){ perfil().bio = v; }, function(){ return perfil().bio || ''; }],
+    ['mwEditGenero',   function(v){ perfil().gender = v; }, function(){ return perfil().gender || ''; }],
+    ['mwEditCurso',    function(v){ faculdade().course = v; }, function(){ return faculdade().course || ''; }],
+    ['mwEditInst',     function(v){ faculdade().institution = v; }, function(){ return faculdade().institution || ''; }],
+    ['mwEditSemestre', function(v){ faculdade().semester = v ? Number(v) : ''; }, function(){ return faculdade().semester || ''; }],
+    ['mwEditArea',     function(v){ faculdade().area = v; }, function(){ return faculdade().area || ''; }]
+  ];
+
+  function carrega(){
+    CAMPOS.forEach(function(c){
+      var e = document.getElementById(c[0]);
+      if (e) e.value = c[2]();
+    });
+    contaBio();
+    desenhaRedes();
+    var ini = q('#mwEditFotoIniciais'), foto = q('#mwEditFoto'), p = perfil();
+    if (foto) {
+      if (p.photo) { foto.style.backgroundImage = 'url("' + p.photo + '")'; foto.classList.add('has-avatar'); }
+      else { foto.style.backgroundImage = ''; foto.classList.remove('has-avatar'); }
+    }
+    if (ini) {
+      var partes = String(p.name || '').trim().split(/\s+/).filter(Boolean);
+      ini.textContent = (partes.length > 1 ? partes[0][0] + partes[partes.length-1][0] : (partes[0] || 'M')[0]).toUpperCase();
+    }
+  }
+  function contaBio(){
+    var t = q('#mwEditBio'), c = q('#mwEditBioContador');
+    if (t && c) c.textContent = (t.value || '').length + '/220';
+  }
+
+  /* GRAVAR ENQUANTO DIGITA, sem botão de salvar.
+     Um "Salvar" no fim de uma lista de nove campos é onde o trabalho se
+     perde: a pessoa edita, volta e descobre depois. O atraso existe para
+     não escrever no armazenamento a cada tecla. */
+  var pendente = null;
+  function agendaGravar(){
+    clearTimeout(pendente);
+    pendente = setTimeout(function(){
+      grava();
+      if (typeof window.mwDashRefresh === 'function') { try { window.mwDashRefresh(window.data); } catch(e){} }
+    }, 400);
+  }
+
+  document.addEventListener('input', function(ev){
+    var e = ev.target;
+    if (!e || !e.id) return;
+    var achado = null;
+    CAMPOS.forEach(function(c){ if (c[0] === e.id) achado = c; });
+    if (!achado) return;
+    achado[1](String(e.value || '').trim());
+    if (e.id === 'mwEditBio') contaBio();
+    agendaGravar();
+  });
+
+  document.addEventListener('click', function(ev){
+    var t = ev.target;
+    if (!t || !t.closest) return;
+    /* "Editar perfil" leva à TELA, não a uma aba. */
+    if (t.closest('#mwPerfilEditar')) {
+      ev.preventDefault(); ev.stopPropagation();
+      if (typeof window.showView === 'function') window.showView('profile-edit');
+      return;
+    }
+    /* Um caminho só para a foto: a mesma folha do Perfil. */
+    if (t.closest('#mwEditFoto') || t.closest('#mwEditFotoBtn')) {
+      ev.preventDefault();
+      q('#mwPerfilFoto')?.click();
+    }
+  }, true);
+
+  document.addEventListener('keydown', function(ev){
+    if (ev.key !== 'Enter' && ev.key !== ' ') return;
+    if (ev.target && ev.target.closest && ev.target.closest('#mwEditFoto')) {
+      ev.preventDefault(); q('#mwPerfilFoto')?.click();
+    }
+  });
+
+  var app = document.getElementById('app');
+  if (app && window.MutationObserver) {
+    var ultima = null;
+    new MutationObserver(function(){
+      var v = app.querySelector('.view.active');
+      var id = v ? v.id : null;
+      if (id === ultima) return;
+      ultima = id;
+      if (id === 'view-profile-edit') carrega();
+    }).observe(app, { subtree: true, attributes: true, attributeFilter: ['class'] });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', carrega);
+  else carrega();
+})();
+</script>
+
 <script id="mw-atividade-js">
 (function(){
   'use strict';
@@ -20904,7 +21205,7 @@ html body.mw-in-app.mw-tela-folha #app .main{padding-bottom:24px!important}
 
      Configurações continua folha: chega-se pela engrenagem, não tem
      item na barra, e a saída é o voltar. */
-  var FOLHAS = ['view-settings', 'view-support', 'view-admin', 'view-notifications'];
+  var FOLHAS = ['view-settings', 'view-support', 'view-admin', 'view-notifications', 'view-profile-edit'];
 
   function marcar(){
     var v = app.querySelector('.view.active');
@@ -25222,451 +25523,27 @@ html body.light #app .mw-id-embreve-selo{ background:#ffe0a3; }
 }
 </style>
 
-<script id="mw-perfil-publico-js">
-(function(){
-  'use strict';
-  /* Identidade pública do perfil: @usuário, bio, tecnologias, links
-     sociais e o controle de privacidade campo a campo.
+<!-- `mw-perfil-publico-js` FOI RETIRADO: ELE NUNCA CHEGAVA À TELA.
+     Este bloco montava, dentro do Perfil, quatro grupos — apresentação
+     (@usuário com validação, bio com contador, chips de tecnologias),
+     links sociais com marcas oficiais e um interruptor de visibilidade
+     por rede, o perfil público e uma prévia do que outra pessoa veria.
+     Bom trabalho, e invisível: para se montar ele procura um
+     `.ds-cartao` dentro de `#view-profile`, e a reconstrução do Perfil
+     tirou esse cartão. Medido antes de apagar: depois de abrir o
+     Perfil, `#mwIdBloco`, `#mwIdLinks` e `#mwIdUsuario` não existem no
+     documento.
 
-     Uma decisão importante primeiro: NÃO existe endereço público de
-     verdade ainda — não há rota, servidor nem página para hospedar um
-     perfil compartilhado. Fingir que existe seria exatamente o que o
-     pedido proíbe. Então o que se entrega aqui é real: os dados são
-     guardados, as escolhas de visibilidade valem, e a prévia mostra
-     exatamente o recorte que sairia daqui. O que ainda não existe está
-     marcado como tal, uma vez só, sem link morto pra clicar. */
+     Eram 22 KB inalcançáveis guardando o ÚNICO modelo de links que
+     funcionava — lista de {id, url, visible} — enquanto a tela que a
+     pessoa realmente usava escrevia num formato que o `JSON.stringify`
+     descartava. Código morto não é neutro: aqui ele sustentava a
+     impressão de que existia um modelo certo em uso.
 
-  var REDES = [
-    { id:'instagram', nome:'Instagram', dica:'instagram.com/seuusuario',
-      caminho:'M12 2.2c-2.7 0-3 .01-4.05.06-1.06.05-1.79.22-2.42.46a4.9 4.9 0 0 0-1.77 1.15A4.9 4.9 0 0 0 2.6 5.64c-.24.63-.4 1.35-.46 2.41C2.1 9.1 2.08 9.4 2.08 12.1s.01 3 .06 4.05c.05 1.06.22 1.78.46 2.41a4.9 4.9 0 0 0 1.16 1.77 4.9 4.9 0 0 0 1.77 1.15c.63.25 1.36.41 2.42.46 1.06.05 1.4.06 4.05.06s3-.01 4.05-.06c1.06-.05 1.79-.21 2.42-.46a5.1 5.1 0 0 0 2.92-2.92c.24-.63.41-1.35.46-2.41.05-1.06.06-1.4.06-4.05s-.01-3-.06-4.05c-.05-1.06-.22-1.78-.46-2.41a4.9 4.9 0 0 0-1.16-1.77 4.9 4.9 0 0 0-1.76-1.15c-.63-.24-1.36-.41-2.42-.46C15.03 2.21 14.7 2.2 12 2.2zm0 1.8c2.6 0 2.92.01 3.95.06.95.04 1.47.2 1.81.34.46.17.78.38 1.12.72.34.34.55.66.73 1.12.13.34.29.86.33 1.81.05 1.03.06 1.34.06 3.95s-.01 2.92-.06 3.95c-.04.95-.2 1.47-.33 1.81-.18.46-.39.78-.73 1.12-.34.34-.66.55-1.12.72-.34.14-.86.3-1.81.34-1.03.05-1.34.06-3.95.06s-2.92-.01-3.95-.06c-.95-.04-1.47-.2-1.81-.34a3.02 3.02 0 0 1-1.12-.72 3.02 3.02 0 0 1-.73-1.12c-.13-.34-.29-.86-.33-1.81-.05-1.03-.06-1.34-.06-3.95s.01-2.92.06-3.95c.04-.95.2-1.47.33-1.81.18-.46.39-.78.73-1.12.34-.34.66-.55 1.12-.72.34-.14.86-.3 1.81-.34C9.08 4.01 9.4 4 12 4z M12 7.06a5.04 5.04 0 1 0 0 10.08 5.04 5.04 0 0 0 0-10.08zm0 8.31a3.27 3.27 0 1 1 0-6.54 3.27 3.27 0 0 1 0 6.54z M18.44 6.86a1.18 1.18 0 1 1-2.36 0 1.18 1.18 0 0 1 2.36 0z' },
-    { id:'github', nome:'GitHub', dica:'github.com/seuusuario',
-      caminho:'M12 2.2a9.8 9.8 0 0 0-3.1 19.1c.49.09.67-.21.67-.47l-.01-1.66c-2.72.59-3.3-1.31-3.3-1.31-.45-1.13-1.09-1.44-1.09-1.44-.89-.61.07-.6.07-.6.98.07 1.5 1.01 1.5 1.01.88 1.5 2.3 1.07 2.86.82.09-.64.34-1.07.62-1.32-2.17-.25-4.45-1.09-4.45-4.83 0-1.07.38-1.94 1-2.62-.1-.25-.44-1.24.1-2.58 0 0 .82-.26 2.7 1a9.3 9.3 0 0 1 4.9 0c1.87-1.26 2.69-1 2.69-1 .54 1.34.2 2.33.1 2.58.63.68 1 1.55 1 2.62 0 3.75-2.29 4.58-4.47 4.82.35.3.67.9.67 1.82l-.01 2.7c0 .26.18.57.68.47A9.8 9.8 0 0 0 12 2.2z' },
-    { id:'linkedin', nome:'LinkedIn', dica:'linkedin.com/in/seuusuario',
-      caminho:'M4.6 3.2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM2.9 8.9h3.4v11.9H2.9zM10 8.9h3.25v1.63h.05c.45-.86 1.56-1.76 3.21-1.76 3.43 0 4.07 2.26 4.07 5.2v6.83h-3.4v-6.06c0-1.44-.03-3.3-2.01-3.3-2.01 0-2.32 1.57-2.32 3.19v6.17H10z' },
-    { id:'x', nome:'X', dica:'x.com/seuusuario',
-      caminho:'M17.9 3.2h2.9l-6.35 7.26 7.47 9.88h-5.85l-4.58-6-5.24 6H3.35l6.79-7.77L3 3.2h6l4.14 5.47zm-1.02 15.4h1.6L7.86 4.84H6.14z' },
-    { id:'site', nome:'Site', dica:'seusite.com',
-      caminho:'M12 2.2a9.8 9.8 0 1 0 0 19.6 9.8 9.8 0 0 0 0-19.6zm6.9 6.9h-2.87a15.3 15.3 0 0 0-1.35-4.24A8.05 8.05 0 0 1 18.9 9.1zM12 4.1c.72.99 1.35 2.66 1.7 5h-3.4c.35-2.34.98-4.01 1.7-5zM4.15 13.9a8.1 8.1 0 0 1 0-3.8h3.28a19 19 0 0 0 0 3.8zm.76 1.8h2.87c.3 1.6.75 3.04 1.35 4.24a8.05 8.05 0 0 1-4.22-4.24zm2.87-7.4H4.91a8.05 8.05 0 0 1 4.22-4.24 15.3 15.3 0 0 0-1.35 4.24zM12 19.9c-.72-.99-1.35-2.66-1.7-5h3.4c-.35 2.34-.98 4.01-1.7 5zm2.02-6.8H9.98a17 17 0 0 1 0-3.8h4.04a17 17 0 0 1 0 3.8zm.86 6.34c.6-1.2 1.05-2.64 1.35-4.24h2.87a8.05 8.05 0 0 1-4.22 4.24zm1.69-6.04a19 19 0 0 0 0-3.8h3.28a8.1 8.1 0 0 1 0 3.8z' }
-  ];
-
-  /* Campos cuja exibição a pessoa controla um a um. "curso",
-     "instituição" e "semestre" moram em college, não em profile — a
-     prévia lê dos dois, mas a decisão de mostrar é sempre daqui. */
-  var CAMPOS = [
-    ['bio',        'Bio',          'O texto que você escreveu sobre si.'],
-    ['skills',     'Tecnologias',  'A lista de tecnologias e áreas do seu perfil.'],
-    ['course',     'Curso',        'O curso registrado em Faculdade.'],
-    ['institution','Instituição',  'A instituição registrada em Faculdade.'],
-    ['semester',   'Semestre',     'Em que semestre você está.'],
-    ['email',      'E-mail',       'Fica oculto por padrão: é um dado de contato direto.']
-  ];
-
-  var LIMITE_BIO = 200;
-
-  function esc(v){ return String(v == null ? '' : v).replace(/[&<>'"]/g, function(c){
-    return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c];
-  }); }
-
-  function lerDados(){
-    var d = window.data;
-    if (!d || typeof d !== 'object') { try { d = JSON.parse(localStorage.getItem('mateusWorkspaceV4') || '{}'); } catch (e) { d = {}; } }
-    return d;
-  }
-  function perfil(){
-    var d = lerDados();
-    d.profile = d.profile || {};
-    if (!Array.isArray(d.profile.skills)) d.profile.skills = [];
-    if (!Array.isArray(d.profile.links)) d.profile.links = [];
-    if (!d.profile.visibility || typeof d.profile.visibility !== 'object') d.profile.visibility = {};
-    return d.profile;
-  }
-  function grava(){
-    /* save() é o caminho oficial: grava no localStorage, espelha na
-       nuvem quando há conta e redesenha. Só quando ele não existe (algum
-       script ainda não carregou) é que se escreve direto. */
-    if (typeof window.save === 'function') { window.save(); return; }
-    try { localStorage.setItem('mateusWorkspaceV4', JSON.stringify(lerDados())); } catch (e) {}
-    redesenhaPrevia();
-  }
-
-  /* @usuário: minúsculas, números, ponto e sublinhado. A regra é
-     explicada no campo em vez de o valor ser silenciosamente corrigido
-     nas costas de quem digita. */
-  function normalizaUsuario(v){
-    return String(v || '').trim().toLowerCase().replace(/^@+/, '').replace(/[^a-z0-9._]/g, '');
-  }
-  function validaUsuario(v){
-    if (!v) return { estado:'', texto:'Opcional. Serve para te identificar quando o perfil for compartilhável.' };
-    if (v.length < 3) return { estado:'erro', texto:'Precisa de pelo menos 3 caracteres.' };
-    if (v.length > 24) return { estado:'erro', texto:'No máximo 24 caracteres.' };
-    if (/^[._]|[._]$/.test(v)) return { estado:'erro', texto:'Não pode começar nem terminar com ponto ou sublinhado.' };
-    return { estado:'ok', texto:'Disponível no seu aparelho. A checagem de nomes repetidos vem junto do perfil público.' };
-  }
-
-  function iconeSvg(rede){
-    return '<svg viewBox="0 0 24 24" aria-hidden="true">' +
-      rede.caminho.split(' M').map(function(pedaco, i){
-        return '<path fill-rule="evenodd" d="' + (i ? 'M' + pedaco : pedaco) + '"/>';
-      }).join('') + '</svg>';
-  }
-
-  function linkDe(id){
-    var p = perfil();
-    var achado = null;
-    p.links.forEach(function(l){ if (l && l.id === id) achado = l; });
-    if (!achado) { achado = { id:id, url:'', visible:true }; p.links.push(achado); }
-    return achado;
-  }
-
-  /* Endereço completo a partir do que a pessoa digitou: quem escreve
-     "github.com/fulano" espera que o link funcione, e um href sem
-     protocolo é tratado pelo navegador como caminho relativo. */
-  function urlCompleta(v){
-    var t = String(v || '').trim();
-    if (!t) return '';
-    if (/^https?:\/\//i.test(t)) return t;
-    return 'https://' + t.replace(/^\/+/, '');
-  }
-
-  // ---------------------------------------------------------------
-  // Marcação
-  // ---------------------------------------------------------------
-  function monta(){
-    var view = document.getElementById('view-profile');
-    if (!view || view.querySelector('#mwIdBloco')) return;
-    /* O cartão da área mudou de nome com a migração. Preso a
-       `.card.section`, este monta() devolvia sem montar nada: quatro
-       grupos do Perfil (apresentação, links, perfil público, prévia)
-       simplesmente não existiam na tela, sem erro no console. */
-    var cartao = view.querySelector('.ds-cartao, .card.section');
-    if (!cartao) return;
-
-    /* Um conjunto de nomes OU o outro — nunca os dois. */
-    var migradaP = !!document.querySelector('#view-profile[data-mw-migrada]');
-    var G  = migradaP ? 'ds-grupo mw-id-bloco'  : 'settings-group mw-id-bloco';
-    var GT = migradaP ? ' class="ds-grupo-titulo"' : '';
-    var GP = migradaP ? ' class="ds-grupo-apoio"'  : '';
-    var FF = migradaP ? 'ds-campo'      : 'form-field';
-    var FL = migradaP ? 'ds-campo ds-largo' : 'form-field full';
-    var EN = migradaP ? ' class="ds-entrada"' : '';
-    var FM = migradaP ? 'ds-grade-fixa-2' : 'profile-form';
-
-    var caixa = document.createElement('div');
-    caixa.id = 'mwIdBloco';
-
-    caixa.innerHTML =
-      '<div class="' + G + '" data-mw-grupo>' +
-        '<h4' + GT + '>Como você se apresenta</h4>' +
-        '<p' + GP + '>Um apelido curto, um texto sobre você e as tecnologias com que trabalha. Nada aqui sai do seu aparelho sozinho.</p>' +
-        '<div class="' + FM + '">' +
-          '<div class="' + FF + '"><label for="mwIdUsuario">Nome de usuário</label>' +
-            '<div class="mw-id-usuario"><span class="mw-id-arroba" aria-hidden="true">@</span>' +
-            '<input id="mwIdUsuario" type="text" inputmode="latin" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="seuusuario" maxlength="24"></div>' +
-            '<p class="mw-id-dica" id="mwIdUsuarioDica"></p>' +
-          '</div>' +
-          '<div class="' + FL + '"><label for="mwIdBio">Bio <span class="mw-id-contador" id="mwIdBioContador">0/' + LIMITE_BIO + '</span></label>' +
-            '<textarea id="mwIdBio"' + EN + ' rows="3" maxlength="' + LIMITE_BIO + '" placeholder="Em duas linhas: o que você estuda e o que está construindo."></textarea>' +
-          '</div>' +
-          '<div class="' + FL + '"><label for="mwIdSkill">Tecnologias e áreas</label>' +
-            '<input id="mwIdSkill"' + EN + ' type="text" placeholder="Digite e pressione Enter (ex.: Python, Anatomia, UI Design)">' +
-            '<div class="mw-id-chips" id="mwIdChips"></div>' +
-            '<p class="mw-id-chips-vazio" id="mwIdChipsVazio">Nenhuma adicionada ainda.</p>' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
-
-      '<div class="' + G + '" data-mw-grupo>' +
-        '<h4' + GT + '>Links</h4>' +
-        '<p' + GP + '>Cole o endereço do seu perfil em cada lugar. O interruptor decide se ele aparece — deixar em branco também esconde.</p>' +
-        '<div class="mw-id-links" id="mwIdLinks"></div>' +
-      '</div>' +
-
-      '<div class="' + G + '" data-mw-grupo>' +
-        '<h4' + GT + '>Perfil público</h4>' +
-        '<p' + GP + '>Com o perfil privado, nada é compartilhável. Com ele público, só o que estiver marcado abaixo faz parte do que sairia daqui.</p>' +
-        '<div class="mw-id-priv-linha" style="border-bottom:0;padding-top:4px">' +
-          '<span>Tornar o perfil público<small id="mwIdPublicoEstado">Privado. Ninguém além de você vê estes dados.</small></span>' +
-          '<label class="mw-id-switch"><input type="checkbox" id="mwIdPublico" aria-label="Tornar o perfil público"><i></i></label>' +
-        '</div>' +
-        '<div class="mw-id-privacidade" id="mwIdPrivacidade" data-desligado="1"></div>' +
-        '<div class="mw-id-embreve">' +
-          '<span class="mw-id-embreve-selo">Em breve</span>' +
-          '<div><strong>O endereço público ainda não existe</strong>' +
-          '<p>Não há link para compartilhar porque a página pública ainda não foi construída — e um botão que não leva a lugar nenhum seria pior do que a ausência dele. Suas escolhas ficam guardadas e passam a valer no dia em que o endereço existir.</p></div>' +
-        '</div>' +
-      '</div>' +
-
-      '<div class="' + G + '" data-mw-grupo>' +
-        '<h4' + GT + '>Prévia</h4>' +
-        '<p' + GP + '>Exatamente o que sairia daqui com as escolhas acima. Se um campo não aparece na prévia, ele não é compartilhado.</p>' +
-        '<div class="mw-id-previa" id="mwIdPrevia"></div>' +
-      '</div>';
-
-    cartao.appendChild(caixa);
-    liga();
-    preenche();
-  }
-
-  // ---------------------------------------------------------------
-  // Ligações
-  // ---------------------------------------------------------------
-  function liga(){
-    var usuario = document.getElementById('mwIdUsuario');
-    var dica = document.getElementById('mwIdUsuarioDica');
-    usuario.addEventListener('input', function(){
-      var limpo = normalizaUsuario(usuario.value);
-      if (usuario.value !== limpo) {
-        var pos = usuario.selectionStart;
-        usuario.value = limpo;
-        try { usuario.setSelectionRange(pos - 1, pos - 1); } catch (e) {}
-      }
-      var r = validaUsuario(limpo);
-      dica.textContent = r.texto;
-      dica.setAttribute('data-estado', r.estado);
-      perfil().username = limpo;
-      redesenhaPrevia();
-    });
-    usuario.addEventListener('change', grava);
-
-    var bio = document.getElementById('mwIdBio');
-    var contador = document.getElementById('mwIdBioContador');
-    bio.addEventListener('input', function(){
-      perfil().bio = bio.value;
-      contador.textContent = bio.value.length + '/' + LIMITE_BIO;
-      contador.setAttribute('data-estado', bio.value.length >= LIMITE_BIO ? 'limite' : '');
-      redesenhaPrevia();
-    });
-    bio.addEventListener('change', grava);
-
-    var skill = document.getElementById('mwIdSkill');
-    skill.addEventListener('keydown', function(ev){
-      if (ev.key !== 'Enter' && ev.key !== ',') return;
-      ev.preventDefault();
-      var valor = skill.value.trim().replace(/,+$/, '');
-      if (!valor) return;
-      var p = perfil();
-      var jaTem = p.skills.some(function(s){ return String(s).toLowerCase() === valor.toLowerCase(); });
-      if (jaTem) { skill.value = ''; return; }
-      if (p.skills.length >= 20) { if (window.toast) window.toast('Máximo de 20 tecnologias.'); return; }
-      p.skills.push(valor);
-      skill.value = '';
-      desenhaChips();
-      grava();
-    });
-
-    document.getElementById('mwIdChips').addEventListener('click', function(ev){
-      var botao = ev.target.closest('button[data-remover]');
-      if (!botao) return;
-      var p = perfil();
-      p.skills.splice(Number(botao.getAttribute('data-remover')), 1);
-      desenhaChips();
-      grava();
-    });
-
-    var publico = document.getElementById('mwIdPublico');
-    publico.addEventListener('change', function(){
-      perfil().public = publico.checked;
-      aplicaEstadoPublico();
-      grava();
-    });
-  }
-
-  function aplicaEstadoPublico(){
-    var p = perfil();
-    var estado = document.getElementById('mwIdPublicoEstado');
-    var grade = document.getElementById('mwIdPrivacidade');
-    if (estado) estado.textContent = p.public
-      ? 'Público. Só os campos marcados abaixo fariam parte.'
-      : 'Privado. Ninguém além de você vê estes dados.';
-    if (grade) grade.setAttribute('data-desligado', p.public ? '0' : '1');
-    redesenhaPrevia();
-  }
-
-  function desenhaChips(){
-    var caixa = document.getElementById('mwIdChips');
-    var vazio = document.getElementById('mwIdChipsVazio');
-    if (!caixa) return;
-    var lista = perfil().skills;
-    caixa.innerHTML = lista.map(function(s, i){
-      return '<span class="mw-id-chip">' + esc(s) +
-        '<button type="button" data-remover="' + i + '" aria-label="Remover ' + esc(s) + '">×</button></span>';
-    }).join('');
-    if (vazio) vazio.hidden = lista.length > 0;
-    redesenhaPrevia();
-  }
-
-  function desenhaLinks(){
-    var caixa = document.getElementById('mwIdLinks');
-    if (!caixa || caixa.dataset.pronto) { atualizaValoresLinks(); return; }
-    caixa.dataset.pronto = '1';
-    caixa.innerHTML = REDES.map(function(r){
-      return '<div class="mw-id-link" data-rede="' + r.id + '">' +
-        '<span class="mw-id-link-ico" aria-hidden="true">' + iconeSvg(r) + '</span>' +
-        '<div class="mw-id-link-corpo"><strong>' + esc(r.nome) + '</strong>' +
-        '<input type="url" inputmode="url" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="' + esc(r.dica) + '" aria-label="Endereço do seu ' + esc(r.nome) + '"></div>' +
-        '<label class="mw-id-switch"><input type="checkbox" aria-label="Exibir ' + esc(r.nome) + ' no perfil"><i></i></label>' +
-        '</div>';
-    }).join('');
-
-    caixa.addEventListener('input', function(ev){
-      var linha = ev.target.closest('.mw-id-link');
-      if (!linha || ev.target.type !== 'url') return;
-      linkDe(linha.getAttribute('data-rede')).url = ev.target.value.trim();
-      redesenhaPrevia();
-    });
-    caixa.addEventListener('change', function(ev){
-      var linha = ev.target.closest('.mw-id-link');
-      if (!linha) return;
-      if (ev.target.type === 'checkbox') linkDe(linha.getAttribute('data-rede')).visible = ev.target.checked;
-      grava();
-    });
-    atualizaValoresLinks();
-  }
-
-  function atualizaValoresLinks(){
-    document.querySelectorAll('#mwIdLinks .mw-id-link').forEach(function(linha){
-      var l = linkDe(linha.getAttribute('data-rede'));
-      var campo = linha.querySelector('input[type="url"]');
-      var chave = linha.querySelector('input[type="checkbox"]');
-      if (campo && document.activeElement !== campo) campo.value = l.url || '';
-      if (chave) chave.checked = l.visible !== false;
-    });
-  }
-
-  function desenhaPrivacidade(){
-    var caixa = document.getElementById('mwIdPrivacidade');
-    if (!caixa) return;
-    var vis = perfil().visibility;
-    if (!caixa.dataset.pronto) {
-      caixa.dataset.pronto = '1';
-      caixa.innerHTML = CAMPOS.map(function(c){
-        return '<div class="mw-id-priv-linha">' +
-          '<span>' + esc(c[1]) + '<small>' + esc(c[2]) + '</small></span>' +
-          '<label class="mw-id-switch"><input type="checkbox" data-campo="' + c[0] + '" aria-label="Exibir ' + esc(c[1]) + ' no perfil público"><i></i></label>' +
-          '</div>';
-      }).join('');
-      caixa.addEventListener('change', function(ev){
-        var alvo = ev.target.closest('input[data-campo]');
-        if (!alvo) return;
-        perfil().visibility[alvo.getAttribute('data-campo')] = alvo.checked;
-        grava();
-      });
-    }
-    caixa.querySelectorAll('input[data-campo]').forEach(function(chave){
-      var campo = chave.getAttribute('data-campo');
-      /* Padrão deliberado: e-mail nasce OCULTO. Os demais nascem
-         visíveis porque são o que a pessoa acabou de escrever para se
-         apresentar; um endereço de contato direto, não. */
-      chave.checked = campo in vis ? !!vis[campo] : campo !== 'email';
-    });
-  }
-
-  function redesenhaPrevia(){
-    var caixa = document.getElementById('mwIdPrevia');
-    if (!caixa) return;
-    var d = lerDados();
-    var p = perfil();
-    var col = d.college || {};
-    var vis = p.visibility;
-    var mostra = function(campo){
-      if (!p.public) return false;
-      return campo in vis ? !!vis[campo] : campo !== 'email';
-    };
-
-    var nome = String(p.name || 'Mateus').trim();
-    var partes = nome.split(/\s+/).filter(Boolean);
-    var iniciais = ((partes[0] || 'M')[0] + (partes.length > 1 ? partes[partes.length - 1][0] : '')).toUpperCase();
-
-    var topo = '<div class="mw-id-previa-topo">' +
-      '<div class="mw-id-previa-foto">' + (p.photo ? '<img src="' + esc(p.photo) + '" alt="">' : esc(iniciais)) + '</div>' +
-      '<div><div class="mw-id-previa-nome">' + esc(nome) + '</div>' +
-      '<div class="mw-id-previa-user">' + (p.username ? '@' + esc(p.username) : 'sem nome de usuário') + '</div></div></div>';
-
-    if (!p.public) {
-      caixa.innerHTML = topo + '<p class="mw-id-previa-vazio">Perfil privado: nada além do nome e da foto sairia daqui.</p>';
-      return;
-    }
-
-    var corpo = '';
-    var bio = String(p.bio || '').trim();
-    if (mostra('bio') && bio) corpo += '<p class="mw-id-previa-bio">' + esc(bio) + '</p>';
-
-    if (mostra('skills') && p.skills.length) {
-      corpo += '<div class="mw-id-chips">' + p.skills.map(function(s){
-        return '<span class="mw-id-chip">' + esc(s) + '</span>';
-      }).join('') + '</div>';
-    }
-
-    var dados = [];
-    if (mostra('course') && String(col.course || '').trim()) dados.push(['Curso', col.course]);
-    if (mostra('institution') && String(col.institution || '').trim()) dados.push(['Instituição', col.institution]);
-    if (mostra('semester') && Number(col.semester)) dados.push(['Semestre', Number(col.semester) + 'º']);
-    if (mostra('email') && String(p.email || '').trim()) dados.push(['E-mail', p.email]);
-    if (dados.length) {
-      corpo += '<div class="mw-id-previa-dados">' + dados.map(function(par){
-        return '<span class="mw-inst-selo">' + esc(par[0]) + ' <b>' + esc(par[1]) + '</b></span>';
-      }).join('') + '</div>';
-    }
-
-    var links = REDES.filter(function(r){
-      var l = linkDe(r.id);
-      return l.visible !== false && String(l.url || '').trim();
-    });
-    if (links.length) {
-      corpo += '<div class="mw-id-previa-links">' + links.map(function(r){
-        var alvo = urlCompleta(linkDe(r.id).url);
-        return '<a href="' + esc(alvo) + '" target="_blank" rel="noopener noreferrer nofollow">' +
-          iconeSvg(r) + esc(r.nome) + '</a>';
-      }).join('') + '</div>';
-    }
-
-    caixa.innerHTML = topo + (corpo || '<p class="mw-id-previa-vazio">Tudo está oculto: só o nome e a foto sairiam daqui.</p>');
-  }
-
-  function preenche(){
-    var p = perfil();
-    var usuario = document.getElementById('mwIdUsuario');
-    var dica = document.getElementById('mwIdUsuarioDica');
-    var bio = document.getElementById('mwIdBio');
-    var contador = document.getElementById('mwIdBioContador');
-    var publico = document.getElementById('mwIdPublico');
-    if (!usuario) return;
-
-    if (document.activeElement !== usuario) usuario.value = p.username || '';
-    var r = validaUsuario(usuario.value);
-    dica.textContent = r.texto;
-    dica.setAttribute('data-estado', r.estado);
-
-    if (document.activeElement !== bio) bio.value = p.bio || '';
-    contador.textContent = (bio.value || '').length + '/' + LIMITE_BIO;
-
-    publico.checked = !!p.public;
-
-    desenhaChips();
-    desenhaLinks();
-    desenhaPrivacidade();
-    aplicaEstadoPublico();
-  }
-
-  function inicia(){
-    monta();
-    if (document.getElementById('mwIdBloco')) preenche();
-  }
-
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', inicia);
-  else inicia();
-
-  /* renderAll() termina chamando mwDashRefresh — é o único ponto que
-     avisa "os dados mudaram". A corrente precisa ser preservada: cinco
-     blocos dependem dela, e sobrescrever por cima já matou o sino de
-     notificações uma vez. */
-  var anterior = window.mwDashRefresh;
-  window.mwDashRefresh = function(dados){
-    if (typeof anterior === 'function') { try { anterior(dados); } catch (e) {} }
-    try { inicia(); } catch (e) {}
-  };
-})();
-</script>
+     O que valia foi para a tela de Editar perfil: a forma de guardar,
+     as marcas oficiais das redes e a regra de montar o endereço. A
+     prévia do perfil público não foi recriada — ela previa uma página
+     que outra pessoa abriria, e esse servidor não existe. -->
 
 
 <style id="mw-identidade-formularios">
@@ -31806,29 +31683,27 @@ html body .mw-pular:focus{ transform: translateY(0); }
     return (p[0][0] + (p.length > 1 ? p[p.length-1][0] : '')).toUpperCase();
   }
 
-  /* ---- os links, normalizados ------------------------------------------
-     A pessoa digita "@fulano", "fulano" ou a URL inteira. Guardar os três
-     jeitos e sair abrindo o que veio daria link quebrado — então cada rede
-     tem a sua regra de montar o endereço, e o que se guarda é o que foi
-     digitado. */
-  var REDES = [
-    { chave:'instagram', nome:'Instagram', campo:'mwLinkInstagram',
-      url:function(v){ return 'https://instagram.com/' + v.replace(/^@/,''); },
-      icone:'<rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/>' },
-    { chave:'github', nome:'GitHub', campo:'mwLinkGithub',
-      url:function(v){ return 'https://github.com/' + v.replace(/^@/,''); },
-      icone:'<path d="M9 19.4c-4.2 1.2-4.2-2.3-5.9-2.8m11.8 5.1v-3.3c0-.9.1-1.3-.5-1.8 2.6-.3 5.1-1.3 5.1-5.6a4.3 4.3 0 0 0-1.2-3 4 4 0 0 0-.1-3s-1-.3-3.3 1.2a11.3 11.3 0 0 0-5.9 0C6.7 4.7 5.7 5 5.7 5a4 4 0 0 0-.1 3 4.3 4.3 0 0 0-1.2 3.1c0 4.2 2.5 5.2 5.1 5.5-.6.5-.6 1.1-.5 1.9v3.2"/>' },
-    { chave:'linkedin', nome:'LinkedIn', campo:'mwLinkLinkedin',
-      url:function(v){ return /^https?:/.test(v) ? v : 'https://linkedin.com/' + v.replace(/^\//,''); },
-      icone:'<rect x="3.2" y="3.2" width="17.6" height="17.6" rx="3"/><path d="M7.4 10.2v6.4M7.4 7.6v.1M11.4 16.6v-6.4m0 2.2c0-1.2.9-2.2 2.1-2.2s2.1 1 2.1 2.2v4.2"/>' },
-    { chave:'site', nome:'Site', campo:'mwLinkSite',
-      url:function(v){ return /^https?:/.test(v) ? v : 'https://' + v; },
-      icone:'<circle cx="12" cy="12" r="8.6"/><path d="M3.4 12h17.2M12 3.4c2.2 2.4 3.4 5.4 3.4 8.6S14.2 18.2 12 20.6c-2.2-2.4-3.4-5.4-3.4-8.6S9.8 5.8 12 3.4Z"/>' }
-  ];
+  /* ---- os links vêm de UM modelo só ------------------------------------
+     Aqui havia uma SEGUNDA lista de redes, com nomes de campo próprios
+     (`mwLinkInstagram`…), ícones desenhados à mão e uma regra de URL
+     paralela. Ela escrevia em `profile.links` como se fosse um objeto,
+     enquanto o resto do app guardava ali uma LISTA — e propriedade
+     nomeada em array não sobrevive ao `JSON.stringify`. Era por isso que
+     nenhum link social jamais era salvo.
+
+     Agora tudo passa por `window.mwRedes` e `window.mwLinkDe`, definidos
+     no bloco de Editar perfil: uma lista, uma forma de guardar, uma
+     regra de montar o endereço e um conjunto de marcas. */
+
 
   /* ---- o que a privacidade controla ------------------------------------ */
   var CHAVES = [
     ['bio',    'Bio',                    'A frase que descreve voc&ecirc;'],
+    /* §16/§17: preencher não é o mesmo que mostrar. Gênero e pronomes
+       são opcionais e ganham chave própria — quem preenche para o
+       aplicativo saber tratar não é obrigado a publicar. */
+    ['pronomes','Pronomes',              'Como voc&ecirc; prefere ser tratado'],
+    ['genero', 'G&ecirc;nero',                  'Aparece junto do seu nome'],
     ['curso',  'Curso e institui&ccedil;&atilde;o',  'Onde e o que voc&ecirc; estuda'],
     ['numeros','N&uacute;meros',                'Quantas disciplinas, projetos e atividades'],
     ['projetos','Projetos',               'A lista dos seus projetos'],
@@ -31849,7 +31724,16 @@ html body .mw-pular:focus{ transform: translateY(0); }
     }
     var elNome = qi('mwPerfilNome'); if (elNome) elNome.textContent = nome;
     var elUser = qi('mwPerfilUsuario');
-    if (elUser) elUser.textContent = p.username ? '@' + p.username : '';
+    /* @usuário, pronomes e gênero na mesma linha, separados por ponto —
+       é como um perfil social apresenta identidade, e cada pedaço só
+       entra se a chave de privacidade dele estiver aberta (§16/§17). */
+    if (elUser) {
+      var identidade = [];
+      if (p.username) identidade.push('@' + p.username);
+      if (ve('pronomes') && String(p.pronouns || '').trim()) identidade.push(String(p.pronouns).trim());
+      if (ve('genero') && String(p.gender || '').trim()) identidade.push(String(p.gender).trim());
+      elUser.textContent = identidade.join(' · ');
+    }
     var elBio = qi('mwPerfilBio');
     if (elBio) elBio.textContent = ve('bio') ? (p.bio || '') : '';
 
@@ -31869,12 +31753,17 @@ html body .mw-pular:focus{ transform: translateY(0); }
     var links = qi('mwPerfilLinks');
     if (links){
       var l = p.links || {};
-      links.innerHTML = !ve('links') ? '' : REDES.filter(function(r){ return (l[r.chave]||'').trim(); })
-        .map(function(r){
-          var val = l[r.chave].trim();
-          return '<a href="' + esc(r.url(val)) + '" target="_blank" rel="noopener noreferrer">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' +
-            r.icone + '</svg>' + esc(r.nome) + '</a>'; }).join('');
+      /* §20: rede sem valor não aparece. Nem ícone apagado, nem link
+         morto — se não foi preenchida, ela não existe neste perfil. */
+      var redes = window.mwRedes || [];
+      var pega = window.mwLinkDe || function(){ return { url:'' }; };
+      links.innerHTML = !ve('links') ? '' : redes.filter(function(r){
+          return String(pega(r.id).url || '').trim();
+        }).map(function(r){
+          var url = window.mwRedeEndereco(r, pega(r.id).url);
+          return '<a href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">' +
+            '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="' + r.caminho + '"/></svg>' +
+            esc(r.nome) + '</a>'; }).join('');
     }
 
     var vs = qi('mwPerfilVisib');
@@ -31997,58 +31886,20 @@ html body .mw-pular:focus{ transform: translateY(0); }
         (ve(k[0]) ? ' checked' : '') + ' aria-label="Mostrar ' + k[1] + ' no perfil"></div></div>'; }).join('');
   }
 
-  function preencheFormulario(){
-    var p = perfil(), c = faculdade(), l = p.links || {};
-    var põe = function(id, v){ var e = qi(id); if (e) e.value = v == null ? '' : v; };
-    põe('profileName', p.name || '');
-    põe('mwPerfilCampoUsuario', p.username || '');
-    põe('mwPerfilCampoBio', p.bio || '');
-    põe('mwPerfilCampoInst', c.institution || '');
-    põe('mwPerfilCampoCurso', c.course || '');
-    põe('mwPerfilCampoSemestre', c.semester || '');
-    põe('mwPerfilCampoArea', c.area || '');
-    REDES.forEach(function(r){ põe(r.campo, l[r.chave] || ''); });
-    contaBio();
-  }
-  function contaBio(){
-    var t = qi('mwPerfilCampoBio'), c = qi('mwPerfilBioConta');
-    if (t && c) c.textContent = (t.value || '').length + ' de 220';
-  }
-
+  /* `preencheFormulario` e o contador de bio saíram: os campos que eles
+     enchiam mudaram para a tela de Editar perfil, que se carrega
+     sozinha ao abrir. Manter aqui um preenchedor de campos inexistentes
+     seria código que roda todo repaint e não faz nada. */
   function pintaTudo(){
     pintaHero(); pintaNumeros(); pintaVisao(); pintaProjetos();
-    pintaAtividades(); pintaPrivacidade(); preencheFormulario();
+    pintaAtividades(); pintaPrivacidade();
   }
   window.mwPintaPerfil = pintaTudo;
 
-  /* ================= SALVAR ================= */
-  function salva(){
-    var d = window.data; if (!d) return;
-    d.profile = d.profile || {}; d.college = d.college || {};
-    var v = function(id){ var e = qi(id); return e ? String(e.value||'').trim() : ''; };
-    d.profile.name = v('profileName') || d.profile.name || '';
-    /* @usuário sem arroba e sem espaço: é o que vira endereço depois. */
-    d.profile.username = v('mwPerfilCampoUsuario').replace(/^@/,'').replace(/\s+/g,'');
-    d.profile.bio = v('mwPerfilCampoBio');
-    d.profile.links = d.profile.links || {};
-    REDES.forEach(function(r){ d.profile.links[r.chave] = v(r.campo); });
-    d.college.institution = v('mwPerfilCampoInst');
-    d.college.course = v('mwPerfilCampoCurso');
-    d.college.area = v('mwPerfilCampoArea');
-    var sem = parseInt(v('mwPerfilCampoSemestre'), 10);
-    if (sem > 0) d.college.semester = sem;
-
-    if (typeof window.save === 'function') window.save();
-    else if (typeof window.persistWorkspace === 'function') window.persistWorkspace();
-    pintaTudo();
-    var aviso = qi('mwPerfilSalvoAviso');
-    if (aviso){
-      aviso.textContent = 'Salvo.';
-      clearTimeout(salva._t);
-      salva._t = setTimeout(function(){ aviso.textContent = ''; }, 2600);
-    }
-    if (typeof window.toast === 'function') window.toast('Perfil salvo');
-  }
+  /* O `salva()` do Perfil foi retirado junto com o botão: ele lia campos
+     que mudaram de tela e gravaria vazio por cima do que a pessoa tem.
+     Quem grava agora é a tela de Editar perfil, a cada tecla, na forma
+     que persiste. */
 
   /* ================= EVENTOS ================= */
   document.addEventListener('click', function(ev){
@@ -32071,7 +31922,7 @@ html body .mw-pular:focus{ transform: translateY(0); }
       var campo = qi('profileName'); if (campo) campo.focus();
       return;
     }
-    if (t.closest('#saveProfile')){ ev.preventDefault(); ev.stopPropagation(); salva(); return; }
+    /* `#saveProfile` não existe mais; ver o comentário do `salva()`. */
     /* Aqui havia uma ponte: o "Escolher foto" da caixa permanente
        clicava na insígnia de câmera do topo, porque eram dois botões
        para a mesma tarefa. Com a caixa virando folha, sobrou UM botão,
@@ -32125,7 +31976,7 @@ html body .mw-pular:focus{ transform: translateY(0); }
     }
   });
   document.addEventListener('input', function(ev){
-    if (ev.target && ev.target.id === 'mwPerfilCampoBio') contaBio();
+    /* o contador de bio agora vive na tela de Editar perfil */
   });
 
   /* Repintar ao ENTRAR na área. A navegação chega por caminhos diferentes
@@ -32216,7 +32067,7 @@ html body .mw-pular:focus{ transform: translateY(0); }
     calendar:'Calendário', focus:'Foco', reports:'Relatórios',
     notes:'Anotações', files:'Arquivos', support:'Suporte',
     profile:'Perfil', settings:'Configurações', admin:'Painel Admin',
-    notifications:'Atividade'
+    notifications:'Atividade', 'profile-edit':'Editar perfil'
   };
   function pintaTitulo(v){
     var h = q('#mwTopoTitulo'); if (!h) return;

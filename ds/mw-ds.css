@@ -2452,6 +2452,63 @@ html[data-densidade]{ --mw-alvo:44px; --mw-alvo-confortavel:44px; }
   min-height: 0; padding-block: var(--mw-e-3);
   color: var(--mw-txt-3);
 }
+
+/* ---- EDITAR PERFIL (§13) ---------------------------------------------------
+   A foto no alto, centrada, e UMA palavra embaixo. A referência que o
+   Mateus mandou acerta a hierarquia: numa tela de editar perfil, a foto
+   é a primeira decisão e todo o resto é lista. */
+.ds .ds-perfil-edit-foto{
+  display: flex; flex-direction: column; align-items: center;
+  gap: var(--mw-e-2);
+  padding: var(--mw-e-5) 0 var(--mw-e-4);
+}
+.ds .ds-perfil-foto-g{ width: 96px; height: 96px; font-size: 34px; }
+.ds .ds-perfil-edit-foto-btn{
+  border: 0; background: none; padding: var(--mw-e-2) var(--mw-e-3);
+  font: inherit; font-size: var(--mw-t-corpo); font-weight: 600;
+  color: var(--mw-ac-txt); cursor: pointer; border-radius: var(--mw-r-2);
+}
+.ds .ds-perfil-edit-foto-btn:hover{ background: var(--mw-sup-2); }
+
+/* CAMPO EDITÁVEL DENTRO DA LINHA.
+   O primo somente-leitura (`ds-conf-campo`) fica em Conta e só existe
+   para poder copiar. Aqui a pessoa DIGITA, e o campo precisa dizer
+   isso: alinhado à direita como um valor, mas com foco visível e
+   tamanho de fonte que o iOS não force zoom (16px). */
+.ds .ds-conf-campo-edit{
+  flex: 1 1 auto; min-width: 0;
+  text-align: right; font-size: 16px; color: var(--mw-txt-1);
+  border: 0; background: transparent; padding: 0;
+}
+.ds .ds-conf-campo-edit::placeholder{ color: var(--mw-txt-3); }
+.ds .ds-conf-campo-edit:focus{ outline: none; }
+.ds .ds-conf-linha:focus-within{ background: var(--mw-sup-2); }
+.ds .ds-conf-campo-area{
+  text-align: left; resize: none; line-height: 1.45;
+  font-family: inherit; min-height: 44px;
+}
+.ds .ds-conf-linha-alta{ align-items: flex-start; }
+/* Numa linha de EDIÇÃO o rótulo não disputa largura com o valor: ele
+   toma o que precisa e o campo fica com o resto. Sem isto, "Nome de
+   usuário" quebrava em duas linhas ao lado de um campo quase vazio. */
+.ds .ds-conf-linha:has(> .ds-conf-campo-edit) > .ds-conf-corpo{ flex: 0 0 auto; }
+.ds .ds-conf-linha:has(> .ds-conf-campo-edit) > .ds-conf-corpo .ds-conf-rotulo{ white-space: nowrap; }
+/* Um `<select>` herda a cara do sistema operacional se não for despido. */
+.ds select.ds-conf-campo-edit{
+  -webkit-appearance: none; appearance: none;
+  text-align-last: right; cursor: pointer;
+}
+/* Marca de rede social: o desenho é o oficial, para ser reconhecível
+   (§19), mas a COR é a do tema — é o que impede a fileira de virar uma
+   explosão de roxo, azul e vermelho dentro de uma lista cinza. */
+.ds .ds-conf-icone-marca{ color: var(--mw-txt-2); }
+.ds .ds-conf-icone-marca svg{ width: 17px; height: 17px; }
+.ds .ds-conf-linha-rede:focus-within .ds-conf-icone-marca{ color: var(--mw-ac); }
+.ds .ds-conf-destino[hidden]{ display: none; }
+.ds .ds-conf-destino{
+  font-variant-numeric: tabular-nums;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
 .ds .ds-conf-acoes-bloco{ padding: 0 var(--mw-e-4) var(--mw-e-3); }
 
 /* ---- RECOLHÍVEL -----------------------------------------------------------
