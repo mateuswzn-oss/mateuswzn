@@ -1913,23 +1913,6 @@ body.mw-tela-folha .ds .ds-topo-voltar:active{ transform: scale(.92); }
   margin-top: var(--mw-e-2);
 }
 
-/* ---- calendário dentro da chapa ---- */
-.ds .ds-cal-topo{ display: flex; justify-content: flex-end; margin-bottom: var(--mw-e-2); }
-.ds .ds-cal-topo .cal-nav{ display: flex; align-items: center; gap: var(--mw-e-2); }
-.ds .ds-cal-topo .cal-nav strong{
-  min-width: 118px; text-align: center; font-size: var(--mw-t-corpo);
-  font-weight: 650; color: var(--mw-txt-1);
-}
-.ds .ds-cal-hoje{
-  margin: 0 0 var(--mw-e-3); font-size: var(--mw-t-micro); color: var(--mw-txt-3);
-}
-.ds .ds-cal-hoje:empty{ display: none; }
-.ds .ds-cal-detalhe{
-  margin-top: var(--mw-e-3); padding-top: var(--mw-e-3);
-  border-top: 1px solid var(--mw-divisor);
-  font-size: var(--mw-t-corpo); color: var(--mw-txt-2);
-}
-
 /* ---- gráfico ---- */
 .ds .ds-grafico{ position: relative; height: 190px; }
 .ds .ds-grafico canvas{ width: 100%; height: 100%; display: block; }
@@ -2675,4 +2658,233 @@ html[data-densidade]{ --mw-alvo:44px; --mw-alvo-confortavel:44px; }
 /* Desktop: coluna com largura de leitura, não a tela inteira (§20). */
 @media (min-width: 901px){
   .ds .ds-conf{ max-width: 720px; }
+}
+
+
+/* ============================================================================
+   CALENDÁRIO (§26–§33)
+
+   O QUE ESTAVA ERRADO, MEDIDO ANTES DE MEXER (390px):
+   · a barra do mês tinha 28px de altura e os passadores 32px — eles
+     transbordavam 2px em cima e 2px embaixo. É isso que o print mostra
+     como "botões sobrepostos, saindo do card". E 32px é menos que o
+     alvo de toque de 44.
+   · cada dia era uma caixa com borda e fundo: 35 caixas numa tela.
+     Calendário se lê pela GRADE — as linhas e colunas já separam os
+     dias, e desenhar uma moldura em cada um é repetir com tinta o que
+     o alinhamento já diz. Era o "excesso de caixas" do §26.
+   · o dia de hoje se distinguia por um tom levemente diferente e um
+     ponto de 4px. O §29 é explícito: a pessoa precisa saber
+     imediatamente, e "levemente diferente" não é imediatamente.
+
+   O QUE FICA: a grade, um círculo cheio no dia de hoje, um anel no dia
+   escolhido, e um ponto para o dia que tem compromisso. Três marcas,
+   três significados, nenhuma moldura.
+
+   ERRO MEU, ANOTADO PARA NÃO SE REPETIR: escrevi estas regras como
+   `.ds #view-calendar .calendar-day`, e nenhuma valeu. `.ds #x` pede um
+   `.ds` ANCESTRAL de `#x` — mas `#view-calendar` É o elemento `.ds`,
+   não está dentro de um. É a mesma armadilha que já tinha derrubado
+   `.ds .ds-topo` (o cabeçalho também é a raiz `.ds`). Duas vezes o
+   mesmo engano: a regra é olhar QUEM carrega a classe, não onde a
+   classe "parece" estar.
+   ============================================================================ */
+.ds .ds-cal-topo{
+  /* Grade de três colunas, e não uma linha com altura escrita à parte:
+     assim a altura é a do item mais alto e nada transborda.
+
+     O alvo aqui é o CONFORTÁVEL (44px), não o mínimo (24px): trocar de
+     mês é um toque repetido, feito com o polegar, e `--mw-alvo` sozinho
+     é só o piso da WCAG 2.5.8 — o §31 pede área de toque confortável. */
+  display: grid;
+  grid-template-columns: var(--mw-alvo-confortavel) 1fr var(--mw-alvo-confortavel);
+  align-items: center;
+  gap: var(--mw-e-2);
+  margin-bottom: var(--mw-e-2);
+}
+.ds .ds-cal-passo{
+  width: var(--mw-alvo-confortavel); height: var(--mw-alvo-confortavel);
+  display: grid; place-items: center;
+  border: 0; border-radius: 50%;
+  background: transparent; color: var(--mw-txt-2);
+  cursor: pointer;
+  transition: background var(--mw-d-rapida) var(--mw-curva), color var(--mw-d-rapida) var(--mw-curva);
+}
+.ds .ds-cal-passo:hover{ background: var(--mw-sup-2); color: var(--mw-txt-1); }
+.ds .ds-cal-passo:active{ transform: scale(.92); }
+.ds .ds-cal-mes{
+  text-align: center; font-size: var(--mw-t-corpo-g); font-weight: 700;
+  letter-spacing: -.01em; color: var(--mw-txt-1);
+  text-transform: capitalize;
+}
+.ds .ds-cal-linha-hoje{
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--mw-e-3); margin-bottom: var(--mw-e-3);
+}
+.ds .ds-cal-hoje{ margin: 0; font-size: var(--mw-t-micro); color: var(--mw-txt-3); }
+.ds .ds-cal-hoje:empty{ display: none; }
+.ds .ds-cal-voltar-hoje[hidden]{ display: none; }
+
+/* ---- a grade ---- */
+.ds .calendar-grid{
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+.ds .calendar-grid .cal-wd{
+  text-align: center; padding-bottom: var(--mw-e-2);
+  font-size: var(--mw-t-micro); font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase; color: var(--mw-txt-3);
+}
+.ds .calendar-grid .calendar-day{
+  position: relative;
+  display: grid; place-items: center;
+  aspect-ratio: 1 / 1; min-height: 0;
+  border: 0; background: transparent; padding: 0;
+  border-radius: 50%;
+  font: inherit; font-size: var(--mw-t-corpo); font-weight: 550;
+  font-variant-numeric: tabular-nums;
+  color: var(--mw-txt-1); cursor: pointer;
+  transition: background var(--mw-d-rapida) var(--mw-curva),
+              color var(--mw-d-rapida) var(--mw-curva);
+}
+.ds .calendar-grid .calendar-day:hover{ background: var(--mw-sup-2); }
+/* Dias do mês vizinho: presentes para a semana não ficar torta, e
+   discretos porque não são deste mês. Não são botões. */
+.ds .calendar-grid .calendar-day.muted{
+  color: var(--mw-txt-4, var(--mw-txt-3)); opacity: .45; cursor: default;
+}
+.ds .calendar-grid .calendar-day.muted:hover{ background: transparent; }
+/* HOJE: círculo cheio de acento. Não é enfeite — é a resposta à
+   pergunta que se faz ao abrir um calendário. */
+.ds .calendar-grid .calendar-day.today{
+  background: var(--mw-ac-grad-forte);
+  color: var(--mw-txt-sobre-acento); font-weight: 700;
+}
+/* ESCOLHIDO: anel, não preenchimento. Escolher é uma ação da pessoa;
+   hoje é um fato do mundo. Marcas diferentes para naturezas diferentes
+   — e assim os dois podem coexistir no mesmo dia sem brigar. */
+.ds .calendar-grid .calendar-day.selected{
+  box-shadow: inset 0 0 0 2px var(--mw-ac);
+}
+.ds .calendar-grid .calendar-day.today.selected{
+  box-shadow: inset 0 0 0 2px var(--mw-chao), 0 0 0 2px var(--mw-ac);
+}
+.ds .calendar-grid .calendar-day:focus-visible{
+  outline: 2px solid var(--mw-ac); outline-offset: 2px;
+}
+/* O ponto de "tem coisa neste dia" fica ABAIXO do número, dentro do
+   círculo — fora dele ele encostaria na linha de baixo. */
+.ds .calendar-grid .cal-dot{
+  position: absolute; bottom: 14%; left: 50%; transform: translateX(-50%);
+  width: 4px; height: 4px; border-radius: 50%;
+  background: var(--mw-ac); display: block;
+}
+.ds .calendar-grid .calendar-day.today .cal-dot{ background: var(--mw-txt-sobre-acento); }
+.ds .calendar-grid .calendar-day:not(.has-event) .cal-dot{ display: none; }
+
+/* ---- o dia escolhido, embaixo ---- */
+.ds .ds-cal-detalhe{
+  margin-top: var(--mw-e-4);
+  padding-top: var(--mw-e-4);
+  border-top: 1px solid var(--mw-divisor);
+  display: flex; flex-direction: column; gap: var(--mw-e-2);
+}
+.ds .ds-cal-detalhe[hidden]{ display: none; }
+/* Sem `capitalize`: ele põe maiúscula em TODA palavra, e "4 de
+   setembro" virava "4 De Setembro". Quem sabe onde vai a maiúscula é
+   quem monta o texto, não a folha de estilo. */
+.ds .ds-cal-detalhe > b{ font-size: var(--mw-t-corpo-g); }
+.ds .ds-cal-detalhe .mw-cal-ev{
+  display: flex; flex-direction: column; gap: 2px;
+  padding: var(--mw-e-3);
+  border-radius: var(--mw-r-2);
+  background: var(--mw-sup-2);
+}
+.ds .ds-cal-detalhe .mw-cal-ev em{
+  font-style: normal; font-size: var(--mw-t-micro); color: var(--mw-txt-3);
+}
+.ds .ds-cal-detalhe .mw-cal-empty{
+  padding: var(--mw-e-4) 0; font-size: var(--mw-t-corpo); color: var(--mw-txt-3);
+}
+.ds .ds-cal-detalhe .mw-cal-add{ display: flex; gap: var(--mw-e-2); }
+/* O CAMPO MORA DENTRO DA CAMADA, e não é preciosismo — é a única forma
+   de ele existir.
+
+   O bloco `mw-legado-desligado` do index.html declara, para cada área
+   migrada, `#view-calendar[data-mw-migrada="1"] :where(… input …){ all:
+   revert-layer; }`. Ele existe para desligar os resets antigos que
+   chegam nos campos (o `button,input,textarea{font:inherit}` global, por
+   exemplo), e `:where()` tem especificidade zero DE PROPÓSITO — a
+   especificidade que conta é a do prefixo, id + atributo (1,1,0).
+
+   `revert-layer` numa declaração SEM CAMADA volta à ORIGEM anterior, que
+   é o navegador. Então, enquanto esta regra ficou fora de camada, ela
+   perdia por especificidade e o campo voltava ao estilo do Chrome: fundo
+   #3b3b3b, 24px de altura, canto reto, fonte de 13px. Era o "tom
+   esverdeado" que aparecia no print — não era autofill, era o campo nu
+   do navegador.
+
+   Dentro de `mw.componente`, `revert-layer` devolve exatamente ISTO
+   AQUI, que é o que o desligamento sempre quis dizer: os nomes antigos
+   não pintam mais nada, quem pinta é o sistema. */
+@layer mw.componente {
+  .ds .ds-cal-detalhe .mw-cal-add input{
+    flex: 1 1 auto; min-width: 0; height: var(--mw-alvo-confortavel);
+    padding: 0 var(--mw-e-3);
+    border: 1px solid var(--mw-borda); border-radius: var(--mw-r-2);
+    background: var(--mw-sup-2); color: var(--mw-txt-1);
+    /* 16px: abaixo disso o Safari do iPhone dá zoom ao focar. */
+    font: inherit; font-size: 16px;
+  }
+  .ds .ds-cal-detalhe .mw-cal-add input::placeholder{ color: var(--mw-txt-3); }
+}
+.ds .ds-cal-detalhe .mw-cal-add button{
+  flex: 0 0 auto; height: var(--mw-alvo-confortavel); padding: 0 var(--mw-e-4);
+  border: 1px solid var(--mw-borda); border-radius: var(--mw-r-2);
+  background: var(--mw-sup-1); color: var(--mw-txt-1);
+  font: inherit; font-weight: 600; cursor: pointer;
+}
+/* O seletor mês/semana é um segmentado DISCRETO: ele escolhe entre duas
+   leituras do mesmo mês, não é a ação principal da tela (§32). */
+.ds .mw-cal-modos{ width: fit-content; margin-bottom: var(--mw-e-4); }
+
+/* ============================================================================
+   O CALENDÁRIO EM TELA LARGA (§33)
+   ============================================================================
+   Um mês não fica melhor por ser maior. Com sete colunas iguais e células
+   quadradas, a grade solta no desktop dava dias de 155px de diâmetro — um
+   círculo do tamanho de um copo para escrever um número de dois dígitos —
+   e no tablet, 107px. Também era isso que deixava o passador do mês numa
+   ponta e o do outro a mais de mil pixels de distância.
+
+   A largura de leitura do mês é a mesma em qualquer tela: o suficiente
+   para caber "31" com folga e para o dedo acertar o dia. O que muda com o
+   espaço é O QUE FICA AO LADO — e o que fica ao lado é o dia escolhido,
+   que no celular vem embaixo porque não há onde mais pôr.
+   ============================================================================ */
+.ds .ds-cal-topo,
+.ds .ds-cal-linha-hoje,
+.ds .calendar-grid{ max-width: 460px; }
+
+@media (min-width: 900px){
+  .ds .ds-cal-chapa{
+    display: grid;
+    grid-template-columns: minmax(320px, 460px) minmax(280px, 1fr);
+    grid-template-rows: auto auto auto;
+    column-gap: var(--mw-e-6);
+    align-items: start;
+  }
+  .ds .ds-cal-chapa > .ds-cal-topo{ grid-column: 1; grid-row: 1; }
+  .ds .ds-cal-chapa > .ds-cal-linha-hoje{ grid-column: 1; grid-row: 2; }
+  .ds .ds-cal-chapa > .calendar-grid{ grid-column: 1; grid-row: 3; }
+  /* O dia escolhido passa a ser a coluna da direita: a divisória vira
+     vertical, e a margem de cima some — ela só existia para separar de
+     quem estava em cima. */
+  .ds .ds-cal-chapa > .ds-cal-detalhe{
+    grid-column: 2; grid-row: 1 / -1;
+    margin-top: 0; padding-top: 0; border-top: 0;
+    padding-left: var(--mw-e-6);
+    border-left: 1px solid var(--mw-divisor);
+    align-self: stretch;
+  }
 }

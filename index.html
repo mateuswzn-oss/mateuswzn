@@ -115,7 +115,7 @@ body.light{--bg:#edf5ff;--bg2:#e5efff;--panel:rgba(255,255,255,.68);--panel2:rgb
 @media(max-width:820px){.login-shell{grid-template-columns:1fr;gap:4px}.lamp-area{height:390px}.lamp{transform:scale(.64)}.login-card{max-width:500px;margin:auto}.activity-list{grid-template-columns:1fr}.profile-form{grid-template-columns:1fr}.profile-form .full{grid-column:auto}}
 @media(max-width:560px){#loginScreen:not([data-mw-migrada]):not([data-mw-migrada] *){padding:15px}.lamp-area{height:300px}.lamp{transform:scale(.48);margin-top:-25px}.login-card{padding:23px;border-radius:22px}.brand h1{font-size:23px}.brand-logo{width:54px;height:54px}.stats{grid-template-columns:1fr}.topbar{align-items:flex-start}.hello h2:not([data-mw-migrada]):not([data-mw-migrada] *){font-size:23px}.top-actions .icon-btn:nth-child(-n+2){display:none}.section-grid{grid-template-columns:1fr}.main{padding:18px 14px 40px}}
 /* === EXTENSÃO VISUAL — adicionada sem remover a base existente === */
-.search-wrap{position:relative;display:flex;align-items:center;min-width:260px}.search-wrap input{width:100%;height:42px;border-radius:14px;border:1px solid var(--line);background:rgba(8,25,50,.48);color:var(--text);padding:0 42px 0 42px;outline:none;backdrop-filter:blur(18px)}body.light .search-wrap input{background:rgba(255,255,255,.62)}.search-icon{position:absolute;left:14px;opacity:.65}.bell-btn{position:relative}.bell-dot{position:absolute;right:8px;top:7px;width:7px;height:7px;border-radius:50%;background:#38bdf8;box-shadow:none !important;}.extra-panel{margin-top:18px}.liquid-card:not([data-mw-migrada] *){background:linear-gradient(145deg,rgba(19,55,103,.58),rgba(6,20,43,.66));border:1px solid rgba(111,190,255,.18);box-shadow:none !important;backdrop-filter:blur(24px);border-radius:22px}.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}.calendar-day{min-height:68px;border:1px solid rgba(111,190,255,.1);border-radius:12px;padding:8px;background:rgba(255,255,255,.025)}.calendar-day.today:not([data-mw-migrada] *){border-color:rgba(56,189,248,.55);box-shadow:none !important;}.calendar-day small{display:block;color:var(--muted);font-size:11px}.event-dot{display:inline-flex;margin-top:8px;padding:3px 6px;border-radius:999px;background:rgba(56,189,248,.12);color:#bdeaff;font-size:10px}.lecture-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.lecture-card{padding:16px;border-radius:17px;background:rgba(255,255,255,.035);border:1px solid rgba(111,190,255,.1);transition:.25s}.lecture-card:hover{transform:translateY(-3px);border-color:rgba(56,189,248,.35);box-shadow:none !important;}.lecture-card .lecture-meta{font-size:12px;color:var(--muted);margin-top:7px}.progress-line{height:6px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:12px}.progress-line i{display:block;height:100%;width:0;background:linear-gradient(90deg,#2563eb,#38bdf8);border-radius:inherit}.auth-links{display:flex;justify-content:space-between;margin-top:12px;font-size:12px}.auth-links button{border:0;background:none;color:#8fd8ff;padding:0}.auth-links button:hover{text-decoration:underline}.auth-modal-card{max-width:460px}.auth-step{display:none}.auth-step.active{display:block}.notification-menu{position:absolute;right:0;top:52px;width:310px;padding:14px;z-index:100;background:rgba(7,22,45,.9);border:1px solid rgba(111,190,255,.2);border-radius:18px;box-shadow:none !important;backdrop-filter:blur(24px)}.notification-menu.hidden{display:none}.notification-item{padding:12px;border-radius:12px;background:rgba(255,255,255,.035);margin-top:8px;color:var(--muted)}@media(max-width:1000px){.search-wrap{min-width:180px}.lecture-grid{grid-template-columns:1fr 1fr}}@media(max-width:700px){.search-wrap{display:flex}.calendar-grid{gap:4px}.calendar-day{min-height:54px;padding:5px}.lecture-grid{grid-template-columns:1fr}}
+.search-wrap{position:relative;display:flex;align-items:center;min-width:260px}.search-wrap input{width:100%;height:42px;border-radius:14px;border:1px solid var(--line);background:rgba(8,25,50,.48);color:var(--text);padding:0 42px 0 42px;outline:none;backdrop-filter:blur(18px)}body.light .search-wrap input{background:rgba(255,255,255,.62)}.search-icon{position:absolute;left:14px;opacity:.65}.bell-btn{position:relative}.bell-dot{position:absolute;right:8px;top:7px;width:7px;height:7px;border-radius:50%;background:#38bdf8;box-shadow:none !important;}.extra-panel{margin-top:18px}.liquid-card:not([data-mw-migrada] *){background:linear-gradient(145deg,rgba(19,55,103,.58),rgba(6,20,43,.66));border:1px solid rgba(111,190,255,.18);box-shadow:none !important;backdrop-filter:blur(24px);border-radius:22px}/*A CAIXA DE CADA DIA SAIU DAQUI. Esta regra desenhava borda, fundo e recheio em TODA célula do mês — 35 molduras numa tela. Calendário se lê pela grade: as linhas e colunas já separam os dias, e uma moldura em cada um repete com tinta o que o alinhamento diz. E ela vencia as regras do sistema não por ser mais específica, e sim por estar FORA de camada: regra sem camada ganha de regra em camada, por menos específica que seja — a mesma armadilha que já apagou a pílula do item ativo da lateral. Quem desenha o dia agora é `.ds #view-calendar .calendar-day`.*.event-dot{display:inline-flex;margin-top:8px;padding:3px 6px;border-radius:999px;background:rgba(56,189,248,.12);color:#bdeaff;font-size:10px}.lecture-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.lecture-card{padding:16px;border-radius:17px;background:rgba(255,255,255,.035);border:1px solid rgba(111,190,255,.1);transition:.25s}.lecture-card:hover{transform:translateY(-3px);border-color:rgba(56,189,248,.35);box-shadow:none !important;}.lecture-card .lecture-meta{font-size:12px;color:var(--muted);margin-top:7px}.progress-line{height:6px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:12px}.progress-line i{display:block;height:100%;width:0;background:linear-gradient(90deg,#2563eb,#38bdf8);border-radius:inherit}.auth-links{display:flex;justify-content:space-between;margin-top:12px;font-size:12px}.auth-links button{border:0;background:none;color:#8fd8ff;padding:0}.auth-links button:hover{text-decoration:underline}.auth-modal-card{max-width:460px}.auth-step{display:none}.auth-step.active{display:block}.notification-menu{position:absolute;right:0;top:52px;width:310px;padding:14px;z-index:100;background:rgba(7,22,45,.9);border:1px solid rgba(111,190,255,.2);border-radius:18px;box-shadow:none !important;backdrop-filter:blur(24px)}.notification-menu.hidden{display:none}.notification-item{padding:12px;border-radius:12px;background:rgba(255,255,255,.035);margin-top:8px;color:var(--muted)}@media(max-width:1000px){.search-wrap{min-width:180px}.lecture-grid{grid-template-columns:1fr 1fr}}@media(max-width:700px){.search-wrap{display:flex}.calendar-grid{gap:4px}.calendar-day{min-height:54px;padding:5px}.lecture-grid{grid-template-columns:1fr}}
 
 /* LOGIN ONLY: liquid glass */
 #loginScreen.reference-login{background:#02040b;isolation:isolate;position:relative;}
@@ -391,7 +391,7 @@ body.light{--bg:#efefeb;--bg2:#e6e6e1;--panel:rgba(255,255,252,.76);--panel2:rgb
 #loginScreen.reference-login .auth-switch-panel{background:#1b1e20;color:#e9eaeb;border-color:rgba(255,255,255,.08);box-shadow:none !important;}
 /* Workspace palette */.sidebar:not([data-mw-migrada] *), .topbar:not([data-mw-migrada] *), .card:not([data-mw-migrada] *), .section-card:not([data-mw-migrada] *), .lecture-card:not([data-mw-migrada] *), .notification-menu:not([data-mw-migrada] *), .modal-box:not([data-mw-migrada] *){background:linear-gradient(145deg,rgba(34,37,40,.90),rgba(24,27,29,.94));border-color:rgba(255,255,255,.08);box-shadow:none !important;}
 .sidebar{background:#1a1c1e}.side-brand:not([data-mw-migrada]):not([data-mw-migrada] *), .nav-title:not([data-mw-migrada]):not([data-mw-migrada] *), .side-bottom:not([data-mw-migrada]):not([data-mw-migrada] *){color:#a9adb1}.nav button:not([data-mw-migrada]):not([data-mw-migrada] *){color:#aeb2b6}.nav button.active:not([data-mw-migrada]):not([data-mw-migrada] *),.nav button:hover:not([data-mw-migrada]):not([data-mw-migrada] *){background:rgba(255,255,255,.065);color:#f5f5f3}.nav-icon{color:#c5c8cb}.liquid-card:not([data-mw-migrada] *){background:linear-gradient(145deg,rgba(43,47,51,.94),rgba(25,28,30,.96));border:1px solid rgba(255,255,255,.09);box-shadow:none !important;backdrop-filter:none}
-.calendar-grid{gap:5px}.calendar-day{min-height:48px;padding:6px;background:rgba(255,255,255,.025);border-color:rgba(255,255,255,.07);transition:transform .16s ease,background .16s ease}.calendar-day:hover{transform:translateY(-2px);background:rgba(255,255,255,.06)}.calendar-day.today:not([data-mw-migrada] *){border-color:rgba(255,255,255,.20);box-shadow:none !important;}.event-dot{background:rgba(255,255,255,.07);color:#e2e4e6}
+.event-dot{background:rgba(255,255,255,.07);color:#e2e4e6}
 .lecture-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.lecture-card{min-width:0;overflow:hidden}.lecture-card strong,.lecture-meta{overflow-wrap:anywhere}.progress-line i{background:#d5d7d9}
 .extra-panel{margin-top:12px}.view.active~.extra-panel{display:none}
 /* Search expands from icon */
@@ -455,11 +455,11 @@ body.light .notification-menu{background:#f7f6f2!important}
 .workspace-instagram .social-profile-popover{bottom:62px!important;background:#151619!important;box-shadow:none !important;backdrop-filter:none!important}
 .workspace-instagram .creator-animated{animation:none!important}
 /* compact calendar, home only */
-#academicCalendarPanel{max-width:620px!important}#academicCalendarPanel .calendar-day{min-height:42px!important;padding:6px!important;border-color:rgba(255,255,255,.07)!important;background:rgba(255,255,255,.025)!important}
+#academicCalendarPanel{max-width:620px!important}
 #academicCalendarPanel .event-dot{background:rgba(255,255,255,.08)!important;color:#ddd!important}
 /* hide calendar and lecture clutter outside home */
 #app[data-view]:not([data-view="home"]) #academicCalendarPanel{display:none!important}
-#app[data-view]:not([data-view="home"]) #lecturesPanel{display:none!important}body.light #academicCalendarPanel .calendar-day:not([data-mw-migrada] *){background:rgba(0,0,0,.025)!important;border-color:rgba(0,0,0,.08)!important}
+#app[data-view]:not([data-view="home"]) #lecturesPanel{display:none!important}
 </style>
 <script id="mw-final-sync-js">
 (()=>{
@@ -515,12 +515,12 @@ body.light .notification-menu{background:#f7f6f2!important}
 #app .workspace-instagram .social-profile-btn span{background:#1b1d20!important;color:#e2e3e2!important;}
 #app .workspace-instagram .social-profile-popover{background:#151619!important;box-shadow:none !important;backdrop-filter:none!important;}
 #app .workspace-instagram .creator-animated{animation:none!important;}
-#academicCalendarPanel{max-width:620px!important;}#academicCalendarPanel .calendar-day{min-height:40px!important;padding:6px!important;background:#1c1f22!important;border-color:rgba(255,255,255,.07)!important;box-shadow:none !important;}
-#academicCalendarPanel .calendar-day:hover{background:#26292c!important;transform:translateY(-1px)!important;}
+#academicCalendarPanel{max-width:620px!important;}
+
 #academicCalendarPanel .event-dot{background:#2b2e31!important;color:#e3e4e4!important;}
 body.light #app{background:#ebe9e4!important;}body.light #app .sidebar:not([data-mw-migrada] *):not([data-mw-migrada]), body.light #app .topbar:not([data-mw-migrada] *):not([data-mw-migrada]), body.light #app .card:not([data-mw-migrada] *):not([data-mw-migrada]), body.light #app .liquid-card:not([data-mw-migrada] *):not([data-mw-migrada]), body.light #app .settings-group:not([data-mw-migrada] *):not([data-mw-migrada]), body.light #app .modal-box:not([data-mw-migrada] *):not([data-mw-migrada]), body.light #app .notification-menu:not([data-mw-migrada] *):not([data-mw-migrada]), body.light #app .lecture-card:not([data-mw-migrada] *):not([data-mw-migrada]), body.light #app .search-wrap input:not([data-mw-migrada] *):not([data-mw-migrada]){background:#f7f5f0!important;color:#202225!important;border-color:rgba(20,22,25,.10)!important;box-shadow:none !important;}
 body.light #app .sidebar{background:#efede8!important;}
-body.light #app .nav button:not([data-mw-migrada]):not([data-mw-migrada] *){color:#5f6264!important;}body.light #app .nav button:hover:not([data-mw-migrada]):not([data-mw-migrada] *), body.light #app .nav button.active:not([data-mw-migrada]):not([data-mw-migrada] *){background:#e4e1da!important;color:#202225!important;}body.light #app .icon-btn:not([data-mw-migrada]):not([data-mw-migrada] *), body.light #app .profile-btn:not([data-mw-migrada]):not([data-mw-migrada] *), body.light #app .search-wrap:not([data-mw-migrada]):not([data-mw-migrada] *){background:#f7f5f0!important;color:#303234!important;border-color:rgba(20,22,25,.10)!important;}body.light #academicCalendarPanel .calendar-day:not([data-mw-migrada] *){background:#f1efe9!important;border-color:rgba(20,22,25,.08)!important;color:#202225!important;}
+body.light #app .nav button:not([data-mw-migrada]):not([data-mw-migrada] *){color:#5f6264!important;}body.light #app .nav button:hover:not([data-mw-migrada]):not([data-mw-migrada] *), body.light #app .nav button.active:not([data-mw-migrada]):not([data-mw-migrada] *){background:#e4e1da!important;color:#202225!important;}body.light #app .icon-btn:not([data-mw-migrada]):not([data-mw-migrada] *), body.light #app .profile-btn:not([data-mw-migrada]):not([data-mw-migrada] *), body.light #app .search-wrap:not([data-mw-migrada]):not([data-mw-migrada] *){background:#f7f5f0!important;color:#303234!important;border-color:rgba(20,22,25,.10)!important;}
 /* Calendar and lecture panel only on Home. */
 #app[data-view]:not([data-view="home"]) #academicCalendarPanel,#app[data-view]:not([data-view="home"]) #lecturesPanel{display:none!important;}
 </style>
@@ -571,8 +571,8 @@ body.light{--mw-bg:#f1f2f3;--mw-surface:#ffffff;--mw-surface-2:#f7f8f9;--mw-bord
 .quick-add,.icon-btn:hover{background:#30363e!important}
 /* Calendar: compact and only home */
 #academicCalendarPanel{max-width:520px!important;margin:18px 0 0!important;border-radius:18px!important}
-#academicCalendarPanel .calendar-grid{gap:5px!important}#academicCalendarPanel .calendar-day{min-height:42px!important;padding:5px!important;border-radius:9px!important;font-size:11px!important;background:var(--mw-surface-2)!important;border-color:var(--mw-border)!important}
-#academicCalendarPanel .calendar-day small{font-size:9px!important}
+
+
 /* Lectures card */#lecturesPanel{max-width:520px!important;border-radius:18px!important}
 #lecturesPanel .lecture-card{overflow:hidden!important}
 #lecturesPanel .section-head h3{font-size:15px!important}
@@ -711,8 +711,8 @@ body.light #app .brand-mark,body.light #app .logo-mark,body.light #app .mw-logo{
 #app .calendar-card,.calendar,.academic-calendar{border-radius:20px!important;border:1px solid rgba(255,255,255,.09)!important;overflow:hidden!important}
 #app .calendar-header{display:flex!important;align-items:center!important;justify-content:space-between!important;padding:12px 14px!important}
 #app .calendar-header button,.calendar-nav button,.calendar-prev,.calendar-next{width:32px!important;height:32px!important;border-radius:10px!important;display:grid!important;place-items:center!important}
-#app .calendar-grid{gap:5px!important}
-#app .calendar-day{min-height:34px!important;display:grid!important;place-items:center!important;border-radius:9px!important}#app .calendar-day.today:not([data-mw-migrada] *), #app .calendar-day.current:not([data-mw-migrada] *), .calendar-day.today:not([data-mw-migrada] *), .calendar-day.current:not([data-mw-migrada] *){background:linear-gradient(135deg,#7c5cff,#5d8cff)!important;color:#fff!important;border-radius:10px!important;box-shadow:none !important;}
+
+
 #app .lessons-card,.lessons,.classes-card{min-height:170px!important;border-radius:18px!important}
 #app .lessons-card .empty-state,.lessons .empty-state,.classes-card .empty-state{padding:28px 18px!important;line-height:1.45!important;text-align:center!important;max-width:100%!important}
 </style>
@@ -4334,9 +4334,27 @@ body.light .mw-faceid-gate-card p{color:#526988}
      vive: nesta área. O `traz()` continua valendo como garantia de ordem
      (ele o põe logo depois do seletor mês/semana), mas já não move nada de
      tela. -->
-<div class="ds-chapa" id="academicCalendarPanel">
-<div class="ds-cal-topo"><div class="cal-nav" id="calNav"><button type="button" class="ds-btn ds-btn-fantasma ds-btn-icone ds-btn-p" id="calPrev" aria-label="M&ecirc;s anterior">&lsaquo;</button><strong id="calMonthLabel">&nbsp;</strong><button type="button" class="ds-btn ds-btn-fantasma ds-btn-icone ds-btn-p" id="calNext" aria-label="Pr&oacute;ximo m&ecirc;s">&rsaquo;</button></div></div>
-<p class="ds-cal-hoje" id="calTodayLine"></p>
+<div class="ds-chapa ds-cal-chapa" id="mwCalMes">
+<!-- OS PASSADORES (§27).
+     Antes eram dois botões de 32px dentro de uma barra de 28px: eles
+     transbordavam 2px em cima e 2px embaixo, e é isso que o print
+     mostra como "botões sobrepostos, saindo do card". Além de 32px ser
+     menos que o alvo de toque de 44.
+
+     Agora a linha é uma grade de três colunas — botão, título, botão —
+     em que o título ocupa o meio e os dois alvos têm o mesmo tamanho.
+     Uma grade não deixa nada transbordar: quem define a altura da linha
+     é o mais alto dos três, e não um valor escrito à parte.
+
+     A seta é `<svg>` e não `&lsaquo;`: o chevron tipográfico depende da
+     fonte, muda de tamanho e de linha de base entre plataformas, e era
+     por isso que ele parecia desalinhado no iPhone. -->
+<div class="ds-cal-topo">
+<button type="button" class="ds-cal-passo" id="calPrev" aria-label="M&ecirc;s anterior"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button>
+<strong class="ds-cal-mes" id="calMonthLabel">&nbsp;</strong>
+<button type="button" class="ds-cal-passo" id="calNext" aria-label="Pr&oacute;ximo m&ecirc;s"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9.5 5.5 6.5 6.5-6.5 6.5"/></svg></button>
+</div>
+<div class="ds-cal-linha-hoje"><p class="ds-cal-hoje" id="calTodayLine"></p><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p ds-cal-voltar-hoje" id="calHoje" hidden>Hoje</button></div>
 <div class="calendar-grid" id="academicCalendar"></div>
 <div class="ds-cal-detalhe" id="calDayDetail" hidden></div>
 </div></section>
@@ -6358,9 +6376,17 @@ window.toast = toast;
  // Search: click icon to open, click outside to close
  const sw=q('.search-wrap'), si=q('.search-icon'), inp=q('#globalSearch');
  /* (abrir/fechar a lupa saiu daqui — havia CINCO cópias disto no arquivo, cada uma com o seu "fechar ao clicar fora"; uma delas olhava `.search-wrap`, seletor que a marcação nova não tem, e fechava o que as outras abriam. Dono único: `mw-busca-abre-js`.) */
- // Calendar and lectures belong only to Home.
- const home=q('#view-home'), cal=q('#academicCalendarPanel'), lec=q('#lecturesPanel');
- function syncPanels(view){const homeOn=view==='home'||q('#view-home')?.classList.contains('active'); if(cal)cal.style.display=homeOn?'block':'none'; if(lec)lec.style.display=homeOn?'block':'none'}
+ /* O CALENDÁRIO SAIU DAQUI (§26).
+    Este bloco é da época em que o mês era um painel do Início: ele o
+    movia para dentro de `#view-home` e ligava/desligava o `display`
+    inline a cada troca de área. Havia TRÊS donos fazendo isso (aqui,
+    em `mw-authoritative-behavior` e em `mw-faculdade-sugestoes`), e um
+    quarto — o `traz()` da área de Calendário — desfazendo. O painel
+    passou a morar em `#view-calendar` e ganhou nome próprio
+    (`#mwCalMes`), então nenhum dos três o alcança mais.
+    As aulas continuam sendo do Início, e continuam aqui. */
+ const lec=q('#lecturesPanel');
+ function syncPanels(view){const homeOn=view==='home'||q('#view-home')?.classList.contains('active'); if(lec)lec.style.display=homeOn?'block':'none'}
  const oldShow=window.showView;
  if(typeof oldShow==='function'){window.showView=(v)=>{oldShow(v);syncPanels(v)}} else {syncPanels('home')}
  // College preferences — agora dentro de "data.college" (o mesmo objeto
@@ -6511,8 +6537,8 @@ window.toast = toast;
 #app:has(#view-home.active) #lecturesPanel{display:block!important;}
 #app #academicCalendarPanel .section-head{margin-bottom:10px!important;}
 #app #academicCalendarPanel .section-head span{font-size:9px!important;}
-#app #academicCalendarPanel .calendar-grid{gap:4px!important;}#app #academicCalendarPanel .calendar-day{min-height:38px!important;padding:5px!important;border-radius:9px!important;background:#1b1d20!important;border-color:#2b2e32!important;}
-#app #academicCalendarPanel .calendar-day:hover{transform:translateY(-1px)!important;background:#222528!important;}
+
+
 #app #academicCalendarPanel .event-dot{margin-top:4px!important;padding:2px 5px!important;background:#2a2d30!important;color:#e5e5e2!important;}
 
 /* Instagram: bottom-left, centered in its slot, elastic expansion retained */
@@ -6527,7 +6553,7 @@ window.toast = toast;
 
 /* Light theme: real contrast, no washed-out text */
 body.light #app{background:#eeeae2!important;color:#202225!important;}body.light #app .sidebar:not([data-mw-migrada] *):not([data-mw-migrada]), body.light #app .topbar:not([data-mw-migrada] *):not([data-mw-migrada]), body.light #app .card:not([data-mw-migrada] *):not([data-mw-migrada]), body.light #app .liquid-card:not([data-mw-migrada] *):not([data-mw-migrada]), body.light #app .settings-group:not([data-mw-migrada] *):not([data-mw-migrada]), body.light #app .modal-box:not([data-mw-migrada] *):not([data-mw-migrada]), body.light #app .notification-menu:not([data-mw-migrada] *):not([data-mw-migrada]), body.light #app .lecture-card:not([data-mw-migrada] *):not([data-mw-migrada]), body.light #app .search-wrap:not([data-mw-migrada] *):not([data-mw-migrada]), body.light #app .search-wrap input:not([data-mw-migrada] *):not([data-mw-migrada]){background:#f8f6f0!important;color:#202225!important;border-color:#d8d4cc!important;}body.light #app .stat:not([data-mw-migrada] *), body.light #app .section-card:not([data-mw-migrada] *), body.light #app .activity-card:not([data-mw-migrada] *), body.light #app .course:not([data-mw-migrada] *), body.light #app .project:not([data-mw-migrada] *), body.light #app .list-item:not([data-mw-migrada] *), body.light #app .lecture-card:not([data-mw-migrada] *), body.light #app .notification-item:not([data-mw-migrada] *){background:#f2efe8!important;color:#202225!important;border-color:#d8d4cc!important;}
-body.light #app .nav button:not([data-mw-migrada]):not([data-mw-migrada] *){color:#666a6d!important;}body.light #app .nav button:hover:not([data-mw-migrada]):not([data-mw-migrada] *), body.light #app .nav button.active:not([data-mw-migrada]):not([data-mw-migrada] *){background:#e5e1d9!important;color:#202225!important;border-color:#d2cec6!important;}body.light #app .side-brand strong:not([data-mw-migrada] *), body.light #app .hello h2:not([data-mw-migrada] *), body.light #app .section-head h3:not([data-mw-migrada] *), body.light #app .card h3:not([data-mw-migrada] *), body.light #app .card h4:not([data-mw-migrada] *), body.light #app .card strong:not([data-mw-migrada] *){color:#202225!important;}body.light #app .side-brand small:not([data-mw-migrada] *), body.light #app .nav-title:not([data-mw-migrada] *), body.light #app .hello p:not([data-mw-migrada] *), body.light #app .section-head span:not([data-mw-migrada] *), body.light #app .section-card p:not([data-mw-migrada] *), body.light #app .activity-card p:not([data-mw-migrada] *), body.light #app .course small:not([data-mw-migrada] *), body.light #app .list-item small:not([data-mw-migrada] *), body.light #app .empty:not([data-mw-migrada] *), body.light #app .settings-group p:not([data-mw-migrada] *), body.light #app .kicker:not([data-mw-migrada] *), body.light #app .lecture-meta:not([data-mw-migrada] *){color:#686b6e!important;}body.light #app #academicCalendarPanel .calendar-day:not([data-mw-migrada] *){background:#ece9e2!important;border-color:#d6d2ca!important;color:#202225!important;}
+body.light #app .nav button:not([data-mw-migrada]):not([data-mw-migrada] *){color:#666a6d!important;}body.light #app .nav button:hover:not([data-mw-migrada]):not([data-mw-migrada] *), body.light #app .nav button.active:not([data-mw-migrada]):not([data-mw-migrada] *){background:#e5e1d9!important;color:#202225!important;border-color:#d2cec6!important;}body.light #app .side-brand strong:not([data-mw-migrada] *), body.light #app .hello h2:not([data-mw-migrada] *), body.light #app .section-head h3:not([data-mw-migrada] *), body.light #app .card h3:not([data-mw-migrada] *), body.light #app .card h4:not([data-mw-migrada] *), body.light #app .card strong:not([data-mw-migrada] *){color:#202225!important;}body.light #app .side-brand small:not([data-mw-migrada] *), body.light #app .nav-title:not([data-mw-migrada] *), body.light #app .hello p:not([data-mw-migrada] *), body.light #app .section-head span:not([data-mw-migrada] *), body.light #app .section-card p:not([data-mw-migrada] *), body.light #app .activity-card p:not([data-mw-migrada] *), body.light #app .course small:not([data-mw-migrada] *), body.light #app .list-item small:not([data-mw-migrada] *), body.light #app .empty:not([data-mw-migrada] *), body.light #app .settings-group p:not([data-mw-migrada] *), body.light #app .kicker:not([data-mw-migrada] *), body.light #app .lecture-meta:not([data-mw-migrada] *){color:#686b6e!important;}
 body.light #app .workspace-instagram .login-social-bar{background:#f2efe8!important;border-color:#d3cfc7!important;}
 body.light #app .workspace-instagram .social-profile-btn{background:#e5e1d9!important;border-color:#cbc7bf!important;}
 body.light #app .workspace-instagram .social-profile-btn span{background:#f8f6f0!important;color:#202225!important;}
@@ -6564,10 +6590,11 @@ body.light #app .workspace-instagram .social-profile-btn span{background:#f8f6f0
  const q=s=>document.querySelector(s);
  const searchWrap=q('.search-wrap'), searchIcon=q('.search-icon'), searchInput=q('#globalSearch');
  /* (abrir/fechar a lupa saiu daqui — havia CINCO cópias disto no arquivo, cada uma com o seu "fechar ao clicar fora"; uma delas olhava `.search-wrap`, seletor que a marcação nova não tem, e fechava o que as outras abriam. Dono único: `mw-busca-abre-js`.) */
- // Calendar visibility follows the actual active view, regardless of how navigation changes it.
+ // As aulas seguem a área ativa. (O calendário não passa mais por aqui:
+ // ele mora em #view-calendar e se chama #mwCalMes.)
  const navButtons=[...document.querySelectorAll('#nav button')];
- const cal=q('#academicCalendarPanel'), lec=q('#lecturesPanel');
- const sync=()=>{const home=q('#view-home')?.classList.contains('active');if(cal)cal.style.display=home?'block':'none';if(lec)lec.style.display=home?'block':'none'};
+ const lec=q('#lecturesPanel');
+ const sync=()=>{const home=q('#view-home')?.classList.contains('active');if(lec)lec.style.display=home?'block':'none'};
  navButtons.forEach(b=>b.addEventListener('click',()=>setTimeout(sync,0)));
  new MutationObserver(sync).observe(q('#view-home')||document.body,{attributes:true,attributeFilter:['class']});
  sync();
@@ -6582,9 +6609,10 @@ body.light #app .workspace-instagram .social-profile-btn span{background:#f8f6f0
    os ícones da barra lateral e a saudação sem o emoji de mão. */
 (()=>{
  const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
- // Move global calendar/lectures into Home so they cannot leak into other sections.
- const home=$('#view-home'), cal=$('#academicCalendarPanel'), lectures=$('#lecturesPanel');
- if(home){ if(cal && cal.parentElement!==home) home.appendChild(cal); if(lectures && lectures.parentElement!==home) home.appendChild(lectures); }
+ // As aulas moram no Início. (O calendário mora na área dele e não é
+ // mais arrastado para cá — ver a nota em mw-legacy-behavior.)
+ const home=$('#view-home'), lectures=$('#lecturesPanel');
+ if(home){ if(lectures && lectures.parentElement!==home) home.appendChild(lectures); }
  // Normalize lecture wording.
  const lh=$('#lecturesPanel h3'); if(lh) lh.textContent='Aulas';
  const lm=$('#lecturesPanel .lecture-meta'); if(lm) lm.textContent='Adicione disciplinas para começar a organizar suas aulas.';
@@ -8931,7 +8959,7 @@ body.light #searchWrap .search-icon:hover{background:#fff;color:#0b1830}
 /* Calendar */
 #academicCalendarPanel .section-head{align-items:center}#academicCalendarPanel h3:not([data-mw-migrada] *), #calMonthLabel:not([data-mw-migrada] *){color:#f8fbff!important;font-weight:800!important}
 .cal-nav{display:flex;align-items:center;gap:8px}.cal-nav strong{font-size:12px;letter-spacing:.02em;min-width:108px;text-align:center;color:var(--mw-txt-1,#fff)!important/*Etapa 0: branco cravado. Com o painel do calendário virando superfície do sistema, no tema claro o mês ficava a 1,12:1 — branco sobre branco.*/}.cal-nav button{width:26px;height:26px;border-radius:8px;border:1px solid var(--mw-borda,rgba(125,211,252,.22));background:var(--mw-sup-2,rgba(255,255,255,.06));color:var(--mw-txt-1,#fff);font-size:16px;line-height:1}
-.cal-nav button:hover{background:rgba(56,189,248,.2)}#academicCalendarPanel .calendar-day:not([data-mw-migrada] *){color:#e8f2ff!important;background:rgba(37,99,235,.08)!important;border-color:rgba(125,211,252,.12)!important}#academicCalendarPanel .calendar-day.today:not([data-mw-migrada] *){background:linear-gradient(145deg,#2563eb,#7c5cff)!important;color:#fff!important;border:0!important}body.light #academicCalendarPanel h3:not([data-mw-migrada] *), body.light #calMonthLabel:not([data-mw-migrada] *), body.light .cal-nav strong:not([data-mw-migrada] *){color:#0b1830!important}body.light .cal-nav button:not([data-mw-migrada] *){color:#0b1830;background:#fff}
+.cal-nav button:hover{background:rgba(56,189,248,.2)}body.light #academicCalendarPanel h3:not([data-mw-migrada] *), body.light #calMonthLabel:not([data-mw-migrada] *), body.light .cal-nav strong:not([data-mw-migrada] *){color:#0b1830!important}body.light .cal-nav button:not([data-mw-migrada] *){color:#0b1830;background:#fff}
 
 /* Stats + aulas contrast */
 .kicker{color:#cfe4ff!important;font-weight:750!important;letter-spacing:.12em!important}
@@ -9225,16 +9253,8 @@ body.light .kicker{color:#355070!important}#lecturesPanel .section-head span:not
   color: #ffffff !important;
   font-weight: 800 !important;
   opacity: 1 !important;
-}#academicCalendarPanel .calendar-day:not([data-mw-migrada] *){
-  background: rgba(37,99,235,.14) !important;
-  border-color: rgba(125,211,252,.16) !important;
-  color: #f8fbff !important;
 }
-#academicCalendarPanel .calendar-day strong{color:#fff !important;font-size:12px !important}#academicCalendarPanel .calendar-day.today:not([data-mw-migrada] *){
-  background: linear-gradient(145deg,#2563eb,#7c5cff) !important;
-  color: #fff !important;
-  border: 0 !important;
-}.cal-nav button:not([data-mw-migrada] *){
+.cal-nav button:not([data-mw-migrada] *){
   background: rgba(37,99,235,.2) !important;
   border: 1px solid rgba(125,211,252,.28) !important;
   color: #fff !important;
@@ -9271,8 +9291,8 @@ body.light .kicker{color:#355070!important}#lecturesPanel .section-head span:not
 }
 
 /* 10) Modo claro: lupa, sino, textos visíveis */
-body.light #app .kicker{color:#1e3a5f !important}body.light #app .stat strong:not([data-mw-migrada] *), body.light #app .hello h2:not([data-mw-migrada] *), body.light #calMonthLabel:not([data-mw-migrada] *), body.light #academicCalendarPanel h3:not([data-mw-migrada] *){color:#0b1830 !important}body.light #app #notificationBtn:not([data-mw-migrada]):not([data-mw-migrada] *), body.light #app .search-wrap .search-icon:not([data-mw-migrada]):not([data-mw-migrada] *), body.light #app .icon-btn:not([data-mw-migrada]):not([data-mw-migrada] *){color:#0b1830 !important; background:#fff !important; border-color:rgba(15,40,80,.16) !important}body.light #app #lecturesPanel .section-head h3:not([data-mw-migrada] *), body.light #app #lecturesPanel .aulas-sub:not([data-mw-migrada] *), body.light #app #lecturesPanel .lecture-meta:not([data-mw-migrada] *), body.light #app #lecturesPanel strong:not([data-mw-migrada] *){color:#0b1830 !important}body.light #academicCalendarPanel .calendar-day:not([data-mw-migrada] *){background:#e8f0ff !important; color:#0b1830 !important; border-color:#c7d7f5 !important}
-body.light #academicCalendarPanel .calendar-day strong{color:#0b1830 !important}body.light #mwSidebarName:not([data-mw-migrada]):not([data-mw-migrada] *){color:#0b1830 !important}
+body.light #app .kicker{color:#1e3a5f !important}body.light #app .stat strong:not([data-mw-migrada] *), body.light #app .hello h2:not([data-mw-migrada] *), body.light #calMonthLabel:not([data-mw-migrada] *), body.light #academicCalendarPanel h3:not([data-mw-migrada] *){color:#0b1830 !important}body.light #app #notificationBtn:not([data-mw-migrada]):not([data-mw-migrada] *), body.light #app .search-wrap .search-icon:not([data-mw-migrada]):not([data-mw-migrada] *), body.light #app .icon-btn:not([data-mw-migrada]):not([data-mw-migrada] *){color:#0b1830 !important; background:#fff !important; border-color:rgba(15,40,80,.16) !important}body.light #app #lecturesPanel .section-head h3:not([data-mw-migrada] *), body.light #app #lecturesPanel .aulas-sub:not([data-mw-migrada] *), body.light #app #lecturesPanel .lecture-meta:not([data-mw-migrada] *), body.light #app #lecturesPanel strong:not([data-mw-migrada] *){color:#0b1830 !important}
+body.light #mwSidebarName:not([data-mw-migrada]):not([data-mw-migrada] *){color:#0b1830 !important}
 body.light #view-college .college-setup select,
 body.light #view-college .college-setup input{
   background:#fff !important; color:#0b1830 !important; border-color:rgba(37,99,235,.28) !important
@@ -9448,12 +9468,8 @@ body.light #app .mw-sidebar-collapse{background:#fff !important;color:#0b1830 !i
   display: grid !important; place-items: center !important;
 }#app .search-wrap .search-icon svg{width:18px;height:18px;display:block;margin:0}
 
-/* Calendário visível */#academicCalendarPanel:not([data-mw-migrada] *){background: #13233d !important; border: 1px solid rgba(125,211,252,.22) !important}#academicCalendarPanel h3:not([data-mw-migrada] *), #calMonthLabel:not([data-mw-migrada] *){color:#fff !important; font-weight:800 !important}#academicCalendarPanel .calendar-day:not([data-mw-migrada] *){
-  background: rgba(56,189,248,.16) !important;
-  color: #fff !important;
-  border-color: rgba(125,211,252,.22) !important;
-}
-#academicCalendarPanel .calendar-day strong{color:#fff !important}.cal-nav button:not([data-mw-migrada] *){background:rgba(56,189,248,.25)!important;color:#fff!important;border-color:rgba(186,230,253,.4)!important}body.light #academicCalendarPanel:not([data-mw-migrada] *){background:#eef5ff !important; border-color:#b9d4ff !important}body.light #academicCalendarPanel h3:not([data-mw-migrada] *), body.light #calMonthLabel:not([data-mw-migrada] *), body.light #academicCalendarPanel .calendar-day strong:not([data-mw-migrada] *){color:#0b1830 !important}body.light #academicCalendarPanel .calendar-day:not([data-mw-migrada] *){background:#dbeafe !important; color:#0b1830 !important}
+/* Calendário visível */#academicCalendarPanel:not([data-mw-migrada] *){background: #13233d !important; border: 1px solid rgba(125,211,252,.22) !important}#academicCalendarPanel h3:not([data-mw-migrada] *), #calMonthLabel:not([data-mw-migrada] *){color:#fff !important; font-weight:800 !important}
+.cal-nav button:not([data-mw-migrada] *){background:rgba(56,189,248,.25)!important;color:#fff!important;border-color:rgba(186,230,253,.4)!important}body.light #academicCalendarPanel:not([data-mw-migrada] *){background:#eef5ff !important; border-color:#b9d4ff !important}
 
 /* Faculdade paleta */
 #view-college .college-setup select,
@@ -10692,37 +10708,9 @@ html body #app .search-wrap:focus-within input{
 }
 #lecturesPanel .lecture-card{ overflow:hidden !important; }
 
-#academicCalendarPanel .calendar-grid{
-  display:grid !important;
-  grid-template-columns:repeat(7,minmax(0,1fr)) !important;
-  gap:5px !important;
-}#academicCalendarPanel .cal-wd:not([data-mw-migrada] *){
-  font-size:10px !important;
-  color:#9ec4ea !important;
-  text-align:center !important;
-  font-weight:700 !important;
-  letter-spacing:.08em !important;
-  padding:0 0 6px !important;
-}#academicCalendarPanel .calendar-day{
-  min-height:38px !important;
-  aspect-ratio:1 / 1 !important;
-  height:auto !important;
-  padding:0 !important;
-  display:grid !important;
-  place-items:center !important;
-  border-radius:10px !important;
-  background:rgba(37,99,235,.16) !important;
-  border:1px solid rgba(125,211,252,.14) !important;
-  color:#f7fbff !important;
-  overflow:hidden !important;
-}
-#academicCalendarPanel .calendar-day strong{ font-size:12px !important; font-weight:650 !important; }
-#academicCalendarPanel .calendar-day.mute{ opacity:.32 !important; background:rgba(255,255,255,.03) !important; }#academicCalendarPanel .calendar-day.today:not([data-mw-migrada] *){
-  background:linear-gradient(145deg,#2563eb,#3b82f6) !important;
-  border-color:transparent !important;
-  color:#fff !important;
-  box-shadow:0 0 0 2px rgba(56,189,248,.35) !important;
-}
+
+
+
 #academicCalendarPanel .event-dot{ display:none !important; }
 #academicCalendarPanel .section-head{
   display:flex !important;
@@ -11043,24 +11031,9 @@ html body #app .bell-btn:hover::after{
 
 /* Calendário dentro do card + Hoje */
 #academicCalendarPanel{ overflow:hidden !important; }
-#academicCalendarPanel .calendar-day{
-  aspect-ratio:auto !important;
-  min-height:36px !important;
-  height:36px !important;
-  display:flex !important;
-  flex-direction:column !important;
-  align-items:center !important;
-  justify-content:center !important;
-  gap:1px !important;
-}
-#academicCalendarPanel .calendar-day em{
-  font-style:normal !important;
-  font-size:8px !important;
-  font-weight:700 !important;
-  letter-spacing:.02em !important;
-  color:#7dd3fc !important;
-}
-#academicCalendarPanel .calendar-day.today em{ color:#fff !important; }
+
+
+
 
 #lecturesPanel, #lecturesPanel *{ min-width:0 !important; }
 #lecturesPanel .lecture-card{ overflow:hidden !important; }
@@ -11274,19 +11247,8 @@ html body #app .search-wrap:focus-within #globalSearch{
   overflow: hidden !important;
   background: linear-gradient(180deg, rgba(16,34,63,.72), rgba(8,20,40,.78)) !important;
   border: 1px solid rgba(79,143,226,.18) !important;
-}#academicCalendarPanel .calendar-day{
-  background: rgba(255,255,255,.05) !important;
-  border: 1px solid rgba(255,255,255,.06) !important;
-  color: #dce8f6 !important;
-  height: 32px !important;
-  min-height: 32px !important;
-  aspect-ratio: auto !important;
 }
-#academicCalendarPanel .calendar-day.muted{ opacity:.38 !important; }#academicCalendarPanel .calendar-day.today:not([data-mw-migrada] *){
-  background: #2563eb !important;
-  color: #fff !important;
-  border-color: #60a5fa !important;
-}#academicCalendarPanel .cal-nav{
+#academicCalendarPanel .cal-nav{
   background: rgba(255,255,255,.08) !important;
   color: #f4f8ff !important;
   border: 1px solid rgba(255,255,255,.14) !important;
@@ -11315,10 +11277,6 @@ body.light #mateusAiBtn.mateus-ai-btn::after{
 }body.light #app .nav button:not([data-mw-migrada]):not([data-mw-migrada] *), body.light #app .mw-profile-copy strong:not([data-mw-migrada]):not([data-mw-migrada] *){ color:#123056 !important; }body.light #app .mw-profile-copy small:not([data-mw-migrada]):not([data-mw-migrada] *){ color:#3d5a80 !important; opacity:1 !important; }body.light #academicCalendarPanel:not([data-mw-migrada] *){
   background: #f4f7fb !important;
   border-color: rgba(15,40,80,.12) !important;
-}body.light #academicCalendarPanel .calendar-day:not([data-mw-migrada] *){
-  background: #fff !important;
-  color: #16345c !important;
-  border-color: rgba(15,40,80,.10) !important;
 }body.light #academicCalendarPanel .cal-nav:not([data-mw-migrada] *){
   background: #fff !important;
   color: #16345c !important;
@@ -11845,88 +11803,29 @@ html body #app #calNav{
   display: flex !important;
   align-items: center !important;
   gap: 6px !important;
-}html body #app #calPrev, html body #app #calNext{
-  width: 28px !important;
-  height: 28px !important;
-  min-width: 28px !important;
-  border-radius: 8px !important;
-  background: rgba(255,255,255,.06) !important;
-  border: 1px solid rgba(255,255,255,.10) !important;
-  color: #eef3f8 !important;
-  font-size: 16px !important;
-  display: grid !important;
-  place-items: center !important;
-  line-height: 1 !important;
-}html body #app #calMonthLabel{
-  font-size: 12.5px !important;
-  font-weight: 700 !important;
-  min-width: 108px !important;
-  text-align: center !important;
-  color: var(--mw-txt-1, #e8eef6) !important;
-  text-transform: capitalize !important;
 }
+/* OS PASSADORES ERAM ALCANÇADOS AQUI PELO ID, com 28px cravados e
+   `!important` em cada linha — e é por isso que nenhuma regra do
+   sistema conseguia dar a eles o alvo de toque de 44px. Os 28px vinham
+   de uma época em que a barra do mês era um cabeçalho apertado dentro
+   do dashboard; na área própria eles ficaram menores que o dedo e
+   maiores que a barra que os continha (28 de caixa contra 32 de botão
+   renderizado), transbordando em cima e embaixo.
+
+   O tamanho, a forma e a cor passam a ser do sistema (`ds-cal-passo`).
+   O rótulo do mês também: `min-width:108px` num rótulo centralizado é
+   uma medida que só faz sentido na largura em que foi escrita. */
+
 html body #app #academicCalendar{
   display: grid !important;
   grid-template-columns: repeat(7, 1fr) !important;
   gap: 4px !important;
-}html body #app #academicCalendar .cal-wd:not([data-mw-migrada] *){
-  font-size: 10px !important;
-  font-weight: 700 !important;
-  letter-spacing: .06em !important;
-  text-transform: uppercase !important;
-  color: #8b96a6 !important;
-  text-align: center !important;
-  padding: 2px 0 6px !important;
-  background: transparent !important;
-  border: 0 !important;
-}html body #app #academicCalendar .calendar-day{
-  min-height: 0 !important;
-  height: 32px !important;
-  padding: 0 !important;
-  display: grid !important;
-  place-items: center !important;
-  border-radius: 9px !important;
-  background: transparent !important;
-  border: 1px solid transparent !important;
-  color: #e6edf6 !important;
-  font-size: 12.5px !important;
-  font-weight: 650 !important;
-  position: relative !important;
-}html body #app #academicCalendar .calendar-day.muted:not([data-mw-migrada] *){
-  color: #5d6776 !important;
 }
-html body #app #academicCalendar .calendar-day:hover{
-  background: rgba(255,255,255,.06) !important;
-  transform: none !important;
-}html body #app #academicCalendar .calendar-day.today:not([data-mw-migrada] *){
-  background: rgba(56,189,248,.16) !important;
-  border-color: rgba(125,211,252,.42) !important;
-  color: #f7fbff !important;
-  font-weight: 800 !important;
-}
+
 html body #app #academicCalendar .calendar-day .event-dot,
-html body #app #academicCalendar .calendar-day .cal-hoje{
-  position: absolute !important;
-  bottom: 2px !important;
-  font-size: 7px !important;
-  letter-spacing: .04em !important;
-  text-transform: uppercase !important;
-  color: #7dd3fc !important;
-  background: none !important;
-  padding: 0 !important;
-  border: 0 !important;
-}body.light #app #academicCalendarPanel:not([data-mw-migrada] *){
-  background: #f7f5f0 !important;
-  border-color: #d8d4cc !important;
-}body.light #app #academicCalendarPanel h3:not([data-mw-migrada] *), body.light #app #calMonthLabel:not([data-mw-migrada] *){ color: #1b2430 !important; }body.light #app #academicCalendar .calendar-day:not([data-mw-migrada] *){ color: #1d2430 !important; }body.light #app #academicCalendar .calendar-day.muted:not([data-mw-migrada] *){ color: #9aa1ab !important; }body.light #app #academicCalendar .calendar-day.today:not([data-mw-migrada] *){
-  background: rgba(37,99,235,.12) !important;
-  border-color: rgba(37,99,235,.35) !important;
-  color: #12305c !important;
-}body.light #app #calPrev:not([data-mw-migrada] *), body.light #app #calNext:not([data-mw-migrada] *){
-  background: #ece9e2 !important;
-  border-color: #d6d2ca !important;
-  color: #1d2430 !important;
-}
+body.light #app #academicCalendarPanel h3:not([data-mw-migrada] *), body.light #app #calMonthLabel:not([data-mw-migrada] *){ color: #1b2430 !important; }
+/* (a versão clara dos passadores saiu com eles: quem os pinta é o sistema) */
+
 
 /* 8) Configurações: mesma paleta, card alinhado, botões inteligentes */html body #app #view-settings .settings-group:not([data-mw-migrada] *), html body #app #view-settings .card:not([data-mw-migrada] *), html body #app .profile-photo-card:not([data-mw-migrada] *){
   background: #1b1d20 !important;
@@ -12333,24 +12232,9 @@ html body #app #calNav{
   display: flex !important;
   align-items: center !important;
   gap: 4px !important;
-}html body #app #calPrev, html body #app #calNext{
-  width: 28px !important;
-  height: 28px !important;
-  min-width: 28px !important;
-  border-radius: 9px !important;
-  background: rgba(56,189,248,.10) !important;
-  border: 1px solid rgba(125,211,252,.22) !important;
-  color: #eaf6ff !important;
-  font-size: 16px !important;
-  display: grid !important;
-  place-items: center !important;
-  opacity: 1 !important;
-  visibility: visible !important;
 }
-html body #app #calPrev:hover,
-html body #app #calNext:hover{
-  background: rgba(56,189,248,.22) !important;
-}html body #app #calMonthLabel{
+/* Segunda cópia da mesma regra de passador, com ciano cravado. */
+html body #app #calMonthLabel{
   font-size: 12.5px !important;
   font-weight: 750 !important;
   min-width: 118px !important;
@@ -12363,57 +12247,12 @@ html body #app #academicCalendar{
   display: grid !important;
   grid-template-columns: repeat(7, 1fr) !important;
   gap: 4px !important;
-}html body #app #academicCalendar .cal-wd:not([data-mw-migrada] *){
-  font-size: 10px !important;
-  font-weight: 750 !important;
-  letter-spacing: .08em !important;
-  text-transform: uppercase !important;
-  color: #7dd3fc !important;
-  text-align: center !important;
-  padding: 2px 0 6px !important;
-  background: transparent !important;
-  border: 0 !important;
-}html body #app #academicCalendar .calendar-day{
-  min-height: 0 !important;
-  height: 32px !important;
-  padding: 0 !important;
-  display: grid !important;
-  place-items: center !important;
-  border-radius: 10px !important;
-  background: rgba(255,255,255,.03) !important;
-  border: 1px solid transparent !important;
-  color: #e6edf6 !important;
-  font-size: 12.5px !important;
-  font-weight: 650 !important;
-  position: relative !important;
-}html body #app #academicCalendar .calendar-day.muted:not([data-mw-migrada] *){
-  color: #4f5d70 !important;
-  background: transparent !important;
 }
-html body #app #academicCalendar .calendar-day:hover{
-  background: rgba(56,189,248,.12) !important;
-  border-color: rgba(125,211,252,.22) !important;
-  transform: none !important;
-}html body #app #academicCalendar .calendar-day.today:not([data-mw-migrada] *){
-  background: linear-gradient(135deg, #38bdf8, #6366f1) !important;
-  border-color: transparent !important;
-  color: #fff !important;
-  font-weight: 800 !important;
-  box-shadow: 0 0 0 3px rgba(56,189,248,.18) !important;
-}
-html body #app #academicCalendar .calendar-day.today .cal-hoje{
-  display: none !important;
-}html body.light #app #academicCalendarPanel:not([data-mw-migrada] *){
+
+html body.light #app #academicCalendarPanel:not([data-mw-migrada] *){
   background: linear-gradient(160deg, #f4f7fb, #eef2f8) !important;
   border-color: #cfd8e6 !important;
-}html body.light #app #academicCalendarPanel h3:not([data-mw-migrada] *), html body.light #app #calMonthLabel:not([data-mw-migrada] *){ color: #152033 !important; }html body.light #app #academicCalendar .cal-wd:not([data-mw-migrada] *){ color: #2563eb !important; }html body.light #app #academicCalendar .calendar-day:not([data-mw-migrada] *){
-  background: #fff !important;
-  color: #1d2430 !important;
-  border-color: #e4e9f0 !important;
-}html body.light #app #academicCalendar .calendar-day.muted:not([data-mw-migrada] *){ color: #9aa3b2 !important; background: transparent !important; border-color: transparent !important; }html body.light #app #academicCalendar .calendar-day.today:not([data-mw-migrada] *){
-  background: linear-gradient(135deg, #38bdf8, #2563eb) !important;
-  color: #fff !important;
-}html body.light #app #calPrev:not([data-mw-migrada] *), html body.light #app #calNext:not([data-mw-migrada] *){
+}html body.light #app #academicCalendarPanel h3:not([data-mw-migrada] *), html body.light #app #calMonthLabel:not([data-mw-migrada] *){ color: #152033 !important; }html body.light #app #calPrev:not([data-mw-migrada] *), html body.light #app #calNext:not([data-mw-migrada] *){
   background: #e8eef8 !important;
   border-color: #c9d4e4 !important;
   color: #1d2430 !important;
@@ -12772,25 +12611,14 @@ html body #app .mw-aula span{ font-size:12px; color:#b7c4d6 !important; }html bo
   border-radius:11px; padding:8px 12px; font-size:12px; font-weight:700; cursor:pointer;
 }
 
-html body #app #academicCalendar .calendar-day.has-event .cal-dot{
-  display:block; width:5px; height:5px; border-radius:50%;
-  background:#7eb6ff; margin:4px auto 0;
-}
-html body #app #academicCalendar .calendar-day .cal-dot{ display:none; }
-html body #app #academicCalendar .calendar-day.selected{
-  outline:1px solid rgba(126,182,255,.55);
-  background: rgba(59,130,246,.22) !important;
-}
-html body #app .mw-cal-detail{
-  margin-top:10px; padding:10px 12px; border-radius:12px;
-  background: rgba(255,255,255,.04);
-  border:1px solid rgba(255,255,255,.08);
-  font-size:12.5px; color:#d5deea !important;
-}
-html body #app .mw-cal-detail[hidden]{ display:none !important; }
-html body #app .mw-cal-detail b{ color:#f4f8ff !important; display:block; margin-bottom:6px; }
-html body #app .mw-cal-ev{ display:flex; justify-content:space-between; gap:8px; padding:4px 0; }
-html body #app .mw-cal-ev em{ font-style:normal; color:#8ec0ff !important; font-size:11px; text-transform:uppercase; letter-spacing:.06em; }
+
+
+
+
+
+
+
+
 
 html body #app .bell-dot,
 html body #app #notificationBtn .bell-dot{
@@ -12815,12 +12643,10 @@ body.light #app .mw-aula-when{ color:#2563eb !important; }body.light #app .mw-we
   background:#dbeafe; color:#1e3a5f !important; border-color:#bfdbfe;
 }
 body.light #app .mw-aula,
-body.light #app .mw-cal-detail{
-  background:#f4f7fb !important; border-color:#d7e0ee !important;
-}
+
 body.light #app .mw-aula strong,
 body.light #app .mw-cal-detail b,
-body.light #app .mw-promo-row b{ color:#152033 !important; }body.light #app .mw-aula-empty strong:not([data-mw-migrada] *){ color:#152033 !important; }
+body.light #app .mw-aula-empty strong:not([data-mw-migrada] *){ color:#152033 !important; }
 
 @media (max-width: 860px){
   html body #app .mw-welcome{ padding:18px 16px !important; }
@@ -12989,6 +12815,15 @@ body.light #app .mw-promo-row b{ color:#152033 !important; }body.light #app .mw-
     const days = new Date(y, m + 1, 0).getDate();
     const prevDays = new Date(y, m, 0).getDate();
     const today = new Date();
+    /* HOJE JÁ VEM ESCOLHIDO (§31). Sem isto, quem abria o Calendário via
+       a grade e, embaixo dela, uns 350px de nada — o painel do dia só
+       aparece depois de escolher um. Mas a pergunta de quem abre um
+       calendário é "o que eu tenho HOJE", e essa resposta não deveria
+       custar um toque. */
+    if (!selectedDay) selectedDay = { y: today.getFullYear(), m: today.getMonth(), d: today.getDate() };
+    const noMesDeHoje = (m === today.getMonth() && y === today.getFullYear());
+    const btnHoje = q('#calHoje');
+    if (btnHoje) btnHoje.hidden = noMesDeHoje;
     let html = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].map(d => '<div class="cal-wd">'+d+'</div>').join('');
     for (let i = 0; i < first; i++) html += '<div class="calendar-day muted">'+(prevDays - first + 1 + i)+'</div>';
     for (let d = 1; d <= days; d++) {
@@ -13010,16 +12845,31 @@ body.light #app .mw-promo-row b{ color:#152033 !important; }body.light #app .mw-
     if (!selectedDay) { detail.hidden = true; detail.innerHTML = ''; return; }
     const { y, m, d } = selectedDay;
     const list = eventsOn(data, y, m, d);
-    const title = d + ' de ' + MONTHS[m];
+    const title = d + ' de ' + MONTHS[m].toLowerCase();
     const body = list.length
-      ? list.map(e => '<div class="mw-cal-ev"><span>'+esc(e.title)+'</span><em>'+esc(e.kind)+' · '+esc(e.meta)+'</em></div>').join('')
+      ? list.map(e => {
+          /* "atividade · Entrega" tinha o tipo em minúscula e o detalhe
+             em maiúscula, na mesma linha. Uma maiúscula na primeira
+             palavra é o que se espera de uma legenda. */
+          const tipo = String(e.kind || '');
+          const rotulo = tipo ? tipo.charAt(0).toUpperCase() + tipo.slice(1) : '';
+          return '<div class="mw-cal-ev"><span>'+esc(e.title)+'</span><em>'+esc([rotulo, e.meta].filter(Boolean).join(' · '))+'</em></div>';
+        }).join('')
       : '<span class="mw-cal-empty">Nada marcado neste dia.</span>';
     detail.hidden = false;
     detail.innerHTML = '<b>'+title+'</b>'+body+
       '<form class="mw-cal-add" id="mwCalAddForm" autocomplete="off">'+
-      '<input id="mwCalAddInput" type="text" maxlength="80" placeholder="Digite o que quer marcar…" />'+
+      /* `autocomplete="off"` no CAMPO, e não só no formulário: o Chrome
+         decide por conta se um campo de texto solto merece preenchimento
+         automático, e quando decide que sim pinta o fundo de amarelo por
+         cima do que a folha mandou. O atributo no `<form>` não basta. */
+      '<input id="mwCalAddInput" type="text" maxlength="80" autocomplete="off" autocapitalize="sentences" placeholder="Digite o que quer marcar…" />'+
       '<button type="submit">Marcar</button></form>';
-    setTimeout(() => q('#mwCalAddInput')?.focus(), 30);
+    /* SEM FOCO AUTOMÁTICO. Escolher um dia é ler o que tem nele; digitar
+       é outra intenção. Com o foco automático, cada toque num dia abria
+       o teclado no telefone e empurrava metade do calendário para fora
+       da tela — a pessoa tinha de fechar o teclado para continuar
+       olhando o mês. Quem quer escrever toca no campo. */
   }
 
   /* O PINTOR DO PAINELZINHO DO SINO FOI RETIRADO.
@@ -13068,6 +12918,16 @@ body.light #app .mw-promo-row b{ color:#152033 !important; }body.light #app .mw-
     next.replaceWith(n);
     n.addEventListener('click', () => { calCursor.setMonth(calCursor.getMonth() + 1); paintCalendar(read()); });
   }
+  /* VOLTAR PARA HOJE (§27/§30). Navegar seis meses para a frente e ter
+     de voltar seis toques é o que faz uma pessoa desistir do calendário.
+     O botão só existe quando há para onde voltar: num mês que já é o
+     atual ele não é escolha nenhuma, e mostrá-lo apagado seria pior. */
+  q('#calHoje')?.addEventListener('click', () => {
+    const h = new Date();
+    calCursor = new Date(h.getFullYear(), h.getMonth(), 1);
+    selectedDay = { y: h.getFullYear(), m: h.getMonth(), d: h.getDate() };
+    paintCalendar(read());
+  });
   q('#academicCalendar')?.addEventListener('click', e => {
     const day = e.target.closest('[data-cal-day]');
     if (!day) return;
@@ -13080,7 +12940,7 @@ body.light #app .mw-promo-row b{ color:#152033 !important; }body.light #app .mw-
     paintCalendar(read());
   });
 
-  q('#academicCalendarPanel')?.addEventListener('submit', e => {
+  q('#mwCalMes')?.addEventListener('submit', e => {
     if (!e.target.closest('#mwCalAddForm')) return;
     e.preventDefault();
     const text = String(q('#mwCalAddInput')?.value || '').trim();
@@ -13206,17 +13066,14 @@ html body #app #calNav{
   align-items: center !important;
   justify-content: space-between !important;
   gap: 8px !important;
-}html body #app #calPrev, html body #app #calNext{
-  display: grid !important;
-  place-items: center !important;
-  width: 32px !important;
-  height: 32px !important;
-  min-width: 32px !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-  font-size: 18px !important;
-  cursor: pointer !important;
-}html body #app #calMonthLabel{
+}
+/* TERCEIRA cópia — e era esta que vencia, com os 32px que apareciam na
+   medição. Três blocos diferentes davam três tamanhos ao mesmo botão
+   (28, 28 e 32), cada um com `!important`, escritos em rodadas
+   diferentes por quem não sabia dos outros. É o desenho de um controle
+   feito por acúmulo: ninguém decidiu 32px; 32px foi o último a chegar.
+   Quem decide agora é `ds-cal-passo`, num lugar só. */
+html body #app #calMonthLabel{
   flex: 1 !important;
   min-width: 0 !important;
   text-align: center !important;
@@ -13229,30 +13086,8 @@ html body #app #calNav{
   font-weight: 650 !important;
   color: #9ec5ff !important;
   letter-spacing: .01em !important;
-}html body #app #academicCalendar .cal-wd:not([data-mw-migrada] *){
-  font-size: 9.5px !important;
-  font-weight: 800 !important;
-  letter-spacing: .02em !important;
-  text-transform: none !important;
-  color: #9fb4cc !important;
-  text-align: center !important;
-  padding: 0 0 6px !important;
-}html body #app #academicCalendar .calendar-day.today:not([data-mw-migrada] *){
-  background: linear-gradient(160deg, rgba(56,189,248,.35), rgba(37,99,235,.28)) !important;
-  border: 1px solid rgba(125,211,252,.65) !important;
-  color: #fff !important;
-  font-weight: 800 !important;
-  box-shadow: 0 0 0 2px rgba(56,189,248,.18) !important;
 }
-html body #app #academicCalendar .calendar-day.today .cal-hoje{
-  display: block !important;
-  font-size: 8px !important;
-  font-weight: 800 !important;
-  letter-spacing: .08em !important;
-  text-transform: uppercase !important;
-  color: #dbeafe !important;
-  margin-top: 2px !important;
-}
+
 
 /* Aulas */html body #app #lecturesPanel .aulas-sub:not([data-mw-migrada] *){ color:#9ec5ff !important; opacity:1 !important; }
 
@@ -13473,106 +13308,17 @@ html body #app #academicCalendarPanel{
 }
 html body #app #academicCalendar{
   overflow: visible !important;
-}html body #app #academicCalendar .calendar-day{
-  width: 100% !important;
-  min-height: 0 !important;
-  aspect-ratio: 1 / 1 !important;
-  border-radius: 50% !important;
-  padding: 0 !important;
-  display: grid !important;
-  place-items: center !important;
-  background: rgba(37,99,235,.10) !important;
-  border: 1px solid rgba(125,211,252,.16) !important;
-  color: #eaf3ff !important;
-  font-size: 12px !important;
-  font-weight: 650 !important;
-  line-height: 1 !important;
-  box-shadow: none !important;
-  transform: none !important;
-}html body #app #academicCalendar .calendar-day .cal-num{
-  display: block !important;
-  font-size: 12px !important;
-  font-weight: 700 !important;
-  line-height: 1 !important;
 }
-html body #app #academicCalendar .calendar-day .cal-hoje{ display: none !important; }html body #app #academicCalendar .calendar-day.muted{
-  opacity: .28 !important;
-  background: transparent !important;
-  border-color: transparent !important;
-  pointer-events: none !important;
-}html body #app #academicCalendar .calendar-day.today:not([data-mw-migrada] *){
-  background: linear-gradient(160deg,#3b82f6,#2563eb) !important;
-  border-color: rgba(147,197,253,.85) !important;
-  color: #fff !important;
-  font-weight: 800 !important;
-  box-shadow: 0 0 0 3px rgba(56,189,248,.28) !important;
-}
-html body #app #academicCalendar .calendar-day.has-event .cal-dot{
-  display: block !important;
-  width: 4px !important;
-  height: 4px !important;
-  border-radius: 50% !important;
-  background: #7dd3fc !important;
-  margin-top: 3px !important;
-}
-html body #app #academicCalendar .calendar-day.selected{
-  box-shadow: 0 0 0 2px #93c5fd !important;
-}
-html body #app #academicCalendar .calendar-day:hover{
-  transform: none !important;
-  background: rgba(37,99,235,.22) !important;
-}
-html body #app .mw-cal-detail{
-  margin-top: 12px !important;
-  padding: 12px 12px 14px !important;
-  border-radius: 14px !important;
-  background: rgba(15,36,72,.45) !important;
-  border: 1px solid rgba(125,211,252,.16) !important;
-  display: grid !important;
-  gap: 8px !important;
-}
-html body #app .mw-cal-add{
-  display: flex !important;
-  gap: 8px !important;
-  margin-top: 4px !important;
-}
-html body #app .mw-cal-add input{
-  flex: 1 !important;
-  height: 34px !important;
-  border-radius: 10px !important;
-  border: 1px solid rgba(125,211,252,.22) !important;
-  background: rgba(8,18,40,.55) !important;
-  color: #eaf3ff !important;
-  padding: 0 10px !important;
-  font-size: 12.5px !important;
-}
-html body #app .mw-cal-add button{
-  height: 34px !important;
-  padding: 0 12px !important;
-  border-radius: 10px !important;
-  border: 0 !important;
-  background: linear-gradient(135deg,#3b82f6,#2563eb) !important;
-  color: #fff !important;
-  font-weight: 700 !important;
-  font-size: 12px !important;
-}html body.light #app #academicCalendar .calendar-day:not([data-mw-migrada] *){
-  background: #e8eef8 !important;
-  border-color: #c9d6e8 !important;
-  color: #152033 !important;
-}html body.light #app #academicCalendar .calendar-day.today:not([data-mw-migrada] *){
-  background: linear-gradient(160deg,#3b82f6,#2563eb) !important;
-  color: #fff !important;
-  border-color: #93c5fd !important;
-}
-html body.light #app .mw-cal-detail{
-  background: #f4f7fb !important;
-  border-color: #d7e0ee !important;
-}
-html body.light #app .mw-cal-add input{
-  background: #fff !important;
-  color: #152033 !important;
-  border-color: #c9d6e8 !important;
-}
+
+
+
+
+
+
+
+
+
+
 
 /* ===== Aulas: título dentro do card ===== */html body #app #lecturesPanel{
   overflow: hidden !important;
@@ -13900,10 +13646,7 @@ html body.light .eva-chips button{
 })();
 </script>
 <style id="mw-cyan-glass-finish">
-/* Visual finish: dashboard/workspace only. Sidebar layout and controls are untouched. */#app .main .card:not([data-mw-migrada] *), #app .main .lecture-card:not([data-mw-migrada] *), #app .main .project:not([data-mw-migrada] *), #app .main .course:not([data-mw-migrada] *), #app .main .list-item:not([data-mw-migrada] *), #app .main .calendar-day:not([data-mw-migrada] *), #app .main .notification-menu:not([data-mw-migrada] *), #app .main .mateus-ai-card:not([data-mw-migrada] *), #app .mateus-ai-card:not([data-mw-migrada] *){
-  border-color: rgba(103, 232, 249, .16) !important;
-  box-shadow: 0 10px 28px rgba(2, 8, 23, .20), inset 0 1px 0 rgba(224, 251, 255, .045) !important;
-}#app .main .card{
+/* Visual finish: dashboard/workspace only. Sidebar layout and controls are untouched. *#app .main .card{
   position: relative;
   overflow: hidden;
 }
@@ -13955,16 +13698,8 @@ html body.light .eva-chips button{
   border-color: rgba(103, 232, 249, .32) !important;
   box-shadow: 0 9px 18px rgba(6, 182, 212, .08) !important;
 }
-#app .main .calendar-day:not(.muted):not(.empty) {
-  transition: transform .18s ease, background .18s ease, box-shadow .18s ease, border-color .18s ease !important;
-}
-#app .main .calendar-day:not(.muted):not(.empty):hover {
-  transform: translateY(-2px) scale(1.03);
-  background: rgba(8, 145, 178, .20) !important;
-  box-shadow: 0 0 18px rgba(34, 211, 238, .16);
-}#app .main .calendar-day.today:not([data-mw-migrada] *), #app .main .calendar-day.selected:not([data-mw-migrada] *){
-  box-shadow: 0 0 0 1px rgba(103, 232, 249, .45), 0 0 22px rgba(34, 211, 238, .20) !important;
-}
+
+
 #app .main .progress i,
 #app .main .progress-line i { box-shadow: 0 0 12px rgba(34, 211, 238, .52); }
 #app .main button:not(.mw-mobile-menu):not(#mwSidebarCollapse):not(.sidebar-toggle),
@@ -15733,8 +15468,8 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
 /* ============================================================
    Calendário acadêmico — leve melhora visual
    ============================================================ */
-#app .calendar-day{transition:transform .2s ease,border-color .2s ease,background .2s ease}
-#app .calendar-day:hover{transform:translateY(-2px);border-color:rgba(56,189,248,.4);background:rgba(56,189,248,.05)}#app .calendar-day.today:not([data-mw-migrada] *){background:rgba(56,189,248,.10)!important}
+
+
 #app .event-dot{transition:transform .15s ease}
 #app .event-dot:hover{transform:translateY(-1px) scale(1.05)}
 
@@ -16320,7 +16055,7 @@ html body #app.mw-sidebar-collapsed aside.sidebar.mw-reference-sidebar.mw-sideba
 .mw-support-chat-messages,
 #mwSupportTicketList,
 .notification-menu,
-#academicCalendarPanel,
+#mwCalMes,
 .mateus-ai-messages,
 #mateusAiMessages{
   scroll-behavior:smooth;
@@ -23026,7 +22761,7 @@ html:not(.mw-standalone) body.mw-in-app #mwBottomNav.mwbn{
   var LIMIAR = 72;
   var MAX_PUXAO = 120;
   var IGNORA = 'input,textarea,select,.modal-box,.notification-menu,' +
-    '.mateus-ai-messages,#mateusAiMessages,#academicCalendarPanel,' +
+    '.mateus-ai-messages,#mateusAiMessages,#mwCalMes,' +
     '#mwSupportTicketList,.mw-support-chat-messages,#mwBottomNav,' +
     '.mw-lente-vidro,#mwTelDialog,#mwPedirValor,#mwConfirmaSegredo,' +
     '#mwPinGate,#mwAdminConteudo';
@@ -28090,6 +27825,13 @@ html body #app .mw-kan-dica{
 
 
 <style id="mw-calendario">
+/* O DIA ESCOLHIDO E O CAMPO DE MARCAR SAÍRAM DAQUI E DE OUTRAS FOLHAS.
+   Somando as três rodadas que passaram por esta tela, 89 regras
+   alcançavam a célula do mês, os passadores e o painel do dia — por id,
+   com `!important`, e com azul e ciano cravados. Três tamanhos para o
+   mesmo passador (28, 28 e 32px), três fundos para a mesma célula.
+   Ninguém decidiu o resultado: o resultado era quem tinha escrito por
+   último. Quem desenha o Calendário agora é a folha do sistema. */
 /* =====================================================================
    §11 CALENDÁRIO
    =====================================================================
@@ -28097,45 +27839,47 @@ html body #app .mw-kan-dica{
    pela frente". São perguntas diferentes e por isso são duas visões, e
    não uma só com zoom.
    ===================================================================== */
-/* O painel do mês é escondido por uma camada antiga com
-   "#app #academicCalendarPanel{display:none!important}", e só revelado
-   sob "#app:has(#view-home.active)". Fora do dashboard ele nunca
-   aparece — foi por isso que, movido para cá, ele sumia mesmo com
-   display:block inline (regra !important vence estilo inline sem
-   !important). Aqui a exceção é declarada para a área nova, e a troca
-   mês/semana passa a ser feita por atributo, não por display inline. */
-/* O painel é `ds-cartao`: recheio e raio vêm do sistema. Aqui fica só o
+/* O PAINEL DO MÊS TEM NOME PRÓPRIO: `#mwCalMes`.
+   ---------------------------------------------------------------------
+   Enquanto ele se chamou `#academicCalendarPanel`, QUARENTA E CINCO
+   lugares do arquivo o alcançavam por esse id — de quando o mês era um
+   quadradinho do dashboard. Entre eles:
+
+     #app #academicCalendarPanel{ display:none !important }
+     #app:has(#view-home.active) #academicCalendarPanel{
+       display:block !important; max-width:380px !important;
+       padding:15px !important; border-radius:18px !important }
+
+   e mais três larguras máximas diferentes (620, 520, 380), três raios e
+   um punhado de cores cravadas. Somados, eram eles que produziam o
+   "excesso de caixas", o azul a mais e o desalinhamento do §26 ao §30 —
+   e eram inalcançáveis por especificidade, porque id + !important não
+   se vence sem escrever outro !important.
+
+   A saída não foi gritar mais alto (§42), foi PARAR DE ATENDER PELO
+   NOME ANTIGO. Este painel não é mais "o calendário do Início": é o mês
+   da área de Calendário. Com o nome novo, as quarenta e cinco regras
+   deixam de casar sozinhas — sem uma linha de !important — e quem
+   desenha o mês passa a ser só a folha do sistema.
+
+   (As regras órfãs continuam no arquivo, sem alcançar nada; apagá-las é
+   a limpeza de folhas legadas inteiras, que é outra tarefa.)
+
+   O painel é `ds-chapa`: recheio e raio vêm do sistema. Aqui fica só o
    que é desta tela — ocupar a largura toda da coluna, sem margem. */
-html body #app #view-calendar #academicCalendarPanel{
-  display: block !important;
-  max-width: none !important;
-  margin: 0 !important;
-}
+#view-calendar #mwCalMes{ max-width: none; margin: 0; }
 /* Com a largura toda da área, as células do mês esticaram e viraram
    elipses — um calendário se lê pela grade, e uma grade de elipses
    deixa de parecer uma grade. Altura mínima e raio moderado devolvem a
    proporção de célula. */
-html body #app #view-calendar .calendar-day{
-  min-height: 52px !important;
-  border-radius: 12px !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 3px !important;
-}
-html body #app #view-calendar .calendar-grid{ gap: 7px !important; }
-html body #app #view-calendar .cal-wd{
-  padding-bottom: 4px; font-size: 11px; font-weight: 700;
-  letter-spacing: .05em; text-transform: uppercase; color: var(--ds-txt-3);
-}
-@media (max-width: 640px){
-  html body #app #view-calendar .calendar-day{ min-height: 42px !important; border-radius: 10px !important; }
-  html body #app #view-calendar .calendar-grid{ gap: 5px !important; }
-}
+/* As medidas da célula (altura mínima, raio, gap, cabeçalho dos dias da
+   semana) saíram daqui: eram desta tela quando a célula ainda era uma
+   caixa. Com o dia virando um círculo dentro de uma grade quadrada, quem
+   define é o sistema — e uma `aspect-ratio` diz mais do que uma altura
+   mínima escrita para uma largura específica. */
 
-html body #app #view-calendar #academicCalendarPanel[data-mw-oculto="1"],
-html body #app #view-calendar #mwSemanaCard[data-mw-oculto="1"]{ display: none !important; }
+#view-calendar #mwCalMes[data-mw-oculto="1"],
+#view-calendar #mwSemanaCard[data-mw-oculto="1"]{ display: none; }
 
 /* O controle de "Mês / Semana" é `ds-abas` + `ds-aba`: a peça existe no
    sistema e é a mesma em toda tela que tem dois modos. A pele que estava
@@ -28315,7 +28059,7 @@ html body #app .mw-sem-nada{ font-size: 11.5px; color: var(--ds-txt-3); padding:
 
   function traz(){
     var view = document.getElementById('view-calendar');
-    var painel = document.getElementById('academicCalendarPanel');
+    var painel = document.getElementById('mwCalMes');
     var modos = document.getElementById('mwCalModos');
     if (!view || !painel || !modos) return;
     if (painel.parentElement !== view || painel.previousElementSibling !== modos){
@@ -28359,7 +28103,7 @@ html body #app .mw-sem-nada{ font-size: 11.5px; color: var(--ds-txt-3); padding:
     if (!monta()) return;
     traz();
     var m = modo();
-    var painel = document.getElementById('academicCalendarPanel');
+    var painel = document.getElementById('mwCalMes');
     var semana = document.getElementById('mwSemanaCard');
     /* display, e não o atributo hidden: os dois têm display de autor,
        que vence o [hidden] do navegador. */

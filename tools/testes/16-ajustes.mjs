@@ -372,7 +372,15 @@ if (area === 'calendar') {
     const modos = [...v.querySelectorAll('button')].filter(b => /^(mês|mes|semana)$/i.test((b.textContent || '').trim()));
     const titulo = () => (v.textContent || '').replace(/\s+/g, ' ').slice(0, 60);
     const antesTitulo = titulo();
-    const proximo = [...v.querySelectorAll('button')].find(b => /^[›>]$/.test((b.textContent || '').trim()));
+    /* O passador do mês é procurado PELO NOME, não pelo desenho.
+       Antes esta linha caçava um botão cujo texto fosse "›": era o
+       chevron tipográfico, que mudava de tamanho e de linha de base
+       entre plataformas e por isso virou `<svg>`. A régua passou a não
+       achar nada e a acusar um calendário parado que andava. Quem quer
+       trocar de mês procura "Próximo mês" — a régua também. */
+    const proximo = [...v.querySelectorAll('button')].find(b =>
+      /pr[oó]ximo m[eê]s/i.test(b.getAttribute('aria-label') || '')
+      || /^[›>]$/.test((b.textContent || '').trim()));
     if (proximo) { proximo.click(); await new Promise(r => setTimeout(r, 400)); }
     const mudouMes = titulo() !== antesTitulo;
     let mudouModo = false;
