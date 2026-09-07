@@ -1,3 +1,16 @@
+/* v114 (BETA - achado da propria suite v113: contraste no fio da navalha)
+
+   A suite completa (23 passos) rodou depois do commit da v113 e achou UM
+   achado real, fora dos seis do relato: --ds-txt-3 (#8a99c1, o terciario
+   do Design System) batia 4,49:1 sobre a zona de soltar arquivo em Arquivos
+   - um centesimo abaixo do minimo de 4,5:1 da WCAG. Nao foi causado pela
+   v113 (nem o texto nem o fundo dessa peca leem a cor de acento); ja
+   estava assim, so a suite de contraste completa (que a v113 nao tinha
+   rodado inteira antes de publicar) achou. Clareado pra #8e9dc5 (4,71:1 na
+   mesma superficie - folga de verdade, nao so passar). Suite 7/13/19
+   voltaram a "0 falha(s)" nas seis combinacoes de tela/tema depois disso.
+*/
+
 /* v113 (BETA - rodada de relato informal: seis achados reais)
 
    Mensagem de voz do Mateus com seis reclamacoes soltas. Cada uma foi
@@ -2698,7 +2711,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v113-beta';
+const CACHE_NAME = 'mw-shell-v114-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
