@@ -1,3 +1,33 @@
+/* v119 (BETA - Fase D: consistencia dos icones — mesmo peso/tamanho em tudo)
+
+   Pedido: "melhorar os icones, tipo assim deixar do Instagram... estilo
+   iOS" — a app tinha 6 icones diferentes na topbar (peso de traco
+   variando de 1.7 a 2.4, tamanho de 17 a 20px) e mais 5 na barra de
+   baixo com a mesma inconsistencia. Cada um foi desenhado numa rodada
+   diferente desta conversa sem comparar com os vizinhos.
+
+   Unificado para o padrao que ja existia na engrenagem de Configuracoes
+   (19x19px, stroke-width 1.8) — referencia escolhida por ja ser o icone
+   mais usado e reconhecido do topo:
+     - topbar: sino, sol/lua do tema, +, hamburguer, lupa da busca
+       (todos foram para 19x19/1.8; só o + da lupa desktop nao mudou de
+       tamanho, so de peso)
+     - barra de baixo: Faculdade, Arquivos e Perfil foram de 1.7 para
+       1.8; o "+" central (mwNavMais) foi de 2.4 para 2 (ainda mais
+       grosso que os outros, de proposito — e um botao de acao, nao um
+       item de navegacao); Inicio ja estava em 1.8 e serviu de segunda
+       referencia.
+     - a copia duplicada do icone de Perfil (o "esqueleto" que
+       window.mwApplyNavPhoto reconstroi se o avatar falhar) tambem
+       tinha o 1.7 antigo — corrigida junto para nao voltar a divergir
+       na proxima foto de perfil trocada.
+
+   Puramente visual (viewBox, largura/altura, stroke-width) — nenhum
+   path, nenhuma logica de clique ou estado mudou.
+
+   Suite completa (23 passos): tudo passou.
+*/
+
 /* v118 (BETA - Fase C: tipografia — Lexend no lugar de so Inter)
 
    Pedido: "as fontes... nao deixar uma coisa muito generico" (Inter
@@ -2831,7 +2861,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v118-beta';
+const CACHE_NAME = 'mw-shell-v119-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
