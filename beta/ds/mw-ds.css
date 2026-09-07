@@ -1551,6 +1551,7 @@ body.light .ds{
   .ds .ds-btn:active, .ds .ds-pilula:active,
   .ds .ds-nav-item:active, .ds .ds-item-acionavel:active{ transform: none; }
   .ds .ds-osso{ animation: none; }
+  .ds .ds-perfil-foto{ animation: none; }
 }
 
 /* ============================================================================
@@ -2103,6 +2104,20 @@ body.mw-tela-folha .ds .ds-topo-voltar:active{ transform: scale(.92); }
   color: var(--mw-txt-sobre-acento);
   font-size: 32px; font-weight: 700; letter-spacing: -.02em;
   box-shadow: 0 0 0 3px var(--mw-chao), 0 0 0 4px var(--mw-borda);
+}
+/* A ENTRADA NO PERFIL É UM MOMENTO, NÃO SÓ MAIS UMA TROCA DE TELA (§Fase E).
+   Toda tela usa a mesma cascata genérica (`.ds-monta`, ds-sobe) — o Perfil
+   também, e continua usando. Mas a foto ganha UM SEGUNDO MOVIMENTO por cima
+   disso, só dela: um "pop" de mola (mesma curva `--mw-curva-mola` da barra
+   do semestre), como o círculo de perfil que aparece ao abrir um perfil no
+   Instagram. É a única ousadia da tela — o resto (nome, números, abas)
+   continua na cascata calma de sempre, de propósito. */
+@keyframes ds-perfil-foto-entra{
+  from{ opacity: 0; transform: scale(.55); }
+  to{ opacity: 1; transform: none; }
+}
+.ds .ds-perfil-foto{
+  animation: ds-perfil-foto-entra 560ms var(--mw-curva-mola) both;
 }
 .ds .ds-perfil-foto > img{
   grid-area: 1 / 1;
