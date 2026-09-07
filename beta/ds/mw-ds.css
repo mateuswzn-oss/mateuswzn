@@ -319,8 +319,12 @@ body.light .ds{
 
   /* Tipografia. A escala é fechada: seis tamanhos, cada um com seu papel.
      Fora dela não há tamanho legítimo. */
-  --mw-fonte:'Inter var','Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
-  --mw-fonte-num:'Inter var','Inter',ui-monospace,'SF Mono',Menlo,monospace;
+  /* ERA só Inter — pedido direto: "as fontes... muito genérico". Lexend
+     entra como a fonte de verdade (auto-hospedada, ver o @font-face no
+     <head> de index.html); Inter e o resto continuam como reserva, pro
+     quadro entre o primeiro parse e a fonte terminar de carregar. */
+  --mw-fonte:'Lexend','Inter var','Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  --mw-fonte-num:'Lexend','Inter var','Inter',ui-monospace,'SF Mono',Menlo,monospace;
   --mw-t-rotulo:10.5px;   /* etiqueta em caixa alta */
   --mw-t-micro:11.5px;    /* apoio, metadado */
   --mw-t-corpo:13px;      /* o texto do app */

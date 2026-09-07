@@ -95,8 +95,27 @@ try {
 <link rel="apple-touch-startup-image" media="(device-width:320px) and (device-height:568px) and (-webkit-device-pixel-ratio:2) and (orientation:portrait)" href="splash/launch-640x1136.png">
 <title>MW Workspace — prévia beta</title>
 <style>
+/* Lexend, auto-hospedada (fonts/lexend-variable-latin.woff2, ~39KB — variavel,
+   cobre 400-800 num arquivo so). NAO e Google Fonts ao vivo: pedir a fonte
+   pela rede a cada carregamento reabriria exatamente o problema que rodadas
+   passadas desta conta gastaram tanto tempo resolvendo (flash, dependencia
+   de rede no primeiro quadro, PWA que devia funcionar offline). O arquivo
+   mora no repositorio e o service worker cacheia junto com o resto do casco.
+   Trocada por pedido explicito ("as fontes... muito generico" — Inter como
+   ÚNICA fonte, nunca so um recurso de reserva, e uma das escolhas mais
+   repetidas e reconhecidas como "gerada por IA" que existe). Lexend tem
+   pedigree diferente — desenhada e testada pra legibilidade, nao pra
+   parecer neutra — e ainda cobre bem os acentos do portugues (subconjunto
+   latin, que inclui todo o Latin-1 Supplement). */
+@font-face{
+  font-family:'Lexend';
+  font-style:normal;
+  font-weight:400 800;
+  font-display:swap;
+  src:url('fonts/lexend-variable-latin.woff2') format('woff2');
+}
 :root{--bg:#020617;--bg2:#071329;--panel:rgba(10,28,56,.62);--panel2:rgba(8,20,43,.78);--line:rgba(99,170,255,.2);--blue:#2563eb;--blue2:#38bdf8;--violet:#7c5cff;--text:#f7fbff;--muted:#8da4c7;--muted2:#61789c;--danger:#fb7185;--shadow:0 30px 90px rgba(0,0,0,.48)}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--text);background:var(--bg)}button,input,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:'Lexend',Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--text);background:var(--bg)}button,input,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
 /* Sem isto o Chrome Android e o Safari iOS desenham por conta própria um
    retângulo cinza translúcido sobre qualquer elemento tocável ao toque —
    e como quase nada aqui usa <button> puro (é <div>/<span> com role e
@@ -714,7 +733,7 @@ body.light .mateus-ai-form input{background:rgba(0,0,0,.035);color:#17191b;borde
 </style>
 
 <style id="mw-premium-ui-v3">
-#app,#app input,#app button,#app select,#app textarea{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}
+#app,#app input,#app button,#app select,#app textarea{font-family:'Lexend',Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}
 #app .search-wrap{position:relative!important;display:flex!important;align-items:center!important}#app .search-icon{position:absolute!important;left:14px!important;top:50%!important;transform:translateY(-50%)!important;width:18px!important;height:18px!important;display:grid!important;place-items:center!important;font-size:0!important;z-index:2!important}
 #app .search-icon:before{content:"";width:17px;height:17px;background:currentColor;display:block;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='10.8' cy='10.8' r='6.5' fill='none' stroke='black' stroke-width='1.9'/%3E%3Cpath d='m15.6 15.6 4.3 4.3' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='10.8' cy='10.8' r='6.5' fill='none' stroke='black' stroke-width='1.9'/%3E%3Cpath d='m15.6 15.6 4.3 4.3' fill='none' stroke='black' stroke-width='1.9'/%3E%3C/svg%3E") center/contain no-repeat}
 #app .search-wrap input{padding-left:43px!important}#app .icon-btn{width:40px!important;height:40px!important;border-radius:12px!important;display:grid!important;place-items:center!important;font-size:0!important;transition:.2s ease!important}
@@ -32267,7 +32286,7 @@ html body .mw-pular:focus{ transform: translateY(0); }
   /* O carimbo entra depois do preloader para não brigar com a abertura
      da marca, e sai sozinho. window.MW_PREVIA fica disponível para
      conferir a versão pelo console sem depender de ver o carimbo. */
-  window.MW_PREVIA = 'v117 - barra de progresso do semestre';
+  window.MW_PREVIA = 'v118 - tipografia Lexend';
   function mostra(){
     if (document.getElementById('mwPreviaCarimbo')) return;
     var el = document.createElement('div');
