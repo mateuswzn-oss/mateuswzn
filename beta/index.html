@@ -64,7 +64,7 @@ try {
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="MW">
+<meta name="apple-mobile-web-app-title" content="Klyne">
 <meta name="mobile-web-app-capable" content="yes">
 <!-- ============================================================
      TELA DE LANÇAMENTO DO iOS
@@ -93,7 +93,7 @@ try {
 <link rel="apple-touch-startup-image" media="(device-width:414px) and (device-height:736px) and (-webkit-device-pixel-ratio:3) and (orientation:portrait)" href="splash/launch-1242x2208.png">
 <link rel="apple-touch-startup-image" media="(device-width:375px) and (device-height:667px) and (-webkit-device-pixel-ratio:2) and (orientation:portrait)" href="splash/launch-750x1334.png">
 <link rel="apple-touch-startup-image" media="(device-width:320px) and (device-height:568px) and (-webkit-device-pixel-ratio:2) and (orientation:portrait)" href="splash/launch-640x1136.png">
-<title>MW Workspace — prévia beta</title>
+<title>Klyne — prévia beta</title>
 <style>
 /* Lexend, auto-hospedada (fonts/lexend-variable-latin.woff2, ~39KB — variavel,
    cobre 400-800 num arquivo so). NAO e Google Fonts ao vivo: pedir a fonte
@@ -1276,7 +1276,7 @@ body > .mw-stray-newline { display:none !important; }
 }
 #app .sidebar .side-brand strong{font-size:0 !important}
 #app .sidebar .side-brand strong::after{
-  content:"Workspace";
+  content:"Klyne";
   font-size:13px;
 }
 #app .sidebar .side-brand small{font-size:9px !important;opacity:.55}
@@ -1894,7 +1894,7 @@ body.light #app .mw-reference-sidebar .mw-switch i{
   font-size:0!important;
 }
 #app .mw-reference-sidebar .side-brand .mw-brand-copy strong::after{
-  content:"WORKSPACE";
+  content:"KLYNE";
   /* 11px lia como legenda solta, não como nome do app — pedido
      explícito pra aumentar porque "não tá dando pra diferenciar".
      15px + peso mais alto lê como marca de verdade ao lado do ícone,
@@ -2122,14 +2122,14 @@ body:not(.light) #app .mw-reference-sidebar .mw-switch i{transform:translateX(15
   transform:rotate(180deg) scale(1.04)!important;
 }
 
-/* One and only one compact WORKSPACE word. */
+/* One and only one compact KLYNE word. */
 #app .mw-reference-sidebar .mw-brand-copy strong{
   font-size:0!important;
   color:transparent!important;
   white-space:nowrap!important;
 }
 #app .mw-reference-sidebar .mw-brand-copy strong::after{
-  content:"WORKSPACE"!important;
+  content:"KLYNE"!important;
   display:inline-block!important;
   color:#f8fbff!important;
   font-size:11px!important;
@@ -2658,7 +2658,7 @@ body.light #app .calendar-card .calendar-nav button:hover{
   </style>
   <div class="mw-sem-js">
     <div>
-      <strong>O Workspace precisa de JavaScript</strong>
+      <strong>O Klyne precisa de JavaScript</strong>
       <p>Ative o JavaScript no navegador e recarregue. Se você abriu este arquivo por uma pré-visualização, abra direto no Safari ou no Chrome.</p>
     </div>
   </div>
@@ -2681,61 +2681,46 @@ body.light #app .calendar-card .calendar-nav button:hover{
      O <use> herda fill e stroke do <svg> que o chama, então o mesmo
      símbolo serve à sidebar, à barra de baixo e ao topo sem cópia. -->
 <svg class="mw-sprite" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
-  <!-- A MARCA. Até aqui só a tela de carregamento desenhava o símbolo
-       de verdade (o M e o W traçados, com gradiente); a sidebar, o
-       login, o rodapé e o convite de instalação escreviam a palavra
-       "MW" numa fonte qualquer. Eram cinco marcas diferentes fingindo
-       ser a mesma.
+  <!-- O SÍMBOLO KLYNE (rebranding, substitui a antiga marca "MW").
+       Até aqui a sidebar, o login, o rodapé e o convite de instalação
+       apontavam para este mesmo <symbol> via <use> — então trocar só o
+       desenho aqui dentro já propaga a marca nova para todos esses
+       lugares de uma vez, sem tocar em nenhum deles.
 
-       Os caminhos abaixo são EXATAMENTE os do carregamento. Os
-       gradientes foram reescritos aqui com nomes próprios porque os do
-       carregamento morrem junto com ele: aquele bloco é removido do
-       documento quando o boot termina, e um <use> apontando para um
-       gradiente que não existe mais renderiza sem cor nenhuma. -->
-  <!-- Um degradê só, atravessando a marca inteira. Antes havia um por
-       letra, o que reforçava justamente o que a marca nova quer desfazer:
-       a leitura de "dois símbolos". Ele lê a cor de destaque escolhida em
-       Configurações, com o par índigo→violeta como recuo — a marca
-       acompanha o app em vez de ser a única coisa que não muda. -->
-  <linearGradient id="mwi-marca-m" x1="7" y1="35" x2="55" y2="13" gradientUnits="userSpaceOnUse">
+       Direção pedida: um K como MASSA única — espinha grossa e os dois
+       braços como UM traço contínuo só, fundidos na espinha sem vão
+       nenhum (a diferença entre "uma peça sólida" e "duas linhas que só
+       por acaso se cruzam"). `stroke-linecap:square` em vez de round
+       nas pontas reforça a solidez; `stroke-linejoin:bevel` no cotovelo
+       dos braços evita o espigão que um miter produz num ângulo tão
+       fechado. Testado como silhueta pura (só a forma, sem cor) em
+       16–256px antes de qualquer acento entrar — ver artifact da
+       auditoria do rebranding.
+
+       O viewBox continua 0 0 64 44 (o mesmo do M/W antigo) de propósito:
+       dezenas de regras de CSS pelo arquivo fixam só a LARGURA do
+       `.mw-marca` (sidebar, login, rodapé, convite de instalação) e
+       deixam a altura livre para a proporção do viewBox decidir — mudar
+       para um viewBox quadrado esticaria/encolheria a marca em todo
+       lugar sem tocar em nenhuma dessas regras. -->
+  <linearGradient id="mwi-marca-m" x1="10" y1="36" x2="52" y2="8" gradientUnits="userSpaceOnUse">
     <stop stop-color="var(--ds-ac, #5b6cff)"/>
-    <stop offset=".52" stop-color="var(--ds-ac-2, #8b5cf6)"/>
-    <stop offset="1" stop-color="var(--ds-ac, #5b6cff)"/>
+    <stop offset="1" stop-color="var(--ds-ac-2, #8b5cf6)"/>
   </linearGradient>
-  <!-- Marca MW.
-       Duas correções sobre o desenho anterior, nas quais está a diferença
-       entre "duas letras que por acaso estão juntas" e um monograma:
-
-       (1) O W tinha hastes VERTICAIS, como as do M. Um W de verdade tem
-       os braços externos na diagonal — com eles verticais o desenho lia
-       como um colchete, não como a letra. Agora os quatro segmentos do W
-       são diagonais e simétricos, e ele é reconhecível sozinho.
-
-       (2) O respiro entre as letras é óptico, não aritmético: 9 unidades
-       de vão para 5,8 de traço deixam ~3 de ar. Colado demais (foi a
-       primeira tentativa, com as letras compartilhando uma haste) as
-       duas se fundem num borrão em tamanho pequeno — que é justamente o
-       tamanho em que uma marca de app costuma ser vista.
-
-       O degradê é UM só, atravessando as duas letras da esquerda para a
-       direita, e não um por letra: é o que faz o par ler como uma peça
-       de material contínuo. Ele acompanha a cor de destaque escolhida em
-       Configurações, com o par índigo→violeta como recuo. -->
   <symbol id="mwi-marca" viewBox="0 0 64 44">
-    <path d="M4 35V13.2L14.5 29L25 13.2V35" fill="none" stroke="url(#mwi-marca-m)" stroke-width="5.8"
-          stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M34 13.2L40.5 35L47 20.6L53.5 35L60 13.2" fill="none" stroke="url(#mwi-marca-m)" stroke-width="5.8"
-          stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M13 8V36" stroke="url(#mwi-marca-m)" stroke-width="8.5" stroke-linecap="square"/>
+    <path d="M52 8 15 22 52 36" stroke="url(#mwi-marca-m)" stroke-width="8.5" stroke-linecap="square" stroke-linejoin="bevel"/>
   </symbol>
 
   <!-- Versão monocromática: mesma forma, sem degradê, para carimbo,
        impressão de uma cor e qualquer superfície que já tenha cor
-       própria. Herda currentColor em vez de trazer cor embutida. -->
+       própria. Herda currentColor em vez de trazer cor embutida. A
+       forma sozinha (branco puro, sem acento) é o teste que decide se o
+       símbolo funciona como MARCA em vez de precisar da cor pra ficar
+       bonito. -->
   <symbol id="mwi-marca-mono" viewBox="0 0 64 44">
-    <path d="M4 35V13.2L14.5 29L25 13.2V35" fill="none" stroke="currentColor" stroke-width="5.8"
-          stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M34 13.2L40.5 35L47 20.6L53.5 35L60 13.2" fill="none" stroke="currentColor" stroke-width="5.8"
-          stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M13 8V36" stroke="currentColor" stroke-width="8.5" stroke-linecap="square"/>
+    <path d="M52 8 15 22 52 36" stroke="currentColor" stroke-width="8.5" stroke-linecap="square" stroke-linejoin="bevel"/>
   </symbol>
 <!-- =====================================================================
        CONJUNTO DE ÍCONES
@@ -2837,18 +2822,27 @@ body.light #app .calendar-card .calendar-nav button:hover{
 </svg>
 <style id="mw-boot-loader-style">
 /* ============================================================
-   CARREGAMENTO — a identidade MW sendo CONSTRUÍDA
+   CARREGAMENTO — o símbolo Klyne sendo CONSTRUÍDO
    ============================================================
+   Rebranding MW Workspace → Klyne: a mesma coreografia de sempre
+   (traço → luz → nome → respiro → saída), só que traçando o K —
+   espinha primeiro, depois o braço diagonal como um gesto só, sem
+   levantar a "caneta" — em vez do M e do W antigos. A mecânica inteira
+   (dashoffset, halo, brilho que corre pelos contornos, abertura do
+   nome) é a mesma; só a geometria dos dois traços e o texto do nome
+   ("Klyne" no lugar de "Workspace") mudaram.
+
    Uma coreografia só, em que cada peça entra como consequência da
    anterior. A ordem e as sobreposições são deliberadas:
 
-     140ms   o M começa a ser traçado
-     620ms   o W começa — quando o traço do M já passou de 55%, então
-             a mão nunca "para"; lê-se como um movimento contínuo
-     900ms   a luz azul/violeta floresce por trás, como se os traços a
-             tivessem acendido
+     140ms   a espinha do K começa a ser traçada
+     620ms   o braço diagonal começa — quando a espinha já passou de
+             55%, então a mão nunca "para"; lê-se como um movimento
+             contínuo
+     900ms   a luz azul/violeta floresce por trás, como se o traço a
+             tivesse acendido
     1500ms   um brilho atravessa os contornos
-    1560ms   o nome sobe, já com a marca formada
+    1560ms   o nome sobe, já com o símbolo formado
     2000ms   COMPLETO — e respira
      saída   a luz se dissipa, a composição recua e some, revelando a
              tela seguinte por baixo. A saída é a mesma curva e a mesma
@@ -2935,7 +2929,7 @@ html.mw-reload-leve #mwBootLoader.mw-boot-out{
   100%{opacity:0}
 }
 
-/* LOCKUP HORIZONTAL: o símbolo MW se forma, e o nome "Workspace"
+/* LOCKUP HORIZONTAL: o símbolo Klyne se forma, e o nome "Klyne"
    nasce AO LADO dele, não embaixo. Como o nome só aparece depois, o
    conjunto começaria descentrado — por isso o palco entra deslocado
    meia-largura do nome e volta ao centro conforme ele se abre, do mesmo
@@ -2949,7 +2943,7 @@ html.mw-reload-leve #mwBootLoader.mw-boot-out{
    CENTRAGEM ESTRUTURAL — sem medir nada
    ============================================================
    Antes o palco era deslocado para a direita por --mwb-desloc, medido
-   em JS como metade da largura de "Workspace" + o vão, para o símbolo
+   em JS como metade da largura de "Klyne" + o vão, para o símbolo
    parecer centrado enquanto o nome ainda não existia. Depois o palco
    voltava a translateX(0) e o par ficava centrado.
 
@@ -3034,52 +3028,54 @@ html.mw-reload-leve #mwBootLoader.mw-boot-out{
    traço percorre algo que já existia, em vez de surgir do nada. */
 .mwb-trilho{
   fill:none;stroke:rgba(125,180,255,.10);
-  stroke-width:5.2;stroke-linecap:round;stroke-linejoin:round;
+  stroke-width:8;stroke-linecap:square;stroke-linejoin:bevel;
 }
 .mwb-traco{
-  fill:none;stroke-width:5.2;stroke-linecap:round;stroke-linejoin:round;
-  /* Um dasharray só não serve: as letras têm comprimentos diferentes
-     (M = 21,8+19,1+19,1+21,8 = 81,8; W = 4x22,9 = 91,6) e um valor único
-     deixaria uma delas com sobra ou cortada. Cada uma leva o seu, logo
-     abaixo. */
-  stroke-linecap:round;stroke-linejoin:round;
+  fill:none;stroke-width:8;stroke-linecap:square;stroke-linejoin:bevel;
+  /* Um dasharray só não serve: a espinha e o braço têm comprimentos
+     diferentes (espinha = 28; braço, dois segmentos iguais de ~39,6 =
+     79,1) e um valor único deixaria um deles com sobra ou cortado.
+     Cada um leva o seu, logo abaixo. */
   animation:mwbTracar 1.15s cubic-bezier(.4,.02,.2,1) both;
 }
 /* O rastro: um pedaço curto e claro que corre à frente do traço, com
    um lampejo (fica mais grosso) bem no instante em que alcança a
-   ponta — o "impacto" da conclusão de cada letra. */
+   ponta — o "impacto" da conclusão de cada segmento. */
 .mwb-rastro{
-  fill:none;stroke:#dff2ff;stroke-width:5.6;stroke-linecap:round;stroke-linejoin:round;
+  fill:none;stroke:#dff2ff;stroke-width:8.6;stroke-linecap:square;stroke-linejoin:bevel;
   opacity:.92;
   animation:mwbRastro 1.15s cubic-bezier(.4,.02,.2,1) both;
 }
 /* Uma batida de silêncio antes de qualquer coisa acontecer: a tela
-   azul fica só ela por um instante, e só então o M começa a ser
-   traçado. Sem essa pausa a animação começava colada na abertura do
-   app e parecia atropelada — era o "esperar uns milésimos antes de
+   azul fica só ela por um instante, e só então a espinha do K começa
+   a ser traçada. Sem essa pausa a animação começava colada na abertura
+   do app e parecia atropelada — era o "esperar uns milésimos antes de
    aparecer". */
 .mwb-m{animation-delay:.55s}
-/* Cada letra carrega o próprio comprimento e o próprio atraso: o W só
-   começa quando o M termina, e a emenda entre os dois é o ritmo da
-   abertura. */
-.mwb-m{--mwb-len:84;  stroke-dasharray:84;  stroke-dashoffset:84;  animation-delay:.55s}
-.mwb-w{--mwb-len:94;  stroke-dasharray:94;  stroke-dashoffset:94;  animation-delay:1.42s}
-.mwb-rastro.mwb-m{stroke-dasharray:8 84}
-.mwb-rastro.mwb-w{stroke-dasharray:8 94}
+/* Cada traço carrega o próprio comprimento e o próprio atraso: o braço
+   só começa quando a espinha termina, e a emenda entre os dois é o
+   ritmo da abertura. (Classes mwb-m/mwb-w preservadas do desenho
+   anterior — a espinha ocupa o papel do primeiro traço, o braço o do
+   segundo.) */
+.mwb-m{--mwb-len:28;  stroke-dasharray:28;  stroke-dashoffset:28;  animation-delay:.55s}
+.mwb-w{--mwb-len:79;  stroke-dasharray:79;  stroke-dashoffset:79;  animation-delay:1.42s}
+.mwb-rastro.mwb-m{stroke-dasharray:8 28}
+.mwb-rastro.mwb-w{stroke-dasharray:8 79}
 @keyframes mwbTracar{to{stroke-dashoffset:0}}
 @keyframes mwbRastro{
   0%{stroke-dashoffset:var(--mwb-len);opacity:0}
   10%{opacity:1}
-  80%{opacity:1;stroke-width:5.6}
-  92%{opacity:1;stroke-width:8}
-  100%{stroke-dashoffset:0;opacity:0;stroke-width:5.6}
+  80%{opacity:1;stroke-width:8.6}
+  92%{opacity:1;stroke-width:12.5}
+  100%{stroke-dashoffset:0;opacity:0;stroke-width:8.6}
 }
 
 /* ---------- o brilho que atravessa os contornos ---------- */
-/* O brilho é data:image/svg+xml;utf8,%3Csvg%20xmlns='http:%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox='0%200%2064%2044'%3E%3Cg%20fill='none'%20stroke='%23fff'%20stroke-width='5.2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M6%2034.5V11.5L17%2026.5L28%2011.5V34.5'%2F%3E%3Cpath%20d='M36%2011.5V34.5L47%2019.5L58%2034.5V11.5'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3EDO pelo próprio traçado do MW, então ele corre
-   pelos CONTORNOS em vez de atravessar a tela como uma faixa. Sem a
-   máscara aparecia um retângulo cinza de bordas duras cruzando o
-   símbolo — que é o oposto do efeito.
+/* O brilho é recortado pelo próprio traçado do K (uma máscara SVG com
+   os mesmos dois caminhos do símbolo), então ele corre pelos CONTORNOS
+   em vez de atravessar a tela como uma faixa. Sem a máscara apareceria
+   um retângulo cinza de bordas duras cruzando o símbolo — o oposto do
+   efeito.
    A máscara é um data URI estático: não custa nada por quadro; só o
    gradiente interno se move, e ele é transform. */
 .mwb-brilho{
@@ -3087,8 +3083,8 @@ html.mw-reload-leve #mwBootLoader.mw-boot-out{
   width:var(--mwb-simb);aspect-ratio:172/118;
   transform:translateY(-50%);
   pointer-events:none;overflow:hidden;
-  -webkit-mask:url("data:image/svg+xml;utf8,%3Csvg%20xmlns='http:%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox='0%200%2064%2044'%3E%3Cg%20fill='none'%20stroke='%23fff'%20stroke-width='5.2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M6%2034.5V11.5L17%2026.5L28%2011.5V34.5'%2F%3E%3Cpath%20d='M36%2011.5V34.5L47%2019.5L58%2034.5V11.5'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") center/100% 100% no-repeat;
-  mask:url("data:image/svg+xml;utf8,%3Csvg%20xmlns='http:%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox='0%200%2064%2044'%3E%3Cg%20fill='none'%20stroke='%23fff'%20stroke-width='5.2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M6%2034.5V11.5L17%2026.5L28%2011.5V34.5'%2F%3E%3Cpath%20d='M36%2011.5V34.5L47%2019.5L58%2034.5V11.5'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") center/100% 100% no-repeat;
+  -webkit-mask:url("data:image/svg+xml;utf8,%3Csvg%20xmlns='http:%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox='0%200%2064%2044'%3E%3Cg%20fill='none'%20stroke='%23fff'%20stroke-width='8.5'%20stroke-linecap='square'%20stroke-linejoin='bevel'%3E%3Cpath%20d='M13%208V36'%2F%3E%3Cpath%20d='M52%208%2015%2022%2052%2036'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") center/100% 100% no-repeat;
+  mask:url("data:image/svg+xml;utf8,%3Csvg%20xmlns='http:%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox='0%200%2064%2044'%3E%3Cg%20fill='none'%20stroke='%23fff'%20stroke-width='8.5'%20stroke-linecap='square'%20stroke-linejoin='bevel'%3E%3Cpath%20d='M13%208V36'%2F%3E%3Cpath%20d='M52%208%2015%2022%2052%2036'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") center/100% 100% no-repeat;
 }
 .mwb-brilho i{
   position:absolute;inset:-30% -70%;
@@ -3106,7 +3102,7 @@ html.mw-reload-leve #mwBootLoader.mw-boot-out{
 }
 
 /* ---------- o nome, já com a marca formada ---------- */
-/* "Workspace" nasce colado no símbolo e desliza para o seu lugar,
+/* "Klyne" nasce colado no símbolo e desliza para o seu lugar,
    como se tivesse saído de dentro dele. */
 .mwb-nome{
   position:relative;
@@ -3266,23 +3262,23 @@ try {
     <span class="mwb-halo"></span>
     <svg class="mwb-glifo" viewBox="0 0 64 44" fill="none">
       <defs>
-        <linearGradient id="mwbGradM" x1="7" y1="35" x2="55" y2="13" gradientUnits="userSpaceOnUse">
+        <linearGradient id="mwbGradM" x1="10" y1="36" x2="56" y2="8" gradientUnits="userSpaceOnUse">
           <stop stop-color="#5b6cff"/><stop offset=".52" stop-color="#8b5cf6"/><stop offset="1" stop-color="#38bdf8"/>
         </linearGradient>
       </defs>
-      <!-- A marca virou um traço contínuo (a perna direita do M é a
-           esquerda do W), e a abertura ganhou com isso: em vez de duas
-           letras traçadas em sequência, com uma emenda visível no meio,
-           é UM gesto que não levanta do papel do começo ao fim. -->
-      <path class="mwb-trilho" d="M4 35V13.2L14.5 29L25 13.2V35"/>
-      <path class="mwb-trilho" d="M34 13.2L40.5 35L47 20.6L53.5 35L60 13.2"/>
-      <path class="mwb-traco mwb-m" stroke="url(#mwbGradM)" d="M4 35V13.2L14.5 29L25 13.2V35"/>
-      <path class="mwb-traco mwb-w" stroke="url(#mwbGradM)" d="M34 13.2L40.5 35L47 20.6L53.5 35L60 13.2"/>
-      <path class="mwb-rastro mwb-m" d="M4 35V13.2L14.5 29L25 13.2V35"/>
-      <path class="mwb-rastro mwb-w" d="M34 13.2L40.5 35L47 20.6L53.5 35L60 13.2"/>
+      <!-- O K é a mesma massa cinematográfica do símbolo Klyne
+           (index.html #mwi-marca): espinha grossa + braço diagonal como
+           um traço contínuo só, fundidos sem vão — nada de duas letras
+           soltas fingindo ser uma marca. -->
+      <path class="mwb-trilho" d="M13 8V36"/>
+      <path class="mwb-trilho" d="M52 8 15 22 52 36"/>
+      <path class="mwb-traco mwb-m" stroke="url(#mwbGradM)" d="M13 8V36"/>
+      <path class="mwb-traco mwb-w" stroke="url(#mwbGradM)" d="M52 8 15 22 52 36"/>
+      <path class="mwb-rastro mwb-m" d="M13 8V36"/>
+      <path class="mwb-rastro mwb-w" d="M52 8 15 22 52 36"/>
     </svg>
     <span class="mwb-brilho" aria-hidden="true"><i></i></span>
-    <span class="mwb-nome-trilha"><span class="mwb-nome-corte"><span class="mwb-nome">Workspace</span></span></span>
+    <span class="mwb-nome-trilha"><span class="mwb-nome-corte"><span class="mwb-nome">Klyne</span></span></span>
   </div>
   <div class="mwb-espera"><i id="mwBootBarFill"></i></div>
 </div>
@@ -3692,7 +3688,7 @@ try {
 <div id="mwFaceIdGate" class="hidden" role="dialog" aria-modal="true" aria-label="Desbloquear com Face ID">
   <div class="mw-faceid-gate-card">
     <div class="mw-faceid-gate-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2"/><path d="M16 4h2a2 2 0 0 1 2 2v2"/><path d="M4 16v2a2 2 0 0 0 2 2h2"/><path d="M16 20h2a2 2 0 0 0 2-2v-2"/><path d="M8 10v1.5a4 4 0 0 0 8 0V10"/><path d="M9.5 9.2V9a2.5 2.5 0 0 1 5 0v.2"/><path d="M12 15.5V17"/></svg></div>
-    <h2>Mateus Workspace</h2>
+    <h2>Klyne</h2>
     <p>Use o Face ID para continuar de onde parou.</p>
     <button type="button" class="save-btn" id="mwFaceIdGateBtn">Continuar com Face ID</button>
     <button type="button" class="small-btn" id="mwFaceIdGateFallback">Entrar de outro jeito</button>
@@ -4094,14 +4090,14 @@ body.light .mw-faceid-gate-card p{color:#526988}
   <aside class="sidebar ds mw-sidebar-polished mw-reference-sidebar" data-mw-migrada="1">
     <div class="side-brand mw-sidebar-brand">
       <div class="mini-logo mw-logo-mark" aria-hidden="true"><svg class="mw-marca" viewBox="0 0 64 44" aria-hidden="true"><use href="#mwi-marca"/></svg></div>
-      <div class="mw-brand-copy label"><strong>WORKSPACE</strong></div>
+      <div class="mw-brand-copy label"><strong>KLYNE</strong></div>
       <button type="button" class="mw-sidebar-collapse" id="mwSidebarCollapse" aria-label="Recolher barra lateral" title="Recolher barra lateral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="17" height="16" rx="3"/><path d="M9.2 4v16"/></svg></button>
     </div>
 
     <div class="mw-reference-profile" id="mwSidebarProfile">
       <button type="button" class="mw-profile-main" id="mwSidebarProfileBtn" aria-label="Abrir perfil">
-        <span class="mw-avatar-wrap" aria-hidden="true"><span class="mw-profile-avatar" id="mwSidebarAvatar">MW</span><span class="mw-online-dot"></span></span>
-        <span class="mw-profile-copy label"><strong id="mwSidebarName">Mateus</strong><small id="mwSidebarEmail">Seu curso</small><span class="mw-online-label"><i class="mw-online-label-dot" aria-hidden="true"></i>Online</span></span>
+        <span class="mw-avatar-wrap" aria-hidden="true"><span class="mw-profile-avatar" id="mwSidebarAvatar">VC</span><span class="mw-online-dot"></span></span>
+        <span class="mw-profile-copy label"><strong id="mwSidebarName">Você</strong><small id="mwSidebarEmail">Seu curso</small><span class="mw-online-label"><i class="mw-online-label-dot" aria-hidden="true"></i>Online</span></span>
       </button>
     </div>
 
@@ -4230,7 +4226,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
 <button type="button" class="ds-sem-barra-vazia" id="mwSemBarraVazia" hidden>Definir início e fim do semestre para ver o progresso →</button>
 <!-- Busca ABERTA, logo abaixo da saudação e do contexto (§24). Sem estado, sem
      alternância, sem nada para descobrir: o campo está lá. -->
-<div class="ds-busca ds-busca-aberta" id="searchWrap"><button type="button" class="ds-topo-icone ds-busca-lupa ds-btn ds-btn-fantasma ds-btn-icone" id="searchToggle" aria-label="Pesquisar" title="Pesquisar (Ctrl+K)"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="m16.2 16.2 3.6 3.6"/></svg></button><input id="globalSearch" class="ds-entrada ds-busca-campo" type="search" placeholder="Pesquisar no Workspace" aria-label="Pesquisar no Workspace" autocomplete="off"></div>
+<div class="ds-busca ds-busca-aberta" id="searchWrap"><button type="button" class="ds-topo-icone ds-busca-lupa ds-btn ds-btn-fantasma ds-btn-icone" id="searchToggle" aria-label="Pesquisar" title="Pesquisar (Ctrl+K)"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="m16.2 16.2 3.6 3.6"/></svg></button><input id="globalSearch" class="ds-entrada ds-busca-campo" type="search" placeholder="Pesquisar no Klyne" aria-label="Pesquisar no Klyne" autocomplete="off"></div>
 <div class="ds-med-fila ds-hero-med" id="mwGradeStats"><div class="ds-med"><span class="ds-med-n" id="statSubjects">0</span><span class="ds-med-r">Disciplinas</span><span class="ds-med-ap" id="statSubjectsHint">—</span></div><div class="ds-med"><span class="ds-med-n" id="statActivities">0</span><span class="ds-med-r">Atividades</span><span class="ds-med-ap" id="statActivitiesHint">—</span></div><div class="ds-med"><span class="ds-med-n" id="statProjects">0</span><span class="ds-med-r">Projetos</span><span class="ds-med-ap" id="statProjectsHint">—</span></div><div class="ds-med"><span class="ds-med-n" id="statProgress">0%</span><span class="ds-med-r">Progresso</span><span class="ds-med-ap" id="statProgressHint">—</span></div></div>
 </header>
 
@@ -4614,7 +4610,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
       </div>
       <div class="ds-campo ds-campo-obrigatorio">
         <label for="sfUsername">Nome de usuário</label>
-        <input id="sfUsername" class="ds-entrada" required placeholder="Como te chamam no Workspace">
+        <input id="sfUsername" class="ds-entrada" required placeholder="Como te chamam no Klyne">
       </div>
       <div class="ds-campo ds-campo-obrigatorio ds-largo">
         <label for="sfEmail">E-mail</label>
@@ -4664,7 +4660,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
       </button>
       <div class="mw-support-chat-id">
         <strong class="ds-item-titulo ds-cortar-1" id="mwSupportChatSubject">Assunto</strong>
-        <small class="ds-micro"><span id="mwSupportChatTicketId">#MW-000000</span> · <span class="mw-support-status" id="mwSupportChatStatus">Aberto</span></small>
+        <small class="ds-micro"><span id="mwSupportChatTicketId">#KLYNE-000000</span> · <span class="mw-support-status" id="mwSupportChatStatus">Aberto</span></small>
       </div>
       <button type="button" id="mwSupportCloseBtn" class="ds-btn ds-btn-perigo ds-btn-p">Encerrar</button>
     </div>
@@ -4760,7 +4756,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
 <section class="ds-faixa">
 <div class="ds-faixa-cabeca"><h3 class="ds-faixa-titulo">Privacidade</h3><span class="ds-faixa-apoio">O que outra pessoa veria</span></div>
 <div class="ds-chapa">
-<p class="ds-perfil-privacidade-nota">O MW ainda n&atilde;o publica perfis para outras pessoas — n&atilde;o existe servidor de perfis p&uacute;blicos. Estas escolhas ficam guardadas com voc&ecirc; e passam a valer no dia em que o perfil p&uacute;blico existir. Enquanto isso elas j&aacute; controlam o que aparece no topo desta tela.</p>
+<p class="ds-perfil-privacidade-nota">O Klyne ainda n&atilde;o publica perfis para outras pessoas — n&atilde;o existe servidor de perfis p&uacute;blicos. Estas escolhas ficam guardadas com voc&ecirc; e passam a valer no dia em que o perfil p&uacute;blico existir. Enquanto isso elas j&aacute; controlam o que aparece no topo desta tela.</p>
 <div class="ds-lista" id="mwPerfilPrivacidade"></div>
 </div>
 </section>
@@ -4792,7 +4788,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
 <h3 id="mwFotoFolhaTitulo" class="ds-titulo">Foto do perfil</h3>
 <button type="button" class="ds-btn ds-btn-fantasma ds-btn-icone" data-fechar aria-label="Fechar"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
 </div>
-<div class="ds-perfil-foto-previa ds-perfil-foto-previa-g" id="profileAvatarPreview"><span id="profileAvatarInitials">MW</span></div>
+<div class="ds-perfil-foto-previa ds-perfil-foto-previa-g" id="profileAvatarPreview"><span id="profileAvatarInitials">VC</span></div>
 <p class="ds-micro ds-perfil-foto-nota">Escolha uma imagem e ajuste o enquadramento antes de salvar.</p>
 <div class="ds-perfil-foto-acoes">
 <button class="ds-btn ds-btn-primario" type="button" id="chooseProfilePhoto">Escolher foto</button>
@@ -4915,11 +4911,11 @@ body.light .mw-faceid-gate-card p{color:#526988}
 <div class="ds-conf ds-conf-tela" data-conf-tela="indice"><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Preferências</h2><div class="ds-conf-lista"><button class="ds-conf-linha ds-conf-nav" type="button" data-conf-ir="conta"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/><path d="M4.5 20.2c0-3.5 3.4-5.8 7.5-5.8s7.5 2.3 7.5 5.8"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Conta</span><span class="ds-conf-apoio">Usuário, e-mail, senha e telefone</span></span></button><button class="ds-conf-linha ds-conf-nav" type="button" data-conf-ir="aparencia"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.4"/><path d="M12 3.6v16.8"/><path d="M12 8.6a3.4 3.4 0 0 1 0 6.8"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Aparência</span><span class="ds-conf-apoio">Tema, cor, vidro e densidade</span></span></button><button class="ds-conf-linha ds-conf-nav" type="button" data-conf-ir="notificacoes"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 8h18c0-1-3-1-3-8"/><path d="M10 21h4"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Notificações</span><span class="ds-conf-apoio">Prazos, aulas e lembretes</span></span></button><button class="ds-conf-linha ds-conf-nav" type="button" data-conf-ir="seguranca"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10" width="15" height="10.5" rx="2.4"/><path d="M8 10V7.2a4 4 0 0 1 8 0V10"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Segurança</span><span class="ds-conf-apoio">Face ID, código e sessões</span></span></button></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Conteúdo</h2><div class="ds-conf-lista"><button class="ds-conf-linha ds-conf-nav" type="button" data-conf-ir="ia"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 2 5.2 5.2 2-5.2 2-2 5.2-2-5.2-5.2-2 5.2-2L12 3Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Nyc AI</span><span class="ds-conf-apoio">Conversas, voz e preferências</span></span></button><button class="ds-conf-linha ds-conf-nav" type="button" data-conf-ir="privacidade"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 5 6v5.4c0 4.2 2.9 7.6 7 9.4 4.1-1.8 7-5.2 7-9.4V6l-7-2.8Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Privacidade</span><span class="ds-conf-apoio">O que fica visível no seu perfil</span></span></button></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Sistema</h2><div class="ds-conf-lista"><button class="ds-conf-linha ds-conf-nav" type="button" data-conf-ir="aplicativo"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.8" width="11" height="18.4" rx="2.4"/><path d="M10.7 5.6h2.6"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Aplicativo</span><span class="ds-conf-apoio">Instalação, backup, versão e suporte</span></span></button></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Sessão</h2><div class="ds-conf-lista"><button class="ds-conf-linha ds-conf-nav" type="button" data-conf-ir="sessao"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 3.5h3a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-3"/><path d="M10 16.5 5.5 12 10 7.5"/><path d="M5.5 12h9"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Sair desta conta</span><span class="ds-conf-apoio">Encerrar aqui ou nos outros aparelhos</span></span></button></div></section></div>
 <div class="ds-conf ds-conf-tela" data-conf-tela="conta" hidden><div class="ds-conf-cabeca"><button type="button" class="ds-conf-voltar" data-conf-voltar aria-label="Voltar para Configurações"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h2>Conta</h2></div><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Informações de acesso</h2><div class="ds-conf-lista"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/><path d="M4.5 20.2c0-3.5 3.4-5.8 7.5-5.8s7.5 2.3 7.5 5.8"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Nome de usuário</span><input id="mwContaUsuario" class="ds-conf-campo" type="text" readonly autocomplete="off"></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwContaTrocarUsuario">Alterar</button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="5" width="17.6" height="14" rx="2.4"/><path d="m3.8 6.6 8.2 6 8.2-6"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">E-mail</span><input id="mwContaEmail" class="ds-conf-campo" type="email" readonly autocomplete="off"></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwContaTrocarEmail">Alterar</button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4.6" y="10.4" width="14.8" height="10" rx="2.2"/><path d="M8.2 10.4V7.6a3.8 3.8 0 0 1 7.6 0v2.8"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Senha</span><input id="mwContaSenha" class="ds-conf-campo" type="password" readonly autocomplete="off" value="••••••••"></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwContaTrocarSenha">Alterar</button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.6" width="10" height="18.8" rx="2.6"/><path d="M11 18.6h2"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Telefone</span><span class="ds-conf-apoio" id="mwContaTelefoneExibicao"><span id="mwContaTelefoneVazio">Não cadastrado</span><span id="mwContaTelefoneValor" hidden></span><span class="mw-tel-badge" id="mwContaTelefoneBadge" hidden>Aguardando confirmação</span></span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwContaTrocarTelefone">Adicionar</button></div></div></section><p class="ds-conf-info" id="mwContaStatus" hidden></p><p class="ds-conf-info">Mudar qualquer um dos três primeiros pede sua senha ou o código de acesso: são as coisas com que se entra na conta.</p></div>
 <div class="ds-conf ds-conf-tela" data-conf-tela="aparencia" hidden><div class="ds-conf-cabeca"><button type="button" class="ds-conf-voltar" data-conf-voltar aria-label="Voltar para Configurações"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h2>Aparência</h2></div><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Tema</h2><div class="ds-conf-lista"><div class="ds-conf-seletor" role="group" aria-label="Tema do aplicativo"><button type="button" data-conf-opcao="tema:escuro" aria-pressed="false">Escuro</button><button type="button" data-conf-opcao="tema:claro" aria-pressed="false">Claro</button><button type="button" data-conf-opcao="tema:sistema" aria-pressed="false">Sistema</button></div><p class="ds-conf-info">Em <strong>Sistema</strong>, o app acompanha o ajuste do seu aparelho.</p></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Cor de destaque</h2><div class="ds-conf-lista"><div class="ds-conf-cores" id="mwCores" role="radiogroup" aria-label="Cor de destaque"></div><p class="ds-conf-info">A cor vale para botões, item ativo, links, foco e indicadores. O fundo e a leitura continuam neutros.</p></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Vidro</h2><div class="ds-conf-lista"><div class="ds-conf-seletor" role="group" aria-label="Intensidade do vidro"><button type="button" data-conf-opcao="vidro:discreto" aria-pressed="false">Discreto</button><button type="button" data-conf-opcao="vidro:medio" aria-pressed="false">Médio</button><button type="button" data-conf-opcao="vidro:intenso" aria-pressed="false">Intenso</button></div><p class="ds-conf-info">Quanto o que está atrás das barras e diálogos é desfocado.</p></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Densidade</h2><div class="ds-conf-lista"><div class="ds-conf-seletor" role="group" aria-label="Densidade"><button type="button" data-conf-opcao="densidade:compacta" aria-pressed="false">Compacta</button><button type="button" data-conf-opcao="densidade:confortavel" aria-pressed="false">Confortável</button><button type="button" data-conf-opcao="densidade:espacosa" aria-pressed="false">Espaçosa</button></div><p class="ds-conf-info">O espaço entre os elementos. O tamanho do que se toca não muda.</p></div></section><div hidden><button type="button" id="darkModeBtn" class="theme-btn">Modo Escuro</button><button type="button" id="lightModeBtn" class="theme-btn">Modo Claro</button></div></div>
-<div class="ds-conf ds-conf-tela" data-conf-tela="notificacoes" hidden><div class="ds-conf-cabeca"><button type="button" class="ds-conf-voltar" data-conf-voltar aria-label="Voltar para Configurações"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h2>Notificações</h2></div><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Lembretes e prazos</h2><div class="ds-conf-lista"><div class="ds-conf-faixa"><span class="ds-conf-rotulo">Avisar sobre prazos</span><span class="ds-conf-apoio" id="mwNotifDiasTexto">até 7 dias antes</span><input type="range" id="mwNotifDias" min="1" max="30" step="1" value="7" aria-label="Quantos dias antes avisar sobre um prazo"></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 8h18c0-1-3-1-3-8"/><path d="M10 21h4"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Incluir aulas de hoje</span><span class="ds-conf-apoio">Só muda algo se você cadastrou horário nas disciplinas</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwNotifAulas" aria-label="Incluir aulas de hoje"></button></div></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">No aparelho</h2><div class="ds-conf-lista"><p class="ds-conf-info"><strong>Em breve.</strong> Um aviso que chega com o app fechado precisa de um servidor de push, que ainda não existe. Enquanto isso os lembretes acima aparecem no sino quando você abre o Workspace — nada é enviado para fora daqui.</p></div></section></div>
+<div class="ds-conf ds-conf-tela" data-conf-tela="notificacoes" hidden><div class="ds-conf-cabeca"><button type="button" class="ds-conf-voltar" data-conf-voltar aria-label="Voltar para Configurações"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h2>Notificações</h2></div><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Lembretes e prazos</h2><div class="ds-conf-lista"><div class="ds-conf-faixa"><span class="ds-conf-rotulo">Avisar sobre prazos</span><span class="ds-conf-apoio" id="mwNotifDiasTexto">até 7 dias antes</span><input type="range" id="mwNotifDias" min="1" max="30" step="1" value="7" aria-label="Quantos dias antes avisar sobre um prazo"></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 8h18c0-1-3-1-3-8"/><path d="M10 21h4"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Incluir aulas de hoje</span><span class="ds-conf-apoio">Só muda algo se você cadastrou horário nas disciplinas</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwNotifAulas" aria-label="Incluir aulas de hoje"></button></div></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">No aparelho</h2><div class="ds-conf-lista"><p class="ds-conf-info"><strong>Em breve.</strong> Um aviso que chega com o app fechado precisa de um servidor de push, que ainda não existe. Enquanto isso os lembretes acima aparecem no sino quando você abre o Klyne — nada é enviado para fora daqui.</p></div></section></div>
 <div class="ds-conf ds-conf-tela" data-conf-tela="seguranca" hidden><div class="ds-conf-cabeca"><button type="button" class="ds-conf-voltar" data-conf-voltar aria-label="Voltar para Configurações"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h2>Segurança</h2></div><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Neste aparelho</h2><div class="ds-conf-lista"><div id="mwFaceIdGroup" hidden><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10" width="15" height="10.5" rx="2.4"/><path d="M8 10V7.2a4 4 0 0 1 8 0V10"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Face ID</span><span class="ds-conf-apoio">Entrar sem digitar, usando o Face ID deste aparelho</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwFaceIdToggle" aria-label="Entrar com Face ID"></button></div></div><div id="mwPinGroup"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 3.5a5 5 0 0 1 0 10 5 5 0 0 1-2.4-.6L10 15h-2v2H6v2H3v-3l6.1-6.1a5 5 0 0 1 5.4-6.4Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Código de acesso</span><span class="ds-conf-apoio"><span id="mwPinEstado">Nenhum código definido.</span></span></span><span class="ds-conf-acoes"><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwPinDefinir">Definir</button><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p mw-pin-remover" id="mwPinRemover" hidden>Remover</button></span></div></div></div></section><p class="ds-conf-info" id="mwFaceIdStatus" hidden></p><p class="ds-conf-info" id="mwPinStatus" hidden></p><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Sessões</h2><div class="ds-conf-lista"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 3.5h3a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-3"/><path d="M10 16.5 5.5 12 10 7.5"/><path d="M5.5 12h9"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Sair dos outros aparelhos</span><span class="ds-conf-apoio">Encerra a sessão em todo lugar, menos aqui</span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwSairOutrosAparelhos">Encerrar</button></div><p class="ds-conf-info" id="mwSairOutrosStatus" hidden></p><p class="ds-conf-info">A lista de aparelhos conectados depende de um registro no servidor que ainda não existe. O que funciona hoje é encerrar as outras sessões de uma vez.</p></div></section></div>
-<div class="ds-conf ds-conf-tela" data-conf-tela="ia" hidden><div class="ds-conf-cabeca"><button type="button" class="ds-conf-voltar" data-conf-voltar aria-label="Voltar para Configurações"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h2>Nyc AI</h2></div><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Conversas</h2><div class="ds-conf-lista"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 2 5.2 5.2 2-5.2 2-2 5.2-2-5.2-5.2-2 5.2-2L12 3Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Conversas guardadas</span><span class="ds-conf-apoio"><span id="mwIaContagem">Nenhuma conversa ainda.</span></span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p ds-btn-perigo" id="mwIaLimpar">Apagar</button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 11.2v5"/><circle cx="12" cy="8" r=".9" fill="currentColor" stroke="none"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Ditar por voz</span><span class="ds-conf-apoio"><span id="mwIaVozEstado">Verificando…</span></span></span><span class="mw-id-beta" id="mwIaVozSelo" hidden>Indisponível</span></div></div></section><p class="ds-conf-info">As conversas ficam guardadas neste navegador, junto com o resto do workspace. Nada delas é usado para treinar nada.</p></div>
+<div class="ds-conf ds-conf-tela" data-conf-tela="ia" hidden><div class="ds-conf-cabeca"><button type="button" class="ds-conf-voltar" data-conf-voltar aria-label="Voltar para Configurações"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h2>Nyc AI</h2></div><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Conversas</h2><div class="ds-conf-lista"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 2 5.2 5.2 2-5.2 2-2 5.2-2-5.2-5.2-2 5.2-2L12 3Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Conversas guardadas</span><span class="ds-conf-apoio"><span id="mwIaContagem">Nenhuma conversa ainda.</span></span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p ds-btn-perigo" id="mwIaLimpar">Apagar</button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 11.2v5"/><circle cx="12" cy="8" r=".9" fill="currentColor" stroke="none"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Ditar por voz</span><span class="ds-conf-apoio"><span id="mwIaVozEstado">Verificando…</span></span></span><span class="mw-id-beta" id="mwIaVozSelo" hidden>Indisponível</span></div></div></section><p class="ds-conf-info">As conversas ficam guardadas neste navegador, junto com o resto dos seus dados. Nada delas é usado para treinar nada.</p></div>
 <div class="ds-conf ds-conf-tela" data-conf-tela="privacidade" hidden><div class="ds-conf-cabeca"><button type="button" class="ds-conf-voltar" data-conf-voltar aria-label="Voltar para Configurações"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h2>Privacidade</h2></div><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Visível no seu perfil</h2><div class="ds-conf-lista"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 5 6v5.4c0 4.2 2.9 7.6 7 9.4 4.1-1.8 7-5.2 7-9.4V6l-7-2.8Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Bio</span><span class="ds-conf-apoio">A frase que descreve você</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwVisBio" data-conf-visivel="bio" aria-label="Bio"></button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 5 6v5.4c0 4.2 2.9 7.6 7 9.4 4.1-1.8 7-5.2 7-9.4V6l-7-2.8Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Pronomes</span><span class="ds-conf-apoio">Como você prefere ser tratado</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwVisPronomes" data-conf-visivel="pronomes" aria-label="Pronomes"></button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 5 6v5.4c0 4.2 2.9 7.6 7 9.4 4.1-1.8 7-5.2 7-9.4V6l-7-2.8Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Gênero</span><span class="ds-conf-apoio">Aparece junto do seu nome</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwVisGenero" data-conf-visivel="genero" aria-label="Gênero"></button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 5 6v5.4c0 4.2 2.9 7.6 7 9.4 4.1-1.8 7-5.2 7-9.4V6l-7-2.8Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Curso e instituição</span><span class="ds-conf-apoio">Onde e o que você estuda</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwVisCurso" data-conf-visivel="curso" aria-label="Curso e instituição"></button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 5 6v5.4c0 4.2 2.9 7.6 7 9.4 4.1-1.8 7-5.2 7-9.4V6l-7-2.8Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Números</span><span class="ds-conf-apoio">Quantas disciplinas, projetos e atividades</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwVisNumeros" data-conf-visivel="numeros" aria-label="Números"></button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 5 6v5.4c0 4.2 2.9 7.6 7 9.4 4.1-1.8 7-5.2 7-9.4V6l-7-2.8Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Projetos</span><span class="ds-conf-apoio">A lista dos seus projetos</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwVisProjetos" data-conf-visivel="projetos" aria-label="Projetos"></button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 5 6v5.4c0 4.2 2.9 7.6 7 9.4 4.1-1.8 7-5.2 7-9.4V6l-7-2.8Z"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Links</span><span class="ds-conf-apoio">Instagram, GitHub, LinkedIn, site</span></span><button type="button" class="ds-conf-chave" role="switch" aria-checked="false" id="mwVisLinks" data-conf-visivel="links" aria-label="Links"></button></div></div></section><p class="ds-conf-info">Estas chaves já gravam a sua escolha e o seu próprio Perfil já as respeita. Uma página de perfil que <em>outra pessoa</em> possa abrir ainda não existe — quando existir, ela lê daqui.</p><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Backup</h2><div class="ds-conf-lista"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.6V4.4"/><path d="m8 8.2 4-3.8 4 3.8"/><path d="M4.6 15.2v3.2a1.6 1.6 0 0 0 1.6 1.6h11.6a1.6 1.6 0 0 0 1.6-1.6v-3.2"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Exportar backup</span><span class="ds-conf-apoio">Um arquivo com tudo o que está neste navegador</span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="exportBackup">Exportar</button></div><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m8 11.4 4 3.8 4-3.8"/><path d="M4.6 19.4h14.8"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Importar backup</span><span class="ds-conf-apoio">Restaura de um arquivo exportado antes</span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="importBackupBtn">Importar</button><input type="file" id="importBackupFile" accept="application/json" hidden></div><p class="ds-conf-info" id="importBackupError"></p></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Dados</h2><div class="ds-conf-lista"><div class="ds-conf-linha ds-conf-perigo"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 6.6h14.4"/><path d="M9.4 6.6V4.8h5.2v1.8"/><path d="M6.6 6.6 7.4 20a1.4 1.4 0 0 0 1.4 1.3h6.4a1.4 1.4 0 0 0 1.4-1.3l.8-13.4"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Apagar todos os dados</span><span class="ds-conf-apoio">Disciplinas, atividades, projetos e anotações deste navegador</span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p ds-btn-perigo mw-clear-btn" id="clearAll">Apagar</button></div><p class="ds-conf-info">Veja também a <a href="javascript:void(0)" data-footer-link="privacidade">Política de Privacidade</a>.</p></div></section></div>
-<div class="ds-conf ds-conf-tela" data-conf-tela="aplicativo" hidden><div class="ds-conf-cabeca"><button type="button" class="ds-conf-voltar" data-conf-voltar aria-label="Voltar para Configurações"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h2>Aplicativo</h2></div><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Instalação</h2><div class="ds-conf-lista"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.8" width="11" height="18.4" rx="2.4"/><path d="M10.7 5.6h2.6"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Instalar o Workspace</span><span class="ds-conf-apoio"><span id="mwSettingsInstallDesc">Adicione à tela de início para abrir como um app.</span></span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwSettingsInstallBtn">Instalar</button></div></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Mesma conta no app</h2><div class="ds-conf-lista"><div id="mwTransfereGrupo"><p class="ds-conf-info" id="mwTransfereOnde"></p><ol class="ds-conf-info mw-transfere-passos"><li id="mwPasso1"><b>No Safari:</b> toque em <b>Copiar código</b>.</li><li id="mwPasso2"><b>No app da tela de início:</b> abra Configurações e toque em <b>Colar código</b>.</li><li>Entre com o <b>mesmo usuário e senha</b> de sempre.</li></ol><div class="ds-conf-acoes ds-conf-acoes-bloco"><button type="button" class="ds-btn ds-btn-secundario ds-btn-p" id="mwTransfereCopiar">Copiar código</button><button type="button" class="ds-btn ds-btn-secundario ds-btn-p" id="mwTransfereColar">Colar código</button></div><textarea id="mwTransfereCodigo" rows="3" readonly hidden aria-label="Código da conta"></textarea><p class="ds-conf-info" id="mwTransfereStatus" hidden></p><p class="ds-conf-info">O código é uma <b>cópia do momento</b>, não uma sincronização.</p></div></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Sobre</h2><div class="ds-conf-lista"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 11.2v5"/><circle cx="12" cy="8" r=".9" fill="currentColor" stroke="none"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Versão</span><span class="ds-conf-apoio"><span id="mwAppVersao">—</span></span></span></div><button class="ds-conf-linha ds-conf-nav" type="button" data-conf-ir="__suporte"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 11.2v5"/><circle cx="12" cy="8" r=".9" fill="currentColor" stroke="none"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Suporte</span><span class="ds-conf-apoio">Falar com quem cuida do Workspace</span></span></button></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Manutenção</h2><div class="ds-conf-lista"><details class="ds-conf-detalhe"><summary class="ds-conf-linha ds-conf-nav"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12h3.6l2-5.4 3.4 11 2.2-5.6h5.8"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Diagnóstico avançado</span><span class="ds-conf-apoio">Mede o que este navegador realmente suporta</span></span></summary><p class="ds-conf-info" id="mwDiagResumo">Nada verificado ainda.</p><div class="mw-diag-lista ds-conf-info" id="mwDiagLista"></div><div class="ds-conf-acoes ds-conf-acoes-bloco"><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwDiagRodar">Verificar agora</button><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwDiagCopiar">Copiar relatório</button></div><textarea id="mwDiagBruto" readonly aria-label="Relatório do diagnóstico em texto" placeholder="O relatório aparece aqui depois de verificar."></textarea></details></div></section></div>
+<div class="ds-conf ds-conf-tela" data-conf-tela="aplicativo" hidden><div class="ds-conf-cabeca"><button type="button" class="ds-conf-voltar" data-conf-voltar aria-label="Voltar para Configurações"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h2>Aplicativo</h2></div><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Instalação</h2><div class="ds-conf-lista"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.8" width="11" height="18.4" rx="2.4"/><path d="M10.7 5.6h2.6"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Instalar o Klyne</span><span class="ds-conf-apoio"><span id="mwSettingsInstallDesc">Adicione à tela de início para abrir como um app.</span></span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwSettingsInstallBtn">Instalar</button></div></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Mesma conta no app</h2><div class="ds-conf-lista"><div id="mwTransfereGrupo"><p class="ds-conf-info" id="mwTransfereOnde"></p><ol class="ds-conf-info mw-transfere-passos"><li id="mwPasso1"><b>No Safari:</b> toque em <b>Copiar código</b>.</li><li id="mwPasso2"><b>No app da tela de início:</b> abra Configurações e toque em <b>Colar código</b>.</li><li>Entre com o <b>mesmo usuário e senha</b> de sempre.</li></ol><div class="ds-conf-acoes ds-conf-acoes-bloco"><button type="button" class="ds-btn ds-btn-secundario ds-btn-p" id="mwTransfereCopiar">Copiar código</button><button type="button" class="ds-btn ds-btn-secundario ds-btn-p" id="mwTransfereColar">Colar código</button></div><textarea id="mwTransfereCodigo" rows="3" readonly hidden aria-label="Código da conta"></textarea><p class="ds-conf-info" id="mwTransfereStatus" hidden></p><p class="ds-conf-info">O código é uma <b>cópia do momento</b>, não uma sincronização.</p></div></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Sobre</h2><div class="ds-conf-lista"><div class="ds-conf-linha"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 11.2v5"/><circle cx="12" cy="8" r=".9" fill="currentColor" stroke="none"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Versão</span><span class="ds-conf-apoio"><span id="mwAppVersao">—</span></span></span></div><button class="ds-conf-linha ds-conf-nav" type="button" data-conf-ir="__suporte"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 11.2v5"/><circle cx="12" cy="8" r=".9" fill="currentColor" stroke="none"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Suporte</span><span class="ds-conf-apoio">Falar com quem cuida do Klyne</span></span></button></div></section><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Manutenção</h2><div class="ds-conf-lista"><details class="ds-conf-detalhe"><summary class="ds-conf-linha ds-conf-nav"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12h3.6l2-5.4 3.4 11 2.2-5.6h5.8"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Diagnóstico avançado</span><span class="ds-conf-apoio">Mede o que este navegador realmente suporta</span></span></summary><p class="ds-conf-info" id="mwDiagResumo">Nada verificado ainda.</p><div class="mw-diag-lista ds-conf-info" id="mwDiagLista"></div><div class="ds-conf-acoes ds-conf-acoes-bloco"><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwDiagRodar">Verificar agora</button><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p" id="mwDiagCopiar">Copiar relatório</button></div><textarea id="mwDiagBruto" readonly aria-label="Relatório do diagnóstico em texto" placeholder="O relatório aparece aqui depois de verificar."></textarea></details></div></section></div>
 <div class="ds-conf ds-conf-tela" data-conf-tela="sessao" hidden><div class="ds-conf-cabeca"><button type="button" class="ds-conf-voltar" data-conf-voltar aria-label="Voltar para Configurações"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h2>Sessão</h2></div><section class="ds-conf-secao"><h2 class="ds-conf-titulo">Sair</h2><div class="ds-conf-lista"><div class="ds-conf-linha ds-conf-perigo"><span class="ds-conf-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 3.5h3a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-3"/><path d="M10 16.5 5.5 12 10 7.5"/><path d="M5.5 12h9"/></svg></span><span class="ds-conf-corpo"><span class="ds-conf-rotulo">Sair desta conta</span><span class="ds-conf-apoio">Será preciso entrar de novo com usuário e senha</span></span><button type="button" class="ds-btn ds-btn-fantasma ds-btn-p ds-btn-perigo mw-logout-btn" id="logout">Sair</button></div></div></section><p class="ds-conf-info">Sua conta fica guardada neste navegador. Para encerrar em OUTROS aparelhos, use Segurança › Sessões.</p></div>
 </div>
 </section>
@@ -5256,7 +5252,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
       <div class="mw-app-footer-brand">
         <span class="mw-app-footer-logo"><svg class="mw-marca" viewBox="0 0 64 44" aria-hidden="true"><use href="#mwi-marca"/></svg></span>
         <div class="mw-app-footer-copy">
-          <strong>Mateus Workspace</strong>
+          <strong>Klyne</strong>
           <small>© <span id="mwAppFooterYear">2026</span> — organize estudos, projetos e prazos em um só lugar.</small>
         </div>
       </div>
@@ -5432,12 +5428,12 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
   function enroll(){
     var profile = {};
     try { profile = (JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}').profile) || {}; } catch(e){}
-    var label = profile.email || profile.name || 'mateus-workspace-user';
+    var label = profile.email || profile.name || 'klyne-user';
     var userId = new TextEncoder().encode(String(label));
     return navigator.credentials.create({ publicKey: {
       challenge: randomChallenge(),
-      rp: { name: 'Mateus Workspace' },
-      user: { id: userId, name: String(label), displayName: profile.name || 'Mateus Workspace' },
+      rp: { name: 'Klyne' },
+      user: { id: userId, name: String(label), displayName: profile.name || 'Klyne' },
       pubKeyCredParams: [{ type:'public-key', alg:-7 }, { type:'public-key', alg:-257 }],
       authenticatorSelection: { authenticatorAttachment:'platform', userVerification:'required', residentKey:'preferred' },
       timeout: 60000,
@@ -5619,7 +5615,7 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
     esqueci && esqueci.addEventListener('click', function(){
       /* mwPedirValor devolve promessa; o prompt() nativo era síncrono.
          O corpo inteiro passou para dentro do then. */
-      window.mwPedirValor('Destravar o Workspace',
+      window.mwPedirValor('Destravar o Klyne',
         'Digite a senha da sua conta para remover o código de acesso.',
         { tipo: 'password', placeholder: 'Sua senha' }).then(function(senha){
       if (senha === null) return;
@@ -5870,7 +5866,7 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
       setStatus('Confirme no pedido do sistema…');
       window.mwFaceId.enroll().then(function(){
         setSwitch(true);
-        setStatus('Face ID ativado. Vamos confirmar na próxima vez que você abrir o Workspace.');
+        setStatus('Face ID ativado. Vamos confirmar na próxima vez que você abrir o Klyne.');
         if (typeof toast === 'function') toast('Face ID ativado');
       }).catch(function(){
         setSwitch(false);
@@ -5888,13 +5884,13 @@ body.light .mw-app-store-badge:hover{background:rgba(15,23,42,.06)}
 </script>
 
 <!-- o #modal legado saiu daqui; ver a nota em "/* Forms */" --></div>
-<div class="modal ms-modal hidden" id="msModal"><div class="modal-box"><div class="ms-top"><span class="ms-logo"><i></i><i></i><i></i><i></i></span><strong>Microsoft</strong></div><h3 id="msTitle">Entrar</h3><p id="msDescription">Use sua conta Microsoft para continuar no Mateus Workspace.</p><form id="msForm"><input class="ms-input" id="msEmail" type="email" autocomplete="username" placeholder="Email, telefone ou Skype" required><div class="ms-error" id="msError"></div><div class="ms-actions"><button class="ms-cancel" id="msCancel" type="button">Voltar</button><button class="ms-continue" id="msContinue" type="submit">Avançar</button></div></form></div></div>
+<div class="modal ms-modal hidden" id="msModal"><div class="modal-box"><div class="ms-top"><span class="ms-logo"><i></i><i></i><i></i><i></i></span><strong>Microsoft</strong></div><h3 id="msTitle">Entrar</h3><p id="msDescription">Use sua conta Microsoft para continuar no Klyne.</p><form id="msForm"><input class="ms-input" id="msEmail" type="email" autocomplete="username" placeholder="Email, telefone ou Skype" required><div class="ms-error" id="msError"></div><div class="ms-actions"><button class="ms-cancel" id="msCancel" type="button">Voltar</button><button class="ms-continue" id="msContinue" type="submit">Avançar</button></div></form></div></div>
 <div id="toast"></div>
 <script>
 (()=>{
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const storeKey='mateusWorkspaceV4';
-const defaults={subjects:[],projects:[],activities:[],notes:[],institutions:[],focus:{config:{foco:25,pausa:5,longa:15},atual:null,sessoes:[]},profile:{name:'Mateus',email:'',photo:'',username:'',bio:'',skills:[],links:[],visibility:{}},college:{institution:'',course:'',area:'',semester:1},theme:'dark'};
+const defaults={subjects:[],projects:[],activities:[],notes:[],institutions:[],focus:{config:{foco:25,pausa:5,longa:15},atual:null,sessoes:[]},profile:{name:'Você',email:'',photo:'',username:'',bio:'',skills:[],links:[],visibility:{}},college:{institution:'',course:'',area:'',semester:1},theme:'dark'};
 /* Sem "let" de propósito: alguns scripts carregados depois (autosave,
    métricas do dashboard, recarregar dados ao trocar de conta) leem/escrevem
    "data" esperando uma variável global compartilhada — várias delas já
@@ -5974,7 +5970,7 @@ loginButton.onclick=()=>{if(loginButton.disabled)return;status.textContent='Entr
 /* Microsoft modal: local simulation only; no real password is stored or sent anywhere. */
 const msModal=$('#msModal'),msForm=$('#msForm'),msEmail=$('#msEmail'),msError=$('#msError'),msTitle=$('#msTitle'),msDescription=$('#msDescription'),msContinue=$('#msContinue');
 let msStage='email',msAccount='';
-$('#msButton').onclick=()=>{msStage='email';msAccount='';msTitle.textContent='Entrar';msDescription.textContent='Use sua conta Microsoft para continuar no Mateus Workspace.';msEmail.type='email';msEmail.value='';msEmail.placeholder='Email, telefone ou Skype';msError.textContent='';msContinue.textContent='Avançar';msModal.classList.remove('hidden');setTimeout(()=>msEmail.focus(),50)};
+$('#msButton').onclick=()=>{msStage='email';msAccount='';msTitle.textContent='Entrar';msDescription.textContent='Use sua conta Microsoft para continuar no Klyne.';msEmail.type='email';msEmail.value='';msEmail.placeholder='Email, telefone ou Skype';msError.textContent='';msContinue.textContent='Avançar';msModal.classList.remove('hidden');setTimeout(()=>msEmail.focus(),50)};
 $('#msCancel').onclick=()=>msModal.classList.add('hidden');
 msForm.addEventListener('submit',e=>{e.preventDefault();const value=msEmail.value.trim();if(msStage==='email'){if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)){msError.textContent='Digite um endereço de e-mail válido.';return}msAccount=value;msStage='password';msTitle.textContent='Digite sua senha';msDescription.textContent='Conta: '+msAccount;msEmail.type='password';msEmail.value='';msEmail.placeholder='Senha';msEmail.autocomplete='current-password';msError.textContent='';msContinue.textContent='Entrar';setTimeout(()=>msEmail.focus(),40);return}if(value.length<1){msError.textContent='Digite sua senha para continuar.';return}msContinue.disabled=true;msContinue.textContent='Entrando...';setTimeout(()=>{msContinue.disabled=false;msModal.classList.add('hidden');enterApp();toast('Autenticação Microsoft simulada com sucesso')},800)});
 /* Navigation */
@@ -6205,7 +6201,7 @@ $('#exportBackup').onclick=()=>{
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
-  a.href=url;a.download='mateus-workspace-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  a.href=url;a.download='klyne-backup-'+new Date().toISOString().slice(0,10)+'.json';
   document.body.appendChild(a);a.click();a.remove();
   URL.revokeObjectURL(url);
   toast('Backup exportado');
@@ -6276,7 +6272,7 @@ window.toast = toast;
   const escSafe=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
   const notify=(msg,error=false)=>{const el=q('#status');if(el){el.textContent=msg;el.classList.toggle('error',error)}};
   const defaultData=(name,email)=>({subjects:[],projects:[],activities:[],notes:[],institutions:[],profile:{name,email,photo:'',username:'',bio:'',skills:[],links:[],visibility:{}},theme:'dark'});
-  const hydrateSession=(email, data)=>{localStorage.setItem('mateusActiveUserV2',email);localStorage.setItem('mateusWorkspaceV4',JSON.stringify(data||defaultData('Mateus',email)));};
+  const hydrateSession=(email, data)=>{localStorage.setItem('mateusActiveUserV2',email);localStorage.setItem('mateusWorkspaceV4',JSON.stringify(data||defaultData('Você',email)));};
   /* Esta era a única das três `enterApp` do documento que NÃO gravava
      `mwSession`. Quem entrasse por ela — o caminho do `authenticate()`,
      usado depois de redefinir a senha por código — entrava no app com a
@@ -6318,7 +6314,7 @@ window.toast = toast;
   const userInput=q('#username'),passInput=q('#password'),loginBtn=q('#loginButton');
   function refreshLogin(){if(!userInput||!passInput||!loginBtn)return;loginBtn.disabled=false}
   userInput?.addEventListener('input',refreshLogin);passInput?.addEventListener('input',refreshLogin);
-  function authenticate(rawValue, passValue){const raw=String(rawValue||'').trim(),pass=String(passValue||''),u=users();if(!raw||!pass)return false;const key=raw.includes('@')?raw.toLowerCase():Object.keys(u).find(k=>u[k].username?.toLowerCase()===raw.toLowerCase());if(!key){notify('Conta não encontrada. Verifique os dados ou crie uma conta.',true);return false}Promise.resolve(window.mwSenha?window.mwSenha.confere(u[key],pass):(u[key].password===pass)).then(function(ok){if(!ok){notify('Senha incorreta. Tente novamente.',true);return}hydrateSession(key,u[key].data||defaultData(u[key].name||u[key].username||'Mateus',u[key].email||key));notify('');enterApp();});return true}
+  function authenticate(rawValue, passValue){const raw=String(rawValue||'').trim(),pass=String(passValue||''),u=users();if(!raw||!pass)return false;const key=raw.includes('@')?raw.toLowerCase():Object.keys(u).find(k=>u[k].username?.toLowerCase()===raw.toLowerCase());if(!key){notify('Conta não encontrada. Verifique os dados ou crie uma conta.',true);return false}Promise.resolve(window.mwSenha?window.mwSenha.confere(u[key],pass):(u[key].password===pass)).then(function(ok){if(!ok){notify('Senha incorreta. Tente novamente.',true);return}hydrateSession(key,u[key].data||defaultData(u[key].name||u[key].username||'Você',u[key].email||key));notify('');enterApp();});return true}
   if(loginBtn){const clean=loginBtn.cloneNode(true);loginBtn.replaceWith(clean);const btn=q('#loginButton');btn.addEventListener('click',()=>{if(btn.disabled)return;authenticate(userInput.value,passInput.value)});}
 
   /* Aqui morava um segundo formulário de criar conta, num modal, que
@@ -6344,7 +6340,7 @@ window.toast = toast;
   const writeUsers=u=>localStorage.setItem(usersKey,JSON.stringify(u));
   const defaultData=(name,email)=>({subjects:[],projects:[],activities:[],notes:[],institutions:[],profile:{name,email,photo:'',username:'',bio:'',skills:[],links:[],visibility:{}},theme:'dark'});
   const enterApp=()=>{localStorage.setItem('mwSession','1');const app=q('#app'),screen=q('#loginScreen');screen?.classList.add('hidden');if(app){app.classList.remove('hidden');app.style.display=''};window.scrollTo(0,0)};
-  const hydrateSession=(email,data)=>{localStorage.setItem('mateusActiveUserV2',email);localStorage.setItem('mateusWorkspaceV4',JSON.stringify(data||defaultData('Mateus',email)));};
+  const hydrateSession=(email,data)=>{localStorage.setItem('mateusActiveUserV2',email);localStorage.setItem('mateusWorkspaceV4',JSON.stringify(data||defaultData('Você',email)));};
   const notify=(msg,error=false)=>{const el=q('#status');if(el){el.textContent=msg;el.classList.toggle('error',error)}};
 
   const userInput=q('#username'), passInput=q('#password'), loginBtn=q('#loginButton');
@@ -6359,7 +6355,7 @@ window.toast = toast;
     const key=raw.includes('@')?raw.toLowerCase():Object.keys(u).find(k=>(u[k]?.username||'').toLowerCase()===raw.toLowerCase());
     if(!key){notify('Conta não encontrada. Verifique os dados ou crie uma conta.',true);return false;}
     if(u[key]?.password!==pass){notify('Senha incorreta. Tente novamente.',true);return false;}
-    hydrateSession(key,u[key].data||defaultData(u[key].name||u[key].username||'Mateus',u[key].email||key));
+    hydrateSession(key,u[key].data||defaultData(u[key].name||u[key].username||'Você',u[key].email||key));
     localStorage.setItem('mwLastEmail',key);
     notify('');
     enterApp();
@@ -6768,9 +6764,9 @@ body.light #app .workspace-instagram .social-profile-btn span{background:#f8f6f0
    });
  }
  // Generate initials from the profile name whenever there is no photo.
- const initials=name=>name.trim().split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0].toUpperCase()).join('')||'MW';
+ const initials=name=>name.trim().split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0].toUpperCase()).join('')||'VC';
  const syncAvatar=()=>{
-   let name=$('#profileName')?.value||'Mateus Workspace';
+   let name=$('#profileName')?.value||'Você';
    const photoUrl=$('#profilePhoto')?.value||'';
    const targets=[$('#profileBtn')].filter(Boolean);
    targets.forEach(a=>{ if(!a.querySelector('img') && photoUrl){a.innerHTML='<img class="workspace-avatar-photo" alt="Foto de perfil">'; a.querySelector('img').src=photoUrl;} else if(!a.querySelector('img')) a.textContent=initials(name); });
@@ -6898,9 +6894,9 @@ body.light .mw-photo-hint{color:#72767a;}
    remove.addEventListener('click',()=>{photo.value='';fileInput.value='';range.value='1';applyPreview('');syncAllAvatars('');try{const d=JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}');d.profile=d.profile||{};d.profile.photo='';localStorage.setItem('mateusWorkspaceV4',JSON.stringify(d));}catch(e){}});
    const initialSrc=photo.value||'';if(initialSrc)applyPreview(initialSrc);
  }
- function initials(name){return String(name||'Mateus Workspace').trim().split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0].toUpperCase()).join('')||'MW';}
+ function initials(name){return String(name||'Você').trim().split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0].toUpperCase()).join('')||'VC';}
  function syncAllAvatars(src){
-   const name=$('#profileName')?.value||'Mateus';
+   const name=$('#profileName')?.value||'Você';
    const targets=[$('#profileBtn'),$('#workspaceProfileSocialBtn'),$('#mwSidebarAvatar'),$('#profileAvatarPreview')].filter(Boolean);
    targets.forEach(a=>{
      if(src){
@@ -6943,7 +6939,7 @@ body.light .mw-photo-hint{color:#72767a;}
     let users={};
     try{users=JSON.parse(localStorage.getItem(usersKey)||'{}')||{}}catch{}
     const account=users[email];
-    const name=account?.name||account?.username||'Mateus';
+    const name=account?.name||account?.username||'Você';
     try{
       if(email) localStorage.setItem('mateusActiveUserV2',email);
       localStorage.setItem('mwSession','1');
@@ -7040,13 +7036,13 @@ body.light .mw-photo-hint{color:#72767a;}
  const q=s=>document.querySelector(s);
  const safeJSON=(v,f)=>{try{return JSON.parse(v)||f}catch{return f}};
  const storeKey='mateusWorkspaceV4';
- const getData=()=>safeJSON(localStorage.getItem(storeKey),{profile:{name:'Mateus',email:'',photo:''}});
- const initials=name=>String(name||'Mateus').trim().split(/\\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase()||'MW';
+ const getData=()=>safeJSON(localStorage.getItem(storeKey),{profile:{name:'Você',email:'',photo:''}});
+ const initials=name=>String(name||'Você').trim().split(/\\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase()||'VC';
  const preview=q('#profileAvatarPreview'), initialsEl=q('#profileAvatarInitials'), photoInput=q('#profilePhoto'), fileInput=q('#profilePhotoFile');
  const choose=q('#chooseProfilePhoto'), edit=q('#editProfilePhoto'), remove=q('#removeProfilePhoto');
  let crop={src:'',img:null,x:0,y:0,scale:1,min:1,max:3,drag:false,sx:0,sy:0,ox:0,oy:0};
- function setAvatar(photo,name){const apply=(el,asImg)=>{if(!el)return;if(photo){el.style.backgroundImage=`url("${photo}")`;el.style.backgroundSize='cover';el.style.backgroundPosition='center';el.classList.add('has-avatar');if(asImg)el.textContent='';}else{el.style.backgroundImage='';el.classList.remove('has-avatar');if(asImg)el.textContent=initials(name);}};const av=q('#profileBtn');apply(av,true);apply(q('#mwSidebarAvatar'),true);/* O botão da bottom nav NÃO passa por apply(): apply escreve textContent e destruiria o ícone, a camada da foto e o rótulo. Ele tem um caminho próprio. */if(window.mwApplyNavPhoto)window.mwApplyNavPhoto(photo||'');const nm=q('#mwSidebarName');if(nm)nm.textContent=name||'Mateus';if(preview){if(photo){preview.style.backgroundImage=`url("${photo}")`;preview.style.backgroundColor='transparent';preview.style.backgroundSize='cover';preview.style.backgroundPosition='center';if(initialsEl)initialsEl.style.display='none'}else{preview.style.backgroundImage='';preview.style.backgroundColor='';if(initialsEl){initialsEl.style.display='';initialsEl.textContent=initials(name)}}}}
- function syncProfile(){const d=getData(),p=d.profile||{};setAvatar(p.photo||'',p.name||'Mateus');if(photoInput)photoInput.value=p.photo||''}
+ function setAvatar(photo,name){const apply=(el,asImg)=>{if(!el)return;if(photo){el.style.backgroundImage=`url("${photo}")`;el.style.backgroundSize='cover';el.style.backgroundPosition='center';el.classList.add('has-avatar');if(asImg)el.textContent='';}else{el.style.backgroundImage='';el.classList.remove('has-avatar');if(asImg)el.textContent=initials(name);}};const av=q('#profileBtn');apply(av,true);apply(q('#mwSidebarAvatar'),true);/* O botão da bottom nav NÃO passa por apply(): apply escreve textContent e destruiria o ícone, a camada da foto e o rótulo. Ele tem um caminho próprio. */if(window.mwApplyNavPhoto)window.mwApplyNavPhoto(photo||'');const nm=q('#mwSidebarName');if(nm)nm.textContent=name||'Você';if(preview){if(photo){preview.style.backgroundImage=`url("${photo}")`;preview.style.backgroundColor='transparent';preview.style.backgroundSize='cover';preview.style.backgroundPosition='center';if(initialsEl)initialsEl.style.display='none'}else{preview.style.backgroundImage='';preview.style.backgroundColor='';if(initialsEl){initialsEl.style.display='';initialsEl.textContent=initials(name)}}}}
+ function syncProfile(){const d=getData(),p=d.profile||{};setAvatar(p.photo||'',p.name||'Você');if(photoInput)photoInput.value=p.photo||''}
  function openCrop(src){
    const back=document.createElement('div');back.className='profile-editor-backdrop';back.innerHTML=`<div class="profile-editor" role="dialog" aria-modal="true"><div class="profile-editor-head"><h3>Ajustar foto de perfil</h3><button class="profile-editor-close" type="button" aria-label="Fechar">×</button></div><div class="crop-stage"><img class="crop-image" draggable="false"><div class="crop-mask"></div><div class="crop-ring"></div></div><div class="crop-controls"><button type="button" data-zoom="-1" title="Afastar">−</button><input type="range" min="0" max="100" step="1" value="0" aria-label="Zoom"><button type="button" data-zoom="1" title="Aproximar">+</button></div><div class="crop-hint">− afasta · + aproxima · arraste para centralizar</div><div class="profile-editor-actions"><button type="button" class="profile-editor-close2">Cancelar</button><button type="button" class="crop-save">Usar esta foto</button></div></div>`;
    document.body.appendChild(back); const stage=back.querySelector('.crop-stage'),img=back.querySelector('.crop-image'),ring=back.querySelector('.crop-ring'),range=back.querySelector('input[type=range]'); crop={...crop,src,img,stage,x:0,y:0,scale:1};img.src=src;
@@ -7082,11 +7078,11 @@ body.light .mw-photo-hint{color:#72767a;}
    const move=e=>{if(!crop.drag)return;crop.x=crop.ox+(e.clientX-crop.sx);crop.y=crop.oy+(e.clientY-crop.sy);position()};
    const up=()=>{crop.drag=false;stage.classList.remove('dragging')};stage.addEventListener('pointerdown',down);stage.addEventListener('pointermove',move);stage.addEventListener('pointerup',up);stage.addEventListener('pointercancel',up);
    const close=()=>back.remove();back.querySelectorAll('.profile-editor-close,.profile-editor-close2').forEach(b=>b.onclick=close);
-    back.querySelector('.crop-save').onclick=()=>{const out=document.createElement('canvas'),size=512;out.width=size;out.height=size;const ctx=out.getContext('2d');const ringRect=ring.getBoundingClientRect(),sr=stage.getBoundingClientRect();const cropSize=ringRect.width;const centerX=sr.left+sr.width/2,centerY=sr.top+sr.height/2;const iw=img.naturalWidth*crop.scale,ih=img.naturalHeight*crop.scale;const imgLeft=sr.left+sr.width/2-iw/2+crop.x,imgTop=sr.top+sr.height/2-ih/2+crop.y;const sx=(centerX-cropSize/2-imgLeft)/crop.scale,sy=(centerY-cropSize/2-imgTop)/crop.scale,sw=cropSize/crop.scale;ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(img,sx,sy,sw,sw,0,0,size,size);const dataUrl=out.toDataURL('image/jpeg',.88);if(photoInput)photoInput.value=dataUrl;const nm=q('#profileName')?.value||'Mateus';setAvatar(dataUrl,nm);try{const raw=JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}');raw.profile={...(raw.profile||{}),photo:dataUrl,name:raw.profile?.name||nm};localStorage.setItem('mateusWorkspaceV4',JSON.stringify(raw));}catch(e){}window.mwSyncAvatars?.();close()};
+    back.querySelector('.crop-save').onclick=()=>{const out=document.createElement('canvas'),size=512;out.width=size;out.height=size;const ctx=out.getContext('2d');const ringRect=ring.getBoundingClientRect(),sr=stage.getBoundingClientRect();const cropSize=ringRect.width;const centerX=sr.left+sr.width/2,centerY=sr.top+sr.height/2;const iw=img.naturalWidth*crop.scale,ih=img.naturalHeight*crop.scale;const imgLeft=sr.left+sr.width/2-iw/2+crop.x,imgTop=sr.top+sr.height/2-ih/2+crop.y;const sx=(centerX-cropSize/2-imgLeft)/crop.scale,sy=(centerY-cropSize/2-imgTop)/crop.scale,sw=cropSize/crop.scale;ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(img,sx,sy,sw,sw,0,0,size,size);const dataUrl=out.toDataURL('image/jpeg',.88);if(photoInput)photoInput.value=dataUrl;const nm=q('#profileName')?.value||'Você';setAvatar(dataUrl,nm);try{const raw=JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}');raw.profile={...(raw.profile||{}),photo:dataUrl,name:raw.profile?.name||nm};localStorage.setItem('mateusWorkspaceV4',JSON.stringify(raw));}catch(e){}window.mwSyncAvatars?.();close()};
  }
  choose?.addEventListener('click',()=>fileInput?.click());fileInput?.addEventListener('change',()=>{const f=fileInput.files?.[0];if(!f)return;if(!f.type.startsWith('image/'))return;const r=new FileReader();r.onload=()=>openCrop(r.result);r.readAsDataURL(f)});
  edit?.addEventListener('click',()=>{const src=photoInput?.value||getData().profile?.photo;if(src)openCrop(src);else fileInput?.click()});
-  remove?.addEventListener('click',()=>{if(photoInput)photoInput.value='';setAvatar('',q('#profileName')?.value||'Mateus');fileInput&&(fileInput.value='');try{const raw=JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}');raw.profile={...(raw.profile||{}),photo:''};localStorage.setItem('mateusWorkspaceV4',JSON.stringify(raw));}catch(e){}window.mwSyncAvatars?.();});
+  remove?.addEventListener('click',()=>{if(photoInput)photoInput.value='';setAvatar('',q('#profileName')?.value||'Você');fileInput&&(fileInput.value='');try{const raw=JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}');raw.profile={...(raw.profile||{}),photo:''};localStorage.setItem('mateusWorkspaceV4',JSON.stringify(raw));}catch(e){}window.mwSyncAvatars?.();});
  q('#saveProfile')?.addEventListener('click',()=>setTimeout(syncProfile,20));
  q('#profileName')?.addEventListener('input',()=>{if(!photoInput?.value)setAvatar('',q('#profileName').value)});
  syncProfile();
@@ -7127,7 +7123,7 @@ body.light .mw-photo-hint{color:#72767a;}
       <div class="eva-conversas-lista" id="evaConversasLista"></div>
     </div>
     <div class="mateus-ai-messages" id="mateusAiMessages">
-      <div class="mateus-ai-msg assistant" id="evaWelcomeMsg">Oi, Mateus — tudo pronto para começar.</div>
+      <div class="mateus-ai-msg assistant" id="evaWelcomeMsg">Oi — tudo pronto para começar.</div>
     </div>
     <div class="eva-sugestoes" id="evaSugestoes"></div>
     <form class="mateus-ai-form" id="mateusAiForm">
@@ -7155,7 +7151,7 @@ body.light .mw-photo-hint{color:#72767a;}
   const modal=$('#mateusAiModal'), open=$('#mateusAiBtn'), close=$('#mateusAiClose');
   const form=$('#mateusAiForm'), input=$('#mateusAiInput'), messages=$('#mateusAiMessages'), status=$('#mateusAiStatus');
   if(!modal||!open||!close||!form||!input||!messages)return;
-  const userName=()=>{try{const d=JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}');return String((d.profile&&d.profile.name)||'Mateus').trim()||'Mateus'}catch{return 'Mateus'}};
+  const userName=()=>{try{const d=JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}');return String((d.profile&&d.profile.name)||'Você').trim()||'Você'}catch{return 'Você'}};
   const cursoAtual=()=>{try{const d=JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}');return String((d.college&&d.college.course)||'').trim()}catch{return ''}};
   const semestreAtual=()=>{try{const d=JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}');return Number((d.college&&d.college.semester))||null}catch{return null}};
 
@@ -7213,26 +7209,26 @@ body.light .mw-photo-hint{color:#72767a;}
       return 'Agora são '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+'.';
     }
     if(q.includes('o que e programacao')||(q.includes('programacao')&&(q.includes('o que')||q.includes('significa')||q.includes('pra que'))))
-      return 'Programação é o ofício de traduzir um problema real em instruções que a máquina executa sem ambiguidade. Você não “fala com o computador”: você modela o problema, quebra em passos, escolhe estruturas (variáveis, condições, loops, funções) e escreve isso numa linguagem. JavaScript, Python e Java são só vocabulários diferentes da mesma lógica.\n\nNo Mateus Workspace isso aparece o tempo todo: o login valida a sessão, a barra lateral anima a coluna sem mexer nos ícones, o calendário calcula o mês, eu mesma leio sua pergunta e devolvo um texto. Cada clique seu dispara uma função. Quem programa bem não memoriza sintaxe — descreve o fluxo com clareza, testa o caso feliz e o caso de erro, e deixa o código legível para o Mateus de daqui a três meses.';
+      return 'Programação é o ofício de traduzir um problema real em instruções que a máquina executa sem ambiguidade. Você não “fala com o computador”: você modela o problema, quebra em passos, escolhe estruturas (variáveis, condições, loops, funções) e escreve isso numa linguagem. JavaScript, Python e Java são só vocabulários diferentes da mesma lógica.\n\nNo Klyne isso aparece o tempo todo: o login valida a sessão, a barra lateral anima a coluna sem mexer nos ícones, o calendário calcula o mês, eu mesma leio sua pergunta e devolvo um texto. Cada clique seu dispara uma função. Quem programa bem não memoriza sintaxe — descreve o fluxo com clareza, testa o caso feliz e o caso de erro, e deixa o código legível para você mesmo daqui a três meses.';
     if(q.includes('javascript')||/\bjs\b/.test(q))
-      return 'JavaScript é a linguagem que o navegador executa. HTML estrutura, CSS desenha, JS decide o que acontece. No Workspace, recolher a barra, abrir a Nyc AI, salvar o perfil e pintar o dia de hoje no calendário são JavaScript.\n\nOs blocos que você vai usar o semestre inteiro:\n1) Variáveis e tipos — string, number, boolean, array, objeto.\n2) Funções — pedaços reutilizáveis. Ex.: salvar() grava no localStorage.\n3) DOM — document.querySelector encontra um botão; addEventListener reage ao clique.\n4) Condicionais e loops — if/else, for, map.\n5) Assíncrono — fetch, async/await, para API e voz.\n\nDica de engenheiro: comece sempre pelo comportamento (o que o usuário faz), depois o estado (o que precisa ser lembrado), depois a interface. Sintaxe vem depois da intenção.';
+      return 'JavaScript é a linguagem que o navegador executa. HTML estrutura, CSS desenha, JS decide o que acontece. No Klyne, recolher a barra, abrir a Nyc AI, salvar o perfil e pintar o dia de hoje no calendário são JavaScript.\n\nOs blocos que você vai usar o semestre inteiro:\n1) Variáveis e tipos — string, number, boolean, array, objeto.\n2) Funções — pedaços reutilizáveis. Ex.: salvar() grava no localStorage.\n3) DOM — document.querySelector encontra um botão; addEventListener reage ao clique.\n4) Condicionais e loops — if/else, for, map.\n5) Assíncrono — fetch, async/await, para API e voz.\n\nDica de engenheiro: comece sempre pelo comportamento (o que o usuário faz), depois o estado (o que precisa ser lembrado), depois a interface. Sintaxe vem depois da intenção.';
     if(q.includes('python'))
       return 'Python é uma linguagem de propósito geral, de sintaxe limpa, dominante em dados, automação e inteligência artificial. A lógica é a mesma de qualquer linguagem: variáveis, condições, loops, funções e objetos. A diferença está no ecossistema — pandas, NumPy, FastAPI — e no fato de você ler o código quase como português.\n\nPara o 4º semestre: use Python quando o problema for processar dados, treinar um modelo ou escrever um backend rápido. Use JavaScript quando o problema mora no navegador. Os dois se completam; não compete um com o outro.';
     if(q.includes('html')||q.includes('css'))
-      return 'HTML é o esqueleto: cada card, botão e título é uma tag. CSS é o corpo: cor, espaçamento, paleta navy/ciano/violeta do Workspace, modo claro, o squircle de 34px dos ícones. JavaScript é o sistema nervoso.\n\nRegra prática: se mudou o conteúdo, é HTML. Se mudou a aparência, é CSS. Se mudou o comportamento, é JavaScript. Quando as três camadas ficam misturadas, o layout quebra — exatamente o tipo de bug que a gente evitou na barra lateral, congelando os ícones e animando só a coluna.';
+      return 'HTML é o esqueleto: cada card, botão e título é uma tag. CSS é o corpo: cor, espaçamento, paleta navy/ciano/violeta do Klyne, modo claro, o squircle de 34px dos ícones. JavaScript é o sistema nervoso.\n\nRegra prática: se mudou o conteúdo, é HTML. Se mudou a aparência, é CSS. Se mudou o comportamento, é JavaScript. Quando as três camadas ficam misturadas, o layout quebra — exatamente o tipo de bug que a gente evitou na barra lateral, congelando os ícones e animando só a coluna.';
     if(q.includes('disciplina')||q.includes('organizar'))
-      return 'Organização profissional das disciplinas, no seu Workspace:\n\n1) Cadastre cada matéria em Disciplinas, com nome, descrição e um progresso honesto (0–100).\n2) Em Faculdade, confirme curso, semestre e área — isso alimenta o cartão “Olá, Mateus” e o progresso do dashboard.\n3) Transforme cada prova, lista e trabalho em Atividade com data. O que tem prazo vira compromisso, não lembrete solto.\n4) Projetos da matéria (site, API, app) vão em Projetos, com uma tag da tecnologia.\n5) Anotações curtas por aula. Não copie slide: escreva o que você explicaria para um colega.\n\nO dashboard atualiza sozinho. Se uma matéria está em 0%, não é bug — é sinal de que ainda não registrou o andamento. Comece pela que tem prova mais perto.';
+      return 'Organização profissional das disciplinas, no seu Klyne:\n\n1) Cadastre cada matéria em Disciplinas, com nome, descrição e um progresso honesto (0–100).\n2) Em Faculdade, confirme curso, semestre e área — isso alimenta o cartão de saudação e o progresso do dashboard.\n3) Transforme cada prova, lista e trabalho em Atividade com data. O que tem prazo vira compromisso, não lembrete solto.\n4) Projetos da matéria (site, API, app) vão em Projetos, com uma tag da tecnologia.\n5) Anotações curtas por aula. Não copie slide: escreva o que você explicaria para um colega.\n\nO dashboard atualiza sozinho. Se uma matéria está em 0%, não é bug — é sinal de que ainda não registrou o andamento. Comece pela que tem prova mais perto.';
     if(q.includes('plano de estudo')||q.includes('semestre')||q.includes('estudar')){
       const curso=cursoAtual(), sem=semestreAtual();
       const contexto=curso?(sem?`o ${sem}º semestre de ${curso}`:curso):'o seu semestre atual';
-      return `Plano de estudo para ${contexto} — objetivo: sair da aula com domínio, não só com presença.\n\nRotina semanal (10–12h além da aula):\n• Segunda e quarta — 90 min na disciplina mais pesada do semestre.\n• Terça e quinta — 60 min de teoria + 30 min de exercícios ou casos práticos.\n• Sexta — revisão ativa: feche o material e explique em voz alta o que viu na semana. Use o microfone da Nyc AI se quiser treinar.\n• Sábado — 2h num projeto ou trabalho em andamento (este Workspace conta).\n• Domingo — 40 min de revisão espaçada + planejar a semana no calendário acadêmico.\n\nMétodo: Pomodoro 50/10. Uma matéria por bloco. Antes de cada prova, 3 simulações cronometradas. Me diga as disciplinas atuais que eu monto a grade dia a dia.`;
+      return `Plano de estudo para ${contexto} — objetivo: sair da aula com domínio, não só com presença.\n\nRotina semanal (10–12h além da aula):\n• Segunda e quarta — 90 min na disciplina mais pesada do semestre.\n• Terça e quinta — 60 min de teoria + 30 min de exercícios ou casos práticos.\n• Sexta — revisão ativa: feche o material e explique em voz alta o que viu na semana. Use o microfone da Nyc AI se quiser treinar.\n• Sábado — 2h num projeto ou trabalho em andamento (este Klyne conta).\n• Domingo — 40 min de revisão espaçada + planejar a semana no calendário acadêmico.\n\nMétodo: Pomodoro 50/10. Uma matéria por bloco. Antes de cada prova, 3 simulações cronometradas. Me diga as disciplinas atuais que eu monto a grade dia a dia.`;
     }
     if(q.includes('projeto'))
-      return 'Um projeto de engenharia de software nasce nesta ordem: problema, usuário, fluxo, dados, interface, prazo.\n\n1) Escreva em uma frase o que o app faz. Se não couber, o escopo está grande.\n2) Liste 3 telas no máximo para a versão 1 — no Workspace, login, dashboard e configurações já são um produto.\n3) Defina o estado: o que precisa sobreviver ao F5? Isso vai para localStorage ou API.\n4) Construa o menor pedaço usável (um botão que salva de verdade) antes de embelezar.\n5) Só então animações, paleta e microinterações.\n\nSe quiser, descreve o projeto que você tem agora que eu quebro em tarefas de 1 hora.';
+      return 'Um projeto de engenharia de software nasce nesta ordem: problema, usuário, fluxo, dados, interface, prazo.\n\n1) Escreva em uma frase o que o app faz. Se não couber, o escopo está grande.\n2) Liste 3 telas no máximo para a versão 1 — no Klyne, login, dashboard e configurações já são um produto.\n3) Defina o estado: o que precisa sobreviver ao F5? Isso vai para localStorage ou API.\n4) Construa o menor pedaço usável (um botão que salva de verdade) antes de embelezar.\n5) Só então animações, paleta e microinterações.\n\nSe quiser, descreve o projeto que você tem agora que eu quebro em tarefas de 1 hora.';
     if(q.includes('como') && (q.includes('faco')||q.includes('fazer')||q.includes('criar')||q.includes('montar')))
       return 'Me fala o artefato exato — “como faço um login?”, “como crio uma API?”, “como organizo as notas?”. Eu te devolvo o passo a passo na ordem de execução, com o porquê de cada etapa, não uma lista genérica. Quanto mais específico você for (linguagem, prazo, o que já tentou), mais profissional fica a resposta.';
-    if(q.includes('workspace')||q.includes('barra')||q.includes('sidebar')||q.includes('calendario')||q.includes('perfil'))
-      return 'No Mateus Workspace: a barra lateral anima só a largura da coluna — os ícones ficam travados e o texto some por recorte. O calendário marca o dia de hoje e troca o mês pelas setas. A foto de perfil, depois de ajustar o enquadramento, precisa de “Salvar perfil” para ir para o cartão do Mateus na lateral. O modo escuro fica no interruptor da base. Qual dessas partes você quer que eu detalhe?';
+    if(q.includes('klyne')||q.includes('barra')||q.includes('sidebar')||q.includes('calendario')||q.includes('perfil'))
+      return 'No Klyne: a barra lateral anima só a largura da coluna — os ícones ficam travados e o texto some por recorte. O calendário marca o dia de hoje e troca o mês pelas setas. A foto de perfil, depois de ajustar o enquadramento, precisa de “Salvar perfil” para ir para o cartão do seu perfil na lateral. O modo escuro fica no interruptor da base. Qual dessas partes você quer que eu detalhe?';
     if(q.includes('obrigad')||q.includes('valeu')||q.includes('tmj'))
       return 'Disponha, '+userName()+'. Quando quiser aprofundar uma matéria, montar a semana ou revisar código, é só chamar — por texto ou pelo microfone.';
     if((q.includes('arquivo')||q.includes('anexo')||q.includes('resuma'))&&window.mwEvaAttachment){
@@ -7248,11 +7244,11 @@ body.light .mw-photo-hint{color:#72767a;}
     if(q.includes('react')||q.includes('vue')||q.includes('angular')||q.includes('framework'))
       return 'React, Vue e Angular resolvem o mesmo problema — interface que reage a dados que mudam — com filosofias diferentes.\n\nReact: componentes + estado (useState) + efeitos (useEffect); a UI é função do estado.\nVue: parecido, com sintaxe mais próxima do HTML puro e reatividade automática.\nAngular: framework completo, mais estrutura e opinião, comum em times grandes.\n\nPara aprender rápido: domine JavaScript puro primeiro (DOM, funções, arrays), porque todo framework é só uma forma organizada de fazer o que o JS já faz.';
     if(q.includes('poo')||q.includes('orienta') && q.includes('objeto'))
-      return 'Programação orientada a objetos organiza o código em torno de "objetos" que combinam dados (atributos) e comportamento (métodos).\n\nOs 4 pilares:\n1) Encapsulamento — esconde detalhes internos, expõe só o necessário.\n2) Herança — uma classe reaproveita comportamento de outra.\n3) Polimorfismo — o mesmo método se comporta diferente conforme o objeto.\n4) Abstração — modela só o que importa para o problema.\n\nExemplo prático deste Workspace: uma classe Disciplina poderia ter nome, progresso e o método calcularStatus() — em vez de repetir essa lógica em cada tela.';
+      return 'Programação orientada a objetos organiza o código em torno de "objetos" que combinam dados (atributos) e comportamento (métodos).\n\nOs 4 pilares:\n1) Encapsulamento — esconde detalhes internos, expõe só o necessário.\n2) Herança — uma classe reaproveita comportamento de outra.\n3) Polimorfismo — o mesmo método se comporta diferente conforme o objeto.\n4) Abstração — modela só o que importa para o problema.\n\nExemplo prático deste Klyne: uma classe Disciplina poderia ter nome, progresso e o método calcularStatus() — em vez de repetir essa lógica em cada tela.';
     if(q.includes('algoritmo')||q.includes('estrutura de dados')||q.includes('complexidade'))
       return 'Algoritmo é a sequência de passos para resolver um problema; estrutura de dados é como você organiza a informação para que esses passos sejam eficientes.\n\nO que mais cai na faculdade:\n• Array/lista — acesso rápido por índice, busca O(n).\n• Pilha e fila — LIFO e FIFO, base de undo e filas de processamento.\n• Árvore e hash map — busca rápida, O(log n) e O(1) em média.\n• Ordenação — quicksort e mergesort, O(n log n), a base de "por que não usar bubble sort em produção".\n\nRegra prática: primeiro faça funcionar, depois meça, só então otimize a complexidade — otimização prematura custa mais tempo do que resolve.';
     if(q.includes('api')||q.includes('backend')||q.includes('requisi'))
-      return 'API é o contrato entre o front-end e o back-end: rotas que recebem uma requisição e devolvem dados, geralmente em JSON.\n\nO ciclo REST clássico:\n• GET — buscar dados.\n• POST — criar um recurso.\n• PUT/PATCH — atualizar.\n• DELETE — remover.\n\nNo navegador isso vira fetch(url,{method,headers,body}).then(r=>r.json()). No Workspace, a própria Nyc AI tenta um fetch para /api/ai antes de cair no modo local — é o mesmo padrão que você vai usar em qualquer projeto real com back-end.';
+      return 'API é o contrato entre o front-end e o back-end: rotas que recebem uma requisição e devolvem dados, geralmente em JSON.\n\nO ciclo REST clássico:\n• GET — buscar dados.\n• POST — criar um recurso.\n• PUT/PATCH — atualizar.\n• DELETE — remover.\n\nNo navegador isso vira fetch(url,{method,headers,body}).then(r=>r.json()). No Klyne, a própria Nyc AI tenta um fetch para /api/ai antes de cair no modo local — é o mesmo padrão que você vai usar em qualquer projeto real com back-end.';
     if(q.includes('typescript')||/\bts\b/.test(q))
       return 'TypeScript é JavaScript com tipos estáticos por cima. O código roda igual, mas o compilador avisa erros antes de você rodar — troca bug em produção por erro no editor.\n\nBase: interface Aluno { nome: string; progresso: number }, function soma(a: number, b: number): number. Em projetos de faculdade que crescem, TypeScript economiza horas de depuração — vale a pena introduzir assim que o projeto passar de um único arquivo.';
     return 'No modo local, posso ajudar diretamente com programação, estudos, organização, datas, horários e o conteúdo de arquivos de texto anexados. Pergunte, por exemplo, sobre JavaScript, Python, HTML/CSS, Git, SQL, APIs, POO, algoritmos, React ou TypeScript — e eu explico com o mesmo nível de detalhe.';
@@ -7512,7 +7508,7 @@ body.light .mw-photo-hint{color:#72767a;}
     back.innerHTML=`<div class="mw-provider-card ${isGithub?'github':''}" role="dialog" aria-modal="true" aria-label="${name}">
       <div class="mw-provider-head"><span class="mw-provider-logo">${providerSvg[provider]}</span><strong>${name}</strong></div>
       <h3>${mode==='signup'?'Criar conta':'Entrar'}</h3>
-      <p>${mode==='signup'?'Use sua conta '+name+' para criar um acesso ao Mateus Workspace.':'Use sua conta '+name+' para continuar no Mateus Workspace.'}</p>
+      <p>${mode==='signup'?'Use sua conta '+name+' para criar um acesso ao Klyne.':'Use sua conta '+name+' para continuar no Klyne.'}</p>
       <input class="mw-provider-input" type="email" placeholder="${provider==='microsoft'?'Email, telefone ou Skype':'E-mail'}" autocomplete="off">
       <div class="mw-provider-error"></div>
       <div class="mw-provider-actions"><button class="mw-provider-cancel" type="button">Cancelar</button><button class="mw-provider-next" type="button">${mode==='signup'?'Continuar':'Avançar'}</button></div>
@@ -7841,7 +7837,7 @@ body.light .mw-photo-hint{color:#72767a;}
 
 
 <style id="mw-smart-gradient-palette">
-/* MATEUS WORKSPACE — COLOR PALETTE ONLY
+/* KLYNE — COLOR PALETTE ONLY
    No layout, spacing, typography, icons, DOM structure, scripts or animations changed. */
 :root{
   --mw-cyan:#66e0ff;
@@ -8037,7 +8033,7 @@ body.light #app .search-wrap input:focus{
       const raw = localStorage.getItem('mateusWorkspaceV4');
       const data = raw ? JSON.parse(raw) : {};
       const p = data.profile || {};
-      const name = String(p.name || 'Mateus').trim() || 'Mateus';
+      const name = String(p.name || 'Você').trim() || 'Você';
       // #mwSidebarEmail, apesar do nome do id, é o subtítulo de CURSO em
       // todo o resto do app (ver data.college.course) — essa era a única
       // função ainda escrevendo o e-mail ali, uma ambiguidade que só não
@@ -8105,7 +8101,7 @@ body.light #app .search-wrap input:focus{
       const raw = localStorage.getItem('mateusWorkspaceV4');
       const data = raw ? JSON.parse(raw) : {};
       const p = data.profile || {};
-      const name = String(p.name || 'Mateus').trim() || 'Mateus';
+      const name = String(p.name || 'Você').trim() || 'Você';
       // p.area/p.role nunca são gravados em lugar nenhum do app — essa
       // leitura sempre caía no fallback fixo. O curso de verdade que a
       // pessoa preenche mora em data.college.course.
@@ -12106,7 +12102,7 @@ body.light #app aside.sidebar nav button.active .label{ color: #141a22 !importan
     try {
       const raw = JSON.parse(localStorage.getItem('mateusWorkspaceV4') || '{}');
       const p = raw.profile || {};
-      if (nameEl) nameEl.textContent = (p.name || 'Mateus').trim() || 'Mateus';
+      if (nameEl) nameEl.textContent = (p.name || 'Você').trim() || 'Você';
       if (roleEl) roleEl.textContent = String((raw.college && raw.college.course) || '').trim() || 'Seu curso';
     } catch {}
   };
@@ -12565,15 +12561,15 @@ html body.light .eva-voice{
 
   /* Foto de perfil → avatar da sidebar (vence o gradient !important) */
   const applyPhoto = () => {
-    let photo = '', name = 'Mateus', curso = 'Seu curso';
+    let photo = '', name = 'Você', curso = 'Seu curso';
     try {
       const raw = JSON.parse(localStorage.getItem('mateusWorkspaceV4') || '{}');
       const p = raw.profile || {};
       photo = p.photo || q('#profilePhoto')?.value || '';
-      name = (p.name || q('#profileName')?.value || 'Mateus').trim() || 'Mateus';
+      name = (p.name || q('#profileName')?.value || 'Você').trim() || 'Você';
       curso = String((raw.college && raw.college.course) || '').trim() || 'Seu curso';
     } catch {}
-    const initials = name.split(/\s+/).filter(Boolean).slice(0,2).map(x => x[0]).join('').toUpperCase() || 'MW';
+    const initials = name.split(/\s+/).filter(Boolean).slice(0,2).map(x => x[0]).join('').toUpperCase() || 'VC';
     const targets = [q('#mwSidebarAvatar'), q('#profileBtn'), q('#profileAvatarPreview')].filter(Boolean);
     targets.forEach(el => {
       if (photo) {
@@ -13109,17 +13105,17 @@ html body .mw-save-html-btn:hover{ background: rgba(59,130,246,.28) !important; 
   if (!btn) return;
   btn.addEventListener('click', async (e) => {
     e.preventDefault();
-    const name = 'Mateus-Workspace.html';
+    const name = 'Klyne.html';
     let text = '';
     try {
-      const res = await fetch('Mateus-Workspace.html', { cache: 'no-store' });
+      const res = await fetch('index.html', { cache: 'no-store' });
       if (res.ok) text = await res.text();
     } catch {}
     if (!text) text = '<!doctype html>\n' + document.documentElement.outerHTML;
     const file = new File([text], name, { type: 'text/html;charset=utf-8' });
     try {
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: 'Mateus Workspace' });
+        await navigator.share({ files: [file], title: 'Klyne' });
         return;
       }
     } catch (err) {
@@ -13741,8 +13737,8 @@ html body.light .eva-chips button{
   const nameOf = () => {
     try {
       const d = JSON.parse(localStorage.getItem('mateusWorkspaceV4') || '{}');
-      return String((d.profile && d.profile.name) || 'Mateus').trim() || 'Mateus';
-    } catch { return 'Mateus'; }
+      return String((d.profile && d.profile.name) || 'Você').trim() || 'Você';
+    } catch { return 'Você'; }
   };
   const greet = q('#evaWelcomeMsg');
   if (greet) greet.textContent = 'Oi, ' + nameOf() + ' — tudo pronto para começar.';
@@ -14217,7 +14213,7 @@ body.light #mateusAiModal .mateus-ai-status { color:#5b7291!important; }
   const modal=document.getElementById('mateusAiModal');
   const open=document.getElementById('mateusAiBtn');
   const welcome=document.getElementById('evaWelcomeMsg');
-  const name=()=>{try{return String(JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}').profile?.name||'Mateus').trim()||'Mateus'}catch{return 'Mateus'}};
+  const name=()=>{try{return String(JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}').profile?.name||'Você').trim()||'Você'}catch{return 'Você'}};
   const setWelcome=()=>{ if(!welcome)return; const hour=new Date().getHours(); const greeting=hour<12?'Bom dia':hour<18?'Boa tarde':'Boa noite'; welcome.textContent=`${greeting}, ${name()}. Como posso ajudar?`; };
   setWelcome(); open?.addEventListener('click',()=>setTimeout(setWelcome,0));
 
@@ -15274,7 +15270,7 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
 <div id="mwv2InstallBanner" role="status" aria-live="polite">
   <div class="mwv2-install-icon"><svg class="mw-marca" viewBox="0 0 64 44" aria-hidden="true"><use href="#mwi-marca"/></svg></div>
   <div class="mwv2-install-text">
-    <strong id="mwv2InstallTitle">Instalar Mateus Workspace</strong>
+    <strong id="mwv2InstallTitle">Instalar Klyne</strong>
     <span id="mwv2InstallDesc">Adicione à tela de início para abrir como um app.</span>
   </div>
   <button type="button" id="mwv2InstallGo" class="mwv2-install-go">Instalar</button>
@@ -15320,7 +15316,7 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
   const settingsDesc = document.getElementById('mwSettingsInstallDesc');
   if (alreadyInstalled) {
     if (settingsBtn) settingsBtn.remove();
-    if (settingsDesc) settingsDesc.textContent = 'O Mateus Workspace já está instalado neste aparelho.';
+    if (settingsDesc) settingsDesc.textContent = 'O Klyne já está instalado neste aparelho.';
     return;
   }
 
@@ -15359,7 +15355,7 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
     if (settingsDesc) settingsDesc.innerHTML = 'Toque em <strong>Compartilhar</strong> <span aria-hidden="true">⬆︎</span> e depois em "Adicionar à Tela de Início".';
     if (localStorage.getItem(DISMISS_KEY) !== '1') showWhenReady(() => setBannerVisible(true));
   } else {
-    if (titleEl) titleEl.textContent = isAndroid ? 'Instalar aplicativo' : 'Instalar Mateus Workspace';
+    if (titleEl) titleEl.textContent = isAndroid ? 'Instalar aplicativo' : 'Instalar Klyne';
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
@@ -15401,7 +15397,7 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
   window.addEventListener('appinstalled', () => {
     setBannerVisible(false);
     if (settingsBtn) settingsBtn.remove();
-    if (settingsDesc) settingsDesc.textContent = 'O Mateus Workspace já está instalado neste aparelho.';
+    if (settingsDesc) settingsDesc.textContent = 'O Klyne já está instalado neste aparelho.';
   });
 })();
 </script>
@@ -15957,7 +15953,7 @@ body.mw-install-showing #app .main{padding-bottom:170px!important;transition:pad
     try { localStorage.setItem(KEY, JSON.stringify(list)); } catch {}
   }
   function genId(list) {
-    return 'MW-' + (100000 + list.length + Math.floor(Math.random() * 90)).toString().slice(0, 6);
+    return 'KLYNE-' + (100000 + list.length + Math.floor(Math.random() * 90)).toString().slice(0, 6);
   }
   function readProfile() {
     try {
@@ -17381,7 +17377,7 @@ html body #app .mw-reference-sidebar .mw-reference-footer .mw-reference-row{
      conta é revelada, sem precisar tocar em cada um desses fluxos. */
   const app=document.getElementById('app');
   if(!app) return;
-  const defaults={subjects:[],projects:[],activities:[],notes:[],institutions:[],focus:{config:{foco:25,pausa:5,longa:15},atual:null,sessoes:[]},profile:{name:'Mateus',email:'',photo:'',username:'',bio:'',skills:[],links:[],visibility:{}},college:{institution:'',course:'',area:'',semester:1},theme:'dark'};
+  const defaults={subjects:[],projects:[],activities:[],notes:[],institutions:[],focus:{config:{foco:25,pausa:5,longa:15},atual:null,sessoes:[]},profile:{name:'Você',email:'',photo:'',username:'',bio:'',skills:[],links:[],visibility:{}},college:{institution:'',course:'',area:'',semester:1},theme:'dark'};
   /* Exposta porque a sincronização com o servidor também precisa dela.
      A "data" em memória é global e é regravada no localStorage quando a
      página fecha; se dados baixados do servidor entrarem no storage sem
@@ -19299,7 +19295,7 @@ body.light .mw-transfere-nota b{color:#0b1830}
     var pacote;
     try { pacote = doCodigo(txt); } catch (e) { dizer('Esse código não é válido.', false); return; }
     if (!pacote || pacote.mwConta !== 1 || !pacote.conta || !pacote.conta.email) {
-      dizer('Esse código não é de uma conta do Workspace.', false); return;
+      dizer('Esse código não é de uma conta do Klyne.', false); return;
     }
     var conta = pacote.conta;
     var email = String(conta.email).toLowerCase();
@@ -19773,7 +19769,7 @@ body.light .mw-transfere-nota b{color:#0b1830}
       '<div class="modal-box auth-modal-card">' +
         '<div class="modal-head"><h3>Privacidade</h3><button class="close" data-close>×</button></div>' +
         '<div style="padding:4px 4px 8px;font-size:13px;line-height:1.6;color:var(--text)">' +
-          '<p><strong>O que fica guardado da sua conta:</strong> nome de usuário, e-mail, senha (com hash — ninguém, nem quem administra o site, consegue ler a senha em texto puro) e o conteúdo que você cria no Workspace (disciplinas, projetos, atividades, anotações). Tudo isso fica no Supabase, o serviço de banco de dados usado pelo site.</p>' +
+          '<p><strong>O que fica guardado da sua conta:</strong> nome de usuário, e-mail, senha (com hash — ninguém, nem quem administra o site, consegue ler a senha em texto puro) e o conteúdo que você cria no Klyne (disciplinas, projetos, atividades, anotações). Tudo isso fica no Supabase, o serviço de banco de dados usado pelo site.</p>' +
           '<p><strong>O que fica guardado de cada acesso ao site</strong> (mesmo sem estar logado): o endereço IP, uma localização aproximada (cidade/estado/país, estimada a partir do IP por um serviço externo — não é GPS, não pede permissão), o navegador/aparelho usado e a página acessada. Serve pra quem administra o site acompanhar acessos e proteger contra abuso.</p>' +
           '<p><strong>Com quem isso é compartilhado:</strong> com ninguém além do Supabase (onde os dados ficam guardados) e do serviço público usado só pra estimar a localização a partir do IP. Não é vendido nem usado pra publicidade.</p>' +
           '<p><strong>Por quanto tempo:</strong> enquanto sua conta existir, ou enquanto o site estiver no ar, no caso dos acessos. Quer que seus dados sejam apagados? Peça pelo <button type="button" id="mwPrivacidadeSuporte" style="all:unset;cursor:pointer;color:var(--blue2);text-decoration:underline">Suporte</button>.</p>' +
@@ -19809,7 +19805,7 @@ body.light .mw-transfere-nota b{color:#0b1830}
     seguranca: {
       titulo: 'Segurança',
       html:
-        '<p>Esta página descreve o que o Workspace faz hoje para proteger sua conta e seus dados. É uma descrição do que está no código, não uma promessa comercial.</p>' +
+        '<p>Esta página descreve o que o Klyne faz hoje para proteger sua conta e seus dados. É uma descrição do que está no código, não uma promessa comercial.</p>' +
         '<p><strong>Sua senha:</strong> o app nunca guarda sua senha. Quem cuida do cadastro e da entrada é o serviço de autenticação do Supabase, que armazena apenas um resumo criptográfico dela. Nem eu consigo ver sua senha.</p>' +
         '<p><strong>Separação entre contas:</strong> as tabelas do banco têm segurança em nível de linha ativada, com regra que amarra cada linha ao dono. Na prática: um pedido feito com a sua sessão só alcança as suas linhas — não é uma checagem feita na tela, é o banco recusando.</p>' +
         '<p><strong>Contra tentativa de invasão:</strong> a tela de entrar tem um freio que aumenta a espera depois de senhas erradas seguidas, para inviabilizar tentativa em massa. O cadastro tem verificação anti-robô e um campo-armadilha invisível, que só um preenchimento automático completa.</p>' +
@@ -19827,10 +19823,10 @@ body.light .mw-transfere-nota b{color:#0b1830}
     termos: {
       titulo: 'Termos de uso',
       html:
-        '<p><strong>O que é este serviço:</strong> o Mateus Workspace é um app para organizar a vida acadêmica — disciplinas, atividades, projetos, prazos e anotações. É um projeto pessoal, em desenvolvimento contínuo, oferecido gratuitamente e no estado em que se encontra.</p>' +
+        '<p><strong>O que é este serviço:</strong> o Klyne é um app para organizar a vida acadêmica — disciplinas, atividades, projetos, prazos e anotações. É um projeto pessoal, em desenvolvimento contínuo, oferecido gratuitamente e no estado em que se encontra.</p>' +
         '<p><strong>Sua conta:</strong> você é responsável por manter sua senha em segredo e pelo que é feito na sua conta. Se achar que alguém acessou sua conta, troque a senha em Configurações › Conta e saia dos outros aparelhos.</p>' +
         '<p><strong>O que você cria é seu:</strong> disciplinas, anotações, projetos e arquivos que você registra continuam sendo seus. Não usamos esse conteúdo para nenhuma outra finalidade além de mostrá-lo de volta pra você dentro do app.</p>' +
-        '<p><strong>Uso responsável:</strong> não use o Workspace para armazenar conteúdo ilegal, nem para tentar derrubar, invadir ou sobrecarregar o serviço.</p>' +
+        '<p><strong>Uso responsável:</strong> não use o Klyne para armazenar conteúdo ilegal, nem para tentar derrubar, invadir ou sobrecarregar o serviço.</p>' +
         '<p><strong>Sem garantia de disponibilidade:</strong> como é um projeto em evolução, o serviço pode ficar fora do ar, mudar de funcionamento ou ser descontinuado. Por isso existe a exportação de backup em Configurações › Privacidade — vale a pena guardar uma cópia dos seus dados de vez em quando.</p>' +
         '<p><strong>Mudanças:</strong> estes termos podem mudar conforme o app evolui. A versão vigente é sempre a que está aqui.</p>'
     },
@@ -19846,9 +19842,9 @@ body.light .mw-transfere-nota b{color:#0b1830}
         '<p><strong>Não achou aqui?</strong> Abra um chamado pelo <button type="button" data-abre-suporte style="all:unset;cursor:pointer;color:var(--blue2);text-decoration:underline">Suporte</button>.</p>'
     },
     sobre: {
-      titulo: 'Sobre o Workspace',
+      titulo: 'Sobre o Klyne',
       html:
-        '<p>O <strong>Mateus Workspace</strong> nasceu como um jeito de organizar a vida universitária inteira num lugar só, em vez de espalhar prazos entre bloco de notas, calendário e grupos de mensagem.</p>' +
+        '<p>O <strong>Klyne</strong> nasceu como um jeito de organizar a vida universitária inteira num lugar só, em vez de espalhar prazos entre bloco de notas, calendário e grupos de mensagem.</p>' +
         '<p>Hoje ele reúne disciplinas, atividades, projetos, anotações, calendário acadêmico e a <strong>Nyc AI</strong>, uma assistente para ajudar a organizar os estudos.</p>' +
         '<p><strong>Como seus dados funcionam:</strong> ficam salvos na sua conta (no Supabase) e também localmente no navegador, pra que o app abra mesmo com a internet ruim. Detalhes em <button type="button" data-abre-privacidade style="all:unset;cursor:pointer;color:var(--blue2);text-decoration:underline">Privacidade</button>.</p>' +
         '<p><strong>Em desenvolvimento:</strong> é um projeto pessoal, melhorado continuamente. Algumas áreas aparecem marcadas como “em breve” justamente porque ainda não estão prontas — preferimos avisar a fingir que funcionam.</p>'
@@ -19954,7 +19950,7 @@ body.light .mw-transfere-nota b{color:#0b1830}
    Por que existe: o Face ID só funciona no iOS e passa pela folha
    nativa de passkey. Quem está no Android, no navegador do
    computador, ou simplesmente não quer a folha nativa, não tinha
-   NENHUMA forma de trancar o app — reabrir caía direto no Workspace.
+   NENHUMA forma de trancar o app — reabrir caía direto no Klyne.
    Este é o cadeado que funciona em qualquer lugar.
 
    O que ele NÃO é: uma camada de segurança de verdade. Os dados
@@ -20016,7 +20012,7 @@ body.light .mw-transfere-nota b{color:#0b1830}
   function pintarAjuste(){
     var tem = temPin();
     if (estado) estado.textContent = tem
-      ? 'Código ativo. Ele será pedido ao reabrir o Workspace.'
+      ? 'Código ativo. Ele será pedido ao reabrir o Klyne.'
       : 'Nenhum código definido.';
     if (btnDefinir) btnDefinir.textContent = tem ? 'Trocar código' : 'Definir código';
     if (btnRemover) btnRemover.hidden = !tem;
@@ -20038,7 +20034,7 @@ body.light .mw-transfere-nota b{color:#0b1830}
     return definir(a).then(function(ok){
       if (!ok) { aviso('Não foi possível guardar o código com segurança neste contexto (precisa de https).', true); return; }
       pintarAjuste();
-      aviso('Código definido. Ele será pedido na próxima vez que você abrir o Workspace.');
+      aviso('Código definido. Ele será pedido na próxima vez que você abrir o Klyne.');
       if (typeof toast === 'function') toast('Código de acesso definido');
     });
     });
@@ -20047,7 +20043,7 @@ body.light .mw-transfere-nota b{color:#0b1830}
 
   btnRemover && btnRemover.addEventListener('click', function(){
     window.mwConfirmar('Remover o código de acesso?',
-      'O Workspace passa a abrir direto, sem pedir o código.',
+      'O Klyne passa a abrir direto, sem pedir o código.',
       { sim: 'Remover' }).then(function(ok){
       if (!ok) return;
       remover(); pintarAjuste();
@@ -20558,7 +20554,7 @@ html body.mw-in-app.mw-tela-folha #app .main{padding-bottom:24px!important}
      array ignora propriedades nomeadas. Medido antes de escrever este
      bloco: digitei "@mateuswzn" no Instagram, salvei o perfil, e o que
      foi para o armazenamento foi `[]`. Todo link social que alguém
-     tenha digitado no MW até hoje foi perdido no primeiro save — sem
+     tenha digitado no Klyne até hoje foi perdido no primeiro save — sem
      aviso, sem erro, sem pista.
 
      E o bloco que tinha a forma certa nunca chegava à tela: ele procura
@@ -20955,7 +20951,7 @@ html body.mw-in-app.mw-tela-folha #app .main{padding-bottom:24px!important}
     }
     var nota = q('#mwNotifSocialNota');
     if (nota) {
-      nota.innerHTML = 'Seguidores, seguindo e interações precisam de um <b>servidor de perfis</b>, que o MW ainda não tem. ' +
+      nota.innerHTML = 'Seguidores, seguindo e interações precisam de um <b>servidor de perfis</b>, que o Klyne ainda não tem. ' +
                        'Quando existir, cada novo seguidor entra nesta lista — o caminho já está pronto e é o mesmo que o Sistema usa.';
     }
 
@@ -30314,7 +30310,7 @@ html body #app #view-files .mw-arq-vazio strong{
       var url = URL.createObjectURL(blob);
       var a = document.createElement('a');
       a.href = url;
-      a.download = 'mateus-workspace-backup-' + new Date().toISOString().slice(0,10) + '.json';
+      a.download = 'klyne-backup-' + new Date().toISOString().slice(0,10) + '.json';
       document.body.appendChild(a); a.click(); a.remove();
       /* Revogar no próximo quadro, e não já: em alguns navegadores
          revogar no mesmo tick cancela o download que acabou de começar. */
@@ -31634,7 +31630,7 @@ html body .mw-pular:focus{ transform: translateY(0); }
    Configurações fica com o que é CONTA e APLICATIVO (§37): e-mail,
    senha, telefone, tema, dados, segurança. Identidade é daqui.
 
-   Sobre a privacidade: o MW não publica perfis para ninguém — não existe
+   Sobre a privacidade: o Klyne não publica perfis para ninguém — não existe
    servidor de perfis públicos. As chaves ficam guardadas e já controlam
    o que aparece no topo desta tela; o resto passa a valer no dia em que
    o perfil público existir. Marcar como pronto o que não existe é o que
@@ -31655,7 +31651,7 @@ html body .mw-pular:focus{ transform: translateY(0); }
   function faculdade(){ var d = dados(); d.college = d.college || {}; return d.college; }
   function iniciais(nome){
     var p = String(nome||'').trim().split(/\s+/).filter(Boolean);
-    if (!p.length) return 'MW';
+    if (!p.length) return 'VC';
     return (p[0][0] + (p.length > 1 ? p[p.length-1][0] : '')).toUpperCase();
   }
 
@@ -32286,7 +32282,7 @@ html body .mw-pular:focus{ transform: translateY(0); }
   /* O carimbo entra depois do preloader para não brigar com a abertura
      da marca, e sai sozinho. window.MW_PREVIA fica disponível para
      conferir a versão pelo console sem depender de ver o carimbo. */
-  window.MW_PREVIA = 'v120';
+  window.MW_PREVIA = 'v121 (rebranding Klyne)';
   function mostra(){
     if (document.getElementById('mwPreviaCarimbo')) return;
     var el = document.createElement('div');

@@ -1,6 +1,6 @@
 {
-  "name": "Mateus Workspace (prévia beta)",
-  "short_name": "MW beta",
+  "name": "Klyne",
+  "short_name": "Klyne",
   "description": "Organize disciplinas, projetos, atividades e anotações da faculdade em um só lugar.",
   "start_url": "./index.html",
   "scope": "./",
