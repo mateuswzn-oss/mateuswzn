@@ -4196,6 +4196,19 @@ body.light .mw-faceid-gate-card p{color:#526988}
 <h2 class="ds-hero-ola">Ol&aacute;, <b id="mwOlaNome">voc&ecirc;</b></h2>
 
 <p class="ds-hero-ctx" id="mwResumoSemestre"></p>
+<!-- Barra de progresso do semestre (pedido direto): só aparece com as
+     duas datas reais (início/fim, em Faculdade) — sem elas seria um
+     número inventado, e a regra desta conta é nunca fingir dado que
+     não existe. Sem as datas, mostra um convite pra defini-las. -->
+<div class="ds-sem-barra" id="mwSemBarra" hidden>
+  <div class="ds-sem-barra-topo">
+    <span class="ds-sem-barra-rotulo">Progresso do semestre</span>
+    <span class="ds-sem-barra-pct" id="mwSemBarraPct">0%</span>
+  </div>
+  <div class="ds-sem-barra-trilho"><i id="mwSemBarraPreenchimento"></i></div>
+  <p class="ds-sem-barra-legenda" id="mwSemBarraLegenda"></p>
+</div>
+<button type="button" class="ds-sem-barra-vazia" id="mwSemBarraVazia" hidden>Definir início e fim do semestre para ver o progresso →</button>
 <!-- Busca ABERTA, logo abaixo da saudação e do contexto (§24). Sem estado, sem
      alternância, sem nada para descobrir: o campo está lá. -->
 <div class="ds-busca ds-busca-aberta" id="searchWrap"><button type="button" class="ds-topo-icone ds-busca-lupa ds-btn ds-btn-fantasma ds-btn-icone" id="searchToggle" aria-label="Pesquisar" title="Pesquisar (Ctrl+K)"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="m16.2 16.2 3.6 3.6"/></svg></button><input id="globalSearch" class="ds-entrada ds-busca-campo" type="search" placeholder="Pesquisar no Workspace" aria-label="Pesquisar no Workspace" autocomplete="off"></div>
@@ -4279,7 +4292,7 @@ body.light .mw-faceid-gate-card p{color:#526988}
 
 
 </div>
-</section><section class="view ds" id="view-college" data-mw-migrada="1"><section class="ds-cartao"><div class="ds-secao-cabeca" data-mw-cabeca><div><h2 class="ds-titulo">Faculdade</h2><p class="ds-micro">Seu contexto acadêmico</p></div></div><div class="ds-grade"><div class="ds-cartao ds-cartao-compacto"><h3 class="ds-rotulo" id="collegeCourseLabel">Seu curso</h3><p class="ds-micro" id="collegeSemesterLabel">1º semestre</p></div><div class="ds-cartao ds-cartao-compacto"><h3 class="ds-rotulo">Progresso do curso</h3><p class="ds-micro" id="collegeProgress2">0% calculado a partir das suas disciplinas</p></div><div class="ds-cartao ds-cartao-compacto"><h3 class="ds-rotulo">Organização</h3><p class="ds-micro">Use Disciplinas, Atividades e Projetos para montar seu Workspace.</p></div></div><div class="ds-grade-fixa-2" data-mw-grupo><div class="ds-campo"><label for="collegeInstitution">Instituição</label><input id="collegeInstitution" class="ds-entrada" list="collegeInstitutionOptions" placeholder="Sua faculdade ou universidade" autocomplete="organization"><datalist id="collegeInstitutionOptions"></datalist></div><div class="ds-campo"><label for="collegeCourse">Curso</label><input id="collegeCourse" class="ds-entrada" list="collegeCourseOptions" placeholder="Seu curso"><datalist id="collegeCourseOptions"></datalist></div><div class="ds-campo"><label for="collegeArea">Área/Especialização (opcional)</label><input id="collegeArea" class="ds-entrada" list="collegeAreaOptions" placeholder="Sua área de interesse"><datalist id="collegeAreaOptions"></datalist></div><div class="ds-campo"><label for="collegeSemester">Semestre atual</label><input id="collegeSemester" class="ds-entrada" type="number" min="1" max="20" value="1"></div></div><div class="ds-dialogo-acoes"><button class="ds-btn ds-btn-primario" id="saveCollege">Salvar organização</button></div></section></section>
+</section><section class="view ds" id="view-college" data-mw-migrada="1"><section class="ds-cartao"><div class="ds-secao-cabeca" data-mw-cabeca><div><h2 class="ds-titulo">Faculdade</h2><p class="ds-micro">Seu contexto acadêmico</p></div></div><div class="ds-grade"><div class="ds-cartao ds-cartao-compacto"><h3 class="ds-rotulo" id="collegeCourseLabel">Seu curso</h3><p class="ds-micro" id="collegeSemesterLabel">1º semestre</p></div><div class="ds-cartao ds-cartao-compacto"><h3 class="ds-rotulo">Progresso do curso</h3><p class="ds-micro" id="collegeProgress2">0% calculado a partir das suas disciplinas</p></div><div class="ds-cartao ds-cartao-compacto"><h3 class="ds-rotulo">Organização</h3><p class="ds-micro">Use Disciplinas, Atividades e Projetos para montar seu Workspace.</p></div></div><div class="ds-grade-fixa-2" data-mw-grupo><div class="ds-campo"><label for="collegeInstitution">Instituição</label><input id="collegeInstitution" class="ds-entrada" list="collegeInstitutionOptions" placeholder="Sua faculdade ou universidade" autocomplete="organization"><datalist id="collegeInstitutionOptions"></datalist></div><div class="ds-campo"><label for="collegeCourse">Curso</label><input id="collegeCourse" class="ds-entrada" list="collegeCourseOptions" placeholder="Seu curso"><datalist id="collegeCourseOptions"></datalist></div><div class="ds-campo"><label for="collegeArea">Área/Especialização (opcional)</label><input id="collegeArea" class="ds-entrada" list="collegeAreaOptions" placeholder="Sua área de interesse"><datalist id="collegeAreaOptions"></datalist></div><div class="ds-campo"><label for="collegeSemester">Semestre atual</label><input id="collegeSemester" class="ds-entrada" type="number" min="1" max="20" value="1"></div><div class="ds-campo"><label for="collegeSemesterStart">Início deste semestre (opcional)</label><input id="collegeSemesterStart" class="ds-entrada" type="date"></div><div class="ds-campo"><label for="collegeSemesterEnd">Fim deste semestre (opcional)</label><input id="collegeSemesterEnd" class="ds-entrada" type="date"></div></div><p class="ds-micro">As duas datas acima ligam a barra de progresso do semestre no Início — sem elas, ela fica escondida em vez de mostrar um número inventado.</p><div class="ds-dialogo-acoes"><button class="ds-btn ds-btn-primario" id="saveCollege">Salvar organização</button></div></section></section>
     <!-- Instituições: até aqui "instituição" era um campo de texto solto
          dentro de Faculdade, então quem estuda em duas (graduação numa,
          técnico/pós em outra) não tinha onde registrar a segunda, e a
@@ -6467,14 +6480,16 @@ window.toast = toast;
  // cuida da identidade acadêmica (instituição/curso/área/semestre), sem
  // recalcular progresso nenhum — dois donos pro mesmo texto faziam o
  // número "piscar" entre duas contas diferentes a cada clique.
- if(!data.college) data.college={institution:'',course:'',area:'',semester:1};
- const institutionEl=q('#collegeInstitution'),area=q('#collegeArea'),sem=q('#collegeSemester'),course=q('#collegeCourse');
+ if(!data.college) data.college={institution:'',course:'',area:'',semester:1,semesterStart:'',semesterEnd:''};
+ const institutionEl=q('#collegeInstitution'),area=q('#collegeArea'),sem=q('#collegeSemester'),course=q('#collegeCourse'),semStart=q('#collegeSemesterStart'),semEnd=q('#collegeSemesterEnd');
  function pintaCollege(){
    const c=data.college||{};
    if(institutionEl)institutionEl.value=c.institution||'';
    if(area)area.value=c.area||'';
    if(sem)sem.value=c.semester||1;
    if(course)course.value=c.course||'';
+   if(semStart)semStart.value=c.semesterStart||'';
+   if(semEnd)semEnd.value=c.semesterEnd||'';
    const s=Math.max(1,Number(c.semester)||1);
    const cursoTxt=(c.course||'').trim();
    const label=q('#collegeSemesterLabel'),cl=q('#collegeCourseLabel'),hello=q('.hello p'),sidebarRole=q('#mwSidebarEmail');
@@ -6482,6 +6497,7 @@ window.toast = toast;
    if(cl)cl.textContent=cursoTxt||'Seu curso';
    if(hello)hello.textContent=s+'º semestre'+(cursoTxt?' • '+cursoTxt:'');
    if(sidebarRole)sidebarRole.textContent=cursoTxt||'Seu curso';
+   if(typeof window.mwPintaBarraSemestre==='function') window.mwPintaBarraSemestre();
  }
  function updateCollege(){
    data.college={
@@ -6489,11 +6505,13 @@ window.toast = toast;
      course:course?.value.trim()||'',
      area:area?.value.trim()||'',
      semester:Math.max(1,Number(sem?.value)||1),
+     semesterStart:semStart?.value||'',
+     semesterEnd:semEnd?.value||'',
    };
    pintaCollege();
    if(typeof save==='function') save();
  }
- q('#saveCollege')?.addEventListener('click',()=>{updateCollege(); if(typeof toast==='function')toast('Organização acadêmica salva.')});[institutionEl,area,sem,course].forEach(el=>el?.addEventListener('change',updateCollege));pintaCollege();
+ q('#saveCollege')?.addEventListener('click',()=>{updateCollege(); if(typeof toast==='function')toast('Organização acadêmica salva.')});[institutionEl,area,sem,course,semStart,semEnd].forEach(el=>el?.addEventListener('change',updateCollege));pintaCollege();
  // Workspace Instagram expandable, closed initially.
  const bar=q('.workspace-instagram .login-social-bar'),btn=q('#workspaceProfileSocialBtn'),pop=q('#workspaceProfileSocialPopover');
  btn?.addEventListener('click',e=>{e.stopPropagation();const open=pop.hidden;pop.hidden=!open;bar?.classList.toggle('expanded',open)});
@@ -24626,9 +24644,50 @@ html body.light #mateusAiTitle .mw-id-beta{
     vaiPara(botao.dataset.ir);
   });
 
+  /* Barra de progresso do semestre (pedido direto do Mateus). Só existe
+     com início e fim reais, definidos em Faculdade — nunca um número
+     calculado a partir de suposição de calendário acadêmico. Sem as
+     datas, o convite para defini-las substitui a barra inteira. */
+  function pintaBarraSemestre(){
+    var barra = document.getElementById('mwSemBarra');
+    var vazia = document.getElementById('mwSemBarraVazia');
+    if (!barra || !vazia) return;
+    var c = (window.data && window.data.college) || {};
+    var tIni = c.semesterStart ? new Date(c.semesterStart + 'T00:00:00').getTime() : NaN;
+    var tFim = c.semesterEnd ? new Date(c.semesterEnd + 'T00:00:00').getTime() : NaN;
+    if (!c.semesterStart || !c.semesterEnd || isNaN(tIni) || isNaN(tFim) || tFim <= tIni){
+      barra.hidden = true;
+      vazia.hidden = false;
+      return;
+    }
+    vazia.hidden = true;
+    barra.hidden = false;
+    var agora = Date.now();
+    var pct = Math.round(Math.max(0, Math.min(1, (agora - tIni) / (tFim - tIni))) * 100);
+    var preenchimento = document.getElementById('mwSemBarraPreenchimento');
+    var pctEl = document.getElementById('mwSemBarraPct');
+    var legenda = document.getElementById('mwSemBarraLegenda');
+    if (preenchimento) preenchimento.style.width = pct + '%';
+    if (pctEl) pctEl.textContent = pct + '%';
+    if (legenda){
+      if (agora >= tFim){
+        legenda.textContent = 'Semestre encerrado';
+      } else if (agora < tIni){
+        var diasParaComecar = Math.ceil((tIni - agora) / 86400000);
+        legenda.textContent = 'Começa em ' + diasParaComecar + (diasParaComecar === 1 ? ' dia' : ' dias');
+      } else {
+        var diasRestantes = Math.ceil((tFim - agora) / 86400000);
+        legenda.textContent = diasRestantes + (diasRestantes === 1 ? ' dia restante' : ' dias restantes');
+      }
+    }
+  }
+  window.mwPintaBarraSemestre = pintaBarraSemestre;
+  document.getElementById('mwSemBarraVazia')?.addEventListener('click', function(){ vaiPara('college'); });
+
   function atualiza(d){
     montaAtalhos();
     pintaResumo(d || window.data || {});
+    pintaBarraSemestre();
   }
 
   /* Encadeia no ponto de atualização que já existe, preservando quem

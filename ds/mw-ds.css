@@ -1893,6 +1893,49 @@ body.mw-tela-folha .ds .ds-topo-voltar:active{ transform: scale(.92); }
   padding-top: var(--mw-e-4); border-top: 1px solid var(--mw-divisor);
 }
 
+/* ---- BARRA DE PROGRESSO DO SEMESTRE ----------------------------------------
+   Só existe com as duas datas reais (início/fim, definidas em Faculdade) —
+   nunca um número inventado. Sem elas, o convite abaixo substitui a barra
+   inteira; JS decide qual dos dois mostrar (mwPintaBarraSemestre). */
+.ds .ds-sem-barra{ margin-top: var(--mw-e-4); }
+.ds .ds-sem-barra[hidden]{ display: none; }
+.ds .ds-sem-barra-topo{
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: var(--mw-e-2); margin-bottom: 6px;
+}
+.ds .ds-sem-barra-rotulo{ font-size: var(--mw-t-micro); color: var(--mw-txt-2); }
+.ds .ds-sem-barra-pct{
+  font-size: var(--mw-t-micro); font-weight: 700; color: var(--mw-txt-1);
+  font-variant-numeric: tabular-nums;
+}
+.ds .ds-sem-barra-trilho{
+  height: 6px; border-radius: 999px; overflow: hidden;
+  background: var(--mw-sup-afundada);
+}
+.ds .ds-sem-barra-trilho i{
+  display: block; height: 100%; border-radius: inherit;
+  background: var(--mw-ac);
+  width: 0%;
+  transition: width .6s var(--mw-curva-mola);
+}
+.ds .ds-sem-barra-legenda{
+  margin: 6px 0 0; font-size: var(--mw-t-micro); color: var(--mw-txt-3);
+}
+.ds .ds-sem-barra-vazia{
+  display: block; width: 100%; margin-top: var(--mw-e-4);
+  padding: var(--mw-e-3) var(--mw-e-4);
+  border: 1px dashed var(--mw-borda); border-radius: var(--mw-r-3);
+  background: transparent; color: var(--mw-txt-2);
+  font-size: var(--mw-t-micro); text-align: left; cursor: pointer;
+  transition: border-color var(--mw-d-rapida) var(--mw-curva),
+              color var(--mw-d-rapida) var(--mw-curva);
+}
+.ds .ds-sem-barra-vazia[hidden]{ display: none; }
+.ds .ds-sem-barra-vazia:hover{
+  border-color: color-mix(in srgb, var(--mw-ac) 45%, transparent);
+  color: var(--mw-txt-1);
+}
+
 /* ---- AGORA ----------------------------------------------------------------
    A faixa do momento. Fica acima de tudo e some quando não há nada — um
    destaque permanente deixa de ser destaque. */

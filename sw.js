@@ -1,3 +1,24 @@
+/* v117 (BETA - Fase F: barra de progresso do semestre no Inicio)
+
+   Pedido: "a tela inicial esta muito lisa, nao tem nem barra". Adicionada
+   uma barra de progresso do semestre logo abaixo da saudacao.
+
+   Regra desta conta, aplicada aqui: NUNCA um numero inventado. O modelo
+   de dados so tinha `college.semester` (um contador - "3o semestre" -
+   sem nenhuma data). Calcular "quanto do semestre passou" a partir so
+   disso exigiria adivinhar um calendario academico (quando comeca/termina
+   um semestre) que pode nao bater com o da instituicao da pessoa.
+
+   Em vez de adivinhar, dois campos novos e opcionais em Faculdade:
+   inicio e fim do semestre (datas de verdade). Com as duas, a barra
+   calcula o progresso real e mostra dias restantes. Sem elas - o caso
+   de quem ainda nao preencheu - a barra fica escondida e um convite
+   para defini-las aparece no lugar dela, que leva direto pra Faculdade
+   ao tocar.
+
+   Suite completa (23 passos): tudo passou.
+*/
+
 /* v116 (BETA - Fase B da "expedicao completa": menos azul, menos arco-iris)
 
    Pedido do Mateus: "nao deixar dar uma coloracao azul... lilas... nao
@@ -2784,7 +2805,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v116-beta';
+const CACHE_NAME = 'mw-shell-v117-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
