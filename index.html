@@ -9704,11 +9704,15 @@ body.light #view-college .college-setup label{color:#1d4ed8 !important}
 *,*::before,*::after{box-sizing:border-box}
 html,body{max-width:100%;overflow-x:hidden}
 img,svg,video,canvas{max-width:100%}
-#mwMobileMenu.mw-mobile-menu{display:none}
+/* #mwMobileMenu NÃO tem a classe .mw-mobile-menu — nunca teve. As regras
+   que a exigiam (aqui e mais três lugares deste arquivo) nunca bateram
+   em elemento nenhum; quem de fato escondia o botão em qualquer largura
+   era a regra sem essa exigência, logo abaixo do véu, e a de dentro do
+   media de telefone instalado. Ver o relato completo perto delas. */
 #mwSidebarScrim{display:none;position:fixed;inset:0;z-index:90;background:rgba(2,6,16,.5);backdrop-filter:blur(10px)}
 
 @media (min-width:861px){
-  #mwMobileMenu.mw-mobile-menu,#mwSidebarScrim{display:none!important}
+  #mwMobileMenu,#mwSidebarScrim{display:none!important}
 }
 
 @media (max-width:860px){
@@ -9808,7 +9812,12 @@ img,svg,video,canvas{max-width:100%}
     background:rgba(7,11,18,.95)!important;backdrop-filter:blur(16px)!important;
   }
   body.light #app .topbar{background:rgba(238,241,246,.96)!important}
-  #mwMobileMenu.mw-mobile-menu{display:grid!important;place-items:center;width:44px;height:44px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:inherit}
+  /* A regra que dava tamanho a #mwMobileMenu aqui exigia a classe
+     .mw-mobile-menu, que o botão nunca carregou — e o próprio `.topbar`
+     deste bloco é da moldura antiga (a de verdade hoje é `.ds-topo`,
+     sem essa classe). Morta nos dois sentidos; quem dá o tamanho e a
+     forma do botão agora é só `.ds-topo-icone`, igual ao sino e à
+     engrenagem ao lado dele. */
   #app .hello{min-width:0!important;overflow:hidden!important;transition:opacity .18s ease,visibility .18s ease!important}#app .hello h2{font-size:17px!important;margin:0!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#app .hello p{font-size:11px!important;margin:2px 0 0!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   /* Com a busca aberta não sobra espaço decente pros dois lados — em vez
      de espremer "Olá, Mateus!" até virar uma letra solta cortada, esconde
@@ -10024,7 +10033,16 @@ img,svg,video,canvas{max-width:100%}
     border-radius: 18px !important;
     grid-template-columns: none !important;
   }
-  #mwMobileMenu,#mwMobileMenu.mw-mobile-menu{display:none !important}
+  /* ESTA LINHA ERA A CAUSA REAL de #mwMobileMenu sumir no celular — em
+     QUALQUER largura ≤860px, instalado ou não. `#mwMobileMenu` sozinho
+     (sem precisar da classe fantasma `.mw-mobile-menu`, que o botão
+     nunca carregou) tinha especificidade suficiente para vencer a regra
+     do sistema (`.ds .ds-topo-menu`) — e ainda por cima com
+     `!important`. Instituições e Suporte só existem dentro da gaveta;
+     sem este botão, as duas áreas ficavam inalcançáveis no celular,
+     dentro ou fora do app instalado. Quem decide a visibilidade agora é
+     só o Design System (`.ds .ds-topo-menu`, oculto apenas a partir de
+     901px — a lateral fixa do desktop). */
   #app .hello{flex:1; min-width:0}#app .hello h2{font-size:16px !important; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}#app .hello p{font-size:11px !important; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
   #app .top-actions{margin-left:auto; gap:6px !important}
 
@@ -13709,11 +13727,17 @@ html body.light .eva-chips button{
 
 #app .main .progress i,
 #app .main .progress-line i { box-shadow: 0 0 12px rgba(34, 211, 238, .52); }
-#app .main button:not(.mw-mobile-menu):not(#mwSidebarCollapse):not(.sidebar-toggle),
+/* `:not(.mw-mobile-menu)` — o hambúrguer nunca teve essa classe, então
+   esta exclusão nunca valeu para ele: ele estava ficando com o mesmo
+   brilho ciano genérico de qualquer botão da página, por cima do
+   círculo próprio que o Design System já desenha (`.ds-topo-icone`).
+   Com o id de verdade, o botão de menu passa a ter só a pele do
+   sistema — como o sino e a engrenagem ao lado dele. */
+#app .main button:not(#mwMobileMenu):not(#mwSidebarCollapse):not(.sidebar-toggle),
 #app .main [role="button"] {
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease !important;
 }
-#app .main button:not(.mw-mobile-menu):not(#mwSidebarCollapse):not(.sidebar-toggle):hover,
+#app .main button:not(#mwMobileMenu):not(#mwSidebarCollapse):not(.sidebar-toggle):hover,
 #app .main [role="button"]:hover {
   box-shadow: 0 0 18px rgba(34, 211, 238, .15);
 }
@@ -22704,25 +22728,25 @@ html:not(.mw-standalone) body.mw-in-app #mwBottomNav.mwbn{
   display:none!important;
 }
 
-/* Sem a cápsula de baixo, quem navega no navegador (não instalado) é
-   o menu lateral — e a única porta pra abri-lo no celular é o botão
-   de hambúrguer (#mwMobileMenu). Ele já existe, já está com o clique
-   funcionando (abre/fecha a gaveta lateral, em mw-responsive-js), só
-   estava com display:none!important de uma regra antiga — de uma
-   época em que a cápsula de baixo cobria sozinha toda a navegação
-   mobile e o hambúrguer virou redundante. Ele deixou de ser redundante
-   no momento em que a cápsula passou a sumir no navegador; sem este
-   reforço, quem abrisse pelo navegador no celular ficava sem nenhum
-   jeito de alcançar Projetos, Atividades, Anotações, Suporte etc. —
-   só os 5 itens da cápsula (que nem aparece mais aqui) chegavam antes.
-   Preso dentro do mesmo @media(max-width:860px) da regra antiga: fora
-   dele (desktop), a barra lateral já é fixa e o hambúrguer continua
-   escondido, sem imagem, sem mudança nenhuma. */
-@media(max-width:860px){
-  html:not(.mw-standalone) #mwMobileMenu.mw-mobile-menu{
-    display:grid!important;
-  }
-}
+/* O HAMBÚRGUER PRECISA ABRIR MESMO NO APP INSTALADO — não só no
+   navegador.
+
+   Este bloco tentava reacender #mwMobileMenu só fora do app instalado
+   (a ideia: sem cápsula, o hambúrguer é a única porta da gaveta). Ele
+   nunca funcionou — o seletor exigia a classe `.mw-mobile-menu`, que o
+   botão nunca carregou — e por isso nunca chegou a ser medido: mesmo
+   corrigido, ele deixaria de pé um buraco real. A gaveta é a ÚNICA
+   porta de duas áreas inteiras, Instituições e Suporte; a cápsula de
+   baixo tem só 4 destinos (Início, Faculdade, Arquivos, Perfil) mais o
+   "+". Restrito a quem não instalou, quem abre pelo app instalado no
+   celular também ficava sem chegar a essas duas.
+
+   Por isso o botão passa a valer nos dois: a peça de menu é outra
+   coisa que a foto de perfil da cápsula (que abre o Perfil, §5) — as
+   duas convivem sem disputar a mesma função. Quem decide a visibilidade
+   de #mwMobileMenu é só o Design System (`.ds .ds-topo-menu`, ausente
+   apenas a partir de 901px, onde a lateral já fica fixa). Nada aqui
+   precisa mais reacender nada. */
 </style>
 
 <style id="mw-pull-refresh-style">

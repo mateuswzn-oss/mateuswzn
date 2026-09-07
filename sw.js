@@ -1,3 +1,35 @@
+/* v111 (BETA — o botão que devia abrir a gaveta, e nunca abria)
+
+   DUAS ÁREAS INTEIRAS ERAM INALCANÇÁVEIS NO CELULAR
+   Instituições e Suporte só existem dentro da gaveta lateral. A única
+   porta para abri-la no celular é o hambúrguer (#mwMobileMenu) — e ele
+   estava escondido em QUALQUER largura de tela ≤860px, instalado ou
+   não. Não era um detalhe visual: as duas áreas simplesmente não
+   tinham como ser alcançadas pelo toque, em lugar nenhum do app no
+   celular.
+
+   A causa era dupla:
+   1. uma regra antiga, sem camada, escondia `#mwMobileMenu` com
+      `!important` para qualquer tela de telefone — sobrando de uma
+      época em que a barra de baixo cobria sozinha toda a navegação.
+   2. uma tentativa de correção mais recente reacendia o botão só fora
+      do app instalado, mas exigia a classe `.mw-mobile-menu`, que o
+      botão NUNCA carregou — a correção nunca chegou a valer.
+
+   O sistema de design já sabe mostrar e esconder este botão direito
+   (some só a partir de 901px, onde a lateral fica fixa); as duas regras
+   velhas só atrapalhavam. Removidas, o hambúrguer volta a valer nos
+   dois contextos — navegador e app instalado — como o Mateus pediu:
+   um botão próprio, claro, para abrir a gaveta, sem disputar a foto de
+   perfil da barra de baixo (que continua abrindo o Perfil, e só isso).
+
+   UM BRILHO CIANO GENÉRICO VAZAVA PARA O HAMBÚRGUER
+   A mesma classe fantasma fazia uma exclusão de estilo nunca valer: o
+   botão ganhava o brilho ciano de qualquer botão da página, por cima
+   do círculo que o sistema já desenha para ele. Corrigido para excluir
+   pelo id de verdade — mesma pele do sino e da engrenagem ao lado.
+*/
+
 /* v110 (BETA — o Calendário, e o painel que respondia por um nome antigo)
 
    O PASSADOR DO MÊS SAÍA DO CARD
@@ -2551,7 +2583,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v110-beta';
+const CACHE_NAME = 'mw-shell-v111-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
