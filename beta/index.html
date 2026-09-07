@@ -16362,12 +16362,17 @@ html body .mwv2-auth-pane{padding:38px 46px 28px!important}
    tamanho do avatar e dos ícones — a cápsula visivelmente fecha ao
    descer e reabre ao subir. A elasticidade final vem da mola no JS
    (mw-liquid-nav-scroll), não de uma escala fixa aqui. */
-@media(max-width:860px){
-  html body #mwBottomNav button{
-    flex-direction:row!important;gap:0!important;font-size:0!important;
-    flex:0 0 auto!important;width:var(--mw-btn-w)!important;
-  }
-}
+/* A REGRA QUE MORAVA AQUI FOI APAGADA (correção cirúrgica pedida).
+   Era de uma versão anterior — ícones lado a lado, texto zerado por
+   `font-size:0` — de antes de o nome do item ativo virar um `<span>`
+   próprio com o seu próprio tamanho de fonte. `flex-direction:row` e
+   `font-size:0` já eram inofensivos (o `mw-ds-bottomnav` decide a
+   direção da coluna e o rótulo tem fonte própria), mas
+   `width:var(--mw-btn-w)!important` (52,6px fixos) não era: com o item
+   ativo passando a medir pelo conteúdo (`flex:0 0 auto`, pedido do
+   §4/§18), essa largura fixa virou a única voz na sala — os cinco
+   botões ficavam todos do MESMO tamanho, ativo ou não, ao contrário do
+   pedido. Quem decide a largura agora é só o conteúdo de cada botão. */
 html body #mwBottomNav{
   /* Variáveis únicas que dirigem toda a compressão — um componente só
      mudando propriedades, nunca uma troca de elementos. */
@@ -16419,7 +16424,14 @@ html body #mwBottomNav{
      O avatar cai de 41 para 28 pelo mesmo motivo que o ícone cai de 30
      para 24: ele É um dos cinco itens, e um item maior que os outros
      desalinha a fileira inteira. */
-  --mw-icon:24px;
+  /* CORREÇÃO CIRÚRGICA (pedido do Mateus): a barra precisa "respirar"
+     mais das bordas e o ícone precisa ser um pouco menor — 24px
+     enchia a cápsula sozinho. 21px ainda lê bem de longe e deixa
+     espaço de sobra para a foto do Perfil (icon+5px) não parecer um
+     item maior que os outros (§10). O avatar não tem token próprio
+     em uso — ele deriva do ícone (ver `.mwnav-photo` mais abaixo) —
+     então um valor só resolve os dois. */
+  --mw-icon:21px;
   --mw-avatar:28px;
   --mw-pad-y:6px;
   --mw-pad-x:14px;
@@ -16430,10 +16442,13 @@ html body #mwBottomNav{
   --mw-nav-scale:calc(1 - var(--mw-nav-compact,0) * .178);
 
   /* Largura de conteúdo, centralizada — não esticada de ponta a ponta
-     da tela. */
+     da tela. 32px de margem total ainda deixava a cápsula quase de
+     ponta a ponta num iPhone comum; 56px (28px de cada lado) é o que
+     o pedido chama de "respirar em relação às bordas" — mais visível
+     nos telefones menores, onde a folga era menor. */
   left:50%!important;right:auto!important;
   transform:translateX(-50%)!important;
-  width:auto!important;max-width:calc(100vw - 32px);
+  width:auto!important;max-width:calc(100vw - 56px);
   align-items:center!important;
   gap:var(--mw-gap)!important;
   padding:var(--mw-pad-y) var(--mw-pad-x)!important;
@@ -17376,98 +17391,40 @@ html body #app .topbar.topbar{
    barra vazar pro desktop. */
 html body.mw-in-app.mw-drawer-open #mwBottomNav.mwbn{display:none!important}
 html body.mw-in-app #mwBottomNav.mwbn{
-  display:grid!important;
-  /* CINCO colunas: Início · Faculdade · + · Arquivos · Perfil.
-     O "+" é a ação principal do aplicativo no telefone e passa a ocupar o
-     centro geométrico da barra — onde o polegar alcança sem esticar. A Nyc
-     AI saiu daqui e foi para o topo, com identidade própria: assistente é
-     ação especial, não destino de navegação. */
-  grid-template-columns:repeat(5,1fr)!important;
+  /* GRID, GAP E PADDING SAÍRAM DAQUI (correção cirúrgica pedida: barra
+     compacta, largura de conteúdo). Eram TRÊS os donos da geometria
+     desta barra — este bloco de grade fixa (o mais específico: duas
+     classes + um id), o `mw-ds-bottomnav` mais abaixo (que já decidiu
+     `display:flex`, e por isso é ele quem realmente pinta a tela — a
+     grade aqui nunca chegou a aparecer) e o `mw-bottomnav-instagram`
+     mais acima. `display:grid`, `gap:0` e a largura fixa
+     `min(100vw-16px,420px)` eram deste bloco; removidos, quem passa a
+     mandar em largura é o `width:auto` + `max-width` do bloco de cima
+     (conteúdo, não tela inteira), e em gap/padding é o `mw-ds-bottomnav`
+     abaixo — que agora traz os dois bem mais próximos do pedido: cápsula
+     pequena, não painel. Só a centralização (translateX + scale do
+     scroll) continua sendo desta regra, porque nada mais a declara. */
   align-items:center!important;
-  justify-items:center!important;
-  gap:0!important;
-  width:min(calc(100vw - 16px),420px)!important;
-  /* 6px não bastavam: a bolha do primeiro e do último item é
-     simétrica em volta do centro do slot e, com só 6px de respiro,
-     ela estourava a cápsula em 0,5px e caía no limitador — o que
-     tirava justamente esses dois do centro. Com 10px nenhum item
-     precisa ser limitado, então TODOS ficam exatamente centrados. */
-  padding:var(--mw-pad-y) 10px!important;
-  /* A COMPRESSÃO DO SCROLL, inteira, em uma linha.
-
-     translateX(-50%) é o que já centralizava a barra; scale() vem
-     depois, com origem no centro dos dois eixos — exatamente o que a
-     referência faz: a cápsula estreita e baixa ao mesmo tempo, em
-     torno do próprio centro, sem se mover na tela.
-
-     Como é transform, isso NÃO gera layout: nada é reposicionado,
-     nada é empurrado, o fluxo do conteúdo não sente. É também o
-     motivo de a barra continuar exatamente no mesmo lugar — o centro
-     é ponto fixo da transformação. */
   transform-origin:50% 50%!important;
   transform:translateX(-50%) scale(var(--mw-nav-scale,1))!important;
 }
-/* A peça do "+" já existe mais abaixo (`#mwNavMais`), escrita numa rodada
-   anterior e nunca usada porque o botão não estava no markup. Agora está:
-   o markup passou a ter cinco itens e reaproveita aquela peça em vez de
-   declarar uma segunda. */
-html body #mwBottomNav.mwbn > button{
-  width:100%!important;min-width:0!important;flex:none!important;
-  display:grid!important;place-items:center!important;
-  position:relative!important;background:transparent!important;
-  padding:0!important;
-  /* O botão tinha overflow:hidden, que cortava o nome ("Facul...").
-     O rótulo é absoluto e precisa transbordar a coluna de propósito. */
-  overflow:visible!important;
-  /* ALTURA PARA O NOME CABER EMBAIXO.
-     Com o nome ao lado, a coluna só precisava da altura do ícone (30px).
-     Empilhado, o conjunto passa a medir ícone + respiro + nome ≈ 44px —
-     e, sendo o rótulo absoluto, ele NÃO empurra nada: sem esta altura
-     mínima o nome sairia por baixo da cápsula. O respiro vertical da
-     cápsula cai junto, senão a barra inteira engordaria. */
-  min-height:48px!important;
-}
-/* ============================================================
-   O CONJUNTO ÍCONE + NOME FICA CENTRADO NO SLOT
-   ============================================================
-   Orçamento de espaço, medido (fonte 9px/700):
-     "Início" 27px · "Faculdade" 52px · "Arquivos" 45px · "Perfil" 27px
-   Com o ícone travado no centro exato do slot, a bolha só pode crescer
-   para a DIREITA, então ela precisa de 82,8px desse lado enquanto o
-   lado esquerdo sobra sem uso. Disponível até o ícone vizinho: 65,3px
-   em 375, 69,3px em 390. Resultado medido: "Faculdade" invadia o ícone
-   vizinho em 17,5px (375), 13,5px (390) e 3,5px (430). Encolher a fonte
-   não salva: "Faculdade" precisaria de ~6,8px para caber, ilegível.
+/* A REGRA QUE MORAVA AQUI FOI APAGADA (correção cirúrgica pedida:
+   barra em fit-content, não em cinco colunas de largura fixa).
 
-   Centrando o CONJUNTO, o transbordo se divide nos dois lados: a bolha
-   passa a precisar de 43,5px de cada lado e sobra folga em toda a faixa.
-
-   Como isso é feito sem nenhum salto:
-     • Cada botão publica dois números, calculados UMA vez (e no
-       resize), nunca no instante do clique: --mw-ix, o quanto o ícone
-       anda, e --mw-lx, onde o nome pousa. Não há medição durante a
-       ativação, então não há um quadro de atraso entre "mudou a classe"
-       e "começou a animar".
-     • A ativação é só a troca da classe. Ícone, nome e lente têm a
-       MESMA duração e a MESMA curva (--mw-choreo-dur/--mw-choreo-ease),
-       sem delay em nenhum deles, então os três partem no mesmo quadro e
-       chegam no mesmo quadro. É isso que evita o efeito "parcelado".
-     • Tudo é transform/opacity. Nenhum slot muda de tamanho ou posição,
-       nada é empurrado, não há reflow. */
-/* (o deslocamento do ícone saía daqui: era a outra metade da
-   coreografia apagada logo abaixo) */
-/* AQUI HAVIA UMA SEGUNDA IMPLEMENTAÇÃO DO RÓTULO — apagada.
-
-   Ela tirava o nome do fluxo (`position:absolute`) e o colocava por
-   `transform`, com a posição medida em JS. Perdia a cascata para o
-   bloco `mw-ds-bottomnav`, lá embaixo, havia rodadas — mas o
-   `transform` SOBREVIVIA, porque o bloco vencedor não declara essa
-   propriedade. Resultado: com o nome empilhado, ele nascia 11px
-   abaixo do lugar e caía fora da pílula. Código morto que ainda mexe
-   na tela é pior do que código morto parado.
-
-   Quem manda no rótulo agora é um lugar só: `mw-ds-bottomnav`. */
-}
+   Ela vinha da mesma grade de 5 colunas descartada acima, e por isso
+   já estava, em grande parte, superada pelo `mw-ds-bottomnav` — MAS
+   `width:100%!important` nunca tinha sido tocado por ninguém, porque
+   antes de agora o item ativo usava `flex:1 1 0` (flex-basis:0), que
+   ignora `width` no eixo principal. Ao trocar para `flex:0 0 auto`
+   (item mede pelo conteúdo, o pedido do §4/§18), o flex-basis passou a
+   ser `auto`, e aí `width:100%!important` — que sempre esteve aqui,
+   inerte — acordou: cada botão passou a pedir 100% da largura da
+   barra, e os cinco brigando por 100% cada é o motivo de a barra ter
+   ficado enorme na primeira tentativa desta correção. Apagar em vez de
+   sobrescrever de novo: é a mesma lição repetida noutras áreas deste
+   arquivo — regra morta que ainda pinta a tela é pior que regra morta
+   parada. Quem dá largura, altura e posição ao botão agora é só o
+   `mw-ds-bottomnav`, um lugar só. */
 /* Perfil: foto quando existe, ícone de pessoa quando não existe.
    A camada da foto ocupa exatamente a caixa do ícone, então trocar
    entre as duas não move nada — o avatar continua centrado no slot. */
@@ -27054,9 +27011,20 @@ html body:not(.mw-in-app) #mwSidebarScrim{ display: none !important; }
    dava para chegar a uma tela inteiramente borrada, sem saída visível.
 
    Agora `display` só é imposta com a âncora; o resto, que é layout puro
-   e inofensivo fora do app, segue sem ela. */
-html body.mw-in-app #mwBottomNav.mwbn{
-  display: flex !important;
+   e inofensivo fora do app, segue sem ela.
+
+   FALTAVA UMA TERCEIRA TRAVA: a de largura. Esta regra nunca tinha
+   `@media(max-width:860px)` — só a âncora de app instalado — e ela
+   também vence o `@media(min-width:861px){ #mwBottomNav{display:
+   none} }` do desktop pelo mesmo motivo que vencia o do login: classe
+   extra na especificidade. Resultado, medido: um desktop com o app
+   instalado (a instalação existe em Chrome/Edge também fora do
+   celular) mostrava a cápsula mobile flutuando por cima da lateral —
+   duas navegações ao mesmo tempo, o oposto do que o §20 pede. */
+@media(max-width:860px){
+  html body.mw-in-app #mwBottomNav.mwbn{
+    display: flex !important;
+  }
 }
 /* O ESPAÇO QUE A BARRA OCUPA, DECLARADO UMA VEZ.
    56 de altura + 16 do afastamento do fundo + 8 de respiro = 80, mais a
@@ -27077,7 +27045,14 @@ html body #mwBottomNav.mwbn{
    do item ativo logo abaixo — o ativo continuava dividindo a largura
    com os irmãos e o nome saía cortado ("Iníci"). O "+" é tratado na
    sua própria regra, que já é mais específica por ter o ID de verdade. */
-html body #mwBottomNav.mwbn > button{ flex: 1 1 0 !important; }
+/* CORREÇÃO CIRÚRGICA (pedido do Mateus): "flex:1 1 0" fazia os cinco
+   itens disputarem TODA a largura da barra — era isso que fazia a
+   cápsula parecer um painel, não uma pílula pequena. Com "flex:0 0
+   auto" cada item mede só o que o seu conteúdo pede (ícone sozinho,
+   ou ícone+nome no ativo), e é a BARRA que encolhe até caber neles —
+   o "fit-content" pedido no §18, sem precisar calcular largura nenhuma
+   à mão. */
+html body #mwBottomNav.mwbn > button{ flex: 0 0 auto !important; }
 
 html body #mwBottomNav.mwbn{
   background: var(--ds-vidro-1) !important;
@@ -27085,35 +27060,50 @@ html body #mwBottomNav.mwbn{
   box-shadow: var(--ds-fio-forte), var(--ds-alt-3) !important;
   backdrop-filter: var(--ds-desfoque) !important;
   -webkit-backdrop-filter: var(--ds-desfoque) !important;
-  border-radius: 26px !important;
-  padding: 8px !important;
-  gap: 4px !important;
+  border-radius: 22px !important;
+  /* 8/4 -> 5/3: o recheio da cápsula em volta dos botões, não a altura
+     do alvo de toque (essa continua em 44px, inalterada — é piso de
+     acessibilidade, não estilo). */
+  padding: 5px !important;
+  gap: 3px !important;
 }
 
 html body #mwBottomNav.mwbn button{
   position: relative !important;
   border: 0 !important;
   background: transparent !important;
-  border-radius: 18px !important;
+  border-radius: 15px !important;
   color: var(--ds-txt-3) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   gap: 0 !important;
-  padding: 10px 0 !important;
-  /* Medido: o botão saía com 42px de altura, dois abaixo dos 44 que a
-     diretriz de plataforma pede para o alvo principal de toque de um app
-     instalado. A barra tem 73px de altura e 13,4px de recheio vertical —
-     havia folga de sobra; o mínimo só a consome. Nada mudou na barra,
-     nem na lente, que se posiciona pela coluna e não pela altura. */
+  padding: 7px 0 !important;
+  /* O ALVO DE TOQUE CONTINUA EM 44×44 — é o piso de acessibilidade, e
+     ele não encolhe (§7 do pedido: "a área de toque pode continuar
+     adequada... mas o VISUAL deve ser compacto"). O que diminuiu foi o
+     recheio da cápsula (acima), o ícone (21px) e o padding horizontal
+     do item ativo (abaixo) — a caixa que o dedo alcança continua do
+     mesmo tamanho; só o desenho lá dentro ficou menor e centralizado.
+     Sem este min-width, os itens inativos (só ícone, sem o "min-width:
+     0" de antes) encolheriam até 21px de LARGURA — abaixo até do
+     mínimo de 24px que a WCAG pede, e bem abaixo dos 44px de conforto
+     que o resto do app usa. */
   min-height: 44px !important;
-  min-width: 0 !important;
+  min-width: 44px !important;
   transition: color .22s var(--ds-suave), flex-grow .34s var(--ds-mola) !important;
 }
 html body #mwBottomNav.mwbn button::before{
   content:''; position: absolute; inset: 0; z-index: 0;
   border-radius: inherit;
-  background: var(--ds-ac-grad);
+  /* O item ativo TROCA de preenchimento sólido (var(--ds-ac-grad), um
+     degradê opaco de ponta a ponta) por um VERNIZ translúcido do
+     próprio destaque — a mesma diferença que o "+" já tinha adotado
+     numa rodada anterior, pelo mesmo motivo: duas manchas cheias da
+     cor de destaque na mesma barra (o item ativo e o "+") liam como
+     ruído, não hierarquia. Agora o roxo aparece como um TOM sobre o
+     vidro, não como uma segunda superfície colorida por cima dele. */
+  background: color-mix(in srgb, var(--ds-ac) 16%, transparent);
   opacity: 0; transform: scale(.86);
   transition: opacity .22s var(--ds-suave), transform .34s var(--ds-mola);
 }
@@ -27134,7 +27124,12 @@ html body #mwBottomNav.mwbn .mwnav-icon{
 html body #mwBottomNav.mwbn button.active{ color: #fff !important; }
 html body #mwBottomNav.mwbn button.active::before{
   opacity: 1; transform: scale(1);
-  box-shadow: 0 6px 20px color-mix(in srgb, var(--ds-ac) 50%, transparent);
+  /* Era uma sombra colorida de 20px a 50% de opacidade — um halo roxo
+     grande o bastante para ler como um botão brilhando, não um estado
+     selecionado discreto (§16: "NÃO quero uma grande área roxa
+     luminosa"). Um anel fino por dentro (inset) marca o contorno da
+     pílula sem projetar luz nenhuma para fora dela. */
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ds-ac) 34%, transparent);
 }
 html body #mwBottomNav.mwbn button.active .mwnav-icon svg{ fill: currentColor !important; }
 
@@ -27156,16 +27151,12 @@ html body #mwBottomNav.mwbn > button{
   flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
-  /* A coluna precisa de caixa própria: 24 do ícone + 2 de respiro + 13
-     do nome = 39, dentro dos 44 do botão com 3 de respiro. A pílula é
-     desenhada com `inset:0` sobre o botão, então ela envolve os dois —
-     era isso que se perdia quando a conta não fechava, e o nome caía
-     fora da pílula.
-
-     44 é o piso: é o alvo de toque, não uma medida de estilo. */
+  /* 44 é o piso: é o alvo de toque, não uma medida de estilo — não
+     encolhe. O respiro em volta do ícone/nome (abaixo) é o que ficou
+     mais justo. */
   min-height: 44px !important;
-  padding-top: 3px !important;
-  padding-bottom: 3px !important;
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
 }
 html body #mwBottomNav.mwbn .mwnav-label{
   position: static !important;
@@ -27180,30 +27171,43 @@ html body #mwBottomNav.mwbn .mwnav-label{
   margin-top: 0 !important;
   overflow: hidden !important;
   white-space: nowrap !important;
-  font-size: 9.5px !important;
-  font-weight: 700 !important;
-  line-height: 1.15 !important;
+  /* WIDTH:0 QUANDO INATIVO. `max-height:0` só recolhe a ALTURA — a
+     largura do texto continuava contando para o tamanho do botão,
+     porque numa coluna flex a largura do item é o mais largo dos
+     filhos, e um `<span>` com `opacity:0` ainda ocupa a caixa dele
+     (não é `display:none`). Foi por isso que, ao trocar o item ativo
+     de "flex:1 1 0" (largura imposta de fora) para "flex:0 0 auto"
+     (largura pelo conteúdo, o pedido do §7), CADA botão inativo ficou
+     com a largura do PRÓPRIO NOME escondido — "Faculdade" mais largo
+     que "Perfil" — em vez da largura do ícone, igual para todos. */
+  width: 0 !important;
+  /* 9,5px/700 -> 9px/650: o texto ainda precisa ser lido de relance,
+     mas não precisa pesar tanto quanto o rótulo de um formulário (§5). */
+  font-size: 9px !important;
+  font-weight: 650 !important;
+  line-height: 1.1 !important;
   letter-spacing: .01em !important;
-  transition: opacity .2s var(--ds-suave), max-height .34s var(--ds-mola), margin-top .34s var(--ds-mola) !important;
+  transition: opacity .2s var(--ds-suave), max-height .34s var(--ds-mola), margin-top .34s var(--ds-mola), width .34s var(--ds-mola) !important;
 }
 html body #mwBottomNav.mwbn button.active .mwnav-label{
   opacity: 1 !important;
-  max-height: 13px !important;
-  margin-top: 2px !important;
+  max-height: 11px !important;
+  margin-top: 1px !important;
+  width: auto !important;
 }
 /* O item ativo deixa de dividir a largura igualmente com os outros e
    passa a se dimensionar pelo conteúdo: com "flex:1 1 0" ele competia
    com os irmãos e o nome saía cortado dentro da própria pílula
    ("Iníci…"). Os demais continuam dividindo o que sobra. */
 html body #mwBottomNav.mwbn > button.active{
-  /* Com o nome EMBAIXO, o item deixa de crescer na horizontal: a pílula
-     envolve uma coluna estreita e alta, e não uma linha larga. Os
-     paddings caem de 13/15 para 10/10 e a largura volta a ser dividida
-     igualmente — o que também acaba com o empurra-empurra que cortava o
-     nome dos vizinhos ("Iníci…"). */
-  flex: 1 1 0 !important;
-  padding-left: 10px !important;
-  padding-right: 10px !important;
+  /* "fit-content", igual aos inativos (ver a regra de cima): a pílula
+     ativa não é mais uma das cinco fatias iguais da barra, é só o
+     ícone+nome com um respiro pequeno em volta (§4) — 10px de cada
+     lado media uma cápsula quase do dobro da largura do que o texto
+     precisa; 6px ainda dá folga sem sobrar. */
+  flex: 0 0 auto !important;
+  padding-left: 6px !important;
+  padding-right: 6px !important;
 }
 
 /* --- O + central -----------------------------------------------------
@@ -27223,22 +27227,36 @@ html body #mwBottomNav.mwbn > button.active{
    não uma segunda mancha. */
 html body #mwBottomNav.mwbn #mwNavMais{
   flex: 0 0 auto !important;
-  width: 38px !important; height: 38px !important;
+  /* 38 -> 34: o "+" ainda precisa parecer a ação principal (§9), só que
+     ao lado de ícones e de uma pílula ativa bem menores agora, 38px
+     lia como um segundo botão grande demais.
+
+     SEM o piso de 44px dos outros quatro itens, de propósito: ele já
+     não alcançava 44px antes desta rodada (era 38px) — não é uma
+     exceção nova, é uma exceção já existente, e reduzi-la mais ainda
+     (a pedido explícito do §9) não piora nada que já não estivesse
+     assim. Os quatro destinos de navegação, esses sim, mantêm 44×44
+     (regra acima). */
+  width: 34px !important; height: 34px !important;
+  min-width: 34px !important; min-height: 34px !important;
   align-self: center !important;
-  margin: 0 2px !important;
-  border-radius: 13px !important;
-  background: color-mix(in srgb, var(--ds-ac) 14%, transparent) !important;
-  border: 1px solid color-mix(in srgb, var(--ds-ac) 34%, transparent) !important;
+  margin: 0 1px !important;
+  border-radius: 12px !important;
+  /* 14%/34% -> 10%/22%: mesmo material translúcido da cápsula, com só
+     um pouco mais de destaque que os outros itens — não uma segunda
+     mancha de cor (§16). */
+  background: color-mix(in srgb, var(--ds-ac) 10%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--ds-ac) 22%, transparent) !important;
   color: var(--ds-ac) !important;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.14) !important;
   transition: transform .2s var(--ds-mola), background .2s var(--ds-suave) !important;
 }
 html body #mwBottomNav.mwbn #mwNavMais:hover{
-  background: color-mix(in srgb, var(--ds-ac) 22%, transparent) !important;
+  background: color-mix(in srgb, var(--ds-ac) 18%, transparent) !important;
 }
 html body #mwBottomNav.mwbn #mwNavMais::before{ display: none !important; }
 html body #mwBottomNav.mwbn #mwNavMais:active{ transform: scale(.92) !important; }
-html body #mwBottomNav.mwbn #mwNavMais svg{ width: 19px !important; height: 19px !important; fill: none !important; stroke: currentColor !important; }
+html body #mwBottomNav.mwbn #mwNavMais svg{ width: 17px !important; height: 17px !important; fill: none !important; stroke: currentColor !important; }
 
 @media (prefers-reduced-motion: reduce){
   html body #mwBottomNav.mwbn button,
@@ -32085,7 +32103,7 @@ html body .mw-pular:focus{ transform: translateY(0); }
   /* O carimbo entra depois do preloader para não brigar com a abertura
      da marca, e sai sozinho. window.MW_PREVIA fica disponível para
      conferir a versão pelo console sem depender de ver o carimbo. */
-  window.MW_PREVIA = 'v111-beta';
+  window.MW_PREVIA = 'v112-beta';
   function mostra(){
     if (document.getElementById('mwPreviaCarimbo')) return;
     var el = document.createElement('div');
