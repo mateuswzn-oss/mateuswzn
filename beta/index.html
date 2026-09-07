@@ -18397,8 +18397,17 @@ html:root{
   --bg:#020617;          --bg2:#071329;
   --panel:rgba(11,23,48,.66);  --panel2:rgba(8,18,38,.82);
   --line:rgba(99,170,255,.16);
-  /* acento — o azul volta a ser azul */
-  --blue:#2563eb;        --blue2:#38bdf8;   --violet:#7c5cff;
+  /* acento — ERA "o azul volta a ser azul", uma decisão de rodada
+     antiga que nunca foi reconciliada com o acento de verdade do
+     app: `--id-ac`/`--sem-1`, o índigo-violeta que a §2 (mais abaixo
+     no arquivo) já pinta em toda tela migrada, e que o próprio
+     Design System documenta como "o acento do MW". Ter DOIS azuis
+     concorrentes — este cravado aqui e o de verdade nos botões e na
+     barra — é o "azul azul azul, muito poluído" do relato do Mateus.
+     Ler do token real fecha os dois num só, e ainda respeita a cor
+     de acento que a pessoa escolher em Configurações (ciano, verde,
+     âmbar, rosa) em vez de forçar azul por cima dela. */
+  --blue:var(--id-ac, #5b6cff);   --blue2:var(--id-ac-2, #8b5cf6);   --violet:var(--id-ac-2, #8b5cf6);
   --text:#f2f7ff;        --muted:#93a8c9;   --muted2:#63799c;
   --danger:#fb7185;
   --shadow:0 30px 90px rgba(2,6,23,.55);
@@ -18414,20 +18423,20 @@ html:root{
      a mesma coisa passam a dizer. No tema claro o token é outro
      (#4d6486, logo abaixo) e não muda. */
   --mw-muted:#b8c4e0;
-  --mw-accent:#38bdf8;
+  --mw-accent:var(--id-ac, #5b6cff);
 }
 
 html body.light{
   --bg:#eef4ff;          --bg2:#e4edff;
   --panel:rgba(255,255,255,.72);  --panel2:rgba(255,255,255,.88);
   --line:rgba(37,99,235,.16);
-  --blue:#2563eb;        --blue2:#0ea5e9;   --violet:#6d4dff;
+  --blue:var(--id-ac, #4f5bff);   --blue2:var(--id-ac-2, #7c3aed);   --violet:var(--id-ac-2, #7c3aed);
   --text:#0b1830;        --muted:#4d6486;   --muted2:#6b80a0;
   --shadow:0 24px 70px rgba(15,40,90,.14);
   --mw-bg:#eef4ff;       --mw-surface:#ffffff;   --mw-surface-2:#f5f9ff;
   --mw-solid:#ffffff;    --mw-solid-2:#f5f9ff;   --mw-soft:#eaf1ff;
   --mw-border:rgba(20,45,90,.13);  --mw-text:#0b1830;  --mw-muted:#4d6486;
-  --mw-accent:#2563eb;
+  --mw-accent:var(--id-ac, #4f5bff);
 }
 
 /* O `body` grafite. `body:not(.light)` (0,1,1) vencia `html,body`
@@ -22911,37 +22920,15 @@ html:not(.mw-standalone) body.mw-in-app #mwBottomNav.mwbn{
 </script>
 
 <style id="mw-nav-icon-cores">
-/* Os 9 ícones da sidebar (Dashboard, Faculdade, Disciplinas, Projetos,
-   Atividades, Anotações, Arquivos, Suporte, Painel Admin) usavam todos
-   o MESMO fundo cinza neutro (.nav-icon{background:var(--mw-surface-2)},
-   sem nenhuma regra mais específica pro estado de repouso) — pedido
-   explícito: "muito genérico, muito igual", difícil de diferenciar de
-   relance. Uma cor de destaque por categoria (só no fundo/ícone
-   parado — hover e ativo continuam com as regras de sempre, que têm
-   mais especificidade e vencem por cima disto) resolve sem redesenhar
-   nenhum traçado de ícone. */
-#app .mw-reference-nav button[data-view="home"] .nav-icon{background:rgba(59,130,246,.16)!important;color:#7ec3ff!important}
-#app .mw-reference-nav button[data-view="college"] .nav-icon{background:rgba(139,92,246,.16)!important;color:#c4b5fd!important}
-#app .mw-reference-nav button[data-view="subjects"] .nav-icon{background:rgba(6,182,212,.16)!important;color:#67e8f9!important}
-#app .mw-reference-nav button[data-view="projects"] .nav-icon{background:rgba(245,158,11,.16)!important;color:#fcd34d!important}
-#app .mw-reference-nav button[data-view="activities"] .nav-icon{background:rgba(16,185,129,.16)!important;color:#6ee7b7!important}
-#app .mw-reference-nav button[data-view="notes"] .nav-icon{background:rgba(236,72,153,.16)!important;color:#f9a8d4!important}
-#app .mw-reference-nav button[data-view="files"] .nav-icon{background:rgba(99,102,241,.16)!important;color:#a5b4fc!important}
-#app .mw-reference-nav button[data-view="support"] .nav-icon{background:rgba(20,184,166,.16)!important;color:#5eead4!important}
-#app .mw-reference-nav button[data-view="admin"] .nav-icon{background:rgba(244,63,94,.16)!important;color:#fda4af!important}
-
-/* Light mode: mesma ideia, fundo um pouco mais opaco e cor do ícone
-   mais escura — as mesmas cores claras acima em cima de um painel
-   claro perderiam quase todo o contraste. */
-body.light #app .mw-reference-nav button[data-view="home"] .nav-icon{background:rgba(37,99,235,.12)!important;color:#1d4ed8!important}
-body.light #app .mw-reference-nav button[data-view="college"] .nav-icon{background:rgba(124,58,237,.12)!important;color:#6d28d9!important}
-body.light #app .mw-reference-nav button[data-view="subjects"] .nav-icon{background:rgba(8,145,178,.12)!important;color:#0e7490!important}
-body.light #app .mw-reference-nav button[data-view="projects"] .nav-icon{background:rgba(217,119,6,.12)!important;color:#b45309!important}
-body.light #app .mw-reference-nav button[data-view="activities"] .nav-icon{background:rgba(5,150,105,.12)!important;color:#047857!important}
-body.light #app .mw-reference-nav button[data-view="notes"] .nav-icon{background:rgba(219,39,119,.12)!important;color:#be185d!important}
-body.light #app .mw-reference-nav button[data-view="files"] .nav-icon{background:rgba(79,70,229,.12)!important;color:#4338ca!important}
-body.light #app .mw-reference-nav button[data-view="support"] .nav-icon{background:rgba(13,148,136,.12)!important;color:#0f766e!important}
-body.light #app .mw-reference-nav button[data-view="admin"] .nav-icon{background:rgba(225,29,72,.12)!important;color:#be123c!important}
+/* ERA uma cor de destaque por categoria (azul/roxo/ciano/âmbar/verde/
+   rosa/índigo/teal/vermelho, um item pro outro) — pedido de uma
+   rodada anterior, contra o "muito genérico, muito igual" de então.
+   Pedido NOVO, na direção oposta: "não deixar tudo tão colorido" —
+   o próprio arco-íris agora é o problema. Volta a ser UMA cor só,
+   neutra, pro repouso; o que diferencia o item atual não é mais a cor
+   do ÍCONE, é o estado ativo de verdade (`.ds-nav-item[aria-current=
+   page]`, a pílula de acento — inalterada, continua lilás só ali). */
+#app .mw-reference-nav button .nav-icon{background:var(--mw-surface-2)!important;color:var(--mw-muted)!important}
 </style>
 <script id="mw-avatar-olhos-js">
 (function(){
@@ -32221,7 +32208,7 @@ html body .mw-pular:focus{ transform: translateY(0); }
   /* O carimbo entra depois do preloader para não brigar com a abertura
      da marca, e sai sozinho. window.MW_PREVIA fica disponível para
      conferir a versão pelo console sem depender de ver o carimbo. */
-  window.MW_PREVIA = 'v115 - lupa e transicao de tema';
+  window.MW_PREVIA = 'v116 - lilas unificado, sidebar sem arco-iris';
   function mostra(){
     if (document.getElementById('mwPreviaCarimbo')) return;
     var el = document.createElement('div');
