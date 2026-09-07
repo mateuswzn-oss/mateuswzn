@@ -1,3 +1,29 @@
+/* v120 (BETA - Fase E: a foto do Perfil ganha um "pop" de mola ao entrar)
+
+   Pedido: "uma animacao quando for pra entrar pro perfil". Toda tela ja
+   usa a mesma cascata generica de entrada (`.ds-monta`, fade + sobe 10px,
+   34ms entre cada faixa) — o Perfil tambem usava so isso, igual a
+   qualquer outra tela do app.
+
+   A foto do perfil ganhou um SEGUNDO movimento so dela, por cima da
+   cascata que continua rodando em tudo o resto: um "pop" de mola
+   (`--mw-curva-mola`, a mesma curva ja usada na barra do semestre),
+   saindo de scale(.55) opacidade 0 ate o tamanho normal em 560ms — o tipo
+   de entrada que o Instagram/iOS usa ao abrir um perfil. E a UNICA
+   ousadia da tela, de proposito: nome, numeros e abas continuam na
+   cascata calma de sempre.
+
+   Auditoria visual do resto do Perfil (mobile/tablet/desktop, claro/
+   escuro): layout ja estava organizado de uma rodada anterior desta
+   conversa (Perfil como area de primeira classe) — nenhum problema
+   estrutural novo encontrado, entao esta rodada ficou focada no que
+   faltava de verdade, o movimento de entrada.
+
+   Respeita prefers-reduced-motion (animacao desligada).
+
+   Suite completa (23 passos): tudo passou.
+*/
+
 /* v119 (BETA - Fase D: consistencia dos icones — mesmo peso/tamanho em tudo)
 
    Pedido: "melhorar os icones, tipo assim deixar do Instagram... estilo
@@ -2861,7 +2887,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v119-beta';
+const CACHE_NAME = 'mw-shell-v120-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
