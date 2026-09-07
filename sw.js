@@ -1,3 +1,35 @@
+/* v116 (BETA - Fase B da "expedicao completa": menos azul, menos arco-iris)
+
+   Pedido do Mateus: "nao deixar dar uma coloracao azul... lilas... nao
+   deixar tudo tao colorido". Dois achados reais, um por baixo do outro:
+
+   1. AZUL "VOLTAVA A SER AZUL" POR DECISAO ANTIGA NUNCA RECONCILIADA.
+      --blue/--blue2/--violet (usados na tela de login inteira - hero,
+      botao Entrar, links - e em focos/status por todo o app) estavam
+      cravados em azul/ciano por um bloco chamado "mw-paleta-canonica",
+      cujo proprio comentario dizia "o azul volta a ser azul": uma
+      decisao consciente de rodada passada que nunca foi atualizada
+      quando o acento de verdade do app (--id-ac, o indigo-violeta que
+      a §2 pinta em toda tela migrada) virou lilas. Dois azuis
+      concorrentes - um cravado aqui, outro nos botoes de verdade - e
+      isso e o "azul azul azul, muito poluido" do relato. Os tres
+      tokens agora leem de --id-ac/--id-ac-2 (com o mesmo fallback de
+      antes), entao seguem a cor de acento real e a que a pessoa
+      escolher em Configuracoes.
+
+   2. SIDEBAR ARCO-IRIS. Os 9 icones da barra lateral (Faculdade,
+      Disciplinas, Projetos, Atividades...) tinham cada um a sua propria
+      cor de destaque (azul/roxo/ciano/ambar/verde/rosa/indigo/teal/
+      vermelho) - decisao de uma rodada AINDA MAIS antiga, contra um
+      "muito generico, muito igual" de entao. O pedido de agora vai na
+      direcao oposta. Voltou a ser uma cor neutra so, igual pra todos
+      os nove; o que marca o item atual continua sendo o estado ativo
+      de verdade (a pilula lilas do `.ds-nav-item[aria-current=page]`),
+      nao mais a cor do icone parado.
+
+   Suite completa (23 passos) + subconjunto de navegacao: tudo passou.
+*/
+
 /* v115 (BETA - tres achados reais do pedido "expedicao completa")
 
    O pedido do Mateus era enorme (icones, cores, tipografia, animacoes,
@@ -2752,7 +2784,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v115-beta';
+const CACHE_NAME = 'mw-shell-v116-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
