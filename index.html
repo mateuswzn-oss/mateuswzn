@@ -36,13 +36,26 @@ try {
    o sistema operacional em vez de seguir a escolha da pessoa. */
 (function(){try{
   var d = JSON.parse(localStorage.getItem('mateusWorkspaceV4') || '{}');
-  document.documentElement.setAttribute('data-ds-tema', d.theme === 'light' ? 'claro' : 'escuro');
+  var claro = d.theme === 'light';
+  document.documentElement.setAttribute('data-ds-tema', claro ? 'claro' : 'escuro');
   /* A COR DE DESTAQUE entra aqui pelo mesmo motivo que o tema: ela é a
      semente de onde nascem todos os tokens de acento. Se fosse aplicada
      depois, o primeiro quadro sairia roxo e viraria verde na frente da
      pessoa — o "pisca" que o §5 manda não existir. */
   var cor = ((d.settings || {}).accent) || 'indigo';
   document.documentElement.setAttribute('data-acento', cor);
+  /* O <meta name="color-scheme"> RESOLVE A CANVAS do navegador (a área
+     fora da própria página — tela cheia antes do primeiro CSS, ver a nota
+     acima dele). O <meta name="theme-color"> é outra coisa: é o SISTEMA
+     OPERACIONAL pintando a barra de status/gesto por CIMA da página — no
+     Safari, na barra de endereço; instalado, no próprio retângulo do
+     notch. Ele ficava cravado em "#020617" (escuro) desde a primeira
+     linha do documento, e nada nunca atualizava — nem aqui, nem em
+     applyTheme(), nem em aplica('tema', ...). No tema claro isso deixava
+     uma tarja escura bem em cima da página clara: exatamente "aquela
+     partezinha lá de cima" fora do lugar. */
+  var mt = document.querySelector('meta[name="theme-color"]');
+  if (mt) mt.setAttribute('content', claro ? '#edf5ff' : '#020617');
 }catch(e){ document.documentElement.setAttribute('data-ds-tema','escuro'); }})();
 </script>
 <link rel="stylesheet" href="ds/mw-ds.css">
@@ -84,6 +97,14 @@ try {
 <style>
 :root{--bg:#020617;--bg2:#071329;--panel:rgba(10,28,56,.62);--panel2:rgba(8,20,43,.78);--line:rgba(99,170,255,.2);--blue:#2563eb;--blue2:#38bdf8;--violet:#7c5cff;--text:#f7fbff;--muted:#8da4c7;--muted2:#61789c;--danger:#fb7185;--shadow:0 30px 90px rgba(0,0,0,.48)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--text);background:var(--bg)}button,input,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+/* Sem isto o Chrome Android e o Safari iOS desenham por conta própria um
+   retângulo cinza translúcido sobre qualquer elemento tocável ao toque —
+   e como quase nada aqui usa <button> puro (é <div>/<span> com role e
+   onclick, e nada define -webkit-tap-highlight-color), esse retângulo do
+   próprio navegador aparecia atrás/ao redor do botão como uma "sombra"
+   que ficava um instante a mais que o próprio :active. Nenhuma regra deste
+   arquivo desliga isso — não existia em lugar nenhum antes desta linha. */
+*{-webkit-tap-highlight-color:transparent}
 body{overflow-x:hidden;background:radial-gradient(circle at 20% 45%,rgba(37,99,235,.17),transparent 30%),radial-gradient(circle at 85% 15%,rgba(124,92,255,.12),transparent 28%),linear-gradient(135deg,#020617,#061226 55%,#020617)}
 body.light{--bg:#edf5ff;--bg2:#e5efff;--panel:rgba(255,255,255,.68);--panel2:rgba(255,255,255,.86);--line:rgba(37,99,235,.18);--text:#0b1830;--muted:#526988;--muted2:#7085a2;background:radial-gradient(circle at 20% 45%,rgba(37,99,235,.13),transparent 30%),linear-gradient(135deg,#eaf3ff,#f7fbff)}
 /* LOGIN */#loginScreen{min-height:100vh;display:grid;place-items:center;padding:28px;position:relative;overflow:hidden;background:#020617}#loginVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;filter:brightness(.34) saturate(1.08);transform:scale(1.02);pointer-events:none}#loginScreen:after{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(90deg,rgba(2,6,23,.72),rgba(2,12,28,.42) 48%,rgba(2,6,23,.72)),radial-gradient(circle at 50% 50%,transparent 20%,rgba(2,6,23,.35) 100%);pointer-events:none}#loginScreen:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 25% 50%,rgba(37,99,235,.16),transparent 30%);pointer-events:none}.login-shell{width:min(1240px,100%);display:grid;grid-template-columns:minmax(0,1fr) 470px;gap:60px;align-items:center;position:relative;z-index:1}
@@ -4972,9 +4993,33 @@ body.light .mw-faceid-gate-card p{color:#526988}
         (valor === 'sistema' && window.matchMedia('(prefers-color-scheme: light)').matches);
       document.body.classList.toggle('light', claro);
       html.setAttribute('data-ds-tema', claro ? 'claro' : 'escuro');
+      /* A barra de status/gesto do sistema (fora da página, pintada pelo
+         <meta name="theme-color">) tem o mesmo problema do <html> logo
+         acima: sem atualizar aqui, ela fica presa no tom do carregamento
+         inicial e destoa da página assim que o tema muda. */
+      var mtTema = document.querySelector('meta[name="theme-color"]');
+      if (mtTema) mtTema.setAttribute('content', claro ? '#edf5ff' : '#020617');
       html.classList.add('mw-troca-tema');
       clearTimeout(aplica._t);
       aplica._t = setTimeout(function(){ html.classList.remove('mw-troca-tema'); }, 320);
+      /* EXISTIA UM SEGUNDO LUGAR ONDE O TEMA MORA: o ícone de sol/lua do
+         topo (#themeToggle) grava em `data.theme` ('dark'/'light'), um
+         campo NO TOPO do mesmo blob — sem relação nenhuma com
+         `settings.tema` ('escuro'/'claro'/'sistema') aqui. Os dois nunca
+         se falavam. No próximo carregamento, `applyTheme()` (que lê só
+         `data.theme`) aplicava o tema ANTES desta tela existir, e quando
+         esta tela terminava de montar e chamava `aplica('tema', ...)` com
+         o `settings.tema` — que podia estar desatualizado, porque trocar
+         pelo ícone do topo nunca escrevia aqui — o app trocava de cor de
+         novo na frente da pessoa. Era esse o "pisca" ao entrar no site.
+         Gravar `theme` aqui também fecha o círculo: seja qual for o
+         controle usado por último, os dois concordam no próximo boot. */
+      try{
+        var bruto = JSON.parse(localStorage.getItem('mateusWorkspaceV4') || '{}');
+        bruto.theme = claro ? 'light' : 'dark';
+        localStorage.setItem('mateusWorkspaceV4', JSON.stringify(bruto));
+        if (window.data) window.data.theme = bruto.theme;
+      }catch(e){}
     }
     if (campo === 'vidro')     html.setAttribute('data-vidro', valor);
     if (campo === 'densidade') html.setAttribute('data-densidade', valor);
@@ -6087,8 +6132,22 @@ function renderAll(){const p=progress();$('#statSubjects').textContent=data.subj
    operacional. Achado na migração de Suporte: o app estava no escuro e o
    cartão veio com o vidro do tema claro.
    Agora o tema é CARIMBADO no <html>, positivamente, nos dois sentidos. */
-function applyTheme(){document.documentElement.setAttribute('data-ds-tema',data.theme==='light'?'claro':'escuro');document.body.classList.toggle('light',data.theme==='light');const tt=$('#themeToggle');if(tt)tt.classList.toggle('is-light',data.theme==='light');$('#darkModeBtn').classList.toggle('active',data.theme==='dark');$('#lightModeBtn').classList.toggle('active',data.theme==='light')}
-function setTheme(theme){data.theme=theme;if(persistWorkspace())applyTheme();toast(theme==='light'?'Modo claro ativado':'Modo escuro ativado')}
+function applyTheme(){document.documentElement.setAttribute('data-ds-tema',data.theme==='light'?'claro':'escuro');document.body.classList.toggle('light',data.theme==='light');const tt=$('#themeToggle');if(tt)tt.classList.toggle('is-light',data.theme==='light');$('#darkModeBtn').classList.toggle('active',data.theme==='dark');$('#lightModeBtn').classList.toggle('active',data.theme==='light');const mt=document.querySelector('meta[name="theme-color"]');if(mt)mt.setAttribute('content',data.theme==='light'?'#edf5ff':'#020617')}
+function setTheme(theme){data.theme=theme;if(persistWorkspace())applyTheme();
+  /* O sol/lua do topo grava aqui, em `data.theme`. Configurações › Aparência
+     grava num campo DIFERENTE do mesmo arquivo, `settings.tema` (e ainda
+     entende "Sistema", que este botão não tem). Os dois nunca se falavam:
+     trocar por aqui deixava `settings.tema` para trás, e no próximo boot a
+     tela de Configurações aplicava esse valor velho por cima assim que
+     terminava de montar — a cor voltava a mudar na frente da pessoa depois
+     do primeiro quadro. Espelhar aqui fecha o círculo dos dois lados. */
+  try{
+    var bruto=JSON.parse(localStorage.getItem('mateusWorkspaceV4')||'{}');
+    bruto.settings=bruto.settings||{};
+    bruto.settings.tema=theme==='light'?'claro':'escuro';
+    localStorage.setItem('mateusWorkspaceV4',JSON.stringify(bruto));
+  }catch(e){}
+  toast(theme==='light'?'Modo claro ativado':'Modo escuro ativado')}
 $('#themeToggle').onclick=()=>setTheme(data.theme==='light'?'dark':'light');$('#darkModeBtn').onclick=()=>setTheme('dark');$('#lightModeBtn').onclick=()=>setTheme('light');
 function loadProfileFields(){
   /* `#profileName` foi embora com o formulário antigo do Perfil, e este
@@ -23721,14 +23780,30 @@ html:root[data-acento="verde"] body.light   { --sem-1:#047857; --sem-2:#0f766e; 
 html:root[data-acento="ambar"] body.light   { --sem-1:#b45309; --sem-2:#a16207; }
 html:root[data-acento="rosa"] body.light    { --sem-1:#be185d; --sem-2:#a21caf; }
 
+/* ---- a semente, acinzentada ----
+   Pedido direto: misturar um cinza na cor de destaque pra ela não ficar
+   "vivo demais, tipo Coca-Cola" — nenhuma das seis deve ler como saída de
+   lata. Um único ponto (aqui) resolve as seis de uma vez, porque tudo
+   abaixo já lê a semente, nunca o hexadecimal direto (§2 acima). 18% de um
+   cinza neutro (sem viés de matiz) é o suficiente pra tirar o brilho de
+   saturação máxima sem a cor virar cinza-com-um-toque — ainda se reconhece
+   qual das seis é. `--id-ac-txt`, mais abaixo, FICA de fora de propósito:
+   ele é o texto sobre uma superfície tingida de acento, com a razão de
+   contraste calculada e comentada a mão pra bater 4,5:1 nas seis cores —
+   acinzentar a entrada dele reabriria essa conta sem necessidade. */
+html:root, html:root body.light{
+  --sem-1-fosco: color-mix(in srgb, var(--sem-1) 82%, #888d99 18%);
+  --sem-2-fosco: color-mix(in srgb, var(--sem-2) 82%, #888d99 18%);
+}
+
 /* ---- tudo o mais deriva ---- */
 html:root, html:root body.light{
-  --id-ac:      var(--sem-1);
-  --id-ac-2:    var(--sem-2);
-  --id-ac-grad: linear-gradient(135deg, var(--sem-1) 0%, var(--sem-2) 100%);
-  --id-ac-suave:color-mix(in srgb, var(--sem-1) 15%, transparent);
-  --id-ac-forte:color-mix(in srgb, var(--sem-1) 88%, black);
-  --id-ac-brilho:color-mix(in srgb, var(--sem-1) 38%, transparent);
+  --id-ac:      var(--sem-1-fosco);
+  --id-ac-2:    var(--sem-2-fosco);
+  --id-ac-grad: linear-gradient(135deg, var(--sem-1-fosco) 0%, var(--sem-2-fosco) 100%);
+  --id-ac-suave:color-mix(in srgb, var(--sem-1-fosco) 15%, transparent);
+  --id-ac-forte:color-mix(in srgb, var(--sem-1-fosco) 88%, black);
+  --id-ac-brilho:color-mix(in srgb, var(--sem-1-fosco) 38%, transparent);
 }
 /* Texto DA cor sobre superfície: no escuro clareia, no claro escurece —
    senão um dos dois some no fundo. */
@@ -27181,17 +27256,21 @@ html body #mwBottomNav.mwbn .mwnav-label{
      com a largura do PRÓPRIO NOME escondido — "Faculdade" mais largo
      que "Perfil" — em vez da largura do ícone, igual para todos. */
   width: 0 !important;
-  /* 9,5px/700 -> 9px/650: o texto ainda precisa ser lido de relance,
-     mas não precisa pesar tanto quanto o rótulo de um formulário (§5). */
-  font-size: 9px !important;
-  font-weight: 650 !important;
+  /* 9,5px/700 -> 9px/650 -> 10,5px/700: o corte pra 9px (rodada anterior)
+     passou do ponto — "Início" ficou pequeno demais pra ler de relance,
+     que era o objetivo original. 10,5px ainda é bem mais discreto que o
+     11px+ de antes de toda essa rodada, só não sacrifica legibilidade. */
+  font-size: 10.5px !important;
+  font-weight: 700 !important;
   line-height: 1.1 !important;
   letter-spacing: .01em !important;
   transition: opacity .2s var(--ds-suave), max-height .34s var(--ds-mola), margin-top .34s var(--ds-mola), width .34s var(--ds-mola) !important;
 }
 html body #mwBottomNav.mwbn button.active .mwnav-label{
   opacity: 1 !important;
-  max-height: 11px !important;
+  /* max-height acompanha o font-size acima (10,5px * line-height 1.1 ≈
+     11,6px de caixa de texto) com uma folga pequena pra não cortar. */
+  max-height: 14px !important;
   margin-top: 1px !important;
   width: auto !important;
 }

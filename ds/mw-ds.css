@@ -1631,8 +1631,18 @@ body.light .ds{
    — uma que se alcança de dentro de outra, e de onde a barra de baixo não
    traz de volta. Quando está visível, ele toma o lugar do menu. */
 .ds .ds-topo-voltar[hidden]{ display: none; }
-.ds .ds-topo-voltar:not([hidden]) ~ .ds-topo-menu,
-.ds .ds-topo-menu:has(~ .ds-topo-voltar:not([hidden])){ display: none; }
+/* O SELETOR ERA POR IRMÃO DIRETO (`~`), E O MENU NUNCA FOI IRMÃO DO
+   VOLTAR. No HTML, `.ds-topo-voltar` é filho direto do cabeçalho, mas
+   `.ds-topo-menu` mora dentro de `.ds-topo-acoes` — um nível a mais.
+   `~` só alcança irmãos de verdade, então esta regra nunca escondeu
+   nada: numa tela-folha, o hambúrguer continuava ao lado do botão de
+   voltar, oferecendo uma segunda porta (a gaveta) onde só devia haver
+   uma (a saída da folha) — foi isso que leu como "dois botões de
+   voltar, um em cima do outro" no relato. `:has()` alcança por dentro
+   da subárvore, e `.ds-topo` já é o cabeçalho inteiro: quando ele TEM
+   um voltar visível como filho direto, o menu — em qualquer
+   profundidade dentro dele — some. */
+.ds.ds-topo:has(> .ds-topo-voltar:not([hidden])) .ds-topo-menu{ display: none; }
 /* Numa tela-folha ele é a SAÍDA PRINCIPAL, e por isso ganha peso: numa
    barra de ícones fantasma, o único com superfície é o que o dedo
    procura primeiro. Peso feito de SUPERFÍCIE, não de cor — a folha
@@ -1646,13 +1656,18 @@ body.mw-tela-folha .ds .ds-topo-voltar:not([hidden]){
 }
 body.mw-tela-folha .ds .ds-topo-voltar:active{ transform: scale(.92); }
 
-/* Sino: o ponto só aparece quando há algo. */
+/* Sino/coração: o ponto só aparece quando há algo.
+   ERA `[data-tem="1"]`, um atributo que NENHUM script deste arquivo jamais
+   escreve — quem acende o alerta é `pinta()` (index.html), e ela faz
+   `botao.classList.toggle('has-alerts', tem)`, não `setAttribute`. Como o
+   seletor antigo nunca casava, o ponto nunca aparecia, não importa quantas
+   notificações não lidas existissem. */
 .ds .ds-topo-sino{ position: relative; }
 .ds .ds-topo-ponto{
   position: absolute; top: 9px; right: 9px; width: 7px; height: 7px;
   border-radius: 50%; background: var(--mw-ac); display: none;
 }
-.ds .ds-topo-sino[data-tem="1"] .ds-topo-ponto{ display: block; }
+.ds .ds-topo-sino.has-alerts .ds-topo-ponto{ display: block; }
 .ds .ds-topo-aviso{
   position: absolute; top: calc(100% + 6px); right: 0; z-index: 60;
   width: min(300px, calc(100vw - 32px)); padding: var(--mw-e-4);

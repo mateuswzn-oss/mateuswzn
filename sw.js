@@ -1,3 +1,66 @@
+/* v113 (BETA - rodada de relato informal: seis achados reais)
+
+   Mensagem de voz do Mateus com seis reclamacoes soltas. Cada uma foi
+   investigada ao vivo antes de qualquer edicao - nenhuma tratada como
+   "so estetica" sem achar o mecanismo real primeiro.
+
+   DOIS BOTOES DE VOLTAR NO PERFIL (bug confirmado)
+   O seletor que devia esconder o hamburguer quando o botao de voltar de
+   uma tela-folha aparece usava "~" (irmao geral) - mas no HTML o
+   hamburguer mora um nivel mais fundo (dentro de .ds-topo-acoes) que o
+   botao de voltar (filho direto do cabecalho). "~" so alcanca irmaos de
+   verdade, entao a regra nunca escondeu nada: as duas saidas (a seta da
+   folha e o hamburguer que abre a gaveta) ficavam visiveis juntas.
+   Trocado para ":has(> .ds-topo-voltar:not([hidden]))", que alcanca a
+   subarvore inteira do cabecalho.
+
+   ROTULO "INICIO" PEQUENO DEMAIS
+   O corte pra 9px da rodada anterior passou do ponto. Voltou pra
+   10,5px/700 (ainda bem mais discreto que o 11px+ de antes de toda essa
+   rodada, so nao sacrifica legibilidade).
+
+   PONTO DE ALERTA DO CORACAO NUNCA APARECIA (bug confirmado)
+   O CSS exigia o atributo `[data-tem="1"]` num elemento - atributo que
+   NENHUM script do arquivo jamais escrevia. Quem acende o alerta de
+   verdade usa `classList.toggle('has-alerts', tem)`. Seletor trocado
+   pra `.has-alerts`, que e o que o JS realmente usa.
+
+   SOMBRA GRUDANDO NO TOQUE
+   `-webkit-tap-highlight-color` nunca tinha sido zerado em lugar nenhum
+   do arquivo - o retangulo cinza translucido que Chrome Android/Safari
+   iOS desenham por conta propria sobre qualquer toque (quase tudo aqui
+   e <div>/<span> com role, nao <button> puro) ficava visivel um instante
+   a mais que o proprio :active, lendo como uma sombra presa.
+
+   CORES MUDANDO AO ENTRAR NO SITE (bug estrutural confirmado)
+   Existiam DUAS fontes de tema completamente dessincronizadas: o icone
+   sol/lua do topo grava em `data.theme` ('dark'/'light'), e as pilulas
+   de Configuracoes > Aparencia gravam em `settings.tema`
+   ('escuro'/'claro'/'sistema') - campos diferentes do mesmo blob, cada
+   um aplicado em momento diferente do boot (um direto no parse, o outro
+   so no DOMContentLoaded). Trocar por um dos dois controles nunca
+   atualizava o outro; no proximo carregamento os dois se aplicavam em
+   sequencia e podiam discordar, trocando a cor na frente da pessoa.
+   Agora os dois se sincronizam a cada gravacao.
+
+   "AQUELA PARTEZINHA LA DE CIMA" (bug confirmado)
+   <meta name="theme-color"> - quem pinta a barra de status/gesto do
+   SISTEMA por cima da pagina, nao a canvas do navegador - ficava
+   cravada em "#020617" (escuro) desde a primeira linha do documento e
+   nunca era atualizada em lugar nenhum. No tema claro isso deixava uma
+   tarja escura bem em cima da pagina clara. Atualizada nos tres pontos
+   que decidem o tema (carimbo inicial anti-flash, applyTheme(),
+   aplica('tema', ...)).
+
+   COR DE ACENTO MENOS "COCA-COLA"
+   Pedido direto: misturar cinza no lilas/roxo pra nao ficar saturado
+   demais. 18% de um cinza neutro (#888d99) misturado na semente
+   (--sem-1/--sem-2, ponto unico de onde toda a paleta de acento nasce)
+   - as seis cores nos dois temas ficam menos vivas de uma vez so. O
+   texto de contraste calculado a mao pra WCAG (--id-ac-txt) ficou de
+   fora de proposito, pra nao reabrir essa conta.
+*/
+
 /* v112 (BETA - correcao cirurgica da Bottom Navigation)
 
    A BARRA ERA UM PAINEL, NAO UMA CAPSULA
@@ -2635,7 +2698,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v112-beta';
+const CACHE_NAME = 'mw-shell-v113-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
