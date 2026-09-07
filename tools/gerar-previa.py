@@ -57,7 +57,7 @@ def main():
 
     # 2) título próprio
     html = re.sub(r'<title>.*?</title>',
-                  '<title>MW Workspace — prévia beta</title>',
+                  '<title>Klyne — prévia beta</title>',
                   html, count=1, flags=re.S)
 
     # 3) carimbo de versão

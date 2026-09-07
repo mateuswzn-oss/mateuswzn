@@ -1,3 +1,77 @@
+/* v121 (BETA - REBRANDING: MW Workspace -> Klyne)
+
+   Pedido: rebranding completo do produto — a marca antiga (MW / MW
+   Workspace / Mateus Workspace) deixa de aparecer para o usuário em
+   qualquer tela, e a nova identidade e visual passa a ser Klyne, com
+   simbolo proprio (nao um "K" generico e nao uma copia do logo antigo
+   com o nome trocado).
+
+   SIMBOLO: o antigo monograma M+W (tracado continuo, dois pesos finos)
+   foi substituido por um K desenhado como MASSA UNICA — espinha grossa
+   e o braco diagonal como um so gesto, fundidos sem vao, cantos retos
+   (stroke-linecap:square, stroke-linejoin:bevel em vez de round). E o
+   mesmo <symbol id="mwi-marca"> reaproveitado em toda a base (sidebar,
+   login, rodape, convite de instalacao) — trocar o desenho ali dentro
+   propagou a marca nova pra todos os lugares de uma vez. Testado como
+   silhueta pura (mono, sem gradiente) em 16-256px antes de entrar no
+   codigo — ver o artifact da auditoria do rebranding.
+
+   PRELOADER: a mesma coreografia de sempre (silencio -> traco ->
+   halo/brilho -> nome -> impacto -> saida), so que tracando o K em vez
+   do M+W — dasharray recalculado pro comprimento real dos dois novos
+   caminhos (espinha=28, braco=~79), mascara do brilho regerada com a
+   nova geometria, nome trocado de "Workspace" pra "Klyne".
+
+   FAVICON/PWA: os 5 PNGs (icon-192, icon-512, as duas variantes
+   maskable e o apple-touch-icon) foram regerados a partir do novo
+   simbolo via Playwright (tools/gerar-icones.mjs — nao ha
+   rsvg-convert/inkscape/imagemagick neste ambiente). manifest.json,
+   package.json, <title>, apple-mobile-web-app-title: todos "Klyne"
+   agora.
+
+   TEXTOS PUBLICOS: dezenas de strings visiveis trocadas de "MW
+   Workspace"/"Workspace" pra "Klyne" — sidebar, topbar (busca,
+   engrenagem), login/cadastro, Configuracoes (todas as 7 categorias),
+   Suporte, Sobre/Termos/Privacidade, convite de instalacao PWA, tela
+   de bloqueio por codigo/Face ID, nome de exportacao de backup,
+   respostas locais da Nyc AI (o modo sem API), e o system prompt real
+   da Nyc AI em api/ai.js (que tambem tinha "para estudantes de
+   Engenharia de Software" hardcoded de antes da Fase 1 generalizar
+   isso — virou generico). E-mails reais do Supabase (confirmar-conta e
+   redefinir-senha) tambem atualizados.
+
+   FALLBACK DE NOME/INICIAIS: varias funcoes calculavam iniciais do
+   perfil com fallback 'MW' e, em alguns casos, com o NOME inteiro
+   caindo pra 'Mateus Workspace' ou 'Mateus' quando o perfil esta vazio
+   — um perfil sem nome preenchido literalmente mostraria o nome do
+   fundador/marca antiga como se fosse a pessoa. Isso incluia o PROPRIO
+   dado padrao de conta nova (profile.name:'Mateus' no objeto default),
+   o texto estatico da sidebar e da saudacao da Nyc AI antes do
+   JavaScript hidratar a tela, e cerca de 18 pontos de codigo no total
+   (default de conta, hidratacao de sessao, avatar, saudacao, exportacao
+   de nome). Trocado por um fallback neutro ('Você' / iniciais 'VC') em
+   todos os pontos encontrados — nenhum usuario com perfil vazio ve mais
+   "Mateus" na tela.
+
+   PROTOCOLO DE SUPORTE E BACKUP: o prefixo do protocolo de atendimento
+   (MW-xxxxxx) virou KLYNE-xxxxxx (index.html + testes/14-suporte.mjs
+   atualizados juntos), e o nome do arquivo baixado ao exportar backup
+   (mateus-workspace-backup-AAAA-MM-DD.json) virou
+   klyne-backup-AAAA-MM-DD.json — a importacao le o conteudo do JSON
+   (marcador interno mateusWorkspaceBackup, preservado), nunca o nome do
+   arquivo, entao backups antigos continuam importando normalmente.
+
+   PRESERVADO DE PROPOSITO (nao e esquecimento): as chaves de
+   localStorage (mateusWorkspaceV4, mateusWorkspaceUsersV2, etc.) e as
+   funcoes internas (persistWorkspace, renderWorkspace...) mantem o
+   nome tecnico antigo. Renomea-las apagaria os dados de quem ja tem
+   conta salva no navegador, e elas nunca aparecem pro usuario — puro
+   encanamento interno. Decisao confirmada com o Mateus antes de comecar.
+
+   Suite completa (23 passos) + checagem de sintaxe dos 131 <script>
+   inline: tudo passou.
+*/
+
 /* v120 (BETA - Fase E: a foto do Perfil ganha um "pop" de mola ao entrar)
 
    Pedido: "uma animacao quando for pra entrar pro perfil". Toda tela ja
@@ -2887,7 +2961,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v120-beta';
+const CACHE_NAME = 'mw-shell-v121-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho

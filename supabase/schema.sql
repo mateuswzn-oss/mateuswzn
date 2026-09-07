@@ -1,5 +1,5 @@
 -- ============================================================================
--- Mateus Workspace — esquema do Supabase
+-- Klyne — esquema do Supabase
 -- ============================================================================
 -- Cole este arquivo inteiro no SQL Editor do Supabase e clique em "Run".
 -- Pode rodar mais de uma vez sem problema: tudo aqui é idempotente.

@@ -1,4 +1,4 @@
-# Testes do Mateus Workspace
+# Testes do Klyne
 
 Suíte de Playwright que roda o app de verdade num navegador de verdade e
 mede o resultado. Não há teste unitário aqui: o app é um arquivo único com

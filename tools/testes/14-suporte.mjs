@@ -91,7 +91,7 @@ if (criado.length) {
   ok('com os campos que foram digitados',
      t.subject === 'O calendário não abre no celular' && t.priority === 'Alta' && t.type === 'Bug',
      { assunto: t.subject, prioridade: t.priority, tipo: t.type });
-  ok('com um protocolo no formato MW-xxxxxx', /^MW-\d{6}$/.test(t.id || ''), t.id);
+  ok('com um protocolo no formato KLYNE-xxxxxx', /^KLYNE-\d{6}$/.test(t.id || ''), t.id);
   ok('e nasce com status aberto', String(t.status || '').toLowerCase().includes('abert'), t.status);
 }
 
@@ -105,7 +105,7 @@ ok('a conversa mostra o assunto e o protocolo',
    await p.evaluate(() => {
      const a = (document.getElementById('mwSupportChatSubject').textContent || '').trim();
      const i = (document.getElementById('mwSupportChatTicketId').textContent || '').trim();
-     return a.includes('calendário') && /MW-\d{6}/.test(i);
+     return a.includes('calendário') && /KLYNE-\d{6}/.test(i);
    }));
 
 /* ---- 6. enviar mensagem ------------------------------------------------- */

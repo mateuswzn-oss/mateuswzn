@@ -1,8 +1,8 @@
 {
-  "name": "mateus-workspace",
+  "name": "klyne",
   "private": true,
   "version": "1.0.0",
-  "description": "Mateus Workspace — site estático com um endpoint serverless (/api/ai) para a Nyc AI.",
+  "description": "Klyne — site estático com um endpoint serverless (/api/ai) para a Nyc AI.",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.121.0"
   },

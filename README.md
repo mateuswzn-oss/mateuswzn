@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="icon-192.png" width="88" alt="Mateus Workspace">
+<img src="icon-192.png" width="88" alt="Klyne">
 
-# Mateus Workspace
+# Klyne
 
 **Organize disciplinas, projetos, atividades e anotações da faculdade em um só lugar.**
 

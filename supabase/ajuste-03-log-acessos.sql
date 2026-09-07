@@ -1,5 +1,5 @@
 -- ============================================================================
--- Mateus Workspace — registro de acessos (IP, localização, aparelho, página)
+-- Klyne — registro de acessos (IP, localização, aparelho, página)
 -- ============================================================================
 -- Cole este arquivo inteiro no SQL Editor do Supabase e clique em "Run".
 -- Pode rodar mais de uma vez sem problema: tudo aqui é idempotente.

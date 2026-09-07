@@ -1,6 +1,6 @@
 # MW Design System
 
-Sistema de interface do Mateus Workspace. Existe para **substituir** as folhas legadas
+Sistema de interface do Klyne. Existe para **substituir** as folhas legadas
 área por área — não para se empilhar sobre elas.
 
 ```

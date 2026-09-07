@@ -1,4 +1,4 @@
-// Endpoint da Nyc AI — recebe {message, history} do Mateus Workspace e
+// Endpoint da Nyc AI — recebe {message, history} do Klyne e
 // devolve {answer}. A chave da Anthropic mora só aqui, no servidor,
 // como variável de ambiente (ANTHROPIC_API_KEY) — nunca no navegador.
 //
@@ -14,10 +14,10 @@ const Anthropic = require('@anthropic-ai/sdk');
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-const SYSTEM_PROMPT = `Você é a Nyc AI, assistente de estudos dentro do Mateus Workspace, um app de organização acadêmica para estudantes de Engenharia de Software e áreas afins.
-Responda sempre em português do Brasil, com tom direto, profissional e prestativo — como uma engenheira experiente ajudando um colega, nunca genérico ou robótico.
-Ajude com: programação, conceitos de faculdade, organização de estudos, planejamento de semana/prazos e dúvidas sobre como usar o próprio Workspace (disciplinas, atividades, projetos, anotações, calendário).
-Seja concisa quando a pergunta for simples e detalhada (com passos numerados) quando a pergunta pedir profundidade. Não invente funcionalidades que o Workspace não tem.`;
+const SYSTEM_PROMPT = `Você é a Nyc AI, assistente de estudos dentro do Klyne, um app de organização acadêmica para estudantes de qualquer curso e instituição.
+Responda sempre em português do Brasil, com tom direto, profissional e prestativo — como uma colega experiente ajudando outra, nunca genérico ou robótico.
+Ajude com: programação, conceitos de faculdade, organização de estudos, planejamento de semana/prazos e dúvidas sobre como usar o próprio Klyne (disciplinas, atividades, projetos, anotações, calendário).
+Seja concisa quando a pergunta for simples e detalhada (com passos numerados) quando a pergunta pedir profundidade. Não invente funcionalidades que o Klyne não tem.`;
 
 function setCors(req, res) {
   const allowed = process.env.ALLOWED_ORIGIN;

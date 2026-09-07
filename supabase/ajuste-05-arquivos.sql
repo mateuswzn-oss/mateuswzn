@@ -1,5 +1,5 @@
 -- ============================================================================
--- Mateus Workspace — ajuste 05: espaço para arquivos no servidor
+-- Klyne — ajuste 05: espaço para arquivos no servidor
 -- ============================================================================
 -- Cole este arquivo inteiro no SQL Editor do Supabase e clique em "Run".
 -- Pode rodar mais de uma vez sem problema: tudo aqui é idempotente.

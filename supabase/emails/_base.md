@@ -1,4 +1,4 @@
-# Modelos de e-mail do Mateus Workspace
+# Modelos de e-mail do Klyne
 
 > ⚠️ **Editar modelo exige SMTP próprio.**
 > Com o serviço de e-mail embutido do Supabase, os campos de assunto e corpo
@@ -16,8 +16,8 @@ Cole cada arquivo no painel do Supabase, em
 
 | Arquivo | Template do Supabase | Assunto sugerido |
 |---|---|---|
-| `confirmar-conta.html` | Confirm signup | `Confirme sua conta — Mateus Workspace` |
-| `redefinir-senha.html` | Reset password | `Redefinir sua senha — Mateus Workspace` |
+| `confirmar-conta.html` | Confirm signup | `Confirme sua conta — Klyne` |
+| `redefinir-senha.html` | Reset password | `Redefinir sua senha — Klyne` |
 
 ## Decisões de desenho, para quem for mexer depois
 
@@ -29,7 +29,7 @@ boa parte dos casos. O que sobrevive em todo lugar é tabela aninhada com
 **A marca é desenhada com texto, não com imagem.** Quase todo cliente
 bloqueia imagem remota até a pessoa autorizar — um logo em `<img>` chegaria
 como um quadrado vazio na primeira vez, que é justamente quando importa. O
-selo "MW" é uma célula com fundo e letra, então aparece sempre.
+selo "K" é uma célula com fundo e letra, então aparece sempre.
 
 **O link aparece escrito por extenso embaixo do botão.** Botão é `<a>` com
 fundo; quando o cliente remove o fundo, sobra um link comum — e quando

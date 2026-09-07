@@ -1,5 +1,5 @@
 -- ============================================================================
--- Mateus Workspace — limite de consulta para as funções públicas
+-- Klyne — limite de consulta para as funções públicas
 -- ============================================================================
 -- Cole este arquivo inteiro no SQL Editor do Supabase e clique em "Run".
 -- Pode rodar mais de uma vez sem problema.

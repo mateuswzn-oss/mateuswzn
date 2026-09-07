@@ -1,5 +1,5 @@
 -- ============================================================================
--- Mateus Workspace — papel de admin, Painel Admin real e "esqueci meu usuário"
+-- Klyne — papel de admin, Painel Admin real e "esqueci meu usuário"
 -- ============================================================================
 -- Cole este arquivo inteiro no SQL Editor do Supabase e clique em "Run".
 -- Pode rodar mais de uma vez sem problema: tudo aqui é idempotente.
