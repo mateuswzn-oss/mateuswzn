@@ -1,3 +1,55 @@
+/* v112 (BETA - correcao cirurgica da Bottom Navigation)
+
+   A BARRA ERA UM PAINEL, NAO UMA CAPSULA
+   358px de largura (quase a tela toda), 89px de item ativo, "+" de
+   38px, brilho roxo de 20px a 50% de opacidade no item selecionado.
+   A causa nao era gosto: era arquitetura. Os cinco itens usavam
+   "flex:1 1 0" - cada um brigando por uma fatia igual da largura TOTAL
+   da barra, em vez de medir pelo proprio conteudo. Trocado para
+   "flex:0 0 auto": cada item mede o que precisa (icone sozinho, ou
+   icone+nome no ativo), e a barra encolhe ate caber neles.
+
+   DUAS REGRAS MORTAS ACORDARAM COM A MUDANCA
+   Um "width:100%!important" e um "width:52,6px!important" (regras de
+   versoes anteriores da barra, ha muito superadas por outras) nunca
+   tinham efeito enquanto "flex-basis:0" os ignorava. Ao virar
+   "flex-basis:auto", os dois passaram a valer ao mesmo tempo - e cada
+   botao brigou por ser o unico do tamanho certo. As duas foram
+   apagadas: quem decide largura agora e so o mw-ds-bottomnav.
+
+   O ROTULO ESCONDIDO AINDA EMPURRAVA A LARGURA
+   "opacity:0" nao e "display:none": o <span> do nome, mesmo invisivel,
+   continuava contando para a largura do botao — e por isso "Faculdade"
+   (nome mais longo) ficava mais largo que "Perfil", mesmo os dois
+   mostrando so o icone. Um "width:0" no rotulo inativo (e "width:auto"
+   no ativo) resolve: agora todo item inativo mede exatamente o icone.
+
+   O ALVO DE TOQUE NAO ENCOLHEU
+   21px de icone nao e 21px de dedo. Cada um dos quatro destinos de
+   navegacao (Inicio, Faculdade, Arquivos, Perfil) ganhou
+   "min-width:44px" - o mesmo piso de acessibilidade que a altura ja
+   respeitava. Visualmente compacto, no toque continua do tamanho que
+   sempre foi. O "+" fica de fora dessa regra de proposito: ele ja
+   estava abaixo de 44px antes desta rodada (38px) e foi reduzido mais
+   (34px) a pedido explicito - nao e uma regressao nova, e uma
+   excecao que ja existia.
+
+   O ESTADO ATIVO TROCOU PREENCHIMENTO POR VERNIZ
+   O item selecionado tinha um degrade solido de acento (o mesmo do
+   "+", que ja tinha sido convertido a contorno numa rodada anterior
+   pelo motivo oposto: duas manchas cheias da mesma cor lem como
+   ruido). Agora e um tom translucido do proprio destaque
+   (color-mix 16%) com um anel fino por dentro - o roxo aparece como
+   parte do vidro, nao como uma segunda superficie por cima dele.
+
+   UM BUG DE DESKTOP, ACHADO NO CAMINHO
+   Uma regra de "display:flex" para a barra no app instalado nunca
+   tinha sido limitada por largura de tela - so por estar instalado.
+   Num desktop com o app instalado (Chrome/Edge suportam isso), a
+   capsula mobile aparecia flutuando por cima da barra lateral. Presa
+   agora dentro do mesmo limite de 860px que o resto da barra usa.
+*/
+
 /* v111 (BETA — o botão que devia abrir a gaveta, e nunca abria)
 
    DUAS ÁREAS INTEIRAS ERAM INALCANÇÁVEIS NO CELULAR
@@ -2583,7 +2635,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v111-beta';
+const CACHE_NAME = 'mw-shell-v112-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
