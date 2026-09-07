@@ -9272,13 +9272,20 @@ body.light .kicker{color:#355070!important}#lecturesPanel .section-head span:not
   border-color: rgba(125,211,252,.45) !important;
 }
 #app .search-wrap.open,
-#app .search-wrap:focus-within,
-#searchWrap.open,
-#searchWrap:focus-within{
+#app .search-wrap:focus-within{
   width: min(280px,42vw) !important;
   min-width: 180px !important;
   justify-content: flex-start !important;
 }
+/* `#searchWrap.open`/`#searchWrap:focus-within` SAÍRAM DAQUI. Eram do
+   desenho antigo (lupa de 42px que crescia ao focar) — e como estavam
+   escritos só pelo id, sem exigir a classe `.search-wrap`, alcançavam a
+   marcação NOVA também (`#searchWrap` com classes `ds-busca
+   ds-busca-aberta`, que já é 100% de largura o tempo todo). Resultado
+   medido: tocar no campo ENCOLHIA a barra de 322px pra 180px, e ela só
+   voltava ao tamanho certo ao perder o foco — o "abre, fecha, fica
+   bugada" do relato. A regra acima (com `.search-wrap`) fica pra quando
+   essa classe existir de novo; sozinha ela é inerte hoje. */
 
 /* 4) Sino centralizado */#app #notificationBtn.bell-btn{
   display: grid !important;
@@ -13792,11 +13799,23 @@ html body.light .eva-chips button{
    círculo próprio que o Design System já desenha (`.ds-topo-icone`).
    Com o id de verdade, o botão de menu passa a ter só a pele do
    sistema — como o sino e a engrenagem ao lado dele. */
-#app .main button:not(#mwMobileMenu):not(#mwSidebarCollapse):not(.sidebar-toggle),
+/* `:not([data-conf-opcao])` — o seletor "Escuro/Claro/Sistema" (e os
+   irmãos Vidro/Densidade) mora dentro de `.ds`, área já migrada pro
+   Design System, mas esta regra alcançava ele mesmo assim: é escrita
+   por `#app .main button`, sem nada que pare em áreas migradas. O
+   brilho ciano abaixo não é da identidade deste app há rodadas, e a
+   duração de .18s que ela também carrega vencia por especificidade
+   (três ids contados pelos `:not()`) a transição de 240ms que o próprio
+   sistema de retema tenta coordenar nesses botões — o botão então
+   cruzava de cor sozinho, fora do ritmo do resto da tela, e é essa a
+   raiz do "fica muito apagado e depois fica preto" do relato.
+   `data-conf-opcao` é o atributo que os três seletores (tema, vidro,
+   densidade) sempre carregam, então a exclusão é exata. */
+#app .main button:not(#mwMobileMenu):not(#mwSidebarCollapse):not(.sidebar-toggle):not([data-conf-opcao]),
 #app .main [role="button"] {
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease !important;
 }
-#app .main button:not(#mwMobileMenu):not(#mwSidebarCollapse):not(.sidebar-toggle):hover,
+#app .main button:not(#mwMobileMenu):not(#mwSidebarCollapse):not(.sidebar-toggle):not([data-conf-opcao]):hover,
 #app .main [role="button"]:hover {
   box-shadow: 0 0 18px rgba(34, 211, 238, .15);
 }
@@ -23826,7 +23845,25 @@ html.mw-troca-tema .ds-chapa,
 html.mw-troca-tema .ds-peca,
 html.mw-troca-tema .ds-agora,
 html.mw-troca-tema .ds-btn,
-html.mw-troca-tema .ds-nav-item{
+html.mw-troca-tema .ds-nav-item,
+/* O SELETOR "Escuro/Claro/Sistema" FICAVA DE FORA DESTA LISTA. Ele já
+   tinha a própria transição (`.ds-conf-seletor > button`, em
+   var(--mw-d-rapida) — mais curta e sem relação com este 240ms). Tocar
+   em "Claro" muda DUAS coisas no mesmo instante: `aria-pressed` (que
+   dispara a transição própria do botão) e o tema inteiro (que troca o
+   VALOR de --mw-txt-1/--mw-sup-1 sem transição nenhuma, na hora). O
+   botão então cruzava de "cinza apagado, sem pressionar, tema escuro"
+   direto para "quase preto, pressionado, tema claro" pela duração
+   errada, e o cinza do meio do caminho é o que leu como "fica muito
+   apagado e depois fica preto" no relato. Entrando nesta lista, ele
+   troca de cor no MESMO ritmo do resto da tela, coordenado. */
+html.mw-troca-tema #app .ds-conf-seletor > button{
+  /* O `#app` a mais na frente não é estilo, é peso: existe uma regra de
+     acessibilidade (`#app *{transition-duration:.16s!important}`) que
+     também é !important e também alcança este botão, e um id bate duas
+     classes — sem o `#app` aqui, aquela regra ganhava só a DURAÇÃO da
+     transição de volta, silenciosamente, e os 240ms acima nunca se
+     aplicavam de verdade. */
   transition: background-color 240ms ease, background-image 240ms ease,
               border-color 240ms ease, color 240ms ease,
               box-shadow 240ms ease !important;

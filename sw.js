@@ -1,3 +1,44 @@
+/* v115 (BETA - tres achados reais do pedido "expedicao completa")
+
+   O pedido do Mateus era enorme (icones, cores, tipografia, animacoes,
+   Inicio, Perfil) e comecei pelos bugs concretos que ele apontou, antes
+   de qualquer coisa visual - a mesma ordem de sempre nesta conta.
+
+   1. LUPA ENCOLHENDO AO FOCAR. Reproduzido ao vivo: tocar no campo de
+      busca da Home fazia a caixa encolher de 322px pra 180px, e ela so
+      voltava ao tamanho certo ao perder o foco - o "abre, fecha, fica
+      bugada" do relato. Causa: uma regra CSS de uma versao ANTERIOR da
+      busca (a lupa de 42px que crescia ao focar, de antes dela virar
+      "sempre aberta" na Home) ainda escrita so pelo id
+      (#searchWrap:focus-within/#searchWrap.open, sem exigir a classe
+      .search-wrap que a marcacao nova nao tem) continuava alcancando o
+      elemento novo. Removida a parte que so casava pelo id; a versao
+      qualificada por .search-wrap ficou (inerte hoje, mas correta se
+      essa classe voltar a existir).
+
+   2. "MODO CLARO" APAGADO ANTES DE FICAR PRETO. Achado real: o texto
+      do seletor Escuro/Claro/Sistema tinha a propria transicao de cor
+      (var(--mw-d-rapida), mais curta) FORA da lista coordenada de
+      240ms que o resto da tela usa ao trocar de tema
+      (html.mw-troca-tema). No instante de tocar em "Claro" duas coisas
+      mudam ao mesmo tempo - o aria-pressed do botao e o tema inteiro -
+      e o botao cruzava de cor sozinho, num ritmo diferente do resto:
+      o cinza do meio do caminho e o que leu como "muito apagado" antes
+      de assentar em preto. Um agravante: uma regra legada de brilho
+      ciano (#app .main button, com tres ids contados via :not()) vencia
+      qualquer tentativa de coordenar esse botao por especificidade.
+      Excluido o seletor de tema/vidro/densidade dessa regra legada (via
+      [data-conf-opcao], que so eles carregam) e somado a lista
+      coordenada. Verificado ao vivo: a cor progride suavemente agora,
+      em sincronia com o resto da tela.
+
+   3. Botoes de voltar: testados em varias telas (Perfil, Notificacoes,
+      Instituicoes) - a duplicacao da rodada anterior (v112) continua
+      corrigida, nenhuma nova encontrada.
+
+   Suite completa (23 passos): tudo passou.
+*/
+
 /* v114 (BETA - achado da propria suite v113: contraste no fio da navalha)
 
    A suite completa (23 passos) rodou depois do commit da v113 e achou UM
@@ -2711,7 +2752,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v114-beta';
+const CACHE_NAME = 'mw-shell-v115-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
