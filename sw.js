@@ -1,3 +1,29 @@
+/* v118 (BETA - Fase C: tipografia — Lexend no lugar de so Inter)
+
+   Pedido: "as fontes... nao deixar uma coisa muito generico" (Inter
+   como UNICA fonte de um app inteiro e uma das escolhas mais repetidas
+   e reconhecidas como "gerada por IA" que existe). Escolha ficou por
+   minha conta ("deixar comigo").
+
+   Lexend entra como a fonte de verdade (auto-hospedada em
+   fonts/lexend-variable-latin.woff2, ~39KB, variavel — cobre os pesos
+   400 a 800 num arquivo so). Inter e o resto da pilha do sistema
+   continuam como reserva.
+
+   NAO e Google Fonts ao vivo, de proposito: pedir a fonte pela rede a
+   cada carregamento reabriria o problema que varias rodadas passadas
+   gastaram resolvendo (flash, dependencia de rede no primeiro quadro
+   de um PWA que devia funcionar offline). O arquivo mora no
+   repositorio e entrou no precache do shell (SHELL_URLS) — o teste 10
+   (offline) confirma que ele carrega sem rede.
+
+   Cobertura: subconjunto "latin" do Google Fonts, que e o Latin-1
+   Supplement inteiro — cobre todos os acentos do portugues (ã, ç, é,
+   í, ó, ú...).
+
+   Suite completa (23 passos), incluindo o teste offline: tudo passou.
+*/
+
 /* v117 (BETA - Fase F: barra de progresso do semestre no Inicio)
 
    Pedido: "a tela inicial esta muito lisa, nao tem nem barra". Adicionada
@@ -2805,7 +2831,7 @@
    inset maior e altura/largura em dvh/dvw. Sem trocar o nome, quem já
    tinha o app instalado continuaria vendo a borda sem preencher, porque
    o service worker antigo seguiria servindo o index.html de antes. */
-const CACHE_NAME = 'mw-shell-v117-beta';
+const CACHE_NAME = 'mw-shell-v118-beta';
 
 // Caminhos relativos de propósito: o site roda numa subpasta do GitHub
 // Pages (ex.: github.io/mateuswzn/), não na raiz do domínio. Um caminho
@@ -2822,6 +2848,12 @@ const SHELL_URLS = [
      shell explicitamente — senão o app abre sem estilo quando estiver
      offline, a partir da primeira área migrada. */
   './ds/mw-ds.css',
+  /* Mesma lógica da Lexend: fonte auto-hospedada (não Google Fonts ao
+     vivo, de propósito — ver o comentário do @font-face). Sem entrar
+     aqui, o primeiro carregamento offline caía pro fallback do sistema
+     mesmo já tendo a fonte baixada uma vez, porque o cache do shell não
+     sabia dela. */
+  './fonts/lexend-variable-latin.woff2',
 ];
 
 self.addEventListener('install', (event) => {
